@@ -10,7 +10,6 @@ import sk.janobono.wiwa.common.component.LocalStorage;
 import sk.janobono.wiwa.common.component.RandomString;
 import sk.janobono.wiwa.common.config.CommonConfigProperties;
 import sk.janobono.wiwa.common.model.Authority;
-import sk.janobono.wiwa.common.model.UserSo;
 import sk.janobono.wiwa.dal.domain.ApplicationPropertyDo;
 import sk.janobono.wiwa.dal.domain.UserDo;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
@@ -22,6 +21,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -29,7 +29,7 @@ import java.util.Objects;
 public class InitDataCommandLineRunner implements CommandLineRunner {
 
     private final ObjectMapper objectMapper;
-    private final CommonConfigProperties appConfigProperties;
+    private final CommonConfigProperties commonConfigProperties;
     private final PasswordEncoder passwordEncoder;
     private final LocalStorage localStorage;
     private final RandomString randomString;
@@ -39,7 +39,7 @@ public class InitDataCommandLineRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Path dataDir = Path.of(appConfigProperties.initDataPath()).normalize().toAbsolutePath();
+        Path dataDir = Path.of(commonConfigProperties.initDataPath()).normalize().toAbsolutePath();
         initAuthorities();
         initUsers(dataDir);
         initApplicationProperties(dataDir);
@@ -58,27 +58,23 @@ public class InitDataCommandLineRunner implements CommandLineRunner {
         if (userRepository.count() == 0L) {
             log.debug("initUsers({})", dataDir);
             Path dataPath = dataDir.resolve("users.json");
-            if (dataPath.toFile().exists()) {
-                UserSo[] users = objectMapper.readValue(dataPath.toFile(), UserSo[].class);
-                for (UserSo userSo : users) {
-                    UserDo userDo = new UserDo(
+            userRepository.addUser(
+                    new UserDo(
                             null,
-                            userSo.username(),
-                            passwordEncoder.encode(randomString.alphaNumeric(3, 2, 1, 6, 6)),
-                            userSo.titleBefore(),
-                            userSo.firstName(),
-                            userSo.midName(),
-                            userSo.lastName(),
-                            userSo.titleAfter(),
-                            userSo.email(),
-                            userSo.gdpr(),
-                            userSo.confirmed(),
-                            userSo.enabled(),
-                            userSo.authorities()
-                    );
-                    userRepository.addUser(userDo);
-                }
-            }
+                            "wiwa",
+                            passwordEncoder.encode("wiwa"),
+                            null,
+                            "wiwa",
+                            null,
+                            "wiwa",
+                            null,
+                            commonConfigProperties.mail(),
+                            true,
+                            true,
+                            true,
+                            Arrays.stream(Authority.values()).collect(Collectors.toSet())
+                    )
+            );
         }
     }
 

@@ -23,7 +23,7 @@ services:
       - DB_URL=jdbc:postgresql://pg:5432/app
       - MAIL_HOST=smtp
       - MAIL_PORT=1025
-      - WEB_URL=http://localhost
+      - WEB_URL=http://localhost:8080
       - INIT_DATA_PATH=./data
     volumes:
       - ./data:/app/data

@@ -42,13 +42,13 @@ class UserControllerIT extends BaseIntegrationTest {
 
         Pageable pageable = PageRequest.of(0, 5, Sort.Direction.DESC, "id", "username");
         Page<UserSo> page = getUsers(headers, pageable);
-        assertThat(page.getTotalElements()).isEqualTo(15);
+        assertThat(page.getTotalElements()).isEqualTo(14);
         assertThat(page.getTotalPages()).isEqualTo(3);
         assertThat(page.getContent().size()).isEqualTo(5);
 
         pageable = PageRequest.of(1, 5, Sort.Direction.DESC, "id", "username");
         page = getUsers(headers, pageable);
-        assertThat(page.getTotalElements()).isEqualTo(15);
+        assertThat(page.getTotalElements()).isEqualTo(14);
         assertThat(page.getTotalPages()).isEqualTo(3);
         assertThat(page.getContent().size()).isEqualTo(5);
 

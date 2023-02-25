@@ -24,16 +24,14 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import sk.janobono.wiwa.business.model.auth.AuthenticationResponseSo;
 import sk.janobono.wiwa.business.model.auth.SignInSo;
+import sk.janobono.wiwa.common.model.Authority;
 import sk.janobono.wiwa.dal.domain.UserDo;
 import sk.janobono.wiwa.dal.repository.UserRepository;
 
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -84,11 +82,11 @@ public abstract class BaseIntegrationTest {
         }
     }
 
-    public static final String DEFAULT_ADMIN = "wadmin";
+    public static final String DEFAULT_ADMIN = "wiwa";
     public static final String DEFAULT_MANAGER = "wmanager";
     public static final String DEFAULT_EMPLOYEE = "wemployee";
     public static final String DEFAULT_CUSTOMER = "wcustomer";
-    public static final String PASSWORD = "pass123";
+    public static final String PASSWORD = "wiwa";
 
     @Value("${local.server.port}")
     public int serverPort;
@@ -116,17 +114,29 @@ public abstract class BaseIntegrationTest {
         flyway.clean();
         flyway.migrate();
         initDataCommandLineRunner.run();
-        changePassword(DEFAULT_ADMIN);
-        changePassword(DEFAULT_MANAGER);
-        changePassword(DEFAULT_EMPLOYEE);
-        changePassword(DEFAULT_CUSTOMER);
+        addUser(DEFAULT_MANAGER, Authority.W_MANAGER);
+        addUser(DEFAULT_EMPLOYEE, Authority.W_EMPLOYEE);
+        addUser(DEFAULT_CUSTOMER, Authority.W_CUSTOMER);
 
         deleteAllEmails();
     }
 
-    private void changePassword(String username) {
-        UserDo userDo = userRepository.getUserByUsername(username).orElseThrow();
-        userRepository.setUserPassword(userDo.id(), passwordEncoder.encode(PASSWORD));
+    private void addUser(String username, Authority authority) {
+        userRepository.addUser(new UserDo(
+                null,
+                username,
+                passwordEncoder.encode(PASSWORD),
+                null,
+                "wiwa",
+                null,
+                "wiwa",
+                null,
+                username + "@wiwa.sk",
+                true,
+                true,
+                true,
+                Set.of(authority)
+        ));
     }
 
     public AuthenticationResponseSo signIn(String username, String password) {
