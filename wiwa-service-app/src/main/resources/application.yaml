@@ -1,0 +1,106 @@
+# ===============================
+# = SERVER
+# ===============================
+server:
+  port: ${PORT:8080}
+  error:
+    whitelabel:
+      enabled: false
+  servlet:
+    context-path: ${CONTEXT_PATH:/api}
+
+# ===============================
+# = LOGGING
+# ===============================
+logging:
+  level:
+    sk.janobono.wiwa: ${LOG_LEVEL:debug}
+    sk.r3n.jdbc: ${LOG_LEVEL:debug}
+
+# ===============================
+# = SPRING
+# ===============================
+spring:
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+  # ===============================
+  # = JPA / HIBERNATE
+  # ===============================
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/app}
+    username: ${DB_USER:app}
+    password: ${DB_PASS:app}
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        # format_sql: true
+        enable_lazy_load_no_trans: true
+        event:
+          merge:
+            entity_copy_observer: allow
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    open-in-view: false
+  # ===============================
+  # = MAIL
+  # ===============================
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username: ${MAIL_USER_NAME}
+    password: ${MAIL_USER_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: ${MAIL_TLS_ENABLE:false}
+            required: ${MAIL_TLS_REQUIRED:false}
+          auth: ${MAIL_AUTH:false}
+          connectiontimeout: 180000
+          timeout: 180000
+          writetimeout: 180000
+
+# ===============================
+# = ACTUATOR
+# ===============================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+# ===============================
+# = SPRING DOC
+# ===============================
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+# ===============================
+# = APP
+# ===============================
+app:
+  common:
+    web-url: ${WEB_URL:http://localhost:8080}
+    mail: ${MAIL:mail@wiwa.sk}
+    init-data-path: ${INIT_DATA_PATH:./data}
+    max-image-resolution: ${MAX_IMAGE_RESOLUTION:1000}
+    max-thumbnail-resolution: ${MAX_THUMBNAIL_RESOLUTION:130}
+  auth:
+    sign-up-token-expiration: ${SIGN_UP_TOKEN_EXPIRES_IN:120}
+    reset-password-token-expiration: ${RESET_PASSWORD_TOKEN_EXPIRES_IN:120}
+    refresh-token-expiration: ${REFRESH_TOKEN_EXPIRES_IN:36}
+  jwt:
+    issuer: ${TOKEN_ISSUER:wiwa}
+    expiration: ${TOKEN_EXPIRES_IN:1}
+  verification:
+    issuer: ${TOKEN_ISSUER:wiwa}

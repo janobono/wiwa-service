@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "username": "wadmin",
+    "titleBefore": null,
+    "firstName": "Ján",
+    "midName": null,
+    "lastName": "Správca",
+    "titleAfter": null,
+    "email": "wadmin@wiwa.sk",
+    "gdpr": true,
+    "confirmed": true,
+    "enabled": true,
+    "authorities": [
+      "w-admin"
+    ]
+  },
+  {
+    "id": 2,
+    "username": "wmanager",
+    "titleBefore": null,
+    "firstName": "Martin",
+    "midName": null,
+    "lastName": "Manažér",
+    "titleAfter": null,
+    "email": "wmanager@wiwa.sk",
+    "gdpr": true,
+    "confirmed": true,
+    "enabled": true,
+    "authorities": [
+      "w-manager"
+    ]
+  },
+  {
+    "id": 3,
+    "username": "wemployee",
+    "titleBefore": null,
+    "firstName": "Peter",
+    "midName": null,
+    "lastName": "Zamestnanec",
+    "titleAfter": null,
+    "email": "wemployee@wiwa.sk",
+    "gdpr": true,
+    "confirmed": true,
+    "enabled": true,
+    "authorities": [
+      "w-employee"
+    ]
+  },
+  {
+    "id": 4,
+    "username": "wcustomer",
+    "titleBefore": null,
+    "firstName": "Jozef",
+    "midName": null,
+    "lastName": "Zákazník",
+    "titleAfter": null,
+    "email": "wcustomer@wiwa.sk",
+    "gdpr": true,
+    "confirmed": true,
+    "enabled": true,
+    "authorities": [
+      "w-customer"
+    ]
+  },
+  {
+    "id": 5,
+    "username": "bcustomer",
+    "titleBefore": null,
+    "firstName": "Juraj",
+    "midName": null,
+    "lastName": "Podvodník",
+    "titleAfter": null,
+    "email": "bcustomer@wiwa.sk",
+    "gdpr": true,
+    "confirmed": true,
+    "enabled": false,
+    "authorities": [
+      "w-customer"
+    ]
+  }
+]

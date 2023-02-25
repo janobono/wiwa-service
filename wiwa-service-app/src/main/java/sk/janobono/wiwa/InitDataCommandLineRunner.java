@@ -1,0 +1,114 @@
+package sk.janobono.wiwa;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import sk.janobono.wiwa.common.component.LocalStorage;
+import sk.janobono.wiwa.common.component.RandomString;
+import sk.janobono.wiwa.common.config.CommonConfigProperties;
+import sk.janobono.wiwa.common.model.Authority;
+import sk.janobono.wiwa.common.model.UserSo;
+import sk.janobono.wiwa.dal.domain.ApplicationPropertyDo;
+import sk.janobono.wiwa.dal.domain.UserDo;
+import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
+import sk.janobono.wiwa.dal.repository.AuthorityRepository;
+import sk.janobono.wiwa.dal.repository.UserRepository;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
+@RequiredArgsConstructor
+@Slf4j
+@Component
+public class InitDataCommandLineRunner implements CommandLineRunner {
+
+    private final ObjectMapper objectMapper;
+    private final CommonConfigProperties appConfigProperties;
+    private final PasswordEncoder passwordEncoder;
+    private final LocalStorage localStorage;
+    private final RandomString randomString;
+    private final AuthorityRepository authorityRepository;
+    private final UserRepository userRepository;
+    private final ApplicationPropertyRepository applicationPropertyRepository;
+
+    @Override
+    public void run(String... args) throws Exception {
+        Path dataDir = Path.of(appConfigProperties.initDataPath()).normalize().toAbsolutePath();
+        initAuthorities();
+        initUsers(dataDir);
+        initApplicationProperties(dataDir);
+    }
+
+    private void initAuthorities() {
+        if (authorityRepository.count() == 0L) {
+            log.debug("initAuthorities()");
+            for (Authority authority : Authority.values()) {
+                authorityRepository.addAuthority(authority);
+            }
+        }
+    }
+
+    private void initUsers(Path dataDir) throws Exception {
+        if (userRepository.count() == 0L) {
+            log.debug("initUsers({})", dataDir);
+            Path dataPath = dataDir.resolve("users.json");
+            if (dataPath.toFile().exists()) {
+                UserSo[] users = objectMapper.readValue(dataPath.toFile(), UserSo[].class);
+                for (UserSo userSo : users) {
+                    UserDo userDo = new UserDo(
+                            null,
+                            userSo.username(),
+                            passwordEncoder.encode(randomString.alphaNumeric(3, 2, 1, 6, 6)),
+                            userSo.titleBefore(),
+                            userSo.firstName(),
+                            userSo.midName(),
+                            userSo.lastName(),
+                            userSo.titleAfter(),
+                            userSo.email(),
+                            userSo.gdpr(),
+                            userSo.confirmed(),
+                            userSo.enabled(),
+                            userSo.authorities()
+                    );
+                    userRepository.addUser(userDo);
+                }
+            }
+        }
+    }
+
+    private void initApplicationProperties(Path dataDir) throws Exception {
+        if (applicationPropertyRepository.count() == 0L) {
+            log.debug("initApplicationProperties({})", dataDir);
+            Path dataPath = dataDir.resolve("application-properties.json");
+            if (dataPath.toFile().exists()) {
+                ApplicationPropertyDo[] applicationProperties = objectMapper.readValue(
+                        dataPath.toFile(), ApplicationPropertyDo[].class
+                );
+                for (ApplicationPropertyDo applicationPropertyDo : applicationProperties) {
+                    applicationPropertyRepository.addApplicationProperty(applicationPropertyDo);
+                }
+            }
+            Path dataDirPath = dataDir.resolve("application-properties");
+            if (dataDirPath.toFile().exists() && dataDirPath.toFile().isDirectory()) {
+                List<File> dataFiles = Arrays.stream(Objects.requireNonNull(dataDirPath.toFile().listFiles())).filter(
+                        f -> f.isFile() && f.getName().endsWith(".md")
+                ).toList();
+                for (File dataFile : dataFiles) {
+                    String[] propertyId = dataFile.getName().replaceAll(".md", "").split("-");
+                    applicationPropertyRepository.addApplicationProperty(
+                            new ApplicationPropertyDo(
+                                    propertyId[0], propertyId[1], propertyId[2],
+                                    new String(localStorage.getFileData(dataFile.toPath()))
+                            )
+                    );
+                }
+            }
+        }
+    }
+}

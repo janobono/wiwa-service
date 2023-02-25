@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  pg:
+    image: postgres:15-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=app
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  app-smtp:
+    image: maildev/maildev:latest
+    ports:
+      - 8081:1080
+      - 1025:1025
+
+volumes:
+  pg-data:
