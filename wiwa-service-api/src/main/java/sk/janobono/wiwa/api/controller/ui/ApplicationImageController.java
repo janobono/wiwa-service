@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api.ui;
+package sk.janobono.wiwa.api.controller.ui;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import sk.janobono.wiwa.common.model.ResourceEntitySo;
 
 @Slf4j
 @RequiredArgsConstructor
-@RestController("ui-application-image")
+@RestController("ui-application-images")
 @RequestMapping(path = "/ui/application-images")
 public class ApplicationImageController {
 

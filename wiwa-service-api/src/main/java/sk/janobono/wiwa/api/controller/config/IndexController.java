@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api.uimanagement;
+package sk.janobono.wiwa.api.controller.config;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +17,9 @@ import sk.janobono.wiwa.business.service.UiService;
 
 @Slf4j
 @RequiredArgsConstructor
-@RestController
-@RequestMapping(path = "/ui-management")
-public class UiManagementController {
+@RestController("config")
+@RequestMapping(path = "/config")
+public class IndexController {
 
     private final UiService uiService;
     private final WebImageUtil webImageUtil;

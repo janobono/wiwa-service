@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api;
+package sk.janobono.wiwa.api.ui;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api.ui;
+package sk.janobono.wiwa.api.controller.ui;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +17,9 @@ import sk.janobono.wiwa.common.model.ResourceEntitySo;
 
 @Slf4j
 @RequiredArgsConstructor
-@RestController
+@RestController("ui")
 @RequestMapping(path = "/ui")
-public class UiController {
+public class IndexController {
 
     private final UiService uiService;
 

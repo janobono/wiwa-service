@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api;
+package sk.janobono.wiwa.api.config;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import sk.janobono.wiwa.common.component.ImageUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ApplicationImageManagementControllerIT extends BaseIntegrationTest {
+class ApplicationImageControllerIT extends BaseIntegrationTest {
 
     @Autowired
     public ImageUtil imageUtil;
@@ -40,7 +40,7 @@ class ApplicationImageManagementControllerIT extends BaseIntegrationTest {
         HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
 
         ResponseEntity<ApplicationImageWeb> uploadedImage = restTemplate.exchange(
-                getURI("/ui-management/application-images"),
+                getURI("/config/application-images"),
                 HttpMethod.POST,
                 httpEntity,
                 ApplicationImageWeb.class
@@ -57,7 +57,7 @@ class ApplicationImageManagementControllerIT extends BaseIntegrationTest {
 
         Pageable pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "fileName", "fileType");
         ResponseEntity<JsonNode> response = restTemplate.exchange(
-                getURI("/ui-management/application-images", pageableToParams(pageable)),
+                getURI("/config/application-images", pageableToParams(pageable)),
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
                 JsonNode.class

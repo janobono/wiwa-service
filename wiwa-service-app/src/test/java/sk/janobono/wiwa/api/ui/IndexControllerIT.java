@@ -1,17 +1,17 @@
-package sk.janobono.wiwa.api;
+package sk.janobono.wiwa.api.ui;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import sk.janobono.wiwa.BaseIntegrationTest;
-import sk.janobono.wiwa.common.model.WiwaProperty;
-import sk.janobono.wiwa.common.component.ImageUtil;
-import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
+import sk.janobono.wiwa.common.component.ImageUtil;
+import sk.janobono.wiwa.common.model.WiwaProperty;
+import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UiControllerIT extends BaseIntegrationTest {
+class IndexControllerIT extends BaseIntegrationTest {
 
     @Autowired
     public ImageUtil imageUtil;

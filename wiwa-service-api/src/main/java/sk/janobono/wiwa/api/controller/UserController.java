@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api;
+package sk.janobono.wiwa.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

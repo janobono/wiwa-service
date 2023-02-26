@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api.uimanagement;
+package sk.janobono.wiwa.api.controller.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +15,8 @@ import sk.janobono.wiwa.business.service.ApplicationImageService;
 
 @Slf4j
 @RequiredArgsConstructor
-@RestController("ui-management-application-image")
-@RequestMapping(path = "/ui-management/application-images")
+@RestController("config-application-images")
+@RequestMapping(path = "/config/application-images")
 public class ApplicationImageController {
 
     private final ApplicationImageService applicationImageService;

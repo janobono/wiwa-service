@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api;
+package sk.janobono.wiwa.api.config;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UiManagementControllerIT extends BaseIntegrationTest {
+class IndexControllerIT extends BaseIntegrationTest {
 
     @Autowired
     public ImageUtil imageUtil;
@@ -48,7 +48,7 @@ class UiManagementControllerIT extends BaseIntegrationTest {
         HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
 
         ResponseEntity<ApplicationImageWeb> uploadedImage = restTemplate.exchange(
-                getURI("/ui-management/logo"),
+                getURI("/config/logo"),
                 HttpMethod.POST,
                 httpEntity,
                 ApplicationImageWeb.class
@@ -62,7 +62,7 @@ class UiManagementControllerIT extends BaseIntegrationTest {
         // title
         headers.setContentType(MediaType.APPLICATION_JSON);
         ResponseEntity<JsonNode> title = restTemplate.exchange(
-                getURI("/ui-management/title"),
+                getURI("/config/title"),
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new LocalizedDataSo<>(
@@ -86,7 +86,7 @@ class UiManagementControllerIT extends BaseIntegrationTest {
 
         // welcome-text
         ResponseEntity<JsonNode> welcomeText = restTemplate.exchange(
-                getURI("/ui-management/welcome-text"),
+                getURI("/config/welcome-text"),
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new LocalizedDataSo<>(
@@ -110,7 +110,7 @@ class UiManagementControllerIT extends BaseIntegrationTest {
 
         // application-info
         ResponseEntity<JsonNode> applicationInfo = restTemplate.exchange(
-                getURI("/ui-management/application-info"),
+                getURI("/config/application-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new LocalizedDataSo<>(
@@ -152,7 +152,7 @@ class UiManagementControllerIT extends BaseIntegrationTest {
 
         // company-info
         ResponseEntity<JsonNode> companyInfo = restTemplate.exchange(
-                getURI("/ui-management/company-info"),
+                getURI("/config/company-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new LocalizedDataSo<>(
@@ -208,7 +208,7 @@ class UiManagementControllerIT extends BaseIntegrationTest {
 
         // cookies-info
         ResponseEntity<JsonNode> cookiesInfo = restTemplate.exchange(
-                getURI("/ui-management/cookies-info"),
+                getURI("/config/cookies-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new LocalizedDataSo<>(
@@ -232,7 +232,7 @@ class UiManagementControllerIT extends BaseIntegrationTest {
 
         // gdpr-info
         ResponseEntity<JsonNode> gdprInfo = restTemplate.exchange(
-                getURI("/ui-management/gdpr-info"),
+                getURI("/config/gdpr-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new LocalizedDataSo<>(
@@ -256,7 +256,7 @@ class UiManagementControllerIT extends BaseIntegrationTest {
 
         // working-hours
         ResponseEntity<JsonNode> workingHours = restTemplate.exchange(
-                getURI("/ui-management/working-hours"),
+                getURI("/config/working-hours"),
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new LocalizedDataSo<>(

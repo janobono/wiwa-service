@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api;
+package sk.janobono.wiwa.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
