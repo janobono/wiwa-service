@@ -12,8 +12,8 @@ import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import sk.janobono.wiwa.BaseIntegrationTest;
+import sk.janobono.wiwa.api.model.ApplicationImageWeb;
 import sk.janobono.wiwa.common.component.ImageUtil;
-import sk.janobono.wiwa.business.model.ApplicationImageSo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,17 +39,17 @@ class ApplicationImageManagementControllerIT extends BaseIntegrationTest {
         });
         HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
 
-        ResponseEntity<ApplicationImageSo> uploadedImage = restTemplate.exchange(
+        ResponseEntity<ApplicationImageWeb> uploadedImage = restTemplate.exchange(
                 getURI("/ui-management/application-images"),
                 HttpMethod.POST,
                 httpEntity,
-                ApplicationImageSo.class
+                ApplicationImageWeb.class
         );
         assertThat(uploadedImage.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(uploadedImage.getBody()).isNotNull();
         assertThat(uploadedImage.hasBody()).isTrue();
         assertThat(uploadedImage.getBody().fileName()).isEqualTo("test.png");
-        assertThat(uploadedImage.getBody().fileType()).isEqualTo(MediaType.IMAGE_PNG_VALUE);
+        assertThat(uploadedImage.getBody().thumbnail().startsWith("data:" + MediaType.IMAGE_PNG_VALUE)).isTrue();
 
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -64,9 +64,9 @@ class ApplicationImageManagementControllerIT extends BaseIntegrationTest {
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        Page<ApplicationImageSo> page = getPage(response.getBody(), pageable, ApplicationImageSo.class);
+        Page<ApplicationImageWeb> page = getPage(response.getBody(), pageable, ApplicationImageWeb.class);
         assertThat(page.getTotalElements()).isEqualTo(1);
         assertThat(page.getContent().get(0).fileName()).isEqualTo("test.png");
-        assertThat(page.getContent().get(0).fileType()).isEqualTo(MediaType.IMAGE_PNG_VALUE);
+        assertThat(page.getContent().get(0).thumbnail().startsWith("data:" + MediaType.IMAGE_PNG_VALUE)).isTrue();
     }
 }

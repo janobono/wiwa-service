@@ -8,7 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.business.model.ApplicationImageSo;
+import sk.janobono.wiwa.api.component.WebImageUtil;
+import sk.janobono.wiwa.api.model.ApplicationImageWeb;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
 import sk.janobono.wiwa.business.model.ui.LocalizedDataSo;
@@ -21,12 +22,13 @@ import sk.janobono.wiwa.business.service.UiService;
 public class UiManagementController {
 
     private final UiService uiService;
+    private final WebImageUtil webImageUtil;
 
     @PostMapping("/logo")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ResponseEntity<ApplicationImageSo> setLogo(final @RequestParam("file") MultipartFile multipartFile) {
+    public ResponseEntity<ApplicationImageWeb> setLogo(final @RequestParam("file") MultipartFile multipartFile) {
         log.debug("setLogo({})", multipartFile.getOriginalFilename());
-        return new ResponseEntity<>(uiService.setLogo(multipartFile), HttpStatus.OK);
+        return new ResponseEntity<>(webImageUtil.toWeb(uiService.setLogo(multipartFile)), HttpStatus.OK);
     }
 
     @PostMapping("/title")

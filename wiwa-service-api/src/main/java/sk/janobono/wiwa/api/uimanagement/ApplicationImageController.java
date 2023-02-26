@@ -9,7 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.business.model.ApplicationImageSo;
+import sk.janobono.wiwa.api.component.WebImageUtil;
+import sk.janobono.wiwa.api.model.ApplicationImageWeb;
 import sk.janobono.wiwa.business.service.ApplicationImageService;
 
 @Slf4j
@@ -19,18 +20,25 @@ import sk.janobono.wiwa.business.service.ApplicationImageService;
 public class ApplicationImageController {
 
     private final ApplicationImageService applicationImageService;
+    private final WebImageUtil webImageUtil;
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public ResponseEntity<Page<ApplicationImageSo>> getApplicationImages(Pageable pageable) {
+    public ResponseEntity<Page<ApplicationImageWeb>> getApplicationImages(Pageable pageable) {
         log.debug("getApplicationImages({})", pageable);
-        return new ResponseEntity<>(applicationImageService.getApplicationImages(pageable), HttpStatus.OK);
+        return new ResponseEntity<>(
+                applicationImageService.getApplicationImages(pageable).map(webImageUtil::toWeb),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public ResponseEntity<ApplicationImageSo> upload(final @RequestParam("file") MultipartFile multipartFile) {
+    public ResponseEntity<ApplicationImageWeb> upload(final @RequestParam("file") MultipartFile multipartFile) {
         log.debug("upload({})", multipartFile.getOriginalFilename());
-        return new ResponseEntity<>(applicationImageService.setApplicationImage(multipartFile), HttpStatus.OK);
+        return new ResponseEntity<>(
+                webImageUtil.toWeb(applicationImageService.setApplicationImage(multipartFile)),
+                HttpStatus.OK
+        );
     }
 }

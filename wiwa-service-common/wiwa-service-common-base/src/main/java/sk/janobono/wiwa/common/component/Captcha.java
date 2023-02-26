@@ -3,6 +3,7 @@ package sk.janobono.wiwa.common.component;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+import sk.janobono.wiwa.common.config.CommonConfigProperties;
 import sk.janobono.wiwa.common.exception.WiwaException;
 
 import javax.imageio.ImageIO;
@@ -10,22 +11,24 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.util.Random;
-import java.util.StringTokenizer;
-import java.util.UUID;
 
 @Slf4j
 @Component
 public class Captcha {
 
     private final BCryptPasswordEncoder tokenEncoder;
+    private final RandomString randomString;
+    private final int captchaLength;
 
-    public Captcha() {
+    public Captcha(CommonConfigProperties commonConfigProperties, RandomString randomString) {
+        this.captchaLength = commonConfigProperties.captchaLength();
+        this.randomString = randomString;
         this.tokenEncoder = new BCryptPasswordEncoder(6);
     }
 
     public String generateText() {
         log.debug("generateText()");
-        return new StringTokenizer(UUID.randomUUID().toString(), "-").nextToken();
+        return randomString.alphaNumeric(captchaLength / 2, captchaLength / 2 + captchaLength % 2, 0, captchaLength, captchaLength);
     }
 
     public byte[] generateImage(String text) {

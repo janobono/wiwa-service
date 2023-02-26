@@ -97,6 +97,7 @@ docker volume rm $(docker volume ls -q --filter dangling=true)
 | INIT_DATA_PATH                  | ./wiwa/data                          |
 | MAX_IMAGE_RESOLUTION            | 1000                                 |
 | MAX_THUMBNAIL_RESOLUTION        | 130                                  |
+| CAPTCHA_LENGTH                  | 4                                    |
 | SIGN_UP_TOKEN_EXPIRES_IN        | 120                                  |
 | RESET_PASSWORD_TOKEN_EXPIRES_IN | 120                                  |
 | REFRESH_TOKEN_EXPIRES_IN        | 36                                   |

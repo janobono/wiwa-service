@@ -95,6 +95,7 @@ app:
     init-data-path: ${INIT_DATA_PATH:./data}
     max-image-resolution: ${MAX_IMAGE_RESOLUTION:1000}
     max-thumbnail-resolution: ${MAX_THUMBNAIL_RESOLUTION:130}
+    captcha-length: ${CAPTCHA_LENGTH:4}
   auth:
     sign-up-token-expiration: ${SIGN_UP_TOKEN_EXPIRES_IN:120}
     reset-password-token-expiration: ${RESET_PASSWORD_TOKEN_EXPIRES_IN:120}

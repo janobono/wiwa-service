@@ -8,7 +8,7 @@ import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import sk.janobono.wiwa.BaseIntegrationTest;
-import sk.janobono.wiwa.business.model.ApplicationImageSo;
+import sk.janobono.wiwa.api.model.ApplicationImageWeb;
 import sk.janobono.wiwa.business.model.ui.*;
 import sk.janobono.wiwa.common.component.ImageUtil;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
@@ -47,17 +47,17 @@ class UiManagementControllerIT extends BaseIntegrationTest {
         });
         HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
 
-        ResponseEntity<ApplicationImageSo> uploadedImage = restTemplate.exchange(
+        ResponseEntity<ApplicationImageWeb> uploadedImage = restTemplate.exchange(
                 getURI("/ui-management/logo"),
                 HttpMethod.POST,
                 httpEntity,
-                ApplicationImageSo.class
+                ApplicationImageWeb.class
         );
         assertThat(uploadedImage.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(uploadedImage.getBody()).isNotNull();
         assertThat(uploadedImage.hasBody()).isTrue();
         assertThat(uploadedImage.getBody().fileName()).isEqualTo("logo.png");
-        assertThat(uploadedImage.getBody().fileType()).isEqualTo(MediaType.IMAGE_PNG_VALUE);
+        assertThat(uploadedImage.getBody().thumbnail().startsWith("data:" + MediaType.IMAGE_PNG_VALUE)).isTrue();
 
         // title
         headers.setContentType(MediaType.APPLICATION_JSON);
