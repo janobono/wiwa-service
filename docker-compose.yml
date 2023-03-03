@@ -17,7 +17,7 @@ services:
     ports:
       - 8081:1080
 
-  wiwa-service-app:
+  wiwa-service:
     image: sk.janobono.wiwa/wiwa-service:latest
     restart: unless-stopped
     environment:
