@@ -1,8 +1,6 @@
 **/target
-**/*.md
 .idea
 .git
-data
 .gitignore
 build.sh
 docker-compose.yml

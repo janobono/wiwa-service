@@ -31,11 +31,13 @@ RUN chown -R app:app /app
 
 USER app
 
-EXPOSE 8080
+COPY data ./data
 
 COPY --from=extractor app/dependencies/ ./
 COPY --from=extractor app/spring-boot-loader/ ./
 COPY --from=extractor app/snapshot-dependencies/ ./
 COPY --from=extractor app/application/ ./
+
+EXPOSE 8080
 
 ENTRYPOINT ["java","org.springframework.boot.loader.JarLauncher"]

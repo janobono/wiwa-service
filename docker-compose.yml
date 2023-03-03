@@ -3,6 +3,8 @@ version: '3.8'
 services:
   pg:
     image: postgres:15-alpine
+    ports:
+      - 5432:5432
     environment:
       - POSTGRES_DB=app
       - POSTGRES_USER=app
@@ -25,8 +27,6 @@ services:
       - MAIL_PORT=1025
       - WEB_URL=http://localhost:8080
       - INIT_DATA_PATH=./data
-    volumes:
-      - ./data:/app/data
     ports:
       - 8080:8080
     depends_on:
