@@ -15,7 +15,7 @@ Woodworking Industry Web Application Service.
 or
 
 ```shell
-docker build -t sk.janobono.wiwa/wiwa-service-app:latest .
+docker build -t sk.janobono.wiwa/wiwa-service:latest .
 ```
 
 ## run application
