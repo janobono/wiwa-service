@@ -33,6 +33,9 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/app}
     username: ${DB_USER:app}
     password: ${DB_PASS:app}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:5}
+      minimum-idle: ${DB_POOL_IDLE:2}
   jpa:
     show-sql: true
     properties:
