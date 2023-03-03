@@ -18,7 +18,7 @@ services:
       - 8081:1080
 
   wiwa-service-app:
-    image: sk.janobono.wiwa/wiwa-service-app:latest
+    image: sk.janobono.wiwa/wiwa-service:latest
     restart: unless-stopped
     environment:
       - TZ=Europe/Bratislava
