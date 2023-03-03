@@ -84,7 +84,7 @@ docker volume rm $(docker volume ls -q --filter dangling=true)
 | LOG_LEVEL                       | debug                                |
 | DB_URL                          | jdbc:postgresql://localhost:5432/app |
 | DB_USER                         | app                                  |
-| DB_PASSWORD                     | app                                  |
+| DB_PASS                         | app                                  |
 | DB_POOL_SIZE                    | 5                                    |
 | DB_POOL_IDLE                    | 2                                    |
 | MAIL_HOST                       | localhost                            |
