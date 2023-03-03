@@ -89,8 +89,8 @@ docker volume rm $(docker volume ls -q --filter dangling=true)
 | DB_POOL_IDLE                    | 2                                    |
 | MAIL_HOST                       | localhost                            |
 | MAIL_PORT                       | 1025                                 |
-| MAIL_USER_NAME                  |                                      |
-| MAIL_USER_PASSWORD              |                                      |
+| MAIL_USER                       |                                      |
+| MAIL_PASS                       |                                      |
 | MAIL_TLS_ENABLE                 | false                                |
 | MAIL_TLS_REQUIRED               | false                                |
 | MAIL_AUTH                       | false                                |
