@@ -1,0 +1,8 @@
+name: wiwa-service
+services:
+  - dockerfile_path: Dockerfile
+    github:
+      branch: main
+      deploy_on_push: true
+      repo: janobono/wiwa-service
+    name: wiwa-service
