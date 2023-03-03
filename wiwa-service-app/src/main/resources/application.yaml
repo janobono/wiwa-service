@@ -60,13 +60,12 @@ spring:
     properties:
       mail:
         smtp:
+          auth: ${MAIL_AUTH:false}
           starttls:
             enable: ${MAIL_TLS_ENABLE:false}
-            required: ${MAIL_TLS_REQUIRED:false}
-          auth: ${MAIL_AUTH:false}
-          connectiontimeout: 180000
-          timeout: 180000
-          writetimeout: 180000
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
 # ===============================
 # = ACTUATOR
