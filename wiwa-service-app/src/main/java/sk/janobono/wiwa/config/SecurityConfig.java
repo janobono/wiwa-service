@@ -14,13 +14,18 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import sk.janobono.wiwa.common.component.JwtToken;
+import sk.janobono.wiwa.common.config.CommonConfigProperties;
 import sk.janobono.wiwa.security.ApplicationAccessDeniedHandler;
 import sk.janobono.wiwa.security.ApplicationAuthenticationEntryPoint;
 import sk.janobono.wiwa.security.jwt.JwtAuthenticationEntryPoint;
 import sk.janobono.wiwa.security.jwt.JwtAuthenticationFilter;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
@@ -29,6 +34,7 @@ import java.util.regex.Pattern;
 public class SecurityConfig {
 
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final CommonConfigProperties commonConfigProperties;
     private final SecurityConfigProperties securityConfigProperties;
     private final JwtToken jwtToken;
 
@@ -78,7 +84,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors().and().csrf().disable()
+        httpSecurity.csrf().disable()
+                .cors(corsConfigurer -> corsConfigurer.configurationSource(getCorsConfigurationSource()))
                 .authorizeHttpRequests()
                 .requestMatchers(permitAllRequestMatcher()).permitAll()
                 .anyRequest().authenticated().and()
@@ -89,5 +96,16 @@ public class SecurityConfig {
                 .accessDeniedHandler(accessDeniedHandler())
                 .authenticationEntryPoint(authenticationEntryPoint());
         return httpSecurity.build();
+    }
+
+    private CorsConfigurationSource getCorsConfigurationSource() {
+        final CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(commonConfigProperties.webUrl()));
+        config.setAllowedMethods(List.of("GET", "PATCH", "POST", "PUT", "DELETE"));
+        config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+        config.setAllowCredentials(true);
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
