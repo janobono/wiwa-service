@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import sk.janobono.wiwa.BaseIntegrationTest;
 import sk.janobono.wiwa.business.model.auth.*;
-import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.common.component.Captcha;
 import sk.janobono.wiwa.common.model.WiwaProperty;
+import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 
 import java.text.MessageFormat;
 
@@ -30,7 +30,7 @@ class AuthControllerIT extends BaseIntegrationTest {
     public Captcha captcha;
 
     @Autowired
-    public ApplicationPropertyService applicationPropertyService;
+    public ApplicationPropertyRepository applicationPropertyRepository;
 
     @Test
     void fullTest() throws Exception {
@@ -101,8 +101,12 @@ class AuthControllerIT extends BaseIntegrationTest {
 
         TestEmail testEmail = getAllEmails()[0];
         return getSubstring(testEmail, "confirm/", ">"
-                + applicationPropertyService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_LINK))
-                .trim().replaceAll("\"", "");
+                        + applicationPropertyRepository.getApplicationProperty(
+                        WiwaProperty.AUTH_SIGN_UP_MAIL_LINK.getGroup(),
+                        WiwaProperty.AUTH_SIGN_UP_MAIL_LINK.getKey(),
+                        "en"
+                ).orElseThrow().value()
+        ).trim().replaceAll("\"", "");
     }
 
     private void resendConfirmation(AuthenticationResponseSo authenticationResponseSO) throws Exception {
@@ -127,8 +131,12 @@ class AuthControllerIT extends BaseIntegrationTest {
 
         TestEmail testEmail = getAllEmails()[0];
         String token = getSubstring(testEmail, "confirm/", ">"
-                + applicationPropertyService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_LINK))
-                .trim().replaceAll("\"", "");
+                        + applicationPropertyRepository.getApplicationProperty(
+                        WiwaProperty.AUTH_SIGN_UP_MAIL_LINK.getGroup(),
+                        WiwaProperty.AUTH_SIGN_UP_MAIL_LINK.getKey(),
+                        "en"
+                ).orElseThrow().value()
+        ).trim().replaceAll("\"", "");
         assertThat(token).isNotEmpty();
     }
 
@@ -266,11 +274,20 @@ class AuthControllerIT extends BaseIntegrationTest {
         TestEmail testEmail = getAllEmails()[0];
         return new String[]{
                 getSubstring(testEmail, "confirm/", ">"
-                        + applicationPropertyService.getProperty(WiwaProperty.AUTH_RESET_PASSWORD_MAIL_LINK))
-                        .trim().replaceAll("\"", ""),
+                                + applicationPropertyRepository.getApplicationProperty(
+                                WiwaProperty.AUTH_RESET_PASSWORD_MAIL_LINK.getGroup(),
+                                WiwaProperty.AUTH_RESET_PASSWORD_MAIL_LINK.getKey(),
+                                "en"
+                        ).orElseThrow().value()
+                ).trim().replaceAll("\"", ""),
                 getSubstring(testEmail,
                         MessageFormat.format(
-                                applicationPropertyService.getProperty(WiwaProperty.AUTH_RESET_PASSWORD_MAIL_PASSWORD_MESSAGE), ""),
+                                applicationPropertyRepository.getApplicationProperty(
+                                        WiwaProperty.AUTH_RESET_PASSWORD_MAIL_PASSWORD_MESSAGE.getGroup(),
+                                        WiwaProperty.AUTH_RESET_PASSWORD_MAIL_PASSWORD_MESSAGE.getKey(),
+                                        "en"
+                                ).orElseThrow().value()
+                                , ""),
                         "<footer>")
                         .replaceAll("</p>", "").replaceAll("</main>", "").trim()
         };

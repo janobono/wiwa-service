@@ -2,9 +2,9 @@ package sk.janobono.wiwa.business.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.common.exception.WiwaException;
+import sk.janobono.wiwa.common.locale.RequestLocale;
 import sk.janobono.wiwa.common.model.ApplicationPropertyKey;
 import sk.janobono.wiwa.dal.domain.ApplicationPropertyDo;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
@@ -16,6 +16,7 @@ import java.util.Optional;
 @Service
 public class ApplicationPropertyServiceImpl implements ApplicationPropertyService {
 
+    private final RequestLocale requestLocale;
     private final ApplicationPropertyRepository applicationPropertyRepository;
 
     public String getProperty(ApplicationPropertyKey key, Object... arguments) {
@@ -34,7 +35,7 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
         Optional<ApplicationPropertyDo> property;
         if (key.isLocalized()) {
             property = applicationPropertyRepository.getApplicationProperty(
-                    key.getGroup(), key.getKey(arguments), LocaleContextHolder.getLocale().getLanguage()
+                    key.getGroup(), key.getKey(arguments), requestLocale.getLocale().getLanguage()
             );
         } else {
             property = applicationPropertyRepository.getApplicationProperty(
