@@ -11,7 +11,7 @@ import java.util.Base64;
 public class WebImageUtil {
 
     public String toDataString(String fileType, byte[] data) {
-        return MessageFormat.format("data:{0};base64, {1}", fileType, Base64.getEncoder().encode(data));
+        return MessageFormat.format("data:{0};base64,{1}", fileType, Base64.getEncoder().encodeToString(data));
     }
 
     public ApplicationImageWeb toWeb(ApplicationImageSo applicationImageSo) {
