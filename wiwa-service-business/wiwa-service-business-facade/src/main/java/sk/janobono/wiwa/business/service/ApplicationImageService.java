@@ -13,4 +13,6 @@ public interface ApplicationImageService {
     ResourceEntitySo getApplicationImage(String fileName);
 
     ApplicationImageSo setApplicationImage(MultipartFile multipartFile);
+
+    void deleteApplicationImage(String fileName);
 }

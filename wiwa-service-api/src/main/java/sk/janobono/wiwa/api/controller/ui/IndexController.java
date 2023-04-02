@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,44 +33,44 @@ public class IndexController {
     }
 
     @GetMapping(value = "/title", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> getTitle() {
+    public String getTitle() {
         log.debug("getTitle()");
-        return new ResponseEntity<>(uiService.getTitle(), HttpStatus.OK);
+        return uiService.getTitle();
     }
 
     @GetMapping(value = "/welcome-text", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> getWelcomeText() {
+    public String getWelcomeText() {
         log.debug("getWelcomeText()");
-        return new ResponseEntity<>(uiService.getWelcomeText(), HttpStatus.OK);
+        return uiService.getWelcomeText();
     }
 
     @GetMapping("/application-info")
-    public ResponseEntity<ApplicationInfoSo> getApplicationInfo() {
+    public ApplicationInfoSo getApplicationInfo() {
         log.debug("getApplicationInfo()");
-        return new ResponseEntity<>(uiService.getApplicationInfo(), HttpStatus.OK);
+        return uiService.getApplicationInfo();
     }
 
     @GetMapping("/company-info")
-    public ResponseEntity<CompanyInfoSo> getCompanyInfo() {
+    public CompanyInfoSo getCompanyInfo() {
         log.debug("getCompanyInfo()");
-        return new ResponseEntity<>(uiService.getCompanyInfo(), HttpStatus.OK);
+        return uiService.getCompanyInfo();
     }
 
     @GetMapping(value = "/cookies-info", produces = MediaType.TEXT_MARKDOWN_VALUE)
-    public ResponseEntity<String> getCookiesInfo() {
+    public String getCookiesInfo() {
         log.debug("getCookiesInfo()");
-        return new ResponseEntity<>(uiService.getCookiesInfo(), HttpStatus.OK);
+        return uiService.getCookiesInfo();
     }
 
     @GetMapping(value = "/gdpr-info", produces = MediaType.TEXT_MARKDOWN_VALUE)
-    public ResponseEntity<String> getGdprInfo() {
+    public String getGdprInfo() {
         log.debug("getGdprInfo()");
-        return new ResponseEntity<>(uiService.getGdprInfo(), HttpStatus.OK);
+        return uiService.getGdprInfo();
     }
 
     @GetMapping(value = "/working-hours", produces = MediaType.TEXT_MARKDOWN_VALUE)
-    public ResponseEntity<String> getWorkingHours() {
+    public String getWorkingHours() {
         log.debug("getWorkingHours()");
-        return new ResponseEntity<>(uiService.getWorkingHours(), HttpStatus.OK);
+        return uiService.getWorkingHours();
     }
 }

@@ -28,34 +28,34 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager', 'w-employee')")
-    public ResponseEntity<Page<UserSo>> getUsers(Pageable pageable) {
+    public Page<UserSo> getUsers(Pageable pageable) {
         log.debug("getUsers({})", pageable);
-        return new ResponseEntity<>(userService.getUsers(pageable), HttpStatus.OK);
+        return userService.getUsers(pageable);
     }
 
     @GetMapping("/by-search-criteria")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager', 'w-employee')")
-    public ResponseEntity<Page<UserSo>> getUsers(
+    public Page<UserSo> getUsers(
             @RequestParam(value = "search-field", required = false) String searchField,
             @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "email", required = false) String email,
             Pageable pageable) {
         log.debug("getUsersBySearchCriteria({},{},{},{})", searchField, username, email, pageable);
-        return new ResponseEntity<>(userService.getUsers(new UserSearchCriteriaSo(searchField, username, email), pageable), HttpStatus.OK);
+        return userService.getUsers(new UserSearchCriteriaSo(searchField, username, email), pageable);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager', 'w-employee')")
-    public ResponseEntity<UserSo> getUser(@PathVariable("id") Long id) {
+    public UserSo getUser(@PathVariable("id") Long id) {
         log.debug("getUser({})", id);
-        return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
+        return userService.getUser(id);
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('w-admin')")
-    public ResponseEntity<UserSo> addUser(@Valid @RequestBody UserDataSo userDataDto) {
+    public UserSo addUser(@Valid @RequestBody UserDataSo userDataDto) {
         log.debug("addUser({})", userDataDto);
-        return new ResponseEntity<>(userService.addUser(userDataDto), HttpStatus.CREATED);
+        return userService.addUser(userDataDto);
     }
 
     @PutMapping("/{id}")
@@ -67,23 +67,23 @@ public class UserController {
 
     @PatchMapping("/{id}/authorities")
     @PreAuthorize("hasAuthority('w-admin')")
-    public ResponseEntity<UserSo> setAuthorities(@PathVariable("id") Long id, @Valid @RequestBody Set<Authority> authorities) {
+    public UserSo setAuthorities(@PathVariable("id") Long id, @Valid @RequestBody Set<Authority> authorities) {
         log.debug("setAuthorities({},{})", id, authorities);
-        return new ResponseEntity<>(userService.setAuthorities(id, authorities), HttpStatus.OK);
+        return userService.setAuthorities(id, authorities);
     }
 
     @PatchMapping("/{id}/confirm")
     @PreAuthorize("hasAuthority('w-admin')")
-    public ResponseEntity<UserSo> setConfirmed(@PathVariable("id") Long id, @Valid @RequestBody Boolean confirmed) {
+    public UserSo setConfirmed(@PathVariable("id") Long id, @Valid @RequestBody Boolean confirmed) {
         log.debug("setConfirmed({},{})", id, confirmed);
-        return new ResponseEntity<>(userService.setConfirmed(id, confirmed), HttpStatus.OK);
+        return userService.setConfirmed(id, confirmed);
     }
 
     @PatchMapping("/{id}/enable")
     @PreAuthorize("hasAuthority('w-admin')")
-    public ResponseEntity<UserSo> setEnabled(@PathVariable("id") Long id, @Valid @RequestBody Boolean enabled) {
+    public UserSo setEnabled(@PathVariable("id") Long id, @Valid @RequestBody Boolean enabled) {
         log.debug("setEnabled({},{})", id, enabled);
-        return new ResponseEntity<>(userService.setEnabled(id, enabled), HttpStatus.OK);
+        return userService.setEnabled(id, enabled);
     }
 
     @DeleteMapping("/{id}")

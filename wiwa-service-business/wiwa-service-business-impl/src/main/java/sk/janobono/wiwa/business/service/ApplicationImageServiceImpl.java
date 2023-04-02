@@ -105,6 +105,12 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
         return result;
     }
 
+    @Override
+    public void deleteApplicationImage(String fileName) {
+        log.debug("deleteApplicationImage({})", fileName);
+        applicationImageRepository.deleteApplicationImage(fileName);
+    }
+
     private String stripAndLowerCase(String s) {
         if (StringUtils.hasLength(s)) {
             return s.strip().toLowerCase();

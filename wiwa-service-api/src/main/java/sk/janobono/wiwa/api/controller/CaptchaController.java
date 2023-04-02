@@ -2,8 +2,6 @@ package sk.janobono.wiwa.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,8 +17,8 @@ public class CaptchaController {
     private final CaptchaService captchaApiService;
 
     @GetMapping
-    public ResponseEntity<CaptchaSo> getCaptcha() {
+    public CaptchaSo getCaptcha() {
         log.debug("getCaptcha()");
-        return new ResponseEntity<>(captchaApiService.getCaptcha(), HttpStatus.OK);
+        return captchaApiService.getCaptcha();
     }
 }

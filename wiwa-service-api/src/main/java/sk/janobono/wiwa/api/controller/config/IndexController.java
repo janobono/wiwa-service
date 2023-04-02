@@ -3,8 +3,6 @@ package sk.janobono.wiwa.api.controller.config;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,59 +24,58 @@ public class IndexController {
 
     @PostMapping("/logo")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ResponseEntity<ApplicationImageWeb> setLogo(final @RequestParam("file") MultipartFile multipartFile) {
+    public ApplicationImageWeb setLogo(final @RequestParam("file") MultipartFile multipartFile) {
         log.debug("setLogo({})", multipartFile.getOriginalFilename());
-        return new ResponseEntity<>(webImageUtil.toWeb(uiService.setLogo(multipartFile)), HttpStatus.OK);
+        return webImageUtil.toWeb(uiService.setLogo(multipartFile));
     }
 
     @PostMapping("/title")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ResponseEntity<LocalizedDataSo<String>> setTitle(@RequestBody LocalizedDataSo<String> data) {
+    public LocalizedDataSo<String> setTitle(@RequestBody LocalizedDataSo<String> data) {
         log.debug("setTitle({})", data);
-        return new ResponseEntity<>(uiService.setTitle(data), HttpStatus.OK);
+        return uiService.setTitle(data);
     }
 
     @PostMapping("/welcome-text")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ResponseEntity<LocalizedDataSo<String>> setWelcomeText(@RequestBody LocalizedDataSo<String> data) {
+    public LocalizedDataSo<String> setWelcomeText(@RequestBody LocalizedDataSo<String> data) {
         log.debug("setWelcomeText({})", data);
-        return new ResponseEntity<>(uiService.setWelcomeText(data), HttpStatus.OK);
+        return uiService.setWelcomeText(data);
     }
 
     @PostMapping("/application-info")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ResponseEntity<LocalizedDataSo<ApplicationInfoSo>> setApplicationInfo(
+    public LocalizedDataSo<ApplicationInfoSo> setApplicationInfo(
             @Valid @RequestBody LocalizedDataSo<ApplicationInfoSo> data) {
         log.debug("setApplicationInfo({})", data);
-        return new ResponseEntity<>(uiService.setApplicationInfo(data), HttpStatus.OK);
+        return uiService.setApplicationInfo(data);
     }
 
     @PostMapping("/company-info")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ResponseEntity<LocalizedDataSo<CompanyInfoSo>> setCompanyInfo(
-            @Valid @RequestBody LocalizedDataSo<CompanyInfoSo> data) {
+    public LocalizedDataSo<CompanyInfoSo> setCompanyInfo(@Valid @RequestBody LocalizedDataSo<CompanyInfoSo> data) {
         log.debug("setCompanyInfo({})", data);
-        return new ResponseEntity<>(uiService.setCompanyInfo(data), HttpStatus.OK);
+        return uiService.setCompanyInfo(data);
     }
 
     @PostMapping("/cookies-info")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ResponseEntity<LocalizedDataSo<String>> setCookiesInfo(@RequestBody LocalizedDataSo<String> data) {
+    public LocalizedDataSo<String> setCookiesInfo(@RequestBody LocalizedDataSo<String> data) {
         log.debug("setCookiesInfo({})", data);
-        return new ResponseEntity<>(uiService.setCookiesInfo(data), HttpStatus.OK);
+        return uiService.setCookiesInfo(data);
     }
 
     @PostMapping("/gdpr-info")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ResponseEntity<LocalizedDataSo<String>> setGdprInfo(@RequestBody LocalizedDataSo<String> data) {
+    public LocalizedDataSo<String> setGdprInfo(@RequestBody LocalizedDataSo<String> data) {
         log.debug("setGdprInfo({})", data);
-        return new ResponseEntity<>(uiService.setGdprInfo(data), HttpStatus.OK);
+        return uiService.setGdprInfo(data);
     }
 
     @PostMapping("/working-hours")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ResponseEntity<LocalizedDataSo<String>> setWorkingHours(@RequestBody LocalizedDataSo<String> data) {
+    public LocalizedDataSo<String> setWorkingHours(@RequestBody LocalizedDataSo<String> data) {
         log.debug("setWorkingHours({})", data);
-        return new ResponseEntity<>(uiService.setWorkingHours(data), HttpStatus.OK);
+        return uiService.setWorkingHours(data);
     }
 }

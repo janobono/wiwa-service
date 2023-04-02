@@ -3,8 +3,6 @@ package sk.janobono.wiwa.api.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,27 +19,27 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/confirm")
-    public ResponseEntity<AuthenticationResponseSo> confirm(@Valid @RequestBody ConfirmationSo confirmationSo) {
+    public AuthenticationResponseSo confirm(@Valid @RequestBody ConfirmationSo confirmationSo) {
         log.debug("confirm({})", confirmationSo);
-        return new ResponseEntity<>(authService.confirm(confirmationSo), HttpStatus.OK);
+        return authService.confirm(confirmationSo);
     }
 
     @PostMapping("/change-email")
-    public ResponseEntity<AuthenticationResponseSo> changeEmail(@Valid @RequestBody ChangeEmailSo changeEmailSo) {
+    public AuthenticationResponseSo changeEmail(@Valid @RequestBody ChangeEmailSo changeEmailSo) {
         log.debug("changeEmail({})", changeEmailSo);
-        return new ResponseEntity<>(authService.changeEmail(changeEmailSo), HttpStatus.OK);
+        return authService.changeEmail(changeEmailSo);
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<AuthenticationResponseSo> changePassword(@Valid @RequestBody ChangePasswordSo changePasswordSo) {
+    public AuthenticationResponseSo changePassword(@Valid @RequestBody ChangePasswordSo changePasswordSo) {
         log.debug("changePassword({})", changePasswordSo);
-        return new ResponseEntity<>(authService.changePassword(changePasswordSo), HttpStatus.OK);
+        return authService.changePassword(changePasswordSo);
     }
 
     @PostMapping("/change-user-details")
-    public ResponseEntity<AuthenticationResponseSo> changeUserDetails(@Valid @RequestBody ChangeUserDetailsSo changeUserDetailsSo) {
+    public AuthenticationResponseSo changeUserDetails(@Valid @RequestBody ChangeUserDetailsSo changeUserDetailsSo) {
         log.debug("changeUserDetails({})", changeUserDetailsSo);
-        return new ResponseEntity<>(authService.changeUserDetails(changeUserDetailsSo), HttpStatus.OK);
+        return authService.changeUserDetails(changeUserDetailsSo);
     }
 
     @PostMapping("/resend-confirmation")
@@ -57,20 +55,20 @@ public class AuthController {
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<AuthenticationResponseSo> signIn(@Valid @RequestBody SignInSo signInSo) {
+    public AuthenticationResponseSo signIn(@Valid @RequestBody SignInSo signInSo) {
         log.debug("signIn({})", signInSo);
-        return new ResponseEntity<>(authService.signIn(signInSo), HttpStatus.OK);
+        return authService.signIn(signInSo);
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<AuthenticationResponseSo> signUp(@Valid @RequestBody SignUpSo signUpSo) {
+    public AuthenticationResponseSo signUp(@Valid @RequestBody SignUpSo signUpSo) {
         log.debug("signUp({})", signUpSo);
-        return new ResponseEntity<>(authService.signUp(signUpSo), HttpStatus.OK);
+        return authService.signUp(signUpSo);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthenticationResponseSo> refresh(@Valid @RequestBody RefreshTokenSo refreshTokenSo) {
+    public AuthenticationResponseSo refresh(@Valid @RequestBody RefreshTokenSo refreshTokenSo) {
         log.debug("refresh({})", refreshTokenSo);
-        return new ResponseEntity<>(authService.refresh(refreshTokenSo), HttpStatus.OK);
+        return authService.refresh(refreshTokenSo);
     }
 }
