@@ -12,8 +12,6 @@ import java.util.Set;
 
 public interface UserService {
 
-    Page<UserSo> getUsers(Pageable pageable);
-
     Page<UserSo> getUsers(UserSearchCriteriaSo userSearchCriteriaSo, Pageable pageable);
 
     UserSo getUser(Long id);

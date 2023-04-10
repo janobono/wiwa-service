@@ -98,7 +98,7 @@ class UserControllerIT extends BaseIntegrationTest {
         params.add("username", username);
         params.add("email", email);
         ResponseEntity<JsonNode> response = restTemplate.exchange(
-                getURI("/users/by-search-criteria", params),
+                getURI("/users", params),
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
                 JsonNode.class

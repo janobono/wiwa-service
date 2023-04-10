@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import sk.janobono.wiwa.business.model.user.UserDataSo;
@@ -28,19 +27,13 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager', 'w-employee')")
-    public Page<UserSo> getUsers(Pageable pageable) {
-        log.debug("getUsers({})", pageable);
-        return userService.getUsers(pageable);
-    }
-
-    @GetMapping("/by-search-criteria")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager', 'w-employee')")
     public Page<UserSo> getUsers(
             @RequestParam(value = "search-field", required = false) String searchField,
             @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "email", required = false) String email,
-            Pageable pageable) {
-        log.debug("getUsersBySearchCriteria({},{},{},{})", searchField, username, email, pageable);
+            Pageable pageable
+    ) {
+        log.debug("getUsers({})", pageable);
         return userService.getUsers(new UserSearchCriteriaSo(searchField, username, email), pageable);
     }
 
@@ -53,6 +46,7 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('w-admin')")
+    @ResponseStatus(HttpStatus.CREATED)
     public UserSo addUser(@Valid @RequestBody UserDataSo userDataDto) {
         log.debug("addUser({})", userDataDto);
         return userService.addUser(userDataDto);
@@ -60,9 +54,9 @@ public class UserController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('w-admin')")
-    public ResponseEntity<UserSo> setUser(@PathVariable("id") Long id, @Valid @RequestBody UserProfileSo userProfileDto) {
+    public UserSo setUser(@PathVariable("id") Long id, @Valid @RequestBody UserProfileSo userProfileDto) {
         log.debug("setUser({},{})", id, userProfileDto);
-        return new ResponseEntity<>(userService.setUser(id, userProfileDto), HttpStatus.OK);
+        return userService.setUser(id, userProfileDto);
     }
 
     @PatchMapping("/{id}/authorities")

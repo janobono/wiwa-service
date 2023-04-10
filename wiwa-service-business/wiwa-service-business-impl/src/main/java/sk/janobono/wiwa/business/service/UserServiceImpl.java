@@ -34,13 +34,6 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
 
-    public Page<UserSo> getUsers(Pageable pageable) {
-        log.debug("getUsers({})", pageable);
-        Page<UserSo> result = userRepository.getUsers(pageable).map(userMapper::mapToSo);
-        log.debug("getUsers({})={}", pageable, result);
-        return result;
-    }
-
     public Page<UserSo> getUsers(UserSearchCriteriaSo userSearchCriteriaSo, Pageable pageable) {
         log.debug("getUsers({},{})", userSearchCriteriaSo, pageable);
         Page<UserSo> result = userRepository.getUsers(new UserSearchCriteriaDo(
