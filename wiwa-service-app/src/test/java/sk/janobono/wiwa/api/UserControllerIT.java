@@ -9,10 +9,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.util.MultiValueMap;
 import sk.janobono.wiwa.BaseIntegrationTest;
-import sk.janobono.wiwa.common.model.Authority;
-import sk.janobono.wiwa.common.model.UserSo;
+import sk.janobono.wiwa.api.model.SingleValueBody;
 import sk.janobono.wiwa.business.model.user.UserDataSo;
 import sk.janobono.wiwa.business.model.user.UserProfileSo;
+import sk.janobono.wiwa.common.model.Authority;
+import sk.janobono.wiwa.common.model.UserSo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -156,7 +157,7 @@ class UserControllerIT extends BaseIntegrationTest {
                 getURI("/users/{id}/authorities", Map.of("id", Long.toString(userDto.id()))),
                 HttpMethod.PATCH,
                 new HttpEntity<>(
-                        new Authority[]{Authority.W_CUSTOMER, Authority.W_EMPLOYEE}
+                        new SingleValueBody<>(new Authority[]{Authority.W_CUSTOMER, Authority.W_EMPLOYEE})
                         , headers),
                 UserSo.class
         );
@@ -169,7 +170,7 @@ class UserControllerIT extends BaseIntegrationTest {
         ResponseEntity<UserSo> response = restTemplate.exchange(
                 getURI("/users/{id}/confirm", Map.of("id", Long.toString(userDto.id()))),
                 HttpMethod.PATCH,
-                new HttpEntity<>(Boolean.TRUE, headers),
+                new HttpEntity<>(new SingleValueBody<>(Boolean.TRUE), headers),
                 UserSo.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -181,7 +182,7 @@ class UserControllerIT extends BaseIntegrationTest {
         ResponseEntity<UserSo> response = restTemplate.exchange(
                 getURI("/users/{id}/enable", Map.of("id", Long.toString(userDto.id()))),
                 HttpMethod.PATCH,
-                new HttpEntity<>(Boolean.TRUE, headers),
+                new HttpEntity<>(new SingleValueBody<>(Boolean.TRUE), headers),
                 UserSo.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

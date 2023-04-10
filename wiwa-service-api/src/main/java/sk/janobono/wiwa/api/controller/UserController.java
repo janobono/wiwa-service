@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import sk.janobono.wiwa.api.model.SingleValueBody;
 import sk.janobono.wiwa.business.model.user.UserDataSo;
 import sk.janobono.wiwa.business.model.user.UserProfileSo;
 import sk.janobono.wiwa.business.model.user.UserSearchCriteriaSo;
@@ -61,23 +62,23 @@ public class UserController {
 
     @PatchMapping("/{id}/authorities")
     @PreAuthorize("hasAuthority('w-admin')")
-    public UserSo setAuthorities(@PathVariable("id") Long id, @Valid @RequestBody Set<Authority> authorities) {
+    public UserSo setAuthorities(@PathVariable("id") Long id, @Valid @RequestBody SingleValueBody<Set<Authority>> authorities) {
         log.debug("setAuthorities({},{})", id, authorities);
-        return userService.setAuthorities(id, authorities);
+        return userService.setAuthorities(id, authorities.value());
     }
 
     @PatchMapping("/{id}/confirm")
     @PreAuthorize("hasAuthority('w-admin')")
-    public UserSo setConfirmed(@PathVariable("id") Long id, @Valid @RequestBody Boolean confirmed) {
+    public UserSo setConfirmed(@PathVariable("id") Long id, @Valid @RequestBody SingleValueBody<Boolean> confirmed) {
         log.debug("setConfirmed({},{})", id, confirmed);
-        return userService.setConfirmed(id, confirmed);
+        return userService.setConfirmed(id, confirmed.value());
     }
 
     @PatchMapping("/{id}/enable")
     @PreAuthorize("hasAuthority('w-admin')")
-    public UserSo setEnabled(@PathVariable("id") Long id, @Valid @RequestBody Boolean enabled) {
+    public UserSo setEnabled(@PathVariable("id") Long id, @Valid @RequestBody SingleValueBody<Boolean> enabled) {
         log.debug("setEnabled({},{})", id, enabled);
-        return userService.setEnabled(id, enabled);
+        return userService.setEnabled(id, enabled.value());
     }
 
     @DeleteMapping("/{id}")
