@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
                 "spring.flyway.clean-disabled=false"
         }
 )
-class ApplicationPropertyRepositoryImplIT {
+class ApplicationPropertyRepositoryImplTest {
 
     private static final ApplicationPropertyDo TEST_APPLICATION_PROPERTY_1 = new ApplicationPropertyDo("group", "key", "", "value1");
     private static final ApplicationPropertyDo TEST_APPLICATION_PROPERTY_2 = new ApplicationPropertyDo("group", "key", "language", "value2");

@@ -22,7 +22,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UserControllerIT extends BaseIntegrationTest {
+class UserControllerTest extends BaseIntegrationTest {
 
     @Test
     public void allUserControllerMethods() throws Exception {

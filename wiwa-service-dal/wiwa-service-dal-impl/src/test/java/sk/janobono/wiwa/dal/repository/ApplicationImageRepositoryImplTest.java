@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
                 "spring.flyway.clean-disabled=false"
         }
 )
-class ApplicationImageRepositoryImplIT {
+class ApplicationImageRepositoryImplTest {
 
     private static final ApplicationImageDo TEST_APPLICATION_IMAGE_1 = new ApplicationImageDo(
             "filename1", "filetype1", "data1".getBytes(), "data1".getBytes()

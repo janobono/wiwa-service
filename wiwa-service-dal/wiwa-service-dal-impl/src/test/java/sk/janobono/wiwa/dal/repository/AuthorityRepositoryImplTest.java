@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
                 "spring.flyway.clean-disabled=false"
         }
 )
-class AuthorityRepositoryImplIT {
+class AuthorityRepositoryImplTest {
 
     @Container
     public static PostgreSQLContainer<?> postgresDB = new PostgreSQLContainer<>

@@ -20,7 +20,7 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class IndexControllerIT extends BaseIntegrationTest {
+class IndexControllerTest extends BaseIntegrationTest {
 
     @Autowired
     public ImageUtil imageUtil;

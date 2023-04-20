@@ -132,10 +132,12 @@ public class ApplicationImageRepositoryImpl implements ApplicationImageRepositor
                     Query.UPDATE(MetaTable.WIWA_APPLICATION_IMAGE.table())
                             .SET(new Column[]{
                                             MetaColumnWiwaApplicationImage.FILE_TYPE.column(),
+                                            MetaColumnWiwaApplicationImage.THUMBNAIL.column(),
                                             MetaColumnWiwaApplicationImage.DATA.column()
                                     },
                                     new Object[]{
                                             applicationImageDo.fileType(),
+                                            applicationImageDo.thumbnail(),
                                             applicationImageDo.data()
                                     })
                             .WHERE(MetaColumnWiwaApplicationImage.FILE_NAME.column(), Condition.EQUALS, applicationImageDo.fileName()));

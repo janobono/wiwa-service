@@ -7,7 +7,7 @@ import sk.janobono.wiwa.common.model.Authority;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AuthorityControllerIT extends BaseIntegrationTest {
+class AuthorityControllerTest extends BaseIntegrationTest {
 
     @Test
     void getAllAuthorities() {

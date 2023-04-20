@@ -17,7 +17,7 @@ import sk.janobono.wiwa.common.component.ImageUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ApplicationImageControllerIT extends BaseIntegrationTest {
+class ApplicationImageControllerTest extends BaseIntegrationTest {
 
     @Autowired
     public ImageUtil imageUtil;

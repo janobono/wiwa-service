@@ -15,7 +15,7 @@ import java.text.MessageFormat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-class AuthControllerIT extends BaseIntegrationTest {
+class AuthControllerTest extends BaseIntegrationTest {
 
     public static final String USERNAME = "jimbop";
     public static final String TITLE_BEFORE = "Phdr.";

@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
                 "spring.flyway.clean-disabled=false"
         }
 )
-class UserRepositoryImplIT {
+class UserRepositoryImplTest {
 
     private static final UserDo TEST_USER_1 = new UserDo(
             1L,

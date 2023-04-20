@@ -11,7 +11,7 @@ import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class IndexControllerIT extends BaseIntegrationTest {
+class IndexControllerTest extends BaseIntegrationTest {
 
     @Autowired
     public ImageUtil imageUtil;

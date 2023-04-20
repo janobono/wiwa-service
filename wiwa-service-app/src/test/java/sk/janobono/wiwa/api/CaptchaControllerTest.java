@@ -10,7 +10,7 @@ import sk.janobono.wiwa.business.model.captcha.CaptchaSo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CaptchaControllerIT extends BaseIntegrationTest {
+class CaptchaControllerTest extends BaseIntegrationTest {
 
     @Test
     void captcha() {
