@@ -31,7 +31,7 @@ class AuthorityRepositoryImplTest {
             .withPassword("app");
 
     @DynamicPropertySource
-    public static void properties(DynamicPropertyRegistry registry) throws Exception {
+    public static void properties(final DynamicPropertyRegistry registry) throws Exception {
         registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
     }
 

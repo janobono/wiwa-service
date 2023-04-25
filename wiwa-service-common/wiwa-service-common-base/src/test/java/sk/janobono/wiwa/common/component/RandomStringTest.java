@@ -52,41 +52,41 @@ class RandomStringTest {
 
     @Test
     void generateNumeric() {
-        String generated = randomString.numeric(20);
+        final String generated = randomString.numeric(20);
         assertThat(generated.length()).isEqualTo(20);
         assertThat(generated).containsPattern("(%d)*");
     }
 
     @Test
     void generateAlfa() {
-        String generated = randomString.alphabet(20);
+        final String generated = randomString.alphabet(20);
         assertThat(generated.length()).isEqualTo(20);
         assertThat(generated).containsPattern("[a-z, A-Z]*");
     }
 
     @Test
     void generateAlfaNumeric() {
-        String generated = randomString.alphaNumeric(20);
+        final String generated = randomString.alphaNumeric(20);
         assertThat(generated.length()).isEqualTo(20);
         assertThat(generated).containsPattern("[a-z, A-Z, 0-9]*");
     }
 
     @Test
     void generateAlfaNumericWithSpecials() {
-        String generated = randomString.alphaNumericWithSpecial(20);
+        final String generated = randomString.alphaNumericWithSpecial(20);
         assertThat(generated.length()).isEqualTo(20);
     }
 
     @Test
     void generateConcrete() {
-        String generated = randomString.alphaNumeric(5, 10, 5, 20, 20);
+        final String generated = randomString.alphaNumeric(5, 10, 5, 20, 20);
         assertThat(generated.length()).isEqualTo(20);
 
         int numbers = 0;
         int characters = 0;
         int capitals = 0;
-        char[] chars = generated.toCharArray();
-        for (char c : chars) {
+        final char[] chars = generated.toCharArray();
+        for (final char c : chars) {
             if (c >= 'A' && c <= 'Z') {
                 capitals++;
             } else if (c >= 'a' && c <= 'z') {
@@ -102,14 +102,14 @@ class RandomStringTest {
 
     @Test
     void generateBetween() {
-        String generated = randomString.alphaNumeric(5, 10, 5, 50, 200);
+        final String generated = randomString.alphaNumeric(5, 10, 5, 50, 200);
         assertThat(generated.length()).isBetween(50, 200);
 
         int numbers = 0;
         int characters = 0;
         int capitals = 0;
-        char[] chars = generated.toCharArray();
-        for (char c : chars) {
+        final char[] chars = generated.toCharArray();
+        for (final char c : chars) {
             if (c >= 'A' && c <= 'Z') {
                 capitals++;
             } else if (c >= 'a' && c <= 'z') {

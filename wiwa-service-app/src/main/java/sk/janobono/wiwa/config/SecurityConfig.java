@@ -72,14 +72,14 @@ public class SecurityConfig {
             }
 
             @Override
-            public boolean matches(HttpServletRequest request) {
+            public boolean matches(final HttpServletRequest request) {
                 return getPublicPathPattern().matcher(request.getServletPath()).matches();
             }
         };
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain filterChain(final HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
                 .cors().disable()
                 .authorizeHttpRequests()

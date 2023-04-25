@@ -26,10 +26,10 @@ public class MailServiceImpl implements MailService {
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
 
-    public void sendEmail(MailSo mail) {
+    public void sendEmail(final MailSo mail) {
         log.debug("sendMail({})", mail);
-        MimeMessagePreparator mimeMessagePreparator = mimeMessage -> {
-            MimeMessageHelper messageHelper = new MimeMessageHelper(
+        final MimeMessagePreparator mimeMessagePreparator = mimeMessage -> {
+            final MimeMessageHelper messageHelper = new MimeMessageHelper(
                     mimeMessage,
                     mail.attachments() != null && !mail.attachments().isEmpty()
             );
@@ -40,7 +40,7 @@ public class MailServiceImpl implements MailService {
             mail.recipients().forEach(recipient -> {
                 try {
                     mimeMessage.addRecipients(Message.RecipientType.TO, recipient);
-                } catch (MessagingException e) {
+                } catch (final MessagingException e) {
                     e.printStackTrace();
                 }
             });
@@ -50,7 +50,7 @@ public class MailServiceImpl implements MailService {
                 mail.attachments().forEach(attachment -> {
                     try {
                         messageHelper.addAttachment(attachment.getName(), attachment);
-                    } catch (MessagingException e) {
+                    } catch (final MessagingException e) {
                         e.printStackTrace();
                     }
                 });
@@ -59,13 +59,13 @@ public class MailServiceImpl implements MailService {
         javaMailSender.send(mimeMessagePreparator);
     }
 
-    private String format(MailTemplate template, MailContentSo mailBaseContentSo) {
+    private String format(final MailTemplate template, final MailContentSo mailBaseContentSo) {
         log.debug("format({},{})", template, mailBaseContentSo);
         return templateEngine.process(template.getTemplate(), getContext(mailBaseContentSo));
     }
 
-    private IContext getContext(MailContentSo mailBaseContentSo) {
-        Context context = new Context();
+    private IContext getContext(final MailContentSo mailBaseContentSo) {
+        final Context context = new Context();
         context.setVariable("title", mailBaseContentSo.title());
         context.setVariable("lines", mailBaseContentSo.lines());
         context.setVariable("isLink", Objects.nonNull(mailBaseContentSo.mailLink()));

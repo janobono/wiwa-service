@@ -34,30 +34,30 @@ public class ApplicationImageRepositoryImpl implements ApplicationImageRepositor
     private final ApplicationImageDoMapper applicationImageDoMapper;
 
     @Override
-    public boolean exists(String fileName) {
+    public boolean exists(final String fileName) {
         log.debug("exists({})", fileName);
-        try (Connection connection = dataSource.getConnection()) {
-            List<Object[]> rows = sqlBuilder.select(connection,
+        try (final Connection connection = dataSource.getConnection()) {
+            final List<Object[]> rows = sqlBuilder.select(connection,
                     Query.SELECT(MetaColumnWiwaApplicationImage.FILE_NAME.column()).COUNT()
                             .FROM(MetaTable.WIWA_APPLICATION_IMAGE.table())
                             .WHERE(MetaColumnWiwaApplicationImage.FILE_NAME.column(), Condition.EQUALS, fileName));
             return ((Integer) rows.get(0)[0]) > 0;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Page<ApplicationImageInfoDo> getApplicationImages(Pageable pageable) {
+    public Page<ApplicationImageInfoDo> getApplicationImages(final Pageable pageable) {
         log.debug("getApplicationImages({})", pageable);
-        try (Connection connection = dataSource.getConnection()) {
-            int totalRows = (Integer) sqlBuilder.select(connection,
+        try (final Connection connection = dataSource.getConnection()) {
+            final int totalRows = (Integer) sqlBuilder.select(connection,
                     Query.SELECT(MetaColumnWiwaApplicationImage.FILE_NAME.column())
                             .COUNT()
                             .FROM(MetaTable.WIWA_APPLICATION_IMAGE.table())).get(0)[0];
-            List<Object[]> rows;
+            final List<Object[]> rows;
             if (pageable.isPaged()) {
-                Query.Select select = Query.SELECT(
+                final Query.Select select = Query.SELECT(
                                 MetaColumnWiwaApplicationImage.FILE_NAME.column(),
                                 MetaColumnWiwaApplicationImage.FILE_TYPE.column(),
                                 MetaColumnWiwaApplicationImage.THUMBNAIL.column()
@@ -84,16 +84,16 @@ public class ApplicationImageRepositoryImpl implements ApplicationImageRepositor
                             ))
                             .toList()
                     , pageable, totalRows);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Optional<ApplicationImageDo> getApplicationImage(String fileName) {
+    public Optional<ApplicationImageDo> getApplicationImage(final String fileName) {
         log.debug("getApplicationImage({})", fileName);
-        try (Connection connection = dataSource.getConnection()) {
-            List<Object[]> rows = sqlBuilder.select(connection,
+        try (final Connection connection = dataSource.getConnection()) {
+            final List<Object[]> rows = sqlBuilder.select(connection,
                     Query.SELECT(MetaColumnWiwaApplicationImage.columns())
                             .FROM(MetaTable.WIWA_APPLICATION_IMAGE.table())
                             .WHERE(MetaColumnWiwaApplicationImage.FILE_NAME.column(), Condition.EQUALS, fileName));
@@ -102,16 +102,16 @@ public class ApplicationImageRepositoryImpl implements ApplicationImageRepositor
             } else {
                 return Optional.empty();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public ApplicationImageInfoDo addApplicationImage(ApplicationImageDo applicationImageDo) {
+    public ApplicationImageInfoDo addApplicationImage(final ApplicationImageDo applicationImageDo) {
         log.debug("addApplicationImage({})", applicationImageDo);
-        try (Connection connection = dataSource.getConnection()) {
-            Object[] row = WiwaApplicationImageDto.toArray(applicationImageDoMapper.mapToDto(applicationImageDo));
+        try (final Connection connection = dataSource.getConnection()) {
+            final Object[] row = WiwaApplicationImageDto.toArray(applicationImageDoMapper.mapToDto(applicationImageDo));
             sqlBuilder.insert(connection,
                     Query.INSERT()
                             .INTO(MetaTable.WIWA_APPLICATION_IMAGE.table(), MetaColumnWiwaApplicationImage.columns())
@@ -119,15 +119,15 @@ public class ApplicationImageRepositoryImpl implements ApplicationImageRepositor
             return new ApplicationImageInfoDo(
                     applicationImageDo.fileName(), applicationImageDo.fileType(), applicationImageDo.thumbnail()
             );
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public ApplicationImageInfoDo setApplicationImage(ApplicationImageDo applicationImageDo) {
+    public ApplicationImageInfoDo setApplicationImage(final ApplicationImageDo applicationImageDo) {
         log.debug("setApplicationImage({})", applicationImageDo);
-        try (Connection connection = dataSource.getConnection()) {
+        try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.update(connection,
                     Query.UPDATE(MetaTable.WIWA_APPLICATION_IMAGE.table())
                             .SET(new Column[]{
@@ -144,25 +144,25 @@ public class ApplicationImageRepositoryImpl implements ApplicationImageRepositor
             return new ApplicationImageInfoDo(
                     applicationImageDo.fileName(), applicationImageDo.fileType(), applicationImageDo.thumbnail()
             );
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void deleteApplicationImage(String fileName) {
+    public void deleteApplicationImage(final String fileName) {
         log.debug("deleteApplicationImage({})", fileName);
-        try (Connection connection = dataSource.getConnection()) {
+        try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
                     Query.DELETE()
                             .FROM(MetaTable.WIWA_APPLICATION_IMAGE.table())
                             .WHERE(MetaColumnWiwaApplicationImage.FILE_NAME.column(), Condition.EQUALS, fileName));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void mapOrderBy(Pageable pageable, Query.Select select) {
+    private void mapOrderBy(final Pageable pageable, final Query.Select select) {
         pageable.getSort().stream().forEach(order -> {
                     switch (order.getProperty()) {
                         case "fileName" -> select.ORDER_BY(
@@ -186,7 +186,7 @@ public class ApplicationImageRepositoryImpl implements ApplicationImageRepositor
         );
     }
 
-    private Order mapDirection(Sort.Order order) {
+    private Order mapDirection(final Sort.Order order) {
         return order.getDirection() == Sort.Direction.ASC ? Order.ASC : Order.DESC;
     }
 }

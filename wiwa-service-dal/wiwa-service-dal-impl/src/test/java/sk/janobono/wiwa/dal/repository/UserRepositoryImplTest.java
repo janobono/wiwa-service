@@ -75,7 +75,7 @@ class UserRepositoryImplTest {
             .withPassword("app");
 
     @DynamicPropertySource
-    public static void properties(DynamicPropertyRegistry registry) throws Exception {
+    public static void properties(final DynamicPropertyRegistry registry) throws Exception {
         registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
     }
 
@@ -90,7 +90,7 @@ class UserRepositoryImplTest {
         assertThat(authorityRepository).isNotNull();
         assertThat(userRepository).isNotNull();
 
-        for (Authority authority : Authority.values()) {
+        for (final Authority authority : Authority.values()) {
             authorityRepository.addAuthority(authority);
         }
         assertThat(authorityRepository.count()).isEqualTo(Authority.values().length);

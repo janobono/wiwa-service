@@ -22,32 +22,32 @@ class IndexControllerTest extends BaseIntegrationTest {
     @Test
     void fullTest() {
         // logo
-        byte[] logo = restTemplate.getForObject(getURI("/ui/logo"), byte[].class);
+        final byte[] logo = restTemplate.getForObject(getURI("/ui/logo"), byte[].class);
         assertThat(logo).isEqualTo(imageUtil.generateMessageImage(null));
 
         // title
-        String titleEn = restTemplate.getForObject(getURI("/ui/title", enQueryParams()), String.class);
+        final String titleEn = restTemplate.getForObject(getURI("/ui/title", enQueryParams()), String.class);
         assertThat(titleEn).isEqualTo("WIWA - Internet store");
 
-        String titleSk = restTemplate.getForObject(getURI("/ui/title", skQueryParams()), String.class);
+        final String titleSk = restTemplate.getForObject(getURI("/ui/title", skQueryParams()), String.class);
         assertThat(titleSk).isEqualTo("WIWA - Internetový obchod");
 
         // welcome-text
-        String welcomeTextEn = restTemplate.getForObject(getURI("/ui/welcome-text", enQueryParams()), String.class);
+        final String welcomeTextEn = restTemplate.getForObject(getURI("/ui/welcome-text", enQueryParams()), String.class);
         assertThat(welcomeTextEn).isEqualTo("If you plan to make the furniture yourself, we offer you the opportunity to order from us quality prepared furniture parts for your kitchen, office or other interior project. We will provide you with the required materials (DTD, MDF, HDF), cutting and gluing the edges exactly according to your wishes.");
 
-        String welcomeTextSk = restTemplate.getForObject(getURI("/ui/welcome-text", skQueryParams()), String.class);
+        final String welcomeTextSk = restTemplate.getForObject(getURI("/ui/welcome-text", skQueryParams()), String.class);
         assertThat(welcomeTextSk).isEqualTo("V prípade ak si plánujete vyrobiť nábytok samostatne, ponúkame Vám možnosť objednať si u nás kvalitne pripravené nábytkové dielce pre váš projekt kuchyne, kancelárie alebo iného interiéru. Zabezpečíme pre Vás požadované materiály (DTD, MDF, HDF), porez a lepenie hrany presne podľa vaších predstáv.");
 
         // application-info
-        ApplicationInfoSo applicationInfoEn = restTemplate.getForObject(getURI("/ui/application-info", enQueryParams()), ApplicationInfoSo.class);
+        final ApplicationInfoSo applicationInfoEn = restTemplate.getForObject(getURI("/ui/application-info", enQueryParams()), ApplicationInfoSo.class);
         assertThat(applicationInfoEn).isNotNull();
         assertThat(applicationInfoEn.items().size()).isEqualTo(3);
         assertThat(applicationInfoEn.items().get(0).title()).isEqualTo("Cutting and edging");
         assertThat(applicationInfoEn.items().get(0).text()).isEqualTo("Cutting and edging chipboard precisely to measure, laminated chipboards and ABS edges in more than 150 decors.");
         assertThat(applicationInfoEn.items().get(0).imageFileName()).isEqualTo("cutting-and-edging.png");
 
-        ApplicationInfoSo applicationInfoSk = restTemplate.getForObject(getURI("/ui/application-info", skQueryParams()), ApplicationInfoSo.class);
+        final ApplicationInfoSo applicationInfoSk = restTemplate.getForObject(getURI("/ui/application-info", skQueryParams()), ApplicationInfoSo.class);
         assertThat(applicationInfoSk).isNotNull();
         assertThat(applicationInfoSk.items().size()).isEqualTo(3);
         assertThat(applicationInfoSk.items().get(0).title()).isEqualTo("Rezanie a hranovanie");
@@ -55,7 +55,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(applicationInfoSk.items().get(0).imageFileName()).isEqualTo("cutting-and-edging.png");
 
         // company-info
-        CompanyInfoSo enCompanyInfoDto = restTemplate.getForObject(getURI("/ui/company-info", enQueryParams()), CompanyInfoSo.class);
+        final CompanyInfoSo enCompanyInfoDto = restTemplate.getForObject(getURI("/ui/company-info", enQueryParams()), CompanyInfoSo.class);
         assertThat(enCompanyInfoDto).isNotNull();
         assertThat(enCompanyInfoDto.name()).isEqualTo("WIWA, Ltd.");
         assertThat(enCompanyInfoDto.street()).isEqualTo("Street 12/4567");
@@ -70,7 +70,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(enCompanyInfoDto.commercialRegisterInfo()).isEqualTo("The company is registered in the Commercial Register of the District Court in Zvolen, section Sro, insert number 11111/P");
         assertThat(enCompanyInfoDto.mapUrl()).isEqualTo("https://maps.google.com/maps?q=Zvolen&t=&z=13&ie=UTF8&iwloc=&output=embed");
 
-        CompanyInfoSo skCompanyInfoDto = restTemplate.getForObject(getURI("/ui/company-info", skQueryParams()), CompanyInfoSo.class);
+        final CompanyInfoSo skCompanyInfoDto = restTemplate.getForObject(getURI("/ui/company-info", skQueryParams()), CompanyInfoSo.class);
         assertThat(skCompanyInfoDto).isNotNull();
         assertThat(skCompanyInfoDto.name()).isEqualTo("WIWA, s.r.o.");
         assertThat(skCompanyInfoDto.street()).isEqualTo("Ulica 12/4567");
@@ -86,7 +86,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(skCompanyInfoDto.mapUrl()).isEqualTo("https://maps.google.com/maps?q=Zvolen&t=&z=13&ie=UTF8&iwloc=&output=embed");
 
         // cookies-info
-        String cookiesInfoEn = restTemplate.getForObject(getURI("/ui/cookies-info", enQueryParams()), String.class);
+        final String cookiesInfoEn = restTemplate.getForObject(getURI("/ui/cookies-info", enQueryParams()), String.class);
         assertThat(cookiesInfoEn).isEqualTo(
                 applicationPropertyRepository.getApplicationProperty(
                         WiwaProperty.APP_COOKIES_INFO.getGroup(),
@@ -95,7 +95,7 @@ class IndexControllerTest extends BaseIntegrationTest {
                 ).orElseThrow().value()
         );
 
-        String cookiesInfoSk = restTemplate.getForObject(getURI("/ui/cookies-info", skQueryParams()), String.class);
+        final String cookiesInfoSk = restTemplate.getForObject(getURI("/ui/cookies-info", skQueryParams()), String.class);
         assertThat(cookiesInfoSk).isEqualTo(
                 applicationPropertyRepository.getApplicationProperty(
                         WiwaProperty.APP_COOKIES_INFO.getGroup(),
@@ -105,7 +105,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         );
 
         // gdpr-info
-        String gdprInfoEn = restTemplate.getForObject(getURI("/ui/gdpr-info", enQueryParams()), String.class);
+        final String gdprInfoEn = restTemplate.getForObject(getURI("/ui/gdpr-info", enQueryParams()), String.class);
         assertThat(gdprInfoEn).isEqualTo(
                 applicationPropertyRepository.getApplicationProperty(
                         WiwaProperty.APP_GDPR_INFO.getGroup(),
@@ -114,7 +114,7 @@ class IndexControllerTest extends BaseIntegrationTest {
                 ).orElseThrow().value()
         );
 
-        String gdprInfoSk = restTemplate.getForObject(getURI("/ui/gdpr-info", skQueryParams()), String.class);
+        final String gdprInfoSk = restTemplate.getForObject(getURI("/ui/gdpr-info", skQueryParams()), String.class);
         assertThat(gdprInfoSk).isEqualTo(
                 applicationPropertyRepository.getApplicationProperty(
                         WiwaProperty.APP_GDPR_INFO.getGroup(),
@@ -124,7 +124,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         );
 
         // working-hours
-        String workingHoursEn = restTemplate.getForObject(getURI("/ui/working-hours", enQueryParams()), String.class);
+        final String workingHoursEn = restTemplate.getForObject(getURI("/ui/working-hours", enQueryParams()), String.class);
         assertThat(workingHoursEn).isEqualTo(
                 applicationPropertyRepository.getApplicationProperty(
                         WiwaProperty.APP_WORKING_HOURS.getGroup(),
@@ -133,7 +133,7 @@ class IndexControllerTest extends BaseIntegrationTest {
                 ).orElseThrow().value()
         );
 
-        String workingHoursSk = restTemplate.getForObject(getURI("/ui/working-hours", skQueryParams()), String.class);
+        final String workingHoursSk = restTemplate.getForObject(getURI("/ui/working-hours", skQueryParams()), String.class);
         assertThat(workingHoursSk).isEqualTo(
                 applicationPropertyRepository.getApplicationProperty(
                         WiwaProperty.APP_WORKING_HOURS.getGroup(),

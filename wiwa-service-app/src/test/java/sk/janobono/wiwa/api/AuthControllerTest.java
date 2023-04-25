@@ -54,7 +54,7 @@ class AuthControllerTest extends BaseIntegrationTest {
         authenticationResponseDto = changeUserDetails(authenticationResponseDto);
         log.debug("change user details = {}", authenticationResponseDto);
 
-        String[] data = resetPassword();
+        final String[] data = resetPassword();
         token = data[0];
         log.debug("reset password token = {}", token);
         authenticationResponseDto = confirm(token);
@@ -78,8 +78,8 @@ class AuthControllerTest extends BaseIntegrationTest {
     private String signUp() throws Exception {
         deleteAllEmails();
 
-        String captchaText = captcha.generateText();
-        String captchaToken = captcha.generateToken(captchaText);
+        final String captchaText = captcha.generateText();
+        final String captchaToken = captcha.generateToken(captchaText);
 
         restTemplate.postForObject(
                 getURI("/auth/sign-up"),
@@ -99,7 +99,7 @@ class AuthControllerTest extends BaseIntegrationTest {
                 AuthenticationResponseSo.class
         );
 
-        TestEmail testEmail = getAllEmails()[0];
+        final TestEmail testEmail = getAllEmails()[0];
         return getSubstring(testEmail, "confirm/", ">"
                         + applicationPropertyRepository.getApplicationProperty(
                         WiwaProperty.AUTH_SIGN_UP_MAIL_LINK.getGroup(),
@@ -109,15 +109,15 @@ class AuthControllerTest extends BaseIntegrationTest {
         ).trim().replaceAll("\"", "");
     }
 
-    private void resendConfirmation(AuthenticationResponseSo authenticationResponseSO) throws Exception {
+    private void resendConfirmation(final AuthenticationResponseSo authenticationResponseSO) throws Exception {
         deleteAllEmails();
 
-        HttpHeaders headers = new HttpHeaders();
+        final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(authenticationResponseSO.token());
 
-        String captchaText = captcha.generateText();
-        String captchaToken = captcha.generateToken(captchaText);
+        final String captchaText = captcha.generateText();
+        final String captchaToken = captcha.generateToken(captchaText);
 
         restTemplate.exchange(
                 getURI("/auth/resend-confirmation"),
@@ -129,8 +129,8 @@ class AuthControllerTest extends BaseIntegrationTest {
                 AuthenticationResponseSo.class
         );
 
-        TestEmail testEmail = getAllEmails()[0];
-        String token = getSubstring(testEmail, "confirm/", ">"
+        final TestEmail testEmail = getAllEmails()[0];
+        final String token = getSubstring(testEmail, "confirm/", ">"
                         + applicationPropertyRepository.getApplicationProperty(
                         WiwaProperty.AUTH_SIGN_UP_MAIL_LINK.getGroup(),
                         WiwaProperty.AUTH_SIGN_UP_MAIL_LINK.getKey(),
@@ -140,7 +140,7 @@ class AuthControllerTest extends BaseIntegrationTest {
         assertThat(token).isNotEmpty();
     }
 
-    private AuthenticationResponseSo confirm(String token) throws Exception {
+    private AuthenticationResponseSo confirm(final String token) throws Exception {
         return restTemplate.postForObject(
                 getURI("/auth/confirm"),
                 new ConfirmationSo(
@@ -150,7 +150,7 @@ class AuthControllerTest extends BaseIntegrationTest {
         );
     }
 
-    private AuthenticationResponseSo refresh(String token) throws Exception {
+    private AuthenticationResponseSo refresh(final String token) throws Exception {
         return restTemplate.postForObject(
                 getURI("/auth/refresh"),
                 new RefreshTokenSo(
@@ -160,13 +160,13 @@ class AuthControllerTest extends BaseIntegrationTest {
         );
     }
 
-    private AuthenticationResponseSo changeEmail(AuthenticationResponseSo authenticationResponseSO) throws Exception {
-        HttpHeaders headers = new HttpHeaders();
+    private AuthenticationResponseSo changeEmail(final AuthenticationResponseSo authenticationResponseSO) throws Exception {
+        final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(authenticationResponseSO.token());
 
-        String captchaText = captcha.generateText();
-        String captchaToken = captcha.generateToken(captchaText);
+        final String captchaText = captcha.generateText();
+        final String captchaToken = captcha.generateToken(captchaText);
 
         restTemplate.exchange(
                 getURI("/auth/change-email"),
@@ -180,7 +180,7 @@ class AuthControllerTest extends BaseIntegrationTest {
                 AuthenticationResponseSo.class
         );
 
-        ResponseEntity<AuthenticationResponseSo> response = restTemplate.exchange(
+        final ResponseEntity<AuthenticationResponseSo> response = restTemplate.exchange(
                 getURI("/auth/change-email"),
                 HttpMethod.POST,
                 new HttpEntity<>(
@@ -195,13 +195,13 @@ class AuthControllerTest extends BaseIntegrationTest {
         return response.getBody();
     }
 
-    private AuthenticationResponseSo changePassword(AuthenticationResponseSo authenticationResponseSO) {
-        HttpHeaders headers = new HttpHeaders();
+    private AuthenticationResponseSo changePassword(final AuthenticationResponseSo authenticationResponseSO) {
+        final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(authenticationResponseSO.token());
 
-        String captchaText = captcha.generateText();
-        String captchaToken = captcha.generateToken(captchaText);
+        final String captchaText = captcha.generateText();
+        final String captchaToken = captcha.generateToken(captchaText);
 
         restTemplate.exchange(
                 getURI("/auth/change-password"),
@@ -215,7 +215,7 @@ class AuthControllerTest extends BaseIntegrationTest {
                 AuthenticationResponseSo.class
         );
 
-        ResponseEntity<AuthenticationResponseSo> response = restTemplate.exchange(
+        final ResponseEntity<AuthenticationResponseSo> response = restTemplate.exchange(
                 getURI("/auth/change-password"),
                 HttpMethod.POST,
                 new HttpEntity<>(new ChangePasswordSo(
@@ -229,15 +229,15 @@ class AuthControllerTest extends BaseIntegrationTest {
         return response.getBody();
     }
 
-    private AuthenticationResponseSo changeUserDetails(AuthenticationResponseSo authenticationResponseSO) {
-        HttpHeaders headers = new HttpHeaders();
+    private AuthenticationResponseSo changeUserDetails(final AuthenticationResponseSo authenticationResponseSO) {
+        final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(authenticationResponseSO.token());
 
-        String captchaText = captcha.generateText();
-        String captchaToken = captcha.generateToken(captchaText);
+        final String captchaText = captcha.generateText();
+        final String captchaToken = captcha.generateToken(captchaText);
 
-        ResponseEntity<AuthenticationResponseSo> response = restTemplate.exchange(
+        final ResponseEntity<AuthenticationResponseSo> response = restTemplate.exchange(
                 getURI("/auth/change-user-details"),
                 HttpMethod.POST,
                 new HttpEntity<>(new ChangeUserDetailsSo(
@@ -258,8 +258,8 @@ class AuthControllerTest extends BaseIntegrationTest {
     private String[] resetPassword() throws Exception {
         deleteAllEmails();
 
-        String captchaText = captcha.generateText();
-        String captchaToken = captcha.generateToken(captchaText);
+        final String captchaText = captcha.generateText();
+        final String captchaToken = captcha.generateToken(captchaText);
 
         restTemplate.postForObject(
                 getURI("/auth/reset-password"),
@@ -271,7 +271,7 @@ class AuthControllerTest extends BaseIntegrationTest {
                 Void.class
         );
 
-        TestEmail testEmail = getAllEmails()[0];
+        final TestEmail testEmail = getAllEmails()[0];
         return new String[]{
                 getSubstring(testEmail, "confirm/", ">"
                                 + applicationPropertyRepository.getApplicationProperty(
@@ -293,7 +293,7 @@ class AuthControllerTest extends BaseIntegrationTest {
         };
     }
 
-    private String getSubstring(TestEmail testEmail, String startSequence, String endSequence) throws Exception {
+    private String getSubstring(final TestEmail testEmail, final String startSequence, final String endSequence) throws Exception {
         String result = testEmail.html();
         result = result.substring(
                 result.indexOf(startSequence) + startSequence.length(),

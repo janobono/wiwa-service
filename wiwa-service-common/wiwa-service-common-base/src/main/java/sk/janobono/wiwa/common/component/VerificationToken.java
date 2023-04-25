@@ -24,42 +24,42 @@ public class VerificationToken {
     private final Algorithm algorithm;
     private final String issuer;
 
-    public VerificationToken(VerificationConfigProperties verificationConfigProperties) {
-        KeyPairGenerator keyGen;
+    public VerificationToken(final VerificationConfigProperties verificationConfigProperties) {
+        final KeyPairGenerator keyGen;
         try {
             keyGen = KeyPairGenerator.getInstance("RSA");
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
         keyGen.initialize(1024);
-        KeyPair keyPair = keyGen.generateKeyPair();
+        final KeyPair keyPair = keyGen.generateKeyPair();
         this.algorithm = Algorithm.RSA256((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
         this.issuer = verificationConfigProperties.issuer();
     }
 
-    public String generateToken(Map<String, String> data, Long issuedAt, Long expiresAt) {
+    public String generateToken(final Map<String, String> data, final Long issuedAt, final Long expiresAt) {
         try {
-            JWTCreator.Builder jwtBuilder = JWT.create()
+            final JWTCreator.Builder jwtBuilder = JWT.create()
                     .withIssuer(issuer)
                     .withIssuedAt(new Date(issuedAt))
                     .withExpiresAt(new Date(expiresAt));
             data.forEach(jwtBuilder::withClaim);
             return jwtBuilder.sign(algorithm);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private DecodedJWT decodeToken(String token) throws JWTVerificationException {
-        JWTVerifier verifier = JWT.require(algorithm)
+    private DecodedJWT decodeToken(final String token) throws JWTVerificationException {
+        final JWTVerifier verifier = JWT.require(algorithm)
                 .withIssuer(issuer)
                 .build();
         return verifier.verify(token);
     }
 
-    public Map<String, String> parseToken(String token) {
-        DecodedJWT jwt = decodeToken(token);
-        Map<String, String> result = new HashMap<>();
+    public Map<String, String> parseToken(final String token) {
+        final DecodedJWT jwt = decodeToken(token);
+        final Map<String, String> result = new HashMap<>();
         jwt.getClaims().forEach((key, value) -> result.put(key, value.asString()));
         return result;
     }

@@ -22,9 +22,9 @@ public class ApplicationImageController {
     private final ApplicationImageService applicationImageService;
 
     @GetMapping("/{fileName}")
-    public ResponseEntity<Resource> getApplicationImage(@PathVariable("fileName") String fileName) {
+    public ResponseEntity<Resource> getApplicationImage(@PathVariable("fileName") final String fileName) {
         log.debug("getApplicationImage({})", fileName);
-        ResourceEntitySo resourceEntityDto = applicationImageService.getApplicationImage(fileName);
+        final ResourceEntitySo resourceEntityDto = applicationImageService.getApplicationImage(fileName);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(resourceEntityDto.contentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntityDto.fileName() + "\"")

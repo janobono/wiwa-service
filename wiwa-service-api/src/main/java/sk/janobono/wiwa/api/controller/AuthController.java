@@ -19,55 +19,55 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/confirm")
-    public AuthenticationResponseSo confirm(@Valid @RequestBody ConfirmationSo confirmationSo) {
+    public AuthenticationResponseSo confirm(@Valid @RequestBody final ConfirmationSo confirmationSo) {
         log.debug("confirm({})", confirmationSo);
         return authService.confirm(confirmationSo);
     }
 
     @PostMapping("/change-email")
-    public AuthenticationResponseSo changeEmail(@Valid @RequestBody ChangeEmailSo changeEmailSo) {
+    public AuthenticationResponseSo changeEmail(@Valid @RequestBody final ChangeEmailSo changeEmailSo) {
         log.debug("changeEmail({})", changeEmailSo);
         return authService.changeEmail(changeEmailSo);
     }
 
     @PostMapping("/change-password")
-    public AuthenticationResponseSo changePassword(@Valid @RequestBody ChangePasswordSo changePasswordSo) {
+    public AuthenticationResponseSo changePassword(@Valid @RequestBody final ChangePasswordSo changePasswordSo) {
         log.debug("changePassword({})", changePasswordSo);
         return authService.changePassword(changePasswordSo);
     }
 
     @PostMapping("/change-user-details")
-    public AuthenticationResponseSo changeUserDetails(@Valid @RequestBody ChangeUserDetailsSo changeUserDetailsSo) {
+    public AuthenticationResponseSo changeUserDetails(@Valid @RequestBody final ChangeUserDetailsSo changeUserDetailsSo) {
         log.debug("changeUserDetails({})", changeUserDetailsSo);
         return authService.changeUserDetails(changeUserDetailsSo);
     }
 
     @PostMapping("/resend-confirmation")
-    public void resendConfirmation(@Valid @RequestBody ResendConfirmationSo resendConfirmationSo) {
+    public void resendConfirmation(@Valid @RequestBody final ResendConfirmationSo resendConfirmationSo) {
         log.debug("resendConfirmation({})", resendConfirmationSo);
         authService.resendConfirmation(resendConfirmationSo);
     }
 
     @PostMapping("/reset-password")
-    public void resetPassword(@Valid @RequestBody ResetPasswordSo resetPasswordSo) {
+    public void resetPassword(@Valid @RequestBody final ResetPasswordSo resetPasswordSo) {
         log.debug("resetPassword({})", resetPasswordSo);
         authService.resetPassword(resetPasswordSo);
     }
 
     @PostMapping("/sign-in")
-    public AuthenticationResponseSo signIn(@Valid @RequestBody SignInSo signInSo) {
+    public AuthenticationResponseSo signIn(@Valid @RequestBody final SignInSo signInSo) {
         log.debug("signIn({})", signInSo);
         return authService.signIn(signInSo);
     }
 
     @PostMapping("/sign-up")
-    public AuthenticationResponseSo signUp(@Valid @RequestBody SignUpSo signUpSo) {
+    public AuthenticationResponseSo signUp(@Valid @RequestBody final SignUpSo signUpSo) {
         log.debug("signUp({})", signUpSo);
         return authService.signUp(signUpSo);
     }
 
     @PostMapping("/refresh")
-    public AuthenticationResponseSo refresh(@Valid @RequestBody RefreshTokenSo refreshTokenSo) {
+    public AuthenticationResponseSo refresh(@Valid @RequestBody final RefreshTokenSo refreshTokenSo) {
         log.debug("refresh({})", refreshTokenSo);
         return authService.refresh(refreshTokenSo);
     }

@@ -19,10 +19,10 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     private final RequestLocale requestLocale;
     private final ApplicationPropertyRepository applicationPropertyRepository;
 
-    public String getProperty(ApplicationPropertyKey key, Object... arguments) {
+    public String getProperty(final ApplicationPropertyKey key, final Object... arguments) {
         log.debug("getProperty({},{})", key, arguments);
-        Optional<ApplicationPropertyDo> property = getApplicationProperty(key, arguments);
-        String result = property.map(ApplicationPropertyDo::value).orElseThrow(
+        final Optional<ApplicationPropertyDo> property = getApplicationProperty(key, arguments);
+        final String result = property.map(ApplicationPropertyDo::value).orElseThrow(
                 () -> WiwaException.APPLICATION_PROPERTY_NOT_FOUND.exception(
                         "Application Property {0},{1} not found", key.getGroup(), key.getKey(arguments)
                 ));
@@ -30,9 +30,9 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
         return result;
     }
 
-    private Optional<ApplicationPropertyDo> getApplicationProperty(ApplicationPropertyKey key, Object... arguments) {
+    private Optional<ApplicationPropertyDo> getApplicationProperty(final ApplicationPropertyKey key, final Object... arguments) {
         log.debug("getApplicationProperty({},{})", key, arguments);
-        Optional<ApplicationPropertyDo> property;
+        final Optional<ApplicationPropertyDo> property;
         if (key.isLocalized()) {
             property = applicationPropertyRepository.getApplicationProperty(
                     key.getGroup(), key.getKey(arguments), requestLocale.getLocale().getLanguage()
@@ -46,9 +46,9 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
         return property;
     }
 
-    public String setApplicationProperty(String group, String key, String language, String value) {
+    public String setApplicationProperty(final String group, final String key, final String language, final String value) {
         log.debug("setApplicationProperty({},{},{},{})", group, key, language, value);
-        ApplicationPropertyDo applicationPropertyDo;
+        final ApplicationPropertyDo applicationPropertyDo;
         if (applicationPropertyRepository.exists(group, key, language)) {
             applicationPropertyDo = applicationPropertyRepository.setApplicationProperty(
                     new ApplicationPropertyDo(group, key, language, value));

@@ -5,7 +5,7 @@ RUN apt-get -y install git
 
 WORKDIR /r3n
 
-RUN git clone -b 6.0.2 https://github.com/janobono/r3n-api.git .
+RUN git clone -b 6.0.3 https://github.com/janobono/r3n-api.git .
 
 RUN mvn clean install -DskipTests
 

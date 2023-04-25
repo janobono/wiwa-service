@@ -29,10 +29,10 @@ public class UserController {
     @GetMapping
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager', 'w-employee')")
     public Page<UserSo> getUsers(
-            @RequestParam(value = "search-field", required = false) String searchField,
-            @RequestParam(value = "username", required = false) String username,
-            @RequestParam(value = "email", required = false) String email,
-            Pageable pageable
+            @RequestParam(value = "search-field", required = false) final String searchField,
+            @RequestParam(value = "username", required = false) final String username,
+            @RequestParam(value = "email", required = false) final String email,
+            final Pageable pageable
     ) {
         log.debug("getUsers({})", pageable);
         return userService.getUsers(new UserSearchCriteriaSo(searchField, username, email), pageable);
@@ -40,7 +40,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager', 'w-employee')")
-    public UserSo getUser(@PathVariable("id") Long id) {
+    public UserSo getUser(@PathVariable("id") final Long id) {
         log.debug("getUser({})", id);
         return userService.getUser(id);
     }
@@ -48,42 +48,42 @@ public class UserController {
     @PostMapping
     @PreAuthorize("hasAuthority('w-admin')")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserSo addUser(@Valid @RequestBody UserDataSo userDataDto) {
+    public UserSo addUser(@Valid @RequestBody final UserDataSo userDataDto) {
         log.debug("addUser({})", userDataDto);
         return userService.addUser(userDataDto);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('w-admin')")
-    public UserSo setUser(@PathVariable("id") Long id, @Valid @RequestBody UserProfileSo userProfileDto) {
+    public UserSo setUser(@PathVariable("id") final Long id, @Valid @RequestBody final UserProfileSo userProfileDto) {
         log.debug("setUser({},{})", id, userProfileDto);
         return userService.setUser(id, userProfileDto);
     }
 
     @PatchMapping("/{id}/authorities")
     @PreAuthorize("hasAuthority('w-admin')")
-    public UserSo setAuthorities(@PathVariable("id") Long id, @Valid @RequestBody SingleValueBody<Set<Authority>> authorities) {
+    public UserSo setAuthorities(@PathVariable("id") final Long id, @Valid @RequestBody final SingleValueBody<Set<Authority>> authorities) {
         log.debug("setAuthorities({},{})", id, authorities);
         return userService.setAuthorities(id, authorities.value());
     }
 
     @PatchMapping("/{id}/confirm")
     @PreAuthorize("hasAuthority('w-admin')")
-    public UserSo setConfirmed(@PathVariable("id") Long id, @Valid @RequestBody SingleValueBody<Boolean> confirmed) {
+    public UserSo setConfirmed(@PathVariable("id") final Long id, @Valid @RequestBody final SingleValueBody<Boolean> confirmed) {
         log.debug("setConfirmed({},{})", id, confirmed);
         return userService.setConfirmed(id, confirmed.value());
     }
 
     @PatchMapping("/{id}/enable")
     @PreAuthorize("hasAuthority('w-admin')")
-    public UserSo setEnabled(@PathVariable("id") Long id, @Valid @RequestBody SingleValueBody<Boolean> enabled) {
+    public UserSo setEnabled(@PathVariable("id") final Long id, @Valid @RequestBody final SingleValueBody<Boolean> enabled) {
         log.debug("setEnabled({},{})", id, enabled);
         return userService.setEnabled(id, enabled.value());
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('w-admin')")
-    public void deleteUser(@PathVariable("id") Long id) {
+    public void deleteUser(@PathVariable("id") final Long id) {
         log.debug("deleteUser({})", id);
         userService.deleteUser(id);
     }

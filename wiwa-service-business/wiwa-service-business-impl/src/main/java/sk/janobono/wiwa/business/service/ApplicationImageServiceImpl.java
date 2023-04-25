@@ -31,18 +31,18 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
     private final ApplicationImageMapper applicationImageMapper;
     private final ApplicationImageRepository applicationImageRepository;
 
-    public Page<ApplicationImageSo> getApplicationImages(Pageable pageable) {
+    public Page<ApplicationImageSo> getApplicationImages(final Pageable pageable) {
         log.debug("getApplicationImages({})", pageable);
-        Page<ApplicationImageSo> result = applicationImageRepository.getApplicationImages(pageable)
+        final Page<ApplicationImageSo> result = applicationImageRepository.getApplicationImages(pageable)
                 .map(applicationImageMapper::map);
         log.debug("getApplicationImages({})={}", pageable, result);
         return result;
     }
 
-    public ResourceEntitySo getApplicationImage(String fileName) {
+    public ResourceEntitySo getApplicationImage(final String fileName) {
         log.debug("getApplicationImage({})", fileName);
         if (applicationImageRepository.exists(stripAndLowerCase(fileName))) {
-            ApplicationImageDo applicationImageDo = applicationImageRepository
+            final ApplicationImageDo applicationImageDo = applicationImageRepository
                     .getApplicationImage(stripAndLowerCase(fileName)).orElseThrow();
             return new ResourceEntitySo(
                     applicationImageDo.fileName(),
@@ -58,10 +58,10 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
         }
     }
 
-    public ApplicationImageSo setApplicationImage(MultipartFile multipartFile) {
+    public ApplicationImageSo setApplicationImage(final MultipartFile multipartFile) {
         log.debug("setApplicationImage({})", multipartFile.getOriginalFilename());
-        String fileName = stripAndLowerCase(multipartFile.getOriginalFilename());
-        String fileType = multipartFile.getContentType() != null
+        final String fileName = stripAndLowerCase(multipartFile.getOriginalFilename());
+        final String fileType = multipartFile.getContentType() != null
                 ? multipartFile.getContentType() : MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
         if (!(fileType.equals(MediaType.IMAGE_GIF_VALUE)
@@ -71,14 +71,14 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
             throw WiwaException.APPLICATION_IMAGE_NOT_SUPPORTED.exception("Unsupported file type {0}", fileType);
         }
 
-        byte[] data;
+        final byte[] data;
         try {
             data = multipartFile.getBytes();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
 
-        ApplicationImageDo applicationImageDo = new ApplicationImageDo(
+        final ApplicationImageDo applicationImageDo = new ApplicationImageDo(
                 fileName,
                 fileType,
                 imageUtil.scaleImage(
@@ -95,7 +95,7 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
                 )
         );
 
-        ApplicationImageSo result;
+        final ApplicationImageSo result;
         if (applicationImageRepository.exists(fileName)) {
             result = applicationImageMapper.map(applicationImageRepository.setApplicationImage(applicationImageDo));
         } else {
@@ -106,12 +106,12 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
     }
 
     @Override
-    public void deleteApplicationImage(String fileName) {
+    public void deleteApplicationImage(final String fileName) {
         log.debug("deleteApplicationImage({})", fileName);
         applicationImageRepository.deleteApplicationImage(fileName);
     }
 
-    private String stripAndLowerCase(String s) {
+    private String stripAndLowerCase(final String s) {
         if (StringUtils.hasLength(s)) {
             return s.strip().toLowerCase();
         }

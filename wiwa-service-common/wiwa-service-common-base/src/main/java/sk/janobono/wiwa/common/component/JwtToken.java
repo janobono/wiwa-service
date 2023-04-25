@@ -42,27 +42,27 @@ public class JwtToken {
     private final Long expiration;
     private final String issuer;
 
-    public JwtToken(JwtConfigProperties jwtConfigProperties) {
-        KeyPairGenerator keyGen;
+    public JwtToken(final JwtConfigProperties jwtConfigProperties) {
+        final KeyPairGenerator keyGen;
         try {
             keyGen = KeyPairGenerator.getInstance("RSA");
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
         keyGen.initialize(1024);
-        KeyPair keyPair = keyGen.generateKeyPair();
+        final KeyPair keyPair = keyGen.generateKeyPair();
         this.algorithm = Algorithm.RSA256((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
         this.expiration = TimeUnit.HOURS.toMillis(jwtConfigProperties.expiration());
         this.issuer = jwtConfigProperties.issuer();
     }
 
-    public Long expiresAt(Long issuedAt) {
+    public Long expiresAt(final Long issuedAt) {
         return issuedAt + expiration;
     }
 
-    public String generateToken(UserSo user, Long issuedAt) {
+    public String generateToken(final UserSo user, final Long issuedAt) {
         try {
-            JWTCreator.Builder jwtBuilder = JWT.create()
+            final JWTCreator.Builder jwtBuilder = JWT.create()
                     .withIssuer(issuer)
                     .withIssuedAt(new Date(issuedAt))
                     .withExpiresAt(new Date(expiresAt(issuedAt)));
@@ -95,44 +95,44 @@ public class JwtToken {
                 );
             }
             return jwtBuilder.sign(algorithm);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private DecodedJWT decodeToken(String token) throws JWTVerificationException {
-        JWTVerifier verifier = JWT.require(algorithm)
+    private DecodedJWT decodeToken(final String token) throws JWTVerificationException {
+        final JWTVerifier verifier = JWT.require(algorithm)
                 .withIssuer(issuer)
                 .build();
         return verifier.verify(token);
     }
 
-    public UserSo parseToken(String token) {
-        DecodedJWT jwt = decodeToken(token);
+    public UserSo parseToken(final String token) {
+        final DecodedJWT jwt = decodeToken(token);
         // id
-        Long id = jwt.getClaims().get(ID).asLong();
+        final Long id = jwt.getClaims().get(ID).asLong();
         // username
-        String username = jwt.getSubject();
+        final String username = jwt.getSubject();
         // titleBefore
-        String titleBefore = jwt.getClaims().containsKey(TITLE_BEFORE) ? jwt.getClaims().get(TITLE_BEFORE).asString() : null;
+        final String titleBefore = jwt.getClaims().containsKey(TITLE_BEFORE) ? jwt.getClaims().get(TITLE_BEFORE).asString() : null;
         // firstName
-        String firstName = jwt.getClaims().get(FIRST_NAME).asString();
+        final String firstName = jwt.getClaims().get(FIRST_NAME).asString();
         // midName
-        String midName = jwt.getClaims().containsKey(MID_NAME) ? jwt.getClaims().get(MID_NAME).asString() : null;
+        final String midName = jwt.getClaims().containsKey(MID_NAME) ? jwt.getClaims().get(MID_NAME).asString() : null;
         // lastName
-        String lastName = jwt.getClaims().get(LAST_NAME).asString();
+        final String lastName = jwt.getClaims().get(LAST_NAME).asString();
         // titleAfter
-        String titleAfter = jwt.getClaims().containsKey(TITLE_AFTER) ? jwt.getClaims().get(TITLE_AFTER).asString() : null;
+        final String titleAfter = jwt.getClaims().containsKey(TITLE_AFTER) ? jwt.getClaims().get(TITLE_AFTER).asString() : null;
         // email
-        String email = jwt.getClaims().get(EMAIL).asString();
+        final String email = jwt.getClaims().get(EMAIL).asString();
         // gdpr
-        Boolean gdpr = jwt.getClaims().get(GDPR).asBoolean();
+        final Boolean gdpr = jwt.getClaims().get(GDPR).asBoolean();
         // confirmed
-        Boolean confirmed = jwt.getClaims().get(CONFIRMED).asBoolean();
+        final Boolean confirmed = jwt.getClaims().get(CONFIRMED).asBoolean();
         // enabled
-        Boolean enabled = jwt.getClaims().get(ENABLED).asBoolean();
+        final Boolean enabled = jwt.getClaims().get(ENABLED).asBoolean();
         // authorities
-        List<String> authorities = jwt.getAudience();
+        final List<String> authorities = jwt.getAudience();
 
         return new UserSo(
                 id,

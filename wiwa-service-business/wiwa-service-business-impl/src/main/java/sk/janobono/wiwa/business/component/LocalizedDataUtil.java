@@ -16,10 +16,10 @@ public class LocalizedDataUtil {
 
     private final ApplicationPropertyService applicationPropertyService;
 
-    public LocalizedDataSo<String> saveLocalizedData(LocalizedDataSo<String> localizedData, String group, String key) {
+    public LocalizedDataSo<String> saveLocalizedData(final LocalizedDataSo<String> localizedData, final String group, final String key) {
         log.debug("saveLocalizedData({},{},{})", localizedData, group, key);
-        LocalizedDataSo<String> result = new LocalizedDataSo<>(new ArrayList<>());
-        for (LocalizedDataItemSo<String> localizedDataItem : localizedData.items()) {
+        final LocalizedDataSo<String> result = new LocalizedDataSo<>(new ArrayList<>());
+        for (final LocalizedDataItemSo<String> localizedDataItem : localizedData.items()) {
             result.items().add(new LocalizedDataItemSo<>(localizedDataItem.language(),
                     applicationPropertyService.setApplicationProperty(group, key, localizedDataItem.language(), localizedDataItem.data()))
             );

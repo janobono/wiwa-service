@@ -19,10 +19,10 @@ public class BaseIntegrationTestConfig {
 
     @Bean
     public RestTemplate restTemplate() {
-        RestTemplate restTemplate = restTemplateBuilder
+        final RestTemplate restTemplate = restTemplateBuilder
                 .requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClientBuilder.create().build()))
                 .build();
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        final MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setObjectMapper(objectMapper);
         restTemplate.getMessageConverters().add(0, converter);
         return restTemplate;

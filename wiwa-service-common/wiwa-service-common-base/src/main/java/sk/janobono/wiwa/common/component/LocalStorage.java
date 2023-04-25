@@ -28,7 +28,7 @@ public class LocalStorage {
     public void init() {
         try {
             this.storageLocation = Files.createTempDirectory("wiwa");
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Could not create the directory where the uploaded files will be stored.", e);
         }
     }
@@ -38,15 +38,15 @@ public class LocalStorage {
         delete(storageLocation);
     }
 
-    public String getFileName(MultipartFile file) {
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+    public String getFileName(final MultipartFile file) {
+        final String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         if (fileName.contains("..")) {
             throw new RuntimeException("Filename [" + fileName + "] contains invalid path sequence.");
         }
         return fileName;
     }
 
-    public String getFileType(MultipartFile file) {
+    public String getFileType(final MultipartFile file) {
         String result = file.getContentType();
         if (!StringUtils.hasLength(result)) {
             result = "application/octet-stream";
@@ -54,48 +54,48 @@ public class LocalStorage {
         return result;
     }
 
-    public byte[] getFileData(MultipartFile file) {
+    public byte[] getFileData(final MultipartFile file) {
         try (
-                InputStream is = new BufferedInputStream(file.getInputStream());
-                ByteArrayOutputStream os = new ByteArrayOutputStream()
+                final InputStream is = new BufferedInputStream(file.getInputStream());
+                final ByteArrayOutputStream os = new ByteArrayOutputStream()
         ) {
             read(is, os);
             return os.toByteArray();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("Local storage exception.", e);
         }
     }
 
-    public Resource getDataResource(byte[] data) {
+    public Resource getDataResource(final byte[] data) {
         return new ByteArrayResource(data);
     }
 
-    public byte[] getFileData(Path file) {
+    public byte[] getFileData(final Path file) {
         try (
-                InputStream is = new BufferedInputStream(new FileInputStream(file.toFile()));
-                ByteArrayOutputStream os = new ByteArrayOutputStream()
+                final InputStream is = new BufferedInputStream(new FileInputStream(file.toFile()));
+                final ByteArrayOutputStream os = new ByteArrayOutputStream()
         ) {
             read(is, os);
             return os.toByteArray();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("Local storage exception.", e);
         }
     }
 
-    public void setFileData(Path file, byte[] data) {
+    public void setFileData(final Path file, final byte[] data) {
         OutputStream os = null;
         try {
             os = new BufferedOutputStream(new FileOutputStream(file.toFile(), false));
             os.write(data, 0, data.length);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {
             close(os);
         }
     }
 
-    public Path createDirectory(String... more) {
-        Path result = Paths.get(
+    public Path createDirectory(final String... more) {
+        final Path result = Paths.get(
                 this.storageLocation.toFile().getAbsolutePath(),
                 more
         ).toAbsolutePath().normalize();
@@ -103,74 +103,74 @@ public class LocalStorage {
         return result;
     }
 
-    public Path createTempDirectory(String prefix) {
+    public Path createTempDirectory(final String prefix) {
         try {
             return Files.createTempDirectory(storageLocation, prefix);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Local storage exception.", e);
         }
     }
 
-    public Path createTempFile(String prefix, String suffix) {
+    public Path createTempFile(final String prefix, final String suffix) {
         try {
             return Files.createTempFile(storageLocation, prefix, suffix);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Local storage exception.", e);
         }
     }
 
-    public Path createTempFile(Path dir, String prefix, String suffix) {
+    public Path createTempFile(final Path dir, final String prefix, final String suffix) {
         try {
             return Files.createTempFile(dir, prefix, suffix);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Local storage exception.", e);
         }
     }
 
-    public void saveStream(InputStream source, Path target) {
+    public void saveStream(final InputStream source, final Path target) {
         try {
             Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Local storage exception.", e);
         }
     }
 
-    public void close(Closeable closeable) {
+    public void close(final Closeable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void delete(Path path) {
+    public void delete(final Path path) {
         try {
             Files.walk(path)
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Local storage exception.", e);
         }
     }
 
-    public void zip(Path zip, Path contentDir) {
-        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip.toFile()))) {
+    public void zip(final Path zip, final Path contentDir) {
+        try (final ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip.toFile()))) {
             zipAddDir(zos, contentDir.toFile(), "");
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Local storage exception.", e);
         }
     }
 
-    public void zip(Path zip, Path[] content) {
-        byte[] buffer = new byte[1024];
-        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip.toFile()))) {
-            for (Path element : content) {
-                ZipEntry ze = new ZipEntry(element.toFile().getName());
+    public void zip(final Path zip, final Path[] content) {
+        final byte[] buffer = new byte[1024];
+        try (final ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip.toFile()))) {
+            for (final Path element : content) {
+                final ZipEntry ze = new ZipEntry(element.toFile().getName());
                 zos.putNextEntry(ze);
-                try (FileInputStream in = new FileInputStream(element.toFile())) {
+                try (final FileInputStream in = new FileInputStream(element.toFile())) {
                     int len;
                     while ((len = in.read(buffer)) > 0) {
                         zos.write(buffer, 0, len);
@@ -178,19 +178,19 @@ public class LocalStorage {
                 }
             }
             zos.closeEntry();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Local storage exception.", e);
         }
     }
 
-    public void unzip(Path zip, Path targetDir) {
+    public void unzip(final Path zip, final Path targetDir) {
         try (
-                ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zip.toFile()))
+                final ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zip.toFile()))
         ) {
             Files.createDirectories(targetDir);
             ZipEntry entry = zipIn.getNextEntry();
             while (entry != null) {
-                Path filePath = Path.of(targetDir.toFile().getAbsolutePath(), entry.getName());
+                final Path filePath = Path.of(targetDir.toFile().getAbsolutePath(), entry.getName());
                 if (entry.isDirectory()) {
                     Files.createDirectories(filePath);
                 } else {
@@ -199,45 +199,45 @@ public class LocalStorage {
                 zipIn.closeEntry();
                 entry = zipIn.getNextEntry();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Local storage exception.", e);
         }
     }
 
-    public void copy(Path source, Path target) {
+    public void copy(final Path source, final Path target) {
         try {
             Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Local storage exception.", e);
         }
     }
 
-    public void write(Path path, byte[] data) {
-        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(path.toFile(), false))) {
+    public void write(final Path path, final byte[] data) {
+        try (final OutputStream os = new BufferedOutputStream(new FileOutputStream(path.toFile(), false))) {
             os.write(data, 0, data.length);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Local storage exception.", e);
         }
     }
 
-    public int countLines(Path file) {
+    public int countLines(final Path file) {
         int result = 0;
-        try (BufferedReader br = new BufferedReader(new FileReader(file.toFile()))) {
+        try (final BufferedReader br = new BufferedReader(new FileReader(file.toFile()))) {
             while (Objects.nonNull(br.readLine())) {
                 result++;
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Local storage exception.", e);
         }
         return result;
     }
 
-    public int countFiles(Path targetDir) {
+    public int countFiles(final Path targetDir) {
         return Objects.requireNonNull(new File(targetDir.toUri()).list()).length;
     }
 
-    protected void read(InputStream is, ByteArrayOutputStream os) throws IOException {
-        byte[] buffer = new byte[1024];
+    protected void read(final InputStream is, final ByteArrayOutputStream os) throws IOException {
+        final byte[] buffer = new byte[1024];
         int bytesRead = 0;
         while (bytesRead != -1) {
             bytesRead = is.read(buffer);
@@ -247,23 +247,23 @@ public class LocalStorage {
         }
     }
 
-    private void createDirectory(Path path) {
+    private void createDirectory(final Path path) {
         try {
             Files.createDirectories(path);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Local storage exception.", e);
         }
     }
 
-    private void zipAddDir(ZipOutputStream zos, File dir, String prefix) throws IOException {
-        byte[] buffer = new byte[1024];
-        for (File file : Objects.requireNonNull(dir.listFiles())) {
+    private void zipAddDir(final ZipOutputStream zos, final File dir, final String prefix) throws IOException {
+        final byte[] buffer = new byte[1024];
+        for (final File file : Objects.requireNonNull(dir.listFiles())) {
             if (file.isDirectory()) {
                 zos.putNextEntry(new ZipEntry(prefix + file.getName() + "/"));
                 zipAddDir(zos, file, prefix + file.getName() + "/");
             } else {
                 zos.putNextEntry(new ZipEntry(prefix + file.getName()));
-                try (FileInputStream in = new FileInputStream(file)) {
+                try (final FileInputStream in = new FileInputStream(file)) {
                     int len;
                     while ((len = in.read(buffer)) > 0) {
                         zos.write(buffer, 0, len);
@@ -274,9 +274,9 @@ public class LocalStorage {
         }
     }
 
-    private void extractFile(ZipInputStream zipIn, Path filePath) throws IOException {
-        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath.toFile()))) {
-            byte[] bytesIn = new byte[4096];
+    private void extractFile(final ZipInputStream zipIn, final Path filePath) throws IOException {
+        try (final BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath.toFile()))) {
+            final byte[] bytesIn = new byte[4096];
             int read;
             while ((read = zipIn.read(bytesIn)) != -1) {
                 bos.write(bytesIn, 0, read);

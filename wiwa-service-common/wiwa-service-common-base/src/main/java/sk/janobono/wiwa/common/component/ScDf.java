@@ -8,14 +8,14 @@ import java.text.Normalizer;
 @Component
 public class ScDf {
 
-    public String toDf(String text) {
+    public String toDf(final String text) {
         if (!StringUtils.hasLength(text)) {
             return null;
         } else {
-            StringBuilder ret = new StringBuilder();
-            char[] cha = text.toCharArray();
-            for (char aCha : cha) {
-                byte[] ba = Normalizer.normalize(String.valueOf(aCha), Normalizer.Form.NFD).getBytes();
+            final StringBuilder ret = new StringBuilder();
+            final char[] cha = text.toCharArray();
+            for (final char aCha : cha) {
+                final byte[] ba = Normalizer.normalize(String.valueOf(aCha), Normalizer.Form.NFD).getBytes();
                 if (ba[0] >= 41 && ba[0] < 123) {
                     ret.append((char) ba[0]);
                 } else {
@@ -26,7 +26,7 @@ public class ScDf {
         }
     }
 
-    public String toScDf(String text) {
+    public String toScDf(final String text) {
         if (!StringUtils.hasLength(text)) {
             return null;
         }

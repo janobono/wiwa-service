@@ -15,7 +15,7 @@ public enum MetaColumnWiwaUserAuthority {
 
     private final DataType dataType;
 
-    MetaColumnWiwaUserAuthority(String columnName, DataType dataType) {
+    MetaColumnWiwaUserAuthority(final String columnName, final DataType dataType) {
         this.columnName = columnName;
         this.dataType = dataType;
     }
@@ -24,21 +24,21 @@ public enum MetaColumnWiwaUserAuthority {
         return Column.column(columnName, dataType, MetaTable.WIWA_USER_AUTHORITY.table());
     }
 
-    public Column column(String tableAlias) {
+    public Column column(final String tableAlias) {
         return Column.column(columnName, dataType, MetaTable.WIWA_USER_AUTHORITY.table(tableAlias));
     }
 
     public static Column[] columns() {
-        List<Column> columnList = new ArrayList<>();
-        for (MetaColumnWiwaUserAuthority metaColumnWiwaUserAuthority : values()) {
+        final List<Column> columnList = new ArrayList<>();
+        for (final MetaColumnWiwaUserAuthority metaColumnWiwaUserAuthority : values()) {
             columnList.add(metaColumnWiwaUserAuthority.column());
         }
         return columnList.toArray(new Column[0]);
     }
 
-    public static Column[] columns(String tableAlias) {
-        List<Column> columnList = new ArrayList<>();
-        for (MetaColumnWiwaUserAuthority metaColumnWiwaUserAuthority : values()) {
+    public static Column[] columns(final String tableAlias) {
+        final List<Column> columnList = new ArrayList<>();
+        for (final MetaColumnWiwaUserAuthority metaColumnWiwaUserAuthority : values()) {
             columnList.add(metaColumnWiwaUserAuthority.column(tableAlias));
         }
         return columnList.toArray(new Column[0]);

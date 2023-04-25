@@ -21,7 +21,7 @@ class UserMapperTest {
 
     @Test
     void mapUser() {
-        UserDo userDo = new UserDo(
+        final UserDo userDo = new UserDo(
                 1L,
                 "username",
                 "password",
@@ -37,7 +37,7 @@ class UserMapperTest {
                 Set.of()
         );
 
-        WiwaUserDto wiwaUserDto = userDoMapper.mapToDto(userDo);
+        final WiwaUserDto wiwaUserDto = userDoMapper.mapToDto(userDo);
         assertThat(wiwaUserDto.id()).isEqualTo(userDo.id());
         assertThat(wiwaUserDto.username()).isEqualTo(userDo.username());
         assertThat(wiwaUserDto.titleBefore()).isEqualTo(userDo.titleBefore());

@@ -22,21 +22,21 @@ public class ApplicationImageController {
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public Page<ApplicationImageWeb> getApplicationImages(Pageable pageable) {
+    public Page<ApplicationImageWeb> getApplicationImages(final Pageable pageable) {
         log.debug("getApplicationImages({})", pageable);
         return applicationImageService.getApplicationImages(pageable).map(webImageUtil::toWeb);
     }
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public ApplicationImageWeb upload(@RequestParam("file") MultipartFile multipartFile) {
+    public ApplicationImageWeb upload(@RequestParam("file") final MultipartFile multipartFile) {
         log.debug("upload({})", multipartFile.getOriginalFilename());
         return webImageUtil.toWeb(applicationImageService.setApplicationImage(multipartFile));
     }
 
     @DeleteMapping("/{fileName}")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public void deleteApplicationImage(@PathVariable("fileName") String fileName) {
+    public void deleteApplicationImage(@PathVariable("fileName") final String fileName) {
         log.debug("deleteApplicationImage({})", fileName);
         applicationImageService.deleteApplicationImage(fileName);
     }

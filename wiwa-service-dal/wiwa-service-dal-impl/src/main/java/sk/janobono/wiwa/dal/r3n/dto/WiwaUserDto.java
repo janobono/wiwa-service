@@ -15,7 +15,7 @@ public record WiwaUserDto(
         Boolean enabled
 ) {
 
-    public static Object[] toArray(WiwaUserDto wiwaUserDto) {
+    public static Object[] toArray(final WiwaUserDto wiwaUserDto) {
         return new Object[]{
                 wiwaUserDto.id,
                 wiwaUserDto.username,
@@ -32,7 +32,7 @@ public record WiwaUserDto(
         };
     }
 
-    public static WiwaUserDto toObject(Object[] array) {
+    public static WiwaUserDto toObject(final Object[] array) {
         return new WiwaUserDto(
                 (Long) array[0],
                 (String) array[1],

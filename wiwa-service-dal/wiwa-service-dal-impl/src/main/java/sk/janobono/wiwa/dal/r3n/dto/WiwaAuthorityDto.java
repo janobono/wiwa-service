@@ -5,14 +5,14 @@ public record WiwaAuthorityDto(
         String authority
 ) {
 
-    public static Object[] toArray(WiwaAuthorityDto wiwaAuthorityDto) {
+    public static Object[] toArray(final WiwaAuthorityDto wiwaAuthorityDto) {
         return new Object[]{
                 wiwaAuthorityDto.id,
                 wiwaAuthorityDto.authority
         };
     }
 
-    public static WiwaAuthorityDto toObject(Object[] array) {
+    public static WiwaAuthorityDto toObject(final Object[] array) {
         return new WiwaAuthorityDto(
                 (Long) array[0],
                 (String) array[1]

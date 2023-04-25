@@ -20,7 +20,7 @@ public class Captcha {
     private final RandomString randomString;
     private final int captchaLength;
 
-    public Captcha(CommonConfigProperties commonConfigProperties, RandomString randomString) {
+    public Captcha(final CommonConfigProperties commonConfigProperties, final RandomString randomString) {
         this.captchaLength = commonConfigProperties.captchaLength();
         this.randomString = randomString;
         this.tokenEncoder = new BCryptPasswordEncoder(6);
@@ -31,11 +31,12 @@ public class Captcha {
         return randomString.alphaNumeric(captchaLength / 2, captchaLength / 2 + captchaLength % 2, 0, captchaLength, captchaLength);
     }
 
-    public byte[] generateImage(String text) {
+    public byte[] generateImage(final String text) {
         log.debug("generateImage({})", text);
-        int w = 180, h = 40;
-        BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = image.createGraphics();
+        final int w = 180;
+        final int h = 40;
+        final BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        final Graphics2D g = image.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
@@ -43,10 +44,10 @@ public class Captcha {
         g.fillRect(0, 0, w, h);
         g.setFont(new Font("Serif", Font.PLAIN, 26));
         g.setColor(Color.blue);
-        int start = 10;
-        byte[] bytes = text.getBytes();
+        final int start = 10;
+        final byte[] bytes = text.getBytes();
 
-        Random random = new Random();
+        final Random random = new Random();
         for (int i = 0; i < bytes.length; i++) {
             g.setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
             g.drawString(new String(new byte[]{bytes[i]}), start + (i * 20), (int) (Math.random() * 20 + 20));
@@ -56,26 +57,26 @@ public class Captcha {
             g.drawOval((int) (Math.random() * 160), (int) (Math.random() * 10), 30, 30);
         }
         g.dispose();
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        final ByteArrayOutputStream bout = new ByteArrayOutputStream();
         try {
             ImageIO.write(image, "png", bout);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
         return bout.toByteArray();
     }
 
-    public String generateToken(String text) {
+    public String generateToken(final String text) {
         log.debug("generateToken({})", text);
         return tokenEncoder.encode(text);
     }
 
-    public boolean isTokenValid(String text, String token) {
+    public boolean isTokenValid(final String text, final String token) {
         log.debug("isTokenValid({},{})", text, token);
         return tokenEncoder.matches(text, token);
     }
 
-    public void checkTokenValid(String text, String token) {
+    public void checkTokenValid(final String text, final String token) {
         log.debug("isTokenValid({},{})", text, token);
         if (!isTokenValid(text, token)) {
             throw WiwaException.INVALID_CAPTCHA.exception("Invalid captcha.");

@@ -16,8 +16,10 @@ public class ApplicationAuthenticationEntryPoint implements AuthenticationEntryP
     private final HandlerExceptionResolver handlerExceptionResolver;
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authenticationException) throws IOException, ServletException {
+    public void commence(
+            final HttpServletRequest request,
+            final HttpServletResponse response,
+            final AuthenticationException authenticationException) throws IOException, ServletException {
         handlerExceptionResolver.resolveException(request, response, null, authenticationException);
     }
 }

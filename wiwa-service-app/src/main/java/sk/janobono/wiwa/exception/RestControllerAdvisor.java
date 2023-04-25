@@ -20,7 +20,7 @@ import java.time.temporal.ChronoUnit;
 public class RestControllerAdvisor {
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException handlerFoundException) {
+    public ResponseEntity<Object> handleNoHandlerFoundException(final NoHandlerFoundException handlerFoundException) {
         log.warn("handleNoHandlerFoundException", handlerFoundException);
         return new ResponseEntity<>(new ExceptionBody(
                 HttpStatus.NOT_FOUND.name(),
@@ -30,7 +30,7 @@ public class RestControllerAdvisor {
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Object> handleAuthenticationException(AuthenticationException authenticationException) {
+    public ResponseEntity<Object> handleAuthenticationException(final AuthenticationException authenticationException) {
         log.warn("handleAuthenticationException", authenticationException);
         return new ResponseEntity<>(new ExceptionBody(
                 HttpStatus.UNAUTHORIZED.name(),
@@ -40,7 +40,7 @@ public class RestControllerAdvisor {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException accessDeniedException) {
+    public ResponseEntity<Object> handleAccessDeniedException(final AccessDeniedException accessDeniedException) {
         log.warn("handleAccessDeniedException", accessDeniedException);
         return new ResponseEntity<>(new ExceptionBody(
                 HttpStatus.FORBIDDEN.name(),
@@ -50,7 +50,7 @@ public class RestControllerAdvisor {
     }
 
     @ExceptionHandler(ApplicationException.class)
-    public ResponseEntity<Object> handleApplicationException(ApplicationException applicationException) {
+    public ResponseEntity<Object> handleApplicationException(final ApplicationException applicationException) {
         log.warn("handleApplicationException", applicationException);
         return new ResponseEntity<>(
                 new ExceptionBody(
@@ -61,7 +61,7 @@ public class RestControllerAdvisor {
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<Object> handleResponseStatusException(ResponseStatusException responseStatusException) {
+    public ResponseEntity<Object> handleResponseStatusException(final ResponseStatusException responseStatusException) {
         log.warn("handleResponseStatusException", responseStatusException);
         return new ResponseEntity<>(
                 new ExceptionBody(
@@ -72,7 +72,7 @@ public class RestControllerAdvisor {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleException(Exception exception) {
+    public ResponseEntity<Object> handleException(final Exception exception) {
         log.warn("handleException", exception);
         return new ResponseEntity<>(new ExceptionBody(
                 HttpStatus.INTERNAL_SERVER_ERROR.name(),
@@ -82,7 +82,7 @@ public class RestControllerAdvisor {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Object> handleRuntimeException(RuntimeException runtimeException) {
+    public ResponseEntity<Object> handleRuntimeException(final RuntimeException runtimeException) {
         log.warn("handleRuntimeException", runtimeException);
         return new ResponseEntity<>(new ExceptionBody(
                 HttpStatus.INTERNAL_SERVER_ERROR.name(),

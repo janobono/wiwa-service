@@ -17,7 +17,7 @@ public enum MetaColumnWiwaApplicationImage {
 
     private final DataType dataType;
 
-    MetaColumnWiwaApplicationImage(String columnName, DataType dataType) {
+    MetaColumnWiwaApplicationImage(final String columnName, final DataType dataType) {
         this.columnName = columnName;
         this.dataType = dataType;
     }
@@ -26,21 +26,21 @@ public enum MetaColumnWiwaApplicationImage {
         return Column.column(columnName, dataType, MetaTable.WIWA_APPLICATION_IMAGE.table());
     }
 
-    public Column column(String tableAlias) {
+    public Column column(final String tableAlias) {
         return Column.column(columnName, dataType, MetaTable.WIWA_APPLICATION_IMAGE.table(tableAlias));
     }
 
     public static Column[] columns() {
-        List<Column> columnList = new ArrayList<>();
-        for (MetaColumnWiwaApplicationImage metaColumnWiwaApplicationImage : values()) {
+        final List<Column> columnList = new ArrayList<>();
+        for (final MetaColumnWiwaApplicationImage metaColumnWiwaApplicationImage : values()) {
             columnList.add(metaColumnWiwaApplicationImage.column());
         }
         return columnList.toArray(new Column[0]);
     }
 
-    public static Column[] columns(String tableAlias) {
-        List<Column> columnList = new ArrayList<>();
-        for (MetaColumnWiwaApplicationImage metaColumnWiwaApplicationImage : values()) {
+    public static Column[] columns(final String tableAlias) {
+        final List<Column> columnList = new ArrayList<>();
+        for (final MetaColumnWiwaApplicationImage metaColumnWiwaApplicationImage : values()) {
             columnList.add(metaColumnWiwaApplicationImage.column(tableAlias));
         }
         return columnList.toArray(new Column[0]);

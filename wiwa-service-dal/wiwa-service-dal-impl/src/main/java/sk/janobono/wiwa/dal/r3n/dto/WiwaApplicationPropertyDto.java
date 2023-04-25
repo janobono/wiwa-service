@@ -7,7 +7,7 @@ public record WiwaApplicationPropertyDto(
         String propertyValue
 ) {
 
-    public static Object[] toArray(WiwaApplicationPropertyDto wiwaApplicationPropertyDto) {
+    public static Object[] toArray(final WiwaApplicationPropertyDto wiwaApplicationPropertyDto) {
         return new Object[]{
                 wiwaApplicationPropertyDto.propertyGroup,
                 wiwaApplicationPropertyDto.propertyKey,
@@ -16,7 +16,7 @@ public record WiwaApplicationPropertyDto(
         };
     }
 
-    public static WiwaApplicationPropertyDto toObject(Object[] array) {
+    public static WiwaApplicationPropertyDto toObject(final Object[] array) {
         return new WiwaApplicationPropertyDto(
                 (String) array[0],
                 (String) array[1],

@@ -8,8 +8,8 @@ class AuthorityTest {
 
     @Test
     void authorityByValue() {
-        for (Authority authority : Authority.values()) {
-            Authority parsed = Authority.byValue(authority.toString());
+        for (final Authority authority : Authority.values()) {
+            final Authority parsed = Authority.byValue(authority.toString());
             assertThat(parsed).isEqualTo(authority);
         }
     }

@@ -18,11 +18,11 @@ public class CaptchaServiceImpl implements CaptchaService {
     public CaptchaSo getCaptcha() {
         log.debug("getCaptcha()");
 
-        String text = captcha.generateText();
-        String image = "data:image/png;base64," + Base64.getEncoder().encodeToString(captcha.generateImage(text));
-        String token = captcha.generateToken(text);
+        final String text = captcha.generateText();
+        final String image = "data:image/png;base64," + Base64.getEncoder().encodeToString(captcha.generateImage(text));
+        final String token = captcha.generateToken(text);
 
-        CaptchaSo result = new CaptchaSo(token, image);
+        final CaptchaSo result = new CaptchaSo(token, image);
         log.debug("getCaptcha({})={}", captcha, result);
         return result;
     }

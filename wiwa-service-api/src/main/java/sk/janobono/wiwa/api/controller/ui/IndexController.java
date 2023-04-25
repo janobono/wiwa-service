@@ -25,7 +25,7 @@ public class IndexController {
     @GetMapping(value = "/logo")
     public ResponseEntity<Resource> getLogo() {
         log.debug("getLogo()");
-        ResourceEntitySo resourceEntityDto = uiService.getLogo();
+        final ResourceEntitySo resourceEntityDto = uiService.getLogo();
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(resourceEntityDto.contentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntityDto.fileName() + "\"")

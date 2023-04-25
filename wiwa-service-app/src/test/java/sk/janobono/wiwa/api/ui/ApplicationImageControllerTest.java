@@ -16,7 +16,7 @@ class ApplicationImageControllerTest extends BaseIntegrationTest {
 
     @Test
     void fullTest() {
-        byte[] data = restTemplate.getForObject(
+        final byte[] data = restTemplate.getForObject(
                 getURI("/ui/application-images/{fileName}", Collections.singletonMap("fileName", "test.png")),
                 byte[].class
         );

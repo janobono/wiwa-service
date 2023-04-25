@@ -24,22 +24,22 @@ class ApplicationImageControllerTest extends BaseIntegrationTest {
 
     @Test
     void fullTest() {
-        String token = signIn(DEFAULT_MANAGER, PASSWORD).token();
+        final String token = signIn(DEFAULT_MANAGER, PASSWORD).token();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.setBearerAuth(token);
 
-        MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
+        final MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
         form.add("file", new ByteArrayResource(imageUtil.generateMessageImage("test")) {
             @Override
             public String getFilename() {
                 return "test.png";
             }
         });
-        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
+        final HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
 
-        ResponseEntity<ApplicationImageWeb> uploadedImage = restTemplate.exchange(
+        final ResponseEntity<ApplicationImageWeb> uploadedImage = restTemplate.exchange(
                 getURI("/config/application-images"),
                 HttpMethod.POST,
                 httpEntity,
@@ -55,8 +55,8 @@ class ApplicationImageControllerTest extends BaseIntegrationTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(token);
 
-        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "fileName", "fileType");
-        ResponseEntity<JsonNode> response = restTemplate.exchange(
+        final Pageable pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "fileName", "fileType");
+        final ResponseEntity<JsonNode> response = restTemplate.exchange(
                 getURI("/config/application-images", pageableToParams(pageable)),
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
@@ -64,7 +64,7 @@ class ApplicationImageControllerTest extends BaseIntegrationTest {
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        Page<ApplicationImageWeb> page = getPage(response.getBody(), pageable, ApplicationImageWeb.class);
+        final Page<ApplicationImageWeb> page = getPage(response.getBody(), pageable, ApplicationImageWeb.class);
         assertThat(page.getTotalElements()).isEqualTo(1);
         assertThat(page.getContent().get(0).fileName()).isEqualTo("test.png");
         assertThat(page.getContent().get(0).thumbnail().startsWith("data:" + MediaType.IMAGE_PNG_VALUE)).isTrue();

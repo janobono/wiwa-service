@@ -7,7 +7,7 @@ public enum MailTemplate {
     private final String template;
     private final boolean html;
 
-    MailTemplate(String template, boolean html) {
+    MailTemplate(final String template, final boolean html) {
         this.template = template;
         this.html = html;
     }

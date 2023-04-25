@@ -22,8 +22,8 @@ class LocalStorageTest {
 
     @Test
     void fullTest() throws Exception {
-        Path src = Path.of(Objects.requireNonNull(LocalStorageTest.class.getResource("/Debian_logo_01.png")).toURI());
-        Path target = localStorage.createTempFile("Test", ".png");
+        final Path src = Path.of(Objects.requireNonNull(LocalStorageTest.class.getResource("/Debian_logo_01.png")).toURI());
+        final Path target = localStorage.createTempFile("Test", ".png");
 
         localStorage.copy(src, target);
         assertThat(localStorage.getFileData(src)).isEqualTo(localStorage.getFileData(target));
@@ -31,7 +31,7 @@ class LocalStorageTest {
         localStorage.write(target, localStorage.getFileData(src));
         assertThat(localStorage.getFileData(src)).isEqualTo(localStorage.getFileData(target));
 
-        Path dir = localStorage.createDirectory("test", "01");
+        final Path dir = localStorage.createDirectory("test", "01");
         localStorage.delete(dir);
     }
 }

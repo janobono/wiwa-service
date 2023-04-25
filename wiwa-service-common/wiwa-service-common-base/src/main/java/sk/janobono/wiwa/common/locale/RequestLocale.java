@@ -27,7 +27,7 @@ public class RequestLocale {
         return locale;
     }
 
-    public void setLocale(Locale locale) {
+    public void setLocale(final Locale locale) {
         this.locale = locale;
     }
 }

@@ -10,11 +10,11 @@ import java.util.Base64;
 @Component
 public class WebImageUtil {
 
-    public String toDataString(String fileType, byte[] data) {
+    public String toDataString(final String fileType, final byte[] data) {
         return MessageFormat.format("data:{0};base64,{1}", fileType, Base64.getEncoder().encodeToString(data));
     }
 
-    public ApplicationImageWeb toWeb(ApplicationImageSo applicationImageSo) {
+    public ApplicationImageWeb toWeb(final ApplicationImageSo applicationImageSo) {
         return new ApplicationImageWeb(
                 applicationImageSo.fileName(),
                 toDataString(applicationImageSo.fileType(), applicationImageSo.thumbnail())

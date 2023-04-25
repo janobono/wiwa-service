@@ -1,7 +1,5 @@
 package sk.janobono.wiwa.common.exception;
 
-import sk.janobono.wiwa.common.exception.ApplicationException;
-
 import java.text.MessageFormat;
 
 public enum WiwaException {
@@ -18,11 +16,11 @@ public enum WiwaException {
     USER_NOT_FOUND,
     USER_USERNAME_IS_USED;
 
-    public ApplicationException exception(String pattern, Object... arguments) {
+    public ApplicationException exception(final String pattern, final Object... arguments) {
         return exception(null, pattern, arguments);
     }
 
-    public ApplicationException exception(Throwable cause, String pattern, Object... arguments) {
+    public ApplicationException exception(final Throwable cause, final String pattern, final Object... arguments) {
         return new ApplicationException(this.name(), MessageFormat.format(pattern, arguments), cause);
     }
 }

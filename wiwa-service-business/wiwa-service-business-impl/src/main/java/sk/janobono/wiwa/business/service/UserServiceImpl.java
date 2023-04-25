@@ -34,9 +34,9 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
 
-    public Page<UserSo> getUsers(UserSearchCriteriaSo userSearchCriteriaSo, Pageable pageable) {
+    public Page<UserSo> getUsers(final UserSearchCriteriaSo userSearchCriteriaSo, final Pageable pageable) {
         log.debug("getUsers({},{})", userSearchCriteriaSo, pageable);
-        Page<UserSo> result = userRepository.getUsers(new UserSearchCriteriaDo(
+        final Page<UserSo> result = userRepository.getUsers(new UserSearchCriteriaDo(
                         scDf.toScDf(userSearchCriteriaSo.searchField()),
                         scDf.toScDf(userSearchCriteriaSo.username()),
                         scDf.toScDf(userSearchCriteriaSo.email())
@@ -46,17 +46,17 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
-    public UserSo getUser(Long id) {
+    public UserSo getUser(final Long id) {
         log.debug("getUser({})", id);
-        UserDo userDo = userRepository.getUser(id).orElseThrow(
+        final UserDo userDo = userRepository.getUser(id).orElseThrow(
                 () -> WiwaException.USER_NOT_FOUND.exception("User with id {0} not found", id)
         );
-        UserSo userSo = userMapper.mapToSo(userDo);
+        final UserSo userSo = userMapper.mapToSo(userDo);
         log.debug("getUser({})={}", id, userSo);
         return userSo;
     }
 
-    public UserSo addUser(UserDataSo userDataSo) {
+    public UserSo addUser(final UserDataSo userDataSo) {
         log.debug("addUser({})", userDataSo);
         if (userRepository.existsByUsername(stripAndLowerCase(userDataSo.username()))) {
             throw WiwaException.USER_USERNAME_IS_USED.exception("Username is used");
@@ -80,15 +80,15 @@ public class UserServiceImpl implements UserService {
                 userDataSo.authorities()
         );
         userDo = userRepository.addUser(userDo);
-        UserSo result = userMapper.mapToSo(userDo);
+        final UserSo result = userMapper.mapToSo(userDo);
         log.debug("addUser({})={}", userDataSo, result);
         return result;
     }
 
-    public UserSo setUser(Long id, UserProfileSo userProfileDto) {
+    public UserSo setUser(final Long id, final UserProfileSo userProfileDto) {
         log.debug("setUser({},{})", id, userProfileDto);
         checkExists(id);
-        UserSo result = userMapper.mapToSo(userRepository.setUserProfile(id, new UserProfileDo(
+        final UserSo result = userMapper.mapToSo(userRepository.setUserProfile(id, new UserProfileDo(
                 userProfileDto.titleBefore(),
                 userProfileDto.firstName(),
                 userProfileDto.midName(),
@@ -99,44 +99,44 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
-    public UserSo setAuthorities(Long id, Set<Authority> authorities) {
+    public UserSo setAuthorities(final Long id, final Set<Authority> authorities) {
         log.debug("setAuthorities({},{})", id, authorities);
         checkExists(id);
-        UserSo result = userMapper.mapToSo(userRepository.setUserAuthorities(id, authorities));
+        final UserSo result = userMapper.mapToSo(userRepository.setUserAuthorities(id, authorities));
         log.debug("setAuthorities({},{})={}", id, authorities, result);
         return result;
     }
 
-    public UserSo setConfirmed(Long id, Boolean confirmed) {
+    public UserSo setConfirmed(final Long id, final Boolean confirmed) {
         log.debug("setConfirmed({},{})", id, confirmed);
         checkExists(id);
-        UserSo result = userMapper.mapToSo(userRepository.setUserConfirmed(id, confirmed));
+        final UserSo result = userMapper.mapToSo(userRepository.setUserConfirmed(id, confirmed));
         log.debug("setConfirmed({},{})={}", id, confirmed, result);
         return result;
     }
 
-    public UserSo setEnabled(Long id, Boolean enabled) {
+    public UserSo setEnabled(final Long id, final Boolean enabled) {
         log.debug("setEnabled({},{})", id, enabled);
         checkExists(id);
-        UserSo result = userMapper.mapToSo(userRepository.setUserEnabled(id, enabled));
+        final UserSo result = userMapper.mapToSo(userRepository.setUserEnabled(id, enabled));
         log.debug("setEnabled({},{})={}", id, enabled, result);
         return result;
     }
 
-    public void deleteUser(Long id) {
+    public void deleteUser(final Long id) {
         log.debug("deleteUser({})", id);
         checkExists(id);
         userRepository.deleteUser(id);
     }
 
-    private String stripAndLowerCase(String s) {
+    private String stripAndLowerCase(final String s) {
         if (StringUtils.hasLength(s)) {
             return s.strip().toLowerCase();
         }
         return s;
     }
 
-    private void checkExists(Long id) {
+    private void checkExists(final Long id) {
         if (!userRepository.exists(id)) {
             throw WiwaException.USER_NOT_FOUND.exception("User with id {0} not found", id);
         }

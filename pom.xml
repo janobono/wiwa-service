@@ -20,7 +20,7 @@
         <org.projectlombok.binding.version>0.2.0</org.projectlombok.binding.version>
         <org.springdoc.version>2.1.0</org.springdoc.version>
         <org.testcontainers.version>1.18.0</org.testcontainers.version>
-        <sk.r3n.version>6.0.2</sk.r3n.version>
+        <sk.r3n.version>6.0.3</sk.r3n.version>
     </properties>
     <modules>
         <module>wiwa-service-api</module>

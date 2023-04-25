@@ -1,7 +1,5 @@
 package sk.janobono.wiwa.common.model;
 
-import sk.janobono.wiwa.common.model.ApplicationPropertyKey;
-
 import java.text.MessageFormat;
 
 public enum WiwaProperty implements ApplicationPropertyKey {
@@ -45,7 +43,7 @@ public enum WiwaProperty implements ApplicationPropertyKey {
     private final String keyPattern;
     private final boolean localized;
 
-    WiwaProperty(String group, String keyPattern, boolean localized) {
+    WiwaProperty(final String group, final String keyPattern, final boolean localized) {
         this.group = group;
         this.keyPattern = keyPattern;
         this.localized = localized;
@@ -55,7 +53,7 @@ public enum WiwaProperty implements ApplicationPropertyKey {
         return group;
     }
 
-    public String getKey(Object... arguments) {
+    public String getKey(final Object... arguments) {
         return MessageFormat.format(keyPattern, arguments);
     }
 

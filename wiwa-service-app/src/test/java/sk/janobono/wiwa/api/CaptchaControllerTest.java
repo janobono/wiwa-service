@@ -14,7 +14,7 @@ class CaptchaControllerTest extends BaseIntegrationTest {
 
     @Test
     void captcha() {
-        ResponseEntity<CaptchaSo> response = restTemplate.exchange(
+        final ResponseEntity<CaptchaSo> response = restTemplate.exchange(
                 getURI("/captcha"), HttpMethod.GET, HttpEntity.EMPTY, CaptchaSo.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();

@@ -11,13 +11,13 @@ class AuthorityControllerTest extends BaseIntegrationTest {
 
     @Test
     void getAllAuthorities() {
-        String token = signIn(DEFAULT_ADMIN, PASSWORD).token();
+        final String token = signIn(DEFAULT_ADMIN, PASSWORD).token();
 
-        HttpHeaders headers = new HttpHeaders();
+        final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(token);
 
-        ResponseEntity<Authority[]> response = restTemplate.exchange(
+        final ResponseEntity<Authority[]> response = restTemplate.exchange(
                 getURI("/authorities"),
                 HttpMethod.GET,
                 new HttpEntity<>(headers),

@@ -51,10 +51,10 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final ApplicationPropertyService applicationPropertyService;
 
-    public AuthenticationResponseSo confirm(ConfirmationSo confirmationSo) {
+    public AuthenticationResponseSo confirm(final ConfirmationSo confirmationSo) {
         log.debug("confirm({})", confirmationSo);
-        Map<String, String> data = verificationToken.parseToken(confirmationSo.token());
-        UserDo userDo = switch (AuthToken.valueOf(data.get(AuthTokenKey.TYPE.name()))) {
+        final Map<String, String> data = verificationToken.parseToken(confirmationSo.token());
+        final UserDo userDo = switch (AuthToken.valueOf(data.get(AuthTokenKey.TYPE.name()))) {
             case SIGN_UP -> signUp(
                     Long.valueOf(data.get(AuthTokenKey.USER_ID.name()))
             );
@@ -64,78 +64,78 @@ public class AuthServiceImpl implements AuthService {
             );
             default -> throw WiwaException.UNSUPPORTED_VALIDATION_TOKEN.exception("Unsupported validation token");
         };
-        AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
+        final AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
         log.info("confirm({}) - {}", confirmationSo, authenticationResponse);
         return authenticationResponse;
     }
 
-    public AuthenticationResponseSo changeEmail(ChangeEmailSo changeEmailSo) {
+    public AuthenticationResponseSo changeEmail(final ChangeEmailSo changeEmailSo) {
         log.debug("changeEmail({})", changeEmailSo);
         captcha.checkTokenValid(changeEmailSo.captchaText(), changeEmailSo.captchaToken());
         if (userRepository.existsByEmail(stripAndLowerCase(changeEmailSo.email()))) {
             throw WiwaException.USER_EMAIL_IS_USED.exception("Email is used");
         }
-        UserSo userSo = (UserSo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final UserSo userSo = (UserSo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         checkExists(userSo.id());
         checkEnabled(userSo.id());
         checkPassword(userSo.id(), changeEmailSo.password());
-        UserDo userDo = userRepository.setUserEmail(userSo.id(), changeEmailSo.email());
-        AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
+        final UserDo userDo = userRepository.setUserEmail(userSo.id(), changeEmailSo.email());
+        final AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
         log.info("changeEmail({}) - {}", changeEmailSo, authenticationResponse);
         return authenticationResponse;
     }
 
-    public AuthenticationResponseSo changePassword(ChangePasswordSo changePasswordSo) {
+    public AuthenticationResponseSo changePassword(final ChangePasswordSo changePasswordSo) {
         log.debug("changePassword({})", changePasswordSo);
         captcha.checkTokenValid(changePasswordSo.captchaText(), changePasswordSo.captchaToken());
-        UserSo userSo = (UserSo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final UserSo userSo = (UserSo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         checkExists(userSo.id());
         checkEnabled(userSo.id());
         checkPassword(userSo.id(), changePasswordSo.oldPassword());
-        UserDo userDo = userRepository.setUserPassword(
+        final UserDo userDo = userRepository.setUserPassword(
                 userSo.id(),
                 passwordEncoder.encode(changePasswordSo.newPassword())
         );
-        AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
+        final AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
         log.info("changePassword({}) - {}", changePasswordSo, authenticationResponse);
         return authenticationResponse;
     }
 
-    public AuthenticationResponseSo changeUserDetails(ChangeUserDetailsSo changeUserDetailsSo) {
+    public AuthenticationResponseSo changeUserDetails(final ChangeUserDetailsSo changeUserDetailsSo) {
         log.debug("changeUserDetails({})", changeUserDetailsSo);
         captcha.checkTokenValid(changeUserDetailsSo.captchaText(), changeUserDetailsSo.captchaToken());
-        UserSo userSo = (UserSo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final UserSo userSo = (UserSo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         checkExists(userSo.id());
         checkEnabled(userSo.id());
         if (!changeUserDetailsSo.gdpr()) {
             throw WiwaException.GDPR.exception("GDPR has to be confirmed");
         }
-        UserDo userDo = userRepository.setUserProfileAndGdpr(userSo.id(), new UserProfileDo(
+        final UserDo userDo = userRepository.setUserProfileAndGdpr(userSo.id(), new UserProfileDo(
                 changeUserDetailsSo.titleBefore(),
                 changeUserDetailsSo.firstName(),
                 changeUserDetailsSo.midName(),
                 changeUserDetailsSo.lastName(),
                 changeUserDetailsSo.titleAfter()
         ), changeUserDetailsSo.gdpr());
-        AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
+        final AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
         log.info("changeUserDetails({}) - {}", changeUserDetailsSo, authenticationResponse);
         return authenticationResponse;
     }
 
-    public void resendConfirmation(ResendConfirmationSo resendConfirmationRequestDto) {
+    public void resendConfirmation(final ResendConfirmationSo resendConfirmationRequestDto) {
         log.debug("resendConfirmation({})", resendConfirmationRequestDto);
         captcha.checkTokenValid(resendConfirmationRequestDto.captchaText(), resendConfirmationRequestDto.captchaToken());
-        UserSo userSO = (UserSo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserDo userDo = userRepository.getUser(userSO.id()).orElseThrow(
+        final UserSo userSO = (UserSo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final UserDo userDo = userRepository.getUser(userSO.id()).orElseThrow(
                 () -> WiwaException.USER_NOT_FOUND.exception("User with username {0} not found", userSO.username())
         );
         sendSignUpMail(userDo);
     }
 
-    public void resetPassword(ResetPasswordSo resetPasswordRequestDto) {
+    public void resetPassword(final ResetPasswordSo resetPasswordRequestDto) {
         log.debug("resetPassword({})", resetPasswordRequestDto);
         captcha.checkTokenValid(resetPasswordRequestDto.captchaText(), resetPasswordRequestDto.captchaToken());
-        UserDo userDo = userRepository.getUserByEmail(stripAndLowerCase(resetPasswordRequestDto.email())).orElseThrow(
+        final UserDo userDo = userRepository.getUserByEmail(stripAndLowerCase(resetPasswordRequestDto.email())).orElseThrow(
                 () -> WiwaException.USER_NOT_FOUND.exception("User with email {0} not found", resetPasswordRequestDto.email())
         );
         if (!userDo.enabled()) {
@@ -144,9 +144,9 @@ public class AuthServiceImpl implements AuthService {
         sendResetPasswordMail(resetPasswordRequestDto, userDo);
     }
 
-    public AuthenticationResponseSo signIn(SignInSo signInRequestDto) {
+    public AuthenticationResponseSo signIn(final SignInSo signInRequestDto) {
         log.debug("signIn({})", signInRequestDto);
-        UserDo userDo = userRepository.getUserByUsername(stripAndLowerCase(signInRequestDto.username())).orElseThrow(
+        final UserDo userDo = userRepository.getUserByUsername(stripAndLowerCase(signInRequestDto.username())).orElseThrow(
                 () -> WiwaException.USER_NOT_FOUND.exception("User with username {0} not found", signInRequestDto.username())
         );
         if (!userDo.enabled()) {
@@ -155,12 +155,12 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordEncoder.matches(signInRequestDto.password(), userDo.password())) {
             throw WiwaException.INVALID_CREDENTIALS.exception("Invalid credentials");
         }
-        AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
+        final AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
         log.info("authenticate({}) - {}", signInRequestDto, authenticationResponse);
         return authenticationResponse;
     }
 
-    public AuthenticationResponseSo signUp(SignUpSo signUpRequestDto) {
+    public AuthenticationResponseSo signUp(final SignUpSo signUpRequestDto) {
         log.debug("signUp({})", signUpRequestDto);
         captcha.checkTokenValid(signUpRequestDto.captchaText(), signUpRequestDto.captchaToken());
         if (userRepository.existsByUsername(stripAndLowerCase(signUpRequestDto.username()))) {
@@ -189,37 +189,37 @@ public class AuthServiceImpl implements AuthService {
         );
         userDo = userRepository.addUser(userDo);
         sendSignUpMail(userDo);
-        AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
+        final AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
         log.info("signUp({}) - {}", signUpRequestDto, authenticationResponse);
         return authenticationResponse;
     }
 
-    public AuthenticationResponseSo refresh(RefreshTokenSo refreshTokenDto) {
+    public AuthenticationResponseSo refresh(final RefreshTokenSo refreshTokenDto) {
         log.debug("refresh({})", refreshTokenDto);
-        Map<String, String> data;
+        final Map<String, String> data;
         try {
             data = verificationToken.parseToken(refreshTokenDto.token());
-        } catch (JWTVerificationException jwtVerificationException) {
+        } catch (final JWTVerificationException jwtVerificationException) {
             throw new AccessDeniedException("Invalid token");
         }
         if (AuthToken.valueOf(data.get(AuthTokenKey.TYPE.name())) != AuthToken.REFRESH) {
             throw new AccessDeniedException("Invalid token");
         }
-        Long userId = Long.valueOf(data.get(AuthTokenKey.USER_ID.name()));
-        UserDo userDo = userRepository.getUser(userId).orElseThrow(
+        final Long userId = Long.valueOf(data.get(AuthTokenKey.USER_ID.name()));
+        final UserDo userDo = userRepository.getUser(userId).orElseThrow(
                 () -> WiwaException.USER_NOT_FOUND.exception("User with id {0} not found", userId)
         );
-        AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
+        final AuthenticationResponseSo authenticationResponse = createAuthenticationResponse(userDo);
         log.info("refresh({}) - {}", refreshTokenDto, authenticationResponse);
         return authenticationResponse;
     }
 
-    private AuthenticationResponseSo createAuthenticationResponse(UserDo userDo) {
-        Long issuedAt = System.currentTimeMillis();
-        Map<String, String> data = new HashMap<>();
+    private AuthenticationResponseSo createAuthenticationResponse(final UserDo userDo) {
+        final Long issuedAt = System.currentTimeMillis();
+        final Map<String, String> data = new HashMap<>();
         data.put(AuthTokenKey.TYPE.name(), AuthToken.REFRESH.name());
         data.put(AuthTokenKey.USER_ID.name(), userDo.id().toString());
-        String token = verificationToken.generateToken(
+        final String token = verificationToken.generateToken(
                 data,
                 issuedAt,
                 issuedAt + TimeUnit.HOURS.toMillis(authConfigProperties.refreshTokenExpiration())
@@ -227,34 +227,34 @@ public class AuthServiceImpl implements AuthService {
         return new AuthenticationResponseSo(jwtToken.generateToken(userMapper.mapToSo(userDo), issuedAt), token);
     }
 
-    private UserDo signUp(Long userId) {
+    private UserDo signUp(final Long userId) {
         log.debug("signUp({})", userId);
         checkExists(userId);
         checkEnabled(userId);
         return userRepository.setUserConfirmedAndAuthorities(userId, true, Set.of(Authority.W_CUSTOMER));
     }
 
-    private UserDo resetPassword(Long userId, String newPassword) {
+    private UserDo resetPassword(final Long userId, final String newPassword) {
         log.debug("resetPassword({})", userId);
         checkExists(userId);
         checkEnabled(userId);
         return userRepository.setUserPassword(userId, passwordEncoder.encode(newPassword));
     }
 
-    private void checkExists(Long id) {
+    private void checkExists(final Long id) {
         if (!userRepository.exists(id)) {
             throw WiwaException.USER_NOT_FOUND.exception("User with id {0} not found", id);
         }
     }
 
-    private void checkEnabled(Long id) {
+    private void checkEnabled(final Long id) {
         log.debug("checkEnabled({})", id);
         if (!userRepository.getUserEnabled(id).orElse(false)) {
             throw WiwaException.USER_IS_DISABLED.exception("User is disabled");
         }
     }
 
-    private void checkPassword(Long id, String password) {
+    private void checkPassword(final Long id, final String password) {
         log.debug("checkPassword({})", id);
         if (!passwordEncoder.matches(password,
                 userRepository.getUserPassword(id).orElseThrow(
@@ -264,15 +264,15 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    private void sendResetPasswordMail(ResetPasswordSo resetPasswordSo, UserDo userDo) {
+    private void sendResetPasswordMail(final ResetPasswordSo resetPasswordSo, final UserDo userDo) {
         log.debug("sendResetPasswordMail({},{})", resetPasswordSo, userDo);
 
-        Map<String, String> data = new HashMap<>();
+        final Map<String, String> data = new HashMap<>();
         data.put(AuthTokenKey.TYPE.name(), AuthToken.RESET_PASSWORD.name());
         data.put(AuthTokenKey.USER_ID.name(), userDo.id().toString());
         data.put(AuthTokenKey.NEW_PASSWORD.name(), randomString.alphaNumeric(2, 5, 3, 10, 10));
-        long issuedAt = System.currentTimeMillis();
-        String token = verificationToken.generateToken(
+        final long issuedAt = System.currentTimeMillis();
+        final String token = verificationToken.generateToken(
                 data,
                 issuedAt,
                 issuedAt + TimeUnit.HOURS.toMillis(authConfigProperties.resetPasswordTokenExpiration())
@@ -308,14 +308,14 @@ public class AuthServiceImpl implements AuthService {
         ));
     }
 
-    private void sendSignUpMail(UserDo userDo) {
+    private void sendSignUpMail(final UserDo userDo) {
         log.debug("sendSignUpMail({})", userDo);
 
-        Map<String, String> data = new HashMap<>();
+        final Map<String, String> data = new HashMap<>();
         data.put(AuthTokenKey.TYPE.name(), AuthToken.SIGN_UP.name());
         data.put(AuthTokenKey.USER_ID.name(), userDo.id().toString());
-        long issuedAt = System.currentTimeMillis();
-        String token = verificationToken.generateToken(
+        final long issuedAt = System.currentTimeMillis();
+        final String token = verificationToken.generateToken(
                 data,
                 issuedAt,
                 issuedAt + TimeUnit.HOURS.toMillis(authConfigProperties.signUpTokenExpiration())
@@ -341,15 +341,15 @@ public class AuthServiceImpl implements AuthService {
         ));
     }
 
-    private String getTokenUrl(String webUrl, String token) {
+    private String getTokenUrl(final String webUrl, final String token) {
         try {
             return webUrl + "/auth/confirm/" + URLEncoder.encode(token, StandardCharsets.UTF_8);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private String stripAndLowerCase(String s) {
+    private String stripAndLowerCase(final String s) {
         if (StringUtils.hasLength(s)) {
             return s.strip().toLowerCase();
         }

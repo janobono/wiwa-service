@@ -60,7 +60,7 @@ public abstract class BaseIntegrationTest {
     }
 
     @DynamicPropertySource
-    public static void properties(DynamicPropertyRegistry registry) throws Exception {
+    public static void properties(final DynamicPropertyRegistry registry) throws Exception {
         registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
         registry.add("spring.mail.port", () -> smtpServer.getMappedPort(1025));
     }
@@ -121,7 +121,7 @@ public abstract class BaseIntegrationTest {
         deleteAllEmails();
     }
 
-    private void addUser(String username, Authority authority) {
+    private void addUser(final String username, final Authority authority) {
         userRepository.addUser(new UserDo(
                 null,
                 username,
@@ -139,7 +139,7 @@ public abstract class BaseIntegrationTest {
         ));
     }
 
-    public AuthenticationResponseSo signIn(String username, String password) {
+    public AuthenticationResponseSo signIn(final String username, final String password) {
         return restTemplate.postForObject(
                 getURI("/auth/sign-in"),
                 new SignInSo(
@@ -165,58 +165,58 @@ public abstract class BaseIntegrationTest {
         );
     }
 
-    public URI getURI(String path) {
-        URI uri = UriComponentsBuilder.fromHttpUrl("http://localhost:" + serverPort)
+    public URI getURI(final String path) {
+        final URI uri = UriComponentsBuilder.fromHttpUrl("http://localhost:" + serverPort)
                 .path("/api" + path).build().toUri();
         log.debug("{}", uri);
         return uri;
     }
 
-    public URI getURI(String path, Map<String, String> pathVars) {
-        URI uri = UriComponentsBuilder.fromHttpUrl("http://localhost:" + serverPort)
+    public URI getURI(final String path, final Map<String, String> pathVars) {
+        final URI uri = UriComponentsBuilder.fromHttpUrl("http://localhost:" + serverPort)
                 .path("/api" + path).buildAndExpand(pathVars).toUri();
         log.debug("{}", uri);
         return uri;
     }
 
-    public URI getURI(String path, MultiValueMap<String, String> queryParams) {
-        URI uri = UriComponentsBuilder.fromHttpUrl("http://localhost:" + serverPort)
+    public URI getURI(final String path, final MultiValueMap<String, String> queryParams) {
+        final URI uri = UriComponentsBuilder.fromHttpUrl("http://localhost:" + serverPort)
                 .path("/api" + path).queryParams(queryParams).build().toUri();
         log.debug("{}", uri);
         return uri;
     }
 
-    public URI getURI(String path, Map<String, String> pathVars, MultiValueMap<String, String> queryParams) {
-        URI uri = UriComponentsBuilder.fromHttpUrl("http://localhost:" + serverPort)
+    public URI getURI(final String path, final Map<String, String> pathVars, final MultiValueMap<String, String> queryParams) {
+        final URI uri = UriComponentsBuilder.fromHttpUrl("http://localhost:" + serverPort)
                 .path("/api" + path).queryParams(queryParams).buildAndExpand(pathVars).toUri();
         log.debug("{}", uri);
         return uri;
     }
 
     public MultiValueMap<String, String> enQueryParams() {
-        MultiValueMap<String, String> result = new LinkedMultiValueMap<>();
+        final MultiValueMap<String, String> result = new LinkedMultiValueMap<>();
         result.add(LocaleChangeInterceptor.DEFAULT_PARAM_NAME, "en_US");
         return result;
     }
 
     public MultiValueMap<String, String> skQueryParams() {
-        MultiValueMap<String, String> result = new LinkedMultiValueMap<>();
+        final MultiValueMap<String, String> result = new LinkedMultiValueMap<>();
         result.add(LocaleChangeInterceptor.DEFAULT_PARAM_NAME, "sk_SK");
         return result;
     }
 
-    public <T> Page<T> getPage(JsonNode jsonNode, Pageable pageable, Class<T> clazz) {
+    public <T> Page<T> getPage(final JsonNode jsonNode, final Pageable pageable, final Class<T> clazz) {
         List<T> content = null;
         Long totalElements = null;
         if (Objects.nonNull(jsonNode)) {
             totalElements = jsonNode.get("totalElements").asLong();
             try {
                 content = getListFromNode(jsonNode.get("content"), clazz);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        Page<T> result;
+        final Page<T> result;
         if (Objects.nonNull(content) && !content.isEmpty()) {
             result = new PageImpl<>(content, pageable, totalElements);
         } else {
@@ -225,31 +225,31 @@ public abstract class BaseIntegrationTest {
         return result;
     }
 
-    public <T> List<T> getListFromNode(JsonNode node, Class<T> clazz) throws IOException {
-        List<T> content = new ArrayList<>();
-        for (JsonNode val : node) {
+    public <T> List<T> getListFromNode(final JsonNode node, final Class<T> clazz) throws IOException {
+        final List<T> content = new ArrayList<>();
+        for (final JsonNode val : node) {
             content.add(objectMapper.readValue(val.traverse(), clazz));
         }
         return content;
     }
 
-    public MultiValueMap<String, String> pageableToParams(Pageable pageable) {
-        MultiValueMap<String, String> result = new LinkedMultiValueMap<>();
+    public MultiValueMap<String, String> pageableToParams(final Pageable pageable) {
+        final MultiValueMap<String, String> result = new LinkedMultiValueMap<>();
         if (pageable.isPaged()) {
             result.add("page", Integer.toString(pageable.getPageNumber()));
             result.add("size", Integer.toString(pageable.getPageSize()));
             if (pageable.getSort().isSorted()) {
-                StringBuilder sb = new StringBuilder();
+                final StringBuilder sb = new StringBuilder();
                 List<Sort.Order> orderList = pageable.getSort().get().filter(Sort.Order::isAscending).collect(Collectors.toList());
                 if (!orderList.isEmpty()) {
-                    for (Sort.Order order : orderList) {
+                    for (final Sort.Order order : orderList) {
                         sb.append(order.getProperty()).append(',');
                     }
                     sb.append("ASC,");
                 }
                 orderList = pageable.getSort().get().filter(Sort.Order::isDescending).collect(Collectors.toList());
                 if (!orderList.isEmpty()) {
-                    for (Sort.Order order : orderList) {
+                    for (final Sort.Order order : orderList) {
                         sb.append(order.getProperty()).append(',');
                     }
                     sb.append("DESC,");

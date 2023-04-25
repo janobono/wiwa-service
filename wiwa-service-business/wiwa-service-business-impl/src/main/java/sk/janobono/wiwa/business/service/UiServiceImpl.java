@@ -51,8 +51,8 @@ public class UiServiceImpl implements UiService {
 
     public ApplicationInfoSo getApplicationInfo() {
         log.debug("getApplicationInfo()");
-        ApplicationInfoSo result = new ApplicationInfoSo(new ArrayList<>());
-        int count = Integer.parseInt(applicationPropertyService.getProperty(WiwaProperty.APP_INFO_SLIDE_COUNT));
+        final ApplicationInfoSo result = new ApplicationInfoSo(new ArrayList<>());
+        final int count = Integer.parseInt(applicationPropertyService.getProperty(WiwaProperty.APP_INFO_SLIDE_COUNT));
         for (int i = 0; i < count; i++) {
             result.items().add(new ApplicationInfoItemSo(
                     applicationPropertyService.getProperty(WiwaProperty.APP_INFO_SLIDE_X_TITLE, i),
@@ -66,7 +66,7 @@ public class UiServiceImpl implements UiService {
 
     public CompanyInfoSo getCompanyInfo() {
         log.debug("getCompanyInfo()");
-        CompanyInfoSo result = new CompanyInfoSo(
+        final CompanyInfoSo result = new CompanyInfoSo(
                 applicationPropertyService.getProperty(WiwaProperty.COMPANY_NAME),
                 applicationPropertyService.getProperty(WiwaProperty.COMPANY_STREET),
                 applicationPropertyService.getProperty(WiwaProperty.COMPANY_CITY),
@@ -99,25 +99,25 @@ public class UiServiceImpl implements UiService {
         return applicationPropertyService.getProperty(WiwaProperty.APP_WORKING_HOURS);
     }
 
-    public ApplicationImageSo setLogo(MultipartFile multipartFile) {
+    public ApplicationImageSo setLogo(final MultipartFile multipartFile) {
         log.debug("setLogo({})", multipartFile.getOriginalFilename());
 
-        String fileName = "logo.png";
-        String fileType = multipartFile.getContentType() != null
+        final String fileName = "logo.png";
+        final String fileType = multipartFile.getContentType() != null
                 ? multipartFile.getContentType() : MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
         if (!fileType.equals(MediaType.IMAGE_PNG_VALUE)) {
             throw WiwaException.APPLICATION_IMAGE_NOT_SUPPORTED.exception("Unsupported logo file type {0}", fileType);
         }
 
-        byte[] data;
+        final byte[] data;
         try {
             data = multipartFile.getBytes();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
 
-        ApplicationImageDo applicationImageDo = new ApplicationImageDo(
+        final ApplicationImageDo applicationImageDo = new ApplicationImageDo(
                 fileName,
                 fileType,
                 imageUtil.scaleImage(
@@ -134,7 +134,7 @@ public class UiServiceImpl implements UiService {
                 )
         );
 
-        ApplicationImageSo result;
+        final ApplicationImageSo result;
         if (applicationImageRepository.exists(fileName)) {
             result = applicationImageMapper.map(applicationImageRepository.setApplicationImage(applicationImageDo));
         } else {
@@ -144,37 +144,37 @@ public class UiServiceImpl implements UiService {
         return result;
     }
 
-    public LocalizedDataSo<String> setTitle(LocalizedDataSo<String> data) {
+    public LocalizedDataSo<String> setTitle(final LocalizedDataSo<String> data) {
         log.debug("setTitle({})", data);
-        LocalizedDataSo<String> result = localizedDataUtil.saveLocalizedData(
+        final LocalizedDataSo<String> result = localizedDataUtil.saveLocalizedData(
                 data, WiwaProperty.APP_TITLE.getGroup(), WiwaProperty.APP_TITLE.getKey()
         );
         log.debug("setTitle({})={}", data, result);
         return result;
     }
 
-    public LocalizedDataSo<String> setWelcomeText(LocalizedDataSo<String> data) {
+    public LocalizedDataSo<String> setWelcomeText(final LocalizedDataSo<String> data) {
         log.debug("setWelcomeText({})", data);
-        LocalizedDataSo<String> result = localizedDataUtil.saveLocalizedData(
+        final LocalizedDataSo<String> result = localizedDataUtil.saveLocalizedData(
                 data, WiwaProperty.APP_WELCOME_TEXT.getGroup(), WiwaProperty.APP_WELCOME_TEXT.getKey()
         );
         log.debug("setWelcomeText({})={}", data, result);
         return result;
     }
 
-    public LocalizedDataSo<ApplicationInfoSo> setApplicationInfo(LocalizedDataSo<ApplicationInfoSo> data) {
+    public LocalizedDataSo<ApplicationInfoSo> setApplicationInfo(final LocalizedDataSo<ApplicationInfoSo> data) {
         log.debug("setApplicationInfo({})", data);
-        LocalizedDataSo<ApplicationInfoSo> result = new LocalizedDataSo<>(new ArrayList<>());
-        for (LocalizedDataItemSo<ApplicationInfoSo> localizedDataItem : data.items()) {
+        final LocalizedDataSo<ApplicationInfoSo> result = new LocalizedDataSo<>(new ArrayList<>());
+        for (final LocalizedDataItemSo<ApplicationInfoSo> localizedDataItem : data.items()) {
             applicationPropertyService.setApplicationProperty(
                     WiwaProperty.APP_INFO_SLIDE_COUNT.getGroup(),
                     WiwaProperty.APP_INFO_SLIDE_COUNT.getKey(),
                     "",
                     Integer.toString(localizedDataItem.data().items().size())
             );
-            List<ApplicationInfoItemSo> items = new ArrayList<>();
+            final List<ApplicationInfoItemSo> items = new ArrayList<>();
             for (int i = 0; i < localizedDataItem.data().items().size(); i++) {
-                ApplicationInfoItemSo applicationInfoItemDto = localizedDataItem.data().items().get(i);
+                final ApplicationInfoItemSo applicationInfoItemDto = localizedDataItem.data().items().get(i);
                 items.add(new ApplicationInfoItemSo(
                         applicationPropertyService.setApplicationProperty(
                                 WiwaProperty.APP_INFO_SLIDE_X_TITLE.getGroup(),
@@ -202,10 +202,10 @@ public class UiServiceImpl implements UiService {
         return result;
     }
 
-    public LocalizedDataSo<CompanyInfoSo> setCompanyInfo(LocalizedDataSo<CompanyInfoSo> data) {
+    public LocalizedDataSo<CompanyInfoSo> setCompanyInfo(final LocalizedDataSo<CompanyInfoSo> data) {
         log.debug("setCompanyInfo({})", data);
-        LocalizedDataSo<CompanyInfoSo> result = new LocalizedDataSo<>(new ArrayList<>());
-        for (LocalizedDataItemSo<CompanyInfoSo> localizedDataItem : data.items()) {
+        final LocalizedDataSo<CompanyInfoSo> result = new LocalizedDataSo<>(new ArrayList<>());
+        for (final LocalizedDataItemSo<CompanyInfoSo> localizedDataItem : data.items()) {
             result.items().add(new LocalizedDataItemSo<>(localizedDataItem.language(), new CompanyInfoSo(
                     applicationPropertyService.setApplicationProperty(
                             WiwaProperty.COMPANY_NAME.getGroup(),
@@ -285,27 +285,27 @@ public class UiServiceImpl implements UiService {
         return result;
     }
 
-    public LocalizedDataSo<String> setCookiesInfo(LocalizedDataSo<String> data) {
+    public LocalizedDataSo<String> setCookiesInfo(final LocalizedDataSo<String> data) {
         log.debug("setCookiesInfo({})", data);
-        LocalizedDataSo<String> result = localizedDataUtil.saveLocalizedData(
+        final LocalizedDataSo<String> result = localizedDataUtil.saveLocalizedData(
                 data, WiwaProperty.APP_COOKIES_INFO.getGroup(), WiwaProperty.APP_COOKIES_INFO.getKey()
         );
         log.debug("setCookiesInfo({})={}", data, result);
         return result;
     }
 
-    public LocalizedDataSo<String> setGdprInfo(LocalizedDataSo<String> data) {
+    public LocalizedDataSo<String> setGdprInfo(final LocalizedDataSo<String> data) {
         log.debug("setGdprInfo({})", data);
-        LocalizedDataSo<String> result = localizedDataUtil.saveLocalizedData(
+        final LocalizedDataSo<String> result = localizedDataUtil.saveLocalizedData(
                 data, WiwaProperty.APP_GDPR_INFO.getGroup(), WiwaProperty.APP_GDPR_INFO.getKey()
         );
         log.debug("setGdprInfo({})={}", data, result);
         return result;
     }
 
-    public LocalizedDataSo<String> setWorkingHours(LocalizedDataSo<String> data) {
+    public LocalizedDataSo<String> setWorkingHours(final LocalizedDataSo<String> data) {
         log.debug("setWorkingHours({})", data);
-        LocalizedDataSo<String> result = localizedDataUtil.saveLocalizedData(
+        final LocalizedDataSo<String> result = localizedDataUtil.saveLocalizedData(
                 data, WiwaProperty.APP_WORKING_HOURS.getGroup(), WiwaProperty.APP_WORKING_HOURS.getKey()
         );
         log.debug("setWorkingHours({})={}", data, result);

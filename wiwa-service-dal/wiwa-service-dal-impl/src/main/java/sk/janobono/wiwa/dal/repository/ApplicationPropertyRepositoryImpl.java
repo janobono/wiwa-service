@@ -8,7 +8,6 @@ import sk.janobono.wiwa.dal.mapper.ApplicationPropertyDoMapper;
 import sk.janobono.wiwa.dal.r3n.dto.WiwaApplicationPropertyDto;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaApplicationProperty;
 import sk.janobono.wiwa.dal.r3n.meta.MetaTable;
-import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
@@ -31,22 +30,22 @@ public class ApplicationPropertyRepositoryImpl implements ApplicationPropertyRep
     @Override
     public long count() {
         log.debug("count()");
-        try (Connection connection = dataSource.getConnection()) {
-            List<Object[]> rows = sqlBuilder.select(connection,
+        try (final Connection connection = dataSource.getConnection()) {
+            final List<Object[]> rows = sqlBuilder.select(connection,
                     Query.SELECT(MetaColumnWiwaApplicationProperty.PROPERTY_KEY.column()).COUNT()
                             .FROM(MetaTable.WIWA_APPLICATION_PROPERTY.table())
             );
             return (Integer) rows.get(0)[0];
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public boolean exists(String group, String key, String language) {
+    public boolean exists(final String group, final String key, final String language) {
         log.debug("exists({},{},{})", group, key, language);
-        try (Connection connection = dataSource.getConnection()) {
-            List<Object[]> rows = sqlBuilder.select(connection,
+        try (final Connection connection = dataSource.getConnection()) {
+            final List<Object[]> rows = sqlBuilder.select(connection,
                     Query.SELECT(MetaColumnWiwaApplicationProperty.PROPERTY_KEY.column()).COUNT()
                             .FROM(MetaTable.WIWA_APPLICATION_PROPERTY.table())
                             .WHERE(MetaColumnWiwaApplicationProperty.PROPERTY_GROUP.column(), Condition.EQUALS, group)
@@ -54,16 +53,16 @@ public class ApplicationPropertyRepositoryImpl implements ApplicationPropertyRep
                             .AND(MetaColumnWiwaApplicationProperty.PROPERTY_LANGUAGE.column(), Condition.EQUALS, language)
             );
             return ((Integer) rows.get(0)[0]) > 0;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Optional<ApplicationPropertyDo> getApplicationProperty(String group, String key, String language) {
+    public Optional<ApplicationPropertyDo> getApplicationProperty(final String group, final String key, final String language) {
         log.debug("getApplicationProperty({},{},{})", group, key, language);
-        try (Connection connection = dataSource.getConnection()) {
-            List<Object[]> rows = sqlBuilder.select(connection,
+        try (final Connection connection = dataSource.getConnection()) {
+            final List<Object[]> rows = sqlBuilder.select(connection,
                     Query.SELECT(MetaColumnWiwaApplicationProperty.columns())
                             .FROM(MetaTable.WIWA_APPLICATION_PROPERTY.table())
                             .WHERE(MetaColumnWiwaApplicationProperty.PROPERTY_GROUP.column(), Condition.EQUALS, group)
@@ -75,30 +74,30 @@ public class ApplicationPropertyRepositoryImpl implements ApplicationPropertyRep
             } else {
                 return Optional.empty();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public ApplicationPropertyDo addApplicationProperty(ApplicationPropertyDo applicationPropertyDo) {
+    public ApplicationPropertyDo addApplicationProperty(final ApplicationPropertyDo applicationPropertyDo) {
         log.debug("addApplicationProperty({})", applicationPropertyDo);
-        try (Connection connection = dataSource.getConnection()) {
-            Object[] row = WiwaApplicationPropertyDto.toArray(applicationPropertyDoMapper.mapToDto(applicationPropertyDo));
+        try (final Connection connection = dataSource.getConnection()) {
+            final Object[] row = WiwaApplicationPropertyDto.toArray(applicationPropertyDoMapper.mapToDto(applicationPropertyDo));
             sqlBuilder.insert(connection,
                     Query.INSERT()
                             .INTO(MetaTable.WIWA_APPLICATION_PROPERTY.table(), MetaColumnWiwaApplicationProperty.columns())
                             .VALUES(row));
             return applicationPropertyDo;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public ApplicationPropertyDo setApplicationProperty(ApplicationPropertyDo applicationPropertyDo) {
+    public ApplicationPropertyDo setApplicationProperty(final ApplicationPropertyDo applicationPropertyDo) {
         log.debug("setApplicationProperty({})", applicationPropertyDo);
-        try (Connection connection = dataSource.getConnection()) {
+        try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.update(connection,
                     Query.UPDATE(MetaTable.WIWA_APPLICATION_PROPERTY.table())
                             .SET(new Column[]{MetaColumnWiwaApplicationProperty.PROPERTY_VALUE.column()}, new Object[]{applicationPropertyDo.value()})
@@ -107,15 +106,15 @@ public class ApplicationPropertyRepositoryImpl implements ApplicationPropertyRep
                             .AND(MetaColumnWiwaApplicationProperty.PROPERTY_LANGUAGE.column(), Condition.EQUALS, applicationPropertyDo.language())
             );
             return applicationPropertyDo;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void deleteApplicationProperty(String group, String key, String language) {
+    public void deleteApplicationProperty(final String group, final String key, final String language) {
         log.debug("deleteApplicationProperty({},{},{})", group, key, language);
-        try (Connection connection = dataSource.getConnection()) {
+        try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
                     Query.DELETE()
                             .FROM(MetaTable.WIWA_APPLICATION_PROPERTY.table())
@@ -123,7 +122,7 @@ public class ApplicationPropertyRepositoryImpl implements ApplicationPropertyRep
                             .AND(MetaColumnWiwaApplicationProperty.PROPERTY_KEY.column(), Condition.EQUALS, key)
                             .AND(MetaColumnWiwaApplicationProperty.PROPERTY_LANGUAGE.column(), Condition.EQUALS, language)
             );
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }

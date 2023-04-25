@@ -30,24 +30,24 @@ class IndexControllerTest extends BaseIntegrationTest {
 
     @Test
     void fullTest() throws IOException {
-        String token = signIn(DEFAULT_MANAGER, PASSWORD).token();
+        final String token = signIn(DEFAULT_MANAGER, PASSWORD).token();
 
-        HttpHeaders headers = new HttpHeaders();
+        final HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
 
         // logo
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
+        final MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
         form.add("file", new ByteArrayResource(imageUtil.generateMessageImage("test")) {
             @Override
             public String getFilename() {
                 return "test.png";
             }
         });
-        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
+        final HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
 
-        ResponseEntity<ApplicationImageWeb> uploadedImage = restTemplate.exchange(
+        final ResponseEntity<ApplicationImageWeb> uploadedImage = restTemplate.exchange(
                 getURI("/config/logo"),
                 HttpMethod.POST,
                 httpEntity,
@@ -61,7 +61,7 @@ class IndexControllerTest extends BaseIntegrationTest {
 
         // title
         headers.setContentType(MediaType.APPLICATION_JSON);
-        ResponseEntity<JsonNode> title = restTemplate.exchange(
+        final ResponseEntity<JsonNode> title = restTemplate.exchange(
                 getURI("/config/title"),
                 HttpMethod.POST,
                 new HttpEntity<>(
@@ -77,7 +77,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         );
         assertThat(title.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(title.getBody()).isNotNull();
-        LocalizedDataSo<String> titleLocalizedData = getLocalizedProperties(title.getBody());
+        final LocalizedDataSo<String> titleLocalizedData = getLocalizedProperties(title.getBody());
         assertThat(titleLocalizedData.items().size()).isEqualTo(2);
         assertThat(titleLocalizedData.items().get(0).language()).isEqualTo("en");
         assertThat(titleLocalizedData.items().get(0).data()).isEqualTo("testEn");
@@ -85,7 +85,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(titleLocalizedData.items().get(1).data()).isEqualTo("testSk");
 
         // welcome-text
-        ResponseEntity<JsonNode> welcomeText = restTemplate.exchange(
+        final ResponseEntity<JsonNode> welcomeText = restTemplate.exchange(
                 getURI("/config/welcome-text"),
                 HttpMethod.POST,
                 new HttpEntity<>(
@@ -101,7 +101,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         );
         assertThat(welcomeText.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(welcomeText.getBody()).isNotNull();
-        LocalizedDataSo<String> welcomeTextLocalizedData = getLocalizedProperties(welcomeText.getBody());
+        final LocalizedDataSo<String> welcomeTextLocalizedData = getLocalizedProperties(welcomeText.getBody());
         assertThat(welcomeTextLocalizedData.items().size()).isEqualTo(2);
         assertThat(welcomeTextLocalizedData.items().get(0).language()).isEqualTo("en");
         assertThat(welcomeTextLocalizedData.items().get(0).data()).isEqualTo("testEn");
@@ -109,7 +109,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(welcomeTextLocalizedData.items().get(1).data()).isEqualTo("testSk");
 
         // application-info
-        ResponseEntity<JsonNode> applicationInfo = restTemplate.exchange(
+        final ResponseEntity<JsonNode> applicationInfo = restTemplate.exchange(
                 getURI("/config/application-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
@@ -137,7 +137,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         );
         assertThat(applicationInfo.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(applicationInfo.getBody()).isNotNull();
-        LocalizedDataSo<ApplicationInfoSo> applicationInfoLocalizedData = getLocalizedApplicationInfo(applicationInfo.getBody());
+        final LocalizedDataSo<ApplicationInfoSo> applicationInfoLocalizedData = getLocalizedApplicationInfo(applicationInfo.getBody());
         assertThat(applicationInfoLocalizedData.items().size()).isEqualTo(2);
         assertThat(applicationInfoLocalizedData.items().get(0).language()).isEqualTo("en");
         assertThat(applicationInfoLocalizedData.items().get(0).data().items().size()).isEqualTo(1);
@@ -151,7 +151,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(applicationInfoLocalizedData.items().get(1).data().items().get(0).imageFileName()).isEqualTo("testImageSk");
 
         // company-info
-        ResponseEntity<JsonNode> companyInfo = restTemplate.exchange(
+        final ResponseEntity<JsonNode> companyInfo = restTemplate.exchange(
                 getURI("/config/company-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
@@ -193,7 +193,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         );
         assertThat(companyInfo.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(companyInfo.getBody()).isNotNull();
-        LocalizedDataSo<CompanyInfoSo> companyInfoLocalizedData = getCompanyInfo(companyInfo.getBody());
+        final LocalizedDataSo<CompanyInfoSo> companyInfoLocalizedData = getCompanyInfo(companyInfo.getBody());
         assertThat(companyInfoLocalizedData.items().size()).isEqualTo(2);
         assertThat(companyInfoLocalizedData.items().get(0).language()).isEqualTo("en");
         assertThat(companyInfoLocalizedData.items().get(0).data().name()).isEqualTo("testNameEn");
@@ -207,7 +207,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(companyInfoLocalizedData.items().get(1).data().state()).isEqualTo("TestStateSk");
 
         // cookies-info
-        ResponseEntity<JsonNode> cookiesInfo = restTemplate.exchange(
+        final ResponseEntity<JsonNode> cookiesInfo = restTemplate.exchange(
                 getURI("/config/cookies-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
@@ -223,7 +223,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         );
         assertThat(cookiesInfo.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(cookiesInfo.getBody()).isNotNull();
-        LocalizedDataSo<String> cookiesInfoLocalizedData = getLocalizedProperties(cookiesInfo.getBody());
+        final LocalizedDataSo<String> cookiesInfoLocalizedData = getLocalizedProperties(cookiesInfo.getBody());
         assertThat(cookiesInfoLocalizedData.items().size()).isEqualTo(2);
         assertThat(cookiesInfoLocalizedData.items().get(0).language()).isEqualTo("en");
         assertThat(cookiesInfoLocalizedData.items().get(0).data()).isEqualTo("testEn");
@@ -231,7 +231,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(cookiesInfoLocalizedData.items().get(1).data()).isEqualTo("testSk");
 
         // gdpr-info
-        ResponseEntity<JsonNode> gdprInfo = restTemplate.exchange(
+        final ResponseEntity<JsonNode> gdprInfo = restTemplate.exchange(
                 getURI("/config/gdpr-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
@@ -247,7 +247,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         );
         assertThat(gdprInfo.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(gdprInfo.getBody()).isNotNull();
-        LocalizedDataSo<String> gdprInfoLocalizedData = getLocalizedProperties(gdprInfo.getBody());
+        final LocalizedDataSo<String> gdprInfoLocalizedData = getLocalizedProperties(gdprInfo.getBody());
         assertThat(gdprInfoLocalizedData.items().size()).isEqualTo(2);
         assertThat(gdprInfoLocalizedData.items().get(0).language()).isEqualTo("en");
         assertThat(gdprInfoLocalizedData.items().get(0).data()).isEqualTo("testEn");
@@ -255,7 +255,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(gdprInfoLocalizedData.items().get(1).data()).isEqualTo("testSk");
 
         // working-hours
-        ResponseEntity<JsonNode> workingHours = restTemplate.exchange(
+        final ResponseEntity<JsonNode> workingHours = restTemplate.exchange(
                 getURI("/config/working-hours"),
                 HttpMethod.POST,
                 new HttpEntity<>(
@@ -271,7 +271,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         );
         assertThat(workingHours.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(workingHours.getBody()).isNotNull();
-        LocalizedDataSo<String> workingHoursLocalizedData = getLocalizedProperties(workingHours.getBody());
+        final LocalizedDataSo<String> workingHoursLocalizedData = getLocalizedProperties(workingHours.getBody());
         assertThat(workingHoursLocalizedData.items().size()).isEqualTo(2);
         assertThat(workingHoursLocalizedData.items().get(0).language()).isEqualTo("en");
         assertThat(workingHoursLocalizedData.items().get(0).data()).isEqualTo("testEn");
@@ -279,28 +279,28 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(workingHoursLocalizedData.items().get(1).data()).isEqualTo("testSk");
     }
 
-    private LocalizedDataSo<String> getLocalizedProperties(JsonNode jsonNode) {
-        LocalizedDataSo<String> result = new LocalizedDataSo<>(new ArrayList<>());
+    private LocalizedDataSo<String> getLocalizedProperties(final JsonNode jsonNode) {
+        final LocalizedDataSo<String> result = new LocalizedDataSo<>(new ArrayList<>());
         if (Objects.nonNull(jsonNode)) {
-            JsonNode items = jsonNode.get("items");
-            for (JsonNode item : items) {
-                String language = item.get("language").asText();
-                String data = item.get("data").asText();
+            final JsonNode items = jsonNode.get("items");
+            for (final JsonNode item : items) {
+                final String language = item.get("language").asText();
+                final String data = item.get("data").asText();
                 result.items().add(new LocalizedDataItemSo<>(language, data));
             }
         }
         return result;
     }
 
-    private LocalizedDataSo<ApplicationInfoSo> getLocalizedApplicationInfo(JsonNode jsonNode) throws IOException {
-        LocalizedDataSo<ApplicationInfoSo> result = new LocalizedDataSo<>(new ArrayList<>());
+    private LocalizedDataSo<ApplicationInfoSo> getLocalizedApplicationInfo(final JsonNode jsonNode) throws IOException {
+        final LocalizedDataSo<ApplicationInfoSo> result = new LocalizedDataSo<>(new ArrayList<>());
         if (Objects.nonNull(jsonNode)) {
-            JsonNode localizedItems = jsonNode.get("items");
-            for (JsonNode localizedItem : localizedItems) {
-                String language = localizedItem.get("language").asText();
-                List<ApplicationInfoItemSo> items = new ArrayList<>();
-                JsonNode localizedData = localizedItem.get("data");
-                for (JsonNode item : localizedData.get("items")) {
+            final JsonNode localizedItems = jsonNode.get("items");
+            for (final JsonNode localizedItem : localizedItems) {
+                final String language = localizedItem.get("language").asText();
+                final List<ApplicationInfoItemSo> items = new ArrayList<>();
+                final JsonNode localizedData = localizedItem.get("data");
+                for (final JsonNode item : localizedData.get("items")) {
                     items.add(objectMapper.readValue(item.traverse(), ApplicationInfoItemSo.class));
                 }
                 result.items().add(new LocalizedDataItemSo<>(language, new ApplicationInfoSo(items)));
@@ -309,13 +309,13 @@ class IndexControllerTest extends BaseIntegrationTest {
         return result;
     }
 
-    private LocalizedDataSo<CompanyInfoSo> getCompanyInfo(JsonNode jsonNode) throws IOException {
-        LocalizedDataSo<CompanyInfoSo> result = new LocalizedDataSo<>(new ArrayList<>());
+    private LocalizedDataSo<CompanyInfoSo> getCompanyInfo(final JsonNode jsonNode) throws IOException {
+        final LocalizedDataSo<CompanyInfoSo> result = new LocalizedDataSo<>(new ArrayList<>());
         if (Objects.nonNull(jsonNode)) {
-            JsonNode items = jsonNode.get("items");
-            for (JsonNode item : items) {
-                String language = item.get("language").asText();
-                CompanyInfoSo companyInfoDto = objectMapper.readValue(item.get("data").traverse(), CompanyInfoSo.class);
+            final JsonNode items = jsonNode.get("items");
+            for (final JsonNode item : items) {
+                final String language = item.get("language").asText();
+                final CompanyInfoSo companyInfoDto = objectMapper.readValue(item.get("data").traverse(), CompanyInfoSo.class);
                 result.items().add(new LocalizedDataItemSo<>(language, companyInfoDto));
             }
         }

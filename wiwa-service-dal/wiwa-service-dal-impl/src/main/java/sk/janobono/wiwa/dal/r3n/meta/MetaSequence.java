@@ -9,7 +9,7 @@ public enum MetaSequence {
 
     private final String sequenceName;
 
-    MetaSequence(String sequenceName) {
+    MetaSequence(final String sequenceName) {
         this.sequenceName = sequenceName;
     }
 

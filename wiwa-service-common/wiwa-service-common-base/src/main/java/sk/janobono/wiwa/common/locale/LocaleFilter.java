@@ -22,8 +22,8 @@ public class LocaleFilter extends OncePerRequestFilter {
     private final RequestLocale requestLocale;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String locale = request.getParameter("locale");
+    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain) throws ServletException, IOException {
+        final String locale = request.getParameter("locale");
         if (StringUtils.hasLength(locale)) {
             requestLocale.setLocale(StringUtils.parseLocale(locale));
         }

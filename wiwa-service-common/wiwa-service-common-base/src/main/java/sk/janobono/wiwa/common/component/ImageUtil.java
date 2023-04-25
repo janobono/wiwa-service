@@ -12,24 +12,22 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.MessageFormat;
-import java.util.Base64;
 
 @Component
 public class ImageUtil {
 
-    public byte[] scaleImage(String fileType, byte[] data, int maxWidth, int maxHeight) {
+    public byte[] scaleImage(final String fileType, final byte[] data, final int maxWidth, final int maxHeight) {
         try {
             return toByteArray(scaleImage(toBufferedImage(data), maxWidth, maxHeight), formatName(fileType));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public byte[] scaleImageAndCropToSquare(String fileType, byte[] data, int maxSize) {
+    public byte[] scaleImageAndCropToSquare(final String fileType, final byte[] data, final int maxSize) {
         try {
             return toByteArray(scaleImageAndCropToSquare(toBufferedImage(data), maxSize), formatName(fileType));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -39,16 +37,16 @@ public class ImageUtil {
             message = "NOT FOUND";
         }
 
-        Font font = new Font("Arial", Font.PLAIN, 18);
+        final Font font = new Font("Arial", Font.PLAIN, 18);
 
         BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = img.createGraphics();
 
         g2d.setFont(font);
         FontMetrics fm = g2d.getFontMetrics();
-        int width = fm.stringWidth(message.toUpperCase());
+        final int width = fm.stringWidth(message.toUpperCase());
 
-        int height = fm.getHeight();
+        final int height = fm.getHeight();
         g2d.dispose();
 
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -68,21 +66,21 @@ public class ImageUtil {
         g2d.drawString(message.toUpperCase(), 0, fm.getAscent());
         g2d.dispose();
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             ImageIO.write(img, "png", baos);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
         return baos.toByteArray();
     }
 
-    private String formatName(String fileType) {
+    private String formatName(final String fileType) {
         return fileType.replaceFirst("image/", "");
     }
 
-    private byte[] toByteArray(BufferedImage bufferedImage, String formatName) throws IOException {
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+    private byte[] toByteArray(final BufferedImage bufferedImage, final String formatName) throws IOException {
+        try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             switch (formatName.toLowerCase()) {
                 case "jpeg", "jpg" -> processJPEGOutput(byteArrayOutputStream, bufferedImage, formatName);
                 case "png" -> processPNGOutput(byteArrayOutputStream, bufferedImage, formatName);
@@ -93,34 +91,34 @@ public class ImageUtil {
         }
     }
 
-    private BufferedImage toBufferedImage(byte[] data) {
-        try (InputStream is = new ByteArrayInputStream(data)) {
+    private BufferedImage toBufferedImage(final byte[] data) {
+        try (final InputStream is = new ByteArrayInputStream(data)) {
             return ImageIO.read(is);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private BufferedImage scaleImageAndCropToSquare(BufferedImage image, int maxSize) {
-        int height = image.getHeight();
-        int width = image.getWidth();
-        int side = Math.min(width, height);
+    private BufferedImage scaleImageAndCropToSquare(final BufferedImage image, final int maxSize) {
+        final int height = image.getHeight();
+        final int width = image.getWidth();
+        final int side = Math.min(width, height);
 
-        int x = (image.getWidth() - side) / 2;
-        int y = (image.getHeight() - side) / 2;
+        final int x = (image.getWidth() - side) / 2;
+        final int y = (image.getHeight() - side) / 2;
 
-        BufferedImage cropped = image.getSubimage(x, y, side, side);
-        Image scaledImg = cropped.getScaledInstance(maxSize, maxSize, Image.SCALE_SMOOTH);
-        BufferedImage scaled = new BufferedImage(scaledImg.getWidth(null), scaledImg.getHeight(null), BufferedImage.TYPE_INT_RGB);
-        Graphics graphics = scaled.getGraphics();
+        final BufferedImage cropped = image.getSubimage(x, y, side, side);
+        final Image scaledImg = cropped.getScaledInstance(maxSize, maxSize, Image.SCALE_SMOOTH);
+        final BufferedImage scaled = new BufferedImage(scaledImg.getWidth(null), scaledImg.getHeight(null), BufferedImage.TYPE_INT_RGB);
+        final Graphics graphics = scaled.getGraphics();
         graphics.drawImage(scaledImg, 0, 0, maxSize, maxSize, null);
         graphics.dispose();
         return scaled;
     }
 
-    private BufferedImage scaleImage(BufferedImage image, int maxWidth, int maxHeight) {
-        int imageWidth = image.getWidth();
-        int imageHeight = image.getHeight();
+    private BufferedImage scaleImage(final BufferedImage image, final int maxWidth, final int maxHeight) {
+        final int imageWidth = image.getWidth();
+        final int imageHeight = image.getHeight();
         float horizontalRatio = 1;
         float verticalRatio = 1;
         if (imageHeight > maxHeight) {
@@ -135,31 +133,31 @@ public class ImageUtil {
         } else if (horizontalRatio < verticalRatio) {
             scaleRatio = horizontalRatio;
         }
-        int destWidth = (int) (imageWidth * scaleRatio);
-        int destHeight = (int) (imageHeight * scaleRatio);
+        final int destWidth = (int) (imageWidth * scaleRatio);
+        final int destHeight = (int) (imageHeight * scaleRatio);
 
-        Image scaledImg = image.getScaledInstance(destWidth, destHeight, Image.SCALE_SMOOTH);
-        BufferedImage scaled = new BufferedImage(destWidth, destHeight, image.getType());
-        Graphics graphics = scaled.getGraphics();
+        final Image scaledImg = image.getScaledInstance(destWidth, destHeight, Image.SCALE_SMOOTH);
+        final BufferedImage scaled = new BufferedImage(destWidth, destHeight, image.getType());
+        final Graphics graphics = scaled.getGraphics();
         graphics.drawImage(scaledImg, 0, 0, destWidth, destHeight, null);
         graphics.dispose();
         return scaled;
     }
 
-    private void processJPEGOutput(ByteArrayOutputStream byteArrayOutputStream, BufferedImage bufferedImage, String formatName) throws IOException {
-        ImageWriter imageWriter = ImageIO.getImageWritersByFormatName(formatName).next();
-        ImageWriteParam imageWriteParam = imageWriter.getDefaultWriteParam();
+    private void processJPEGOutput(final ByteArrayOutputStream byteArrayOutputStream, final BufferedImage bufferedImage, final String formatName) throws IOException {
+        final ImageWriter imageWriter = ImageIO.getImageWritersByFormatName(formatName).next();
+        final ImageWriteParam imageWriteParam = imageWriter.getDefaultWriteParam();
         imageWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
         imageWriteParam.setCompressionQuality(0.90f);
-        ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_RGB);
-        IIOMetadata metadata = imageWriter.getDefaultImageMetadata(typeSpecifier, imageWriteParam);
+        final ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_RGB);
+        final IIOMetadata metadata = imageWriter.getDefaultImageMetadata(typeSpecifier, imageWriteParam);
 
-        try (ImageOutputStream ios = ImageIO.createImageOutputStream(byteArrayOutputStream)) {
+        try (final ImageOutputStream ios = ImageIO.createImageOutputStream(byteArrayOutputStream)) {
             if (!metadata.isReadOnly() && metadata.isStandardMetadataFormatSupported()) {
-                IIOMetadataNode root = new IIOMetadataNode("javax_imageio_jpeg_image_1.0");
-                IIOMetadataNode jpegVariety = new IIOMetadataNode("JPEGvariety");
-                IIOMetadataNode markerSequence = new IIOMetadataNode("markerSequence");
-                IIOMetadataNode app0JFIF = new IIOMetadataNode("app0JFIF");
+                final IIOMetadataNode root = new IIOMetadataNode("javax_imageio_jpeg_image_1.0");
+                final IIOMetadataNode jpegVariety = new IIOMetadataNode("JPEGvariety");
+                final IIOMetadataNode markerSequence = new IIOMetadataNode("markerSequence");
+                final IIOMetadataNode app0JFIF = new IIOMetadataNode("app0JFIF");
 
                 app0JFIF.setAttribute("majorVersion", "1");
                 app0JFIF.setAttribute("minorVersion", "2");
@@ -180,27 +178,27 @@ public class ImageUtil {
         }
     }
 
-    private void processPNGOutput(ByteArrayOutputStream byteArrayOutputStream, BufferedImage bufferedImage, String formatName) throws IOException {
-        ImageWriter imageWriter = ImageIO.getImageWritersByFormatName(formatName).next();
-        ImageWriteParam imageWriteParam = imageWriter.getDefaultWriteParam();
-        ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_RGB);
-        IIOMetadata metadata = imageWriter.getDefaultImageMetadata(typeSpecifier, imageWriteParam);
+    private void processPNGOutput(final ByteArrayOutputStream byteArrayOutputStream, final BufferedImage bufferedImage, final String formatName) throws IOException {
+        final ImageWriter imageWriter = ImageIO.getImageWritersByFormatName(formatName).next();
+        final ImageWriteParam imageWriteParam = imageWriter.getDefaultWriteParam();
+        final ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_RGB);
+        final IIOMetadata metadata = imageWriter.getDefaultImageMetadata(typeSpecifier, imageWriteParam);
 
-        try (ImageOutputStream ios = ImageIO.createImageOutputStream(byteArrayOutputStream)) {
+        try (final ImageOutputStream ios = ImageIO.createImageOutputStream(byteArrayOutputStream)) {
             if (!metadata.isReadOnly() && metadata.isStandardMetadataFormatSupported()) {
-                double dotsPerMilli = 1.0 * 96 / 10 / 2.54;
+                final double dotsPerMilli = 1.0 * 96 / 10 / 2.54;
 
-                IIOMetadataNode horiz = new IIOMetadataNode("HorizontalPixelSize");
+                final IIOMetadataNode horiz = new IIOMetadataNode("HorizontalPixelSize");
                 horiz.setAttribute("value", Double.toString(dotsPerMilli));
 
-                IIOMetadataNode vert = new IIOMetadataNode("VerticalPixelSize");
+                final IIOMetadataNode vert = new IIOMetadataNode("VerticalPixelSize");
                 vert.setAttribute("value", Double.toString(dotsPerMilli));
 
-                IIOMetadataNode dim = new IIOMetadataNode("Dimension");
+                final IIOMetadataNode dim = new IIOMetadataNode("Dimension");
                 dim.appendChild(horiz);
                 dim.appendChild(vert);
 
-                IIOMetadataNode root = new IIOMetadataNode("javax_imageio_1.0");
+                final IIOMetadataNode root = new IIOMetadataNode("javax_imageio_1.0");
                 root.appendChild(dim);
 
                 metadata.mergeTree("javax_imageio_1.0", root);

@@ -26,18 +26,18 @@ class UserControllerTest extends BaseIntegrationTest {
 
     @Test
     public void allUserControllerMethods() throws Exception {
-        String token = signIn(DEFAULT_ADMIN, PASSWORD).token();
+        final String token = signIn(DEFAULT_ADMIN, PASSWORD).token();
 
-        HttpHeaders headers = new HttpHeaders();
+        final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(token);
 
-        List<UserSo> users = new ArrayList<>();
+        final List<UserSo> users = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             users.add(addUser(headers, i));
         }
 
-        for (UserSo userSO : users) {
+        for (final UserSo userSO : users) {
             assertThat(userSO).usingRecursiveComparison().isEqualTo(getUser(headers, userSO.id()));
         }
 
@@ -59,7 +59,7 @@ class UserControllerTest extends BaseIntegrationTest {
         assertThat(page.getTotalPages()).isEqualTo(1);
         assertThat(page.getContent().size()).isEqualTo(1);
 
-        for (UserSo userSO : users) {
+        for (final UserSo userSO : users) {
             setUser(headers, userSO);
             setAuthorities(headers, userSO);
             setConfirmed(headers, userSO);
@@ -68,8 +68,8 @@ class UserControllerTest extends BaseIntegrationTest {
         }
     }
 
-    private UserSo getUser(HttpHeaders headers, Long id) {
-        ResponseEntity<UserSo> response = restTemplate.exchange(
+    private UserSo getUser(final HttpHeaders headers, final Long id) {
+        final ResponseEntity<UserSo> response = restTemplate.exchange(
                 getURI("/users/{id}", Map.of("id", Long.toString(id))),
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
@@ -80,9 +80,9 @@ class UserControllerTest extends BaseIntegrationTest {
         return response.getBody();
     }
 
-    private Page<UserSo> getUsers(HttpHeaders headers, Pageable pageable) {
-        MultiValueMap<String, String> params = pageableToParams(pageable);
-        ResponseEntity<JsonNode> response = restTemplate.exchange(
+    private Page<UserSo> getUsers(final HttpHeaders headers, final Pageable pageable) {
+        final MultiValueMap<String, String> params = pageableToParams(pageable);
+        final ResponseEntity<JsonNode> response = restTemplate.exchange(
                 getURI("/users", params),
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
@@ -93,12 +93,12 @@ class UserControllerTest extends BaseIntegrationTest {
         return getPage(response.getBody(), pageable, UserSo.class);
     }
 
-    private Page<UserSo> getUsers(HttpHeaders headers, String searchField, String username, String email, Pageable pageable) {
-        MultiValueMap<String, String> params = pageableToParams(pageable);
+    private Page<UserSo> getUsers(final HttpHeaders headers, final String searchField, final String username, final String email, final Pageable pageable) {
+        final MultiValueMap<String, String> params = pageableToParams(pageable);
         params.add("search-field", searchField);
         params.add("username", username);
         params.add("email", email);
-        ResponseEntity<JsonNode> response = restTemplate.exchange(
+        final ResponseEntity<JsonNode> response = restTemplate.exchange(
                 getURI("/users", params),
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
@@ -109,8 +109,8 @@ class UserControllerTest extends BaseIntegrationTest {
         return getPage(response.getBody(), pageable, UserSo.class);
     }
 
-    private UserSo addUser(HttpHeaders headers, int index) {
-        ResponseEntity<UserSo> response = restTemplate.exchange(
+    private UserSo addUser(final HttpHeaders headers, final int index) {
+        final ResponseEntity<UserSo> response = restTemplate.exchange(
                 getURI("/users"),
                 HttpMethod.POST,
                 new HttpEntity<>(new UserDataSo(
@@ -133,8 +133,8 @@ class UserControllerTest extends BaseIntegrationTest {
         return response.getBody();
     }
 
-    private void setUser(HttpHeaders headers, UserSo userDto) {
-        ResponseEntity<UserSo> response = restTemplate.exchange(
+    private void setUser(final HttpHeaders headers, final UserSo userDto) {
+        final ResponseEntity<UserSo> response = restTemplate.exchange(
                 getURI("/users/{id}", Map.of("id", Long.toString(userDto.id()))),
                 HttpMethod.PUT,
                 new HttpEntity<>(new UserProfileSo(
@@ -148,12 +148,12 @@ class UserControllerTest extends BaseIntegrationTest {
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        UserSo result = response.getBody();
+        final UserSo result = response.getBody();
         assertThat(result.midName()).isNull();
     }
 
-    private void setAuthorities(HttpHeaders headers, UserSo userDto) {
-        ResponseEntity<UserSo> response = restTemplate.exchange(
+    private void setAuthorities(final HttpHeaders headers, final UserSo userDto) {
+        final ResponseEntity<UserSo> response = restTemplate.exchange(
                 getURI("/users/{id}/authorities", Map.of("id", Long.toString(userDto.id()))),
                 HttpMethod.PATCH,
                 new HttpEntity<>(
@@ -166,8 +166,8 @@ class UserControllerTest extends BaseIntegrationTest {
         assertThat(response.getBody().authorities().size()).isEqualTo(2);
     }
 
-    private void setConfirmed(HttpHeaders headers, UserSo userDto) {
-        ResponseEntity<UserSo> response = restTemplate.exchange(
+    private void setConfirmed(final HttpHeaders headers, final UserSo userDto) {
+        final ResponseEntity<UserSo> response = restTemplate.exchange(
                 getURI("/users/{id}/confirm", Map.of("id", Long.toString(userDto.id()))),
                 HttpMethod.PATCH,
                 new HttpEntity<>(new SingleValueBody<>(Boolean.TRUE), headers),
@@ -178,8 +178,8 @@ class UserControllerTest extends BaseIntegrationTest {
         assertThat(response.getBody().confirmed()).isTrue();
     }
 
-    private void setEnabled(HttpHeaders headers, UserSo userDto) {
-        ResponseEntity<UserSo> response = restTemplate.exchange(
+    private void setEnabled(final HttpHeaders headers, final UserSo userDto) {
+        final ResponseEntity<UserSo> response = restTemplate.exchange(
                 getURI("/users/{id}/enable", Map.of("id", Long.toString(userDto.id()))),
                 HttpMethod.PATCH,
                 new HttpEntity<>(new SingleValueBody<>(Boolean.TRUE), headers),
@@ -190,8 +190,8 @@ class UserControllerTest extends BaseIntegrationTest {
         assertThat(response.getBody().enabled()).isTrue();
     }
 
-    private void deleteUser(HttpHeaders headers, Long id) {
-        ResponseEntity<Void> response = restTemplate.exchange(
+    private void deleteUser(final HttpHeaders headers, final Long id) {
+        final ResponseEntity<Void> response = restTemplate.exchange(
                 getURI("/users/{id}", Map.of("id", Long.toString(id))),
                 HttpMethod.DELETE,
                 new HttpEntity<>(headers),

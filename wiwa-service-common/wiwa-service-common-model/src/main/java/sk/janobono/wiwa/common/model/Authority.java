@@ -11,7 +11,7 @@ public enum Authority {
 
     private final String value;
 
-    Authority(String value) {
+    Authority(final String value) {
         this.value = value;
     }
 
@@ -21,9 +21,9 @@ public enum Authority {
         return value;
     }
 
-    public static Authority byValue(String value) {
+    public static Authority byValue(final String value) {
         Authority result = null;
-        for (Authority auth : Authority.values()) {
+        for (final Authority auth : Authority.values()) {
             if (auth.value.equals(value)) {
                 result = auth;
                 break;

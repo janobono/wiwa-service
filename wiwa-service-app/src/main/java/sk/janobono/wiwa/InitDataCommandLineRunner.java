@@ -38,8 +38,8 @@ public class InitDataCommandLineRunner implements CommandLineRunner {
     private final ApplicationPropertyRepository applicationPropertyRepository;
 
     @Override
-    public void run(String... args) throws Exception {
-        Path dataDir = Path.of(commonConfigProperties.initDataPath()).normalize().toAbsolutePath();
+    public void run(final String... args) throws Exception {
+        final Path dataDir = Path.of(commonConfigProperties.initDataPath()).normalize().toAbsolutePath();
         initAuthorities();
         initUsers(dataDir);
         initApplicationProperties(dataDir);
@@ -48,16 +48,16 @@ public class InitDataCommandLineRunner implements CommandLineRunner {
     private void initAuthorities() {
         if (authorityRepository.count() == 0L) {
             log.debug("initAuthorities()");
-            for (Authority authority : Authority.values()) {
+            for (final Authority authority : Authority.values()) {
                 authorityRepository.addAuthority(authority);
             }
         }
     }
 
-    private void initUsers(Path dataDir) throws Exception {
+    private void initUsers(final Path dataDir) throws Exception {
         if (userRepository.count() == 0L) {
             log.debug("initUsers({})", dataDir);
-            Path dataPath = dataDir.resolve("users.json");
+            final Path dataPath = dataDir.resolve("users.json");
             userRepository.addUser(
                     new UserDo(
                             null,
@@ -78,25 +78,25 @@ public class InitDataCommandLineRunner implements CommandLineRunner {
         }
     }
 
-    private void initApplicationProperties(Path dataDir) throws Exception {
+    private void initApplicationProperties(final Path dataDir) throws Exception {
         if (applicationPropertyRepository.count() == 0L) {
             log.debug("initApplicationProperties({})", dataDir);
-            Path dataPath = dataDir.resolve("application-properties.json");
+            final Path dataPath = dataDir.resolve("application-properties.json");
             if (dataPath.toFile().exists()) {
-                ApplicationPropertyDo[] applicationProperties = objectMapper.readValue(
+                final ApplicationPropertyDo[] applicationProperties = objectMapper.readValue(
                         dataPath.toFile(), ApplicationPropertyDo[].class
                 );
-                for (ApplicationPropertyDo applicationPropertyDo : applicationProperties) {
+                for (final ApplicationPropertyDo applicationPropertyDo : applicationProperties) {
                     applicationPropertyRepository.addApplicationProperty(applicationPropertyDo);
                 }
             }
-            Path dataDirPath = dataDir.resolve("application-properties");
+            final Path dataDirPath = dataDir.resolve("application-properties");
             if (dataDirPath.toFile().exists() && dataDirPath.toFile().isDirectory()) {
-                List<File> dataFiles = Arrays.stream(Objects.requireNonNull(dataDirPath.toFile().listFiles())).filter(
+                final List<File> dataFiles = Arrays.stream(Objects.requireNonNull(dataDirPath.toFile().listFiles())).filter(
                         f -> f.isFile() && f.getName().endsWith(".md")
                 ).toList();
-                for (File dataFile : dataFiles) {
-                    String[] propertyId = dataFile.getName().replaceAll(".md", "").split("-");
+                for (final File dataFile : dataFiles) {
+                    final String[] propertyId = dataFile.getName().replaceAll(".md", "").split("-");
                     applicationPropertyRepository.addApplicationProperty(
                             new ApplicationPropertyDo(
                                     propertyId[0], propertyId[1], propertyId[2],

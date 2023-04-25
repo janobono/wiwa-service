@@ -7,7 +7,7 @@ public record WiwaApplicationImageDto(
         byte[] data
 ) {
 
-    public static Object[] toArray(WiwaApplicationImageDto wiwaApplicationImageDto) {
+    public static Object[] toArray(final WiwaApplicationImageDto wiwaApplicationImageDto) {
         return new Object[]{
                 wiwaApplicationImageDto.fileName,
                 wiwaApplicationImageDto.fileType,
@@ -16,7 +16,7 @@ public record WiwaApplicationImageDto(
         };
     }
 
-    public static WiwaApplicationImageDto toObject(Object[] array) {
+    public static WiwaApplicationImageDto toObject(final Object[] array) {
         return new WiwaApplicationImageDto(
                 (String) array[0],
                 (String) array[1],

@@ -25,16 +25,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtToken jwtToken;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
-                                    FilterChain filterChain) throws IOException, ServletException {
+    protected void doFilterInternal(
+            final HttpServletRequest httpServletRequest,
+            final HttpServletResponse httpServletResponse,
+            final FilterChain filterChain) throws IOException, ServletException {
         log.debug("doFilterInternal({})", httpServletRequest.getRequestURI());
-        String authorizationHeader = httpServletRequest.getHeader("Authorization");
+        final String authorizationHeader = httpServletRequest.getHeader("Authorization");
         if (StringUtils.hasLength(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.replace("Bearer ", "");
-            UserSo userSo = jwtToken.parseToken(token);
+            final String token = authorizationHeader.replace("Bearer ", "");
+            final UserSo userSo = jwtToken.parseToken(token);
             if (userSo != null) {
                 log.debug("user: {}", userSo);
-                List<SimpleGrantedAuthority> authorities = userSo.authorities().stream()
+                final List<SimpleGrantedAuthority> authorities = userSo.authorities().stream()
                         .map(authority -> new SimpleGrantedAuthority(authority.toString())).collect(Collectors.toList());
                 SecurityContextHolder.getContext()
                         .setAuthentication(new UsernamePasswordAuthenticationToken(userSo, null, authorities));
