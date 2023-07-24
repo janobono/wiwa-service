@@ -1,0 +1,114 @@
+# ===============================
+# = SERVER
+# ===============================
+server:
+  port: ${PORT:8080}
+  error:
+    whitelabel:
+      enabled: false
+  servlet:
+    context-path: ${CONTEXT_PATH:/api}
+
+# ===============================
+# = LOGGING
+# ===============================
+logging:
+  level:
+    sk.janobono.wiwa: ${LOG_LEVEL:debug}
+
+# ===============================
+# = SPRING
+# ===============================
+spring:
+  mvc:
+    throw-exception-if-no-handler-found: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  web:
+    resources:
+      add-mappings: false
+
+  # ===============================
+  # = JPA / HIBERNATE
+  # ===============================
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/app}
+    username: ${DB_USER:app}
+    password: ${DB_PASS:app}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:5}
+      minimum-idle: ${DB_POOL_IDLE:2}
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        event:
+          merge:
+            entity_copy_observer: allow
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    open-in-view: false
+
+  # ===============================
+  # = MAIL
+  # ===============================
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username: ${MAIL_USER}
+    password: ${MAIL_PASS}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_AUTH:false}
+          starttls:
+            enable: ${MAIL_TLS_ENABLE:false}
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+# ===============================
+# = ACTUATOR
+# ===============================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+# ===============================
+# = SPRING DOC
+# ===============================
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+# ===============================
+# = APP
+# ===============================
+app:
+  common:
+    default-locale: ${DEFAULT_LOCALE:en_US}
+    web-url: ${WEB_URL:http://localhost:8080}
+    mail: ${MAIL:mail@wiwa.sk}
+    init-data-path: ${INIT_DATA_PATH:./data}
+    max-image-resolution: ${MAX_IMAGE_RESOLUTION:1000}
+    max-thumbnail-resolution: ${MAX_THUMBNAIL_RESOLUTION:130}
+    captcha-length: ${CAPTCHA_LENGTH:4}
+  auth:
+    sign-up-token-expiration: ${SIGN_UP_TOKEN_EXPIRES_IN:120}
+    reset-password-token-expiration: ${RESET_PASSWORD_TOKEN_EXPIRES_IN:120}
+    refresh-token-expiration: ${REFRESH_TOKEN_EXPIRES_IN:36}
+  jwt:
+    issuer: ${TOKEN_ISSUER:wiwa}
+    expiration: ${TOKEN_EXPIRES_IN:1}
+  verification:
+    issuer: ${VERIFICATION_TOKEN_ISSUER:verification}

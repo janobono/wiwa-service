@@ -1,14 +1,5 @@
 FROM maven:3-eclipse-temurin-17-focal as builder
 
-RUN apt-get -y update
-RUN apt-get -y install git
-
-WORKDIR /r3n
-
-RUN git clone -b 6.0.3 https://github.com/janobono/r3n-api.git .
-
-RUN mvn clean install -DskipTests
-
 WORKDIR /app
 
 COPY . .
@@ -17,7 +8,7 @@ RUN mvn clean install -DskipTests
 
 FROM eclipse-temurin:17-jre-alpine as extractor
 WORKDIR app
-COPY --from=builder /app/wiwa-service-app/target/*.jar app.jar
+COPY --from=builder /app/target/*.jar app.jar
 RUN java -Djarmode=layertools -jar app.jar extract
 
 FROM eclipse-temurin:17-jre-alpine as production

@@ -1,332 +1,233 @@
 [
   {
-    "group": "APP",
-    "key": "TITLE",
-    "language": "en",
+    "key": {
+      "group": "APP",
+      "key": "TITLE"
+    },
     "value": "WIWA - Internet store"
   },
   {
-    "group": "APP",
-    "key": "TITLE",
-    "language": "sk",
-    "value": "WIWA - Internetový obchod"
-  },
-  {
-    "group": "APP",
-    "key": "WELCOME_TEXT",
-    "language": "en",
+    "key": {
+      "group": "APP",
+      "key": "WELCOME_TEXT"
+    },
     "value": "If you plan to make the furniture yourself, we offer you the opportunity to order from us quality prepared furniture parts for your kitchen, office or other interior project. We will provide you with the required materials (DTD, MDF, HDF), cutting and gluing the edges exactly according to your wishes."
   },
   {
-    "group": "APP",
-    "key": "WELCOME_TEXT",
-    "language": "sk",
-    "value": "V prípade ak si plánujete vyrobiť nábytok samostatne, ponúkame Vám možnosť objednať si u nás kvalitne pripravené nábytkové dielce pre váš projekt kuchyne, kancelárie alebo iného interiéru. Zabezpečíme pre Vás požadované materiály (DTD, MDF, HDF), porez a lepenie hrany presne podľa vaších predstáv."
-  },
-  {
-    "group": "APP_INFO_SLIDE",
-    "key": "COUNT",
-    "language": "",
+    "key": {
+      "group": "APP_INFO_SLIDE",
+      "key": "COUNT"
+    },
     "value": "3"
   },
   {
-    "group": "APP_INFO_SLIDE",
-    "key": "0_TITLE",
-    "language": "en",
+    "key": {
+      "group": "APP_INFO_SLIDE",
+      "key": "0_TITLE"
+    },
     "value": "Cutting and edging"
   },
   {
-    "group": "APP_INFO_SLIDE",
-    "key": "0_TITLE",
-    "language": "sk",
-    "value": "Rezanie a hranovanie"
-  },
-  {
-    "group": "APP_INFO_SLIDE",
-    "key": "0_TEXT",
-    "language": "en",
+    "key": {
+      "group": "APP_INFO_SLIDE",
+      "key": "0_TEXT"
+    },
     "value": "Cutting and edging chipboard precisely to measure, laminated chipboards and ABS edges in more than 150 decors."
   },
   {
-    "group": "APP_INFO_SLIDE",
-    "key": "0_TEXT",
-    "language": "sk",
-    "value": "Rezanie a hranovanie drevotriesky presne na mieru, laminované drevotrieskové dosky a ABS hrany vo viac ako 150 dekoroch."
-  },
-  {
-    "group": "APP_INFO_SLIDE",
-    "key": "0_IMAGE",
-    "language": "",
+    "key": {
+      "group": "APP_INFO_SLIDE",
+      "key": "0_IMAGE"
+    },
     "value": "cutting-and-edging.png"
   },
   {
-    "group": "APP_INFO_SLIDE",
-    "key": "1_TITLE",
-    "language": "en",
+    "key": {
+      "group": "APP_INFO_SLIDE",
+      "key": "1_TITLE"
+    },
     "value": "Online ordering"
   },
   {
-    "group": "APP_INFO_SLIDE",
-    "key": "1_TITLE",
-    "language": "sk",
-    "value": "On-line objednávka"
-  },
-  {
-    "group": "APP_INFO_SLIDE",
-    "key": "1_TEXT",
-    "language": "en",
+    "key": {
+      "group": "APP_INFO_SLIDE",
+      "key": "1_TEXT"
+    },
     "value": "A simple, convenient, safe and fast way of online ordering. Choose the material, specify the type of part, dimensions, quantity."
   },
   {
-    "group": "APP_INFO_SLIDE",
-    "key": "1_TEXT",
-    "language": "sk",
-    "value": "Jednoduchý, pohodlný, bezpečný a rýchly spôsob on-line objednávky. Vyberte si materiál, špecifikujte druh dielca, rozmery, množstvo."
-  },
-  {
-    "group": "APP_INFO_SLIDE",
-    "key": "1_IMAGE",
-    "language": "",
+    "key": {
+      "group": "APP_INFO_SLIDE",
+      "key": "1_IMAGE"
+    },
     "value": "online-ordering.png"
   },
   {
-    "group": "APP_INFO_SLIDE",
-    "key": "2_TITLE",
-    "language": "en",
+    "key": {
+      "group": "APP_INFO_SLIDE",
+      "key": "2_TITLE"
+    },
     "value": "Manufacture and delivery"
   },
   {
-    "group": "APP_INFO_SLIDE",
-    "key": "2_TITLE",
-    "language": "sk",
-    "value": "Výroba a dodávka"
-  },
-  {
-    "group": "APP_INFO_SLIDE",
-    "key": "2_TEXT",
-    "language": "en",
+    "key": {
+      "group": "APP_INFO_SLIDE",
+      "key": "2_TEXT"
+    },
     "value": "Now just wait for your furniture parts, we will manufacture and deliver them exactly according to your requirements."
   },
   {
-    "group": "APP_INFO_SLIDE",
-    "key": "2_TEXT",
-    "language": "sk",
-    "value": "Teraz už iba čakajte na svoje nábytkové dielce, vyrobíme ich a dodáme presne podľa vašich požiadaviek."
-  },
-  {
-    "group": "APP_INFO_SLIDE",
-    "key": "2_IMAGE",
-    "language": "",
+    "key": {
+      "group": "APP_INFO_SLIDE",
+      "key": "2_IMAGE"
+    },
     "value": "manufacture-and-delivery.png"
   },
   {
-    "group": "COMPANY",
-    "key": "NAME",
-    "language": "en",
+    "key": {
+      "group": "COMPANY",
+      "key": "NAME"
+    },
     "value": "WIWA, Ltd."
   },
   {
-    "group": "COMPANY",
-    "key": "NAME",
-    "language": "sk",
-    "value": "WIWA, s.r.o."
-  },
-  {
-    "group": "COMPANY",
-    "key": "STREET",
-    "language": "en",
+    "key": {
+      "group": "COMPANY",
+      "key": "STREET"
+    },
     "value": "Street 12/4567"
   },
   {
-    "group": "COMPANY",
-    "key": "STREET",
-    "language": "sk",
-    "value": "Ulica 12/4567"
-  },
-  {
-    "group": "COMPANY",
-    "key": "CITY",
-    "language": "en",
+    "key": {
+      "group": "COMPANY",
+      "key": "CITY"
+    },
     "value": "Zvolen"
   },
   {
-    "group": "COMPANY",
-    "key": "CITY",
-    "language": "sk",
-    "value": "Zvolen"
-  },
-  {
-    "group": "COMPANY",
-    "key": "ZIP_CODE",
-    "language": "",
+    "key": {
+      "group": "COMPANY",
+      "key": "ZIP_CODE"
+    },
     "value": "960 01"
   },
   {
-    "group": "COMPANY",
-    "key": "STATE",
-    "language": "en",
+    "key": {
+      "group": "COMPANY",
+      "key": "STATE"
+    },
     "value": "Slovakia"
   },
   {
-    "group": "COMPANY",
-    "key": "STATE",
-    "language": "sk",
-    "value": "Slovensko"
-  },
-  {
-    "group": "COMPANY",
-    "key": "PHONE",
-    "language": "",
+    "key": {
+      "group": "COMPANY",
+      "key": "PHONE"
+    },
     "value": "+421 111 111 111"
   },
   {
-    "group": "COMPANY",
-    "key": "MAIL",
-    "language": "",
+    "key": {
+      "group": "COMPANY",
+      "key": "MAIL"
+    },
     "value": "mail@domain.sk"
   },
   {
-    "group": "COMPANY",
-    "key": "COMMERCIAL_REGISTER_INFO",
-    "language": "en",
+    "key": {
+      "group": "COMPANY",
+      "key": "COMMERCIAL_REGISTER_INFO"
+    },
     "value": "The company is registered in the Commercial Register of the District Court in Zvolen, section Sro, insert number 11111/P"
   },
   {
-    "group": "COMPANY",
-    "key": "COMMERCIAL_REGISTER_INFO",
-    "language": "sk",
-    "value": "Spoločnosť je zapísaná v Obchodnom registri Okresného súdu vo Zvolene, oddiel Sro, vložka číslo 11111/P"
-  },
-  {
-    "group": "COMPANY",
-    "key": "BUSINESS_ID",
-    "language": "",
+    "key": {
+      "group": "COMPANY",
+      "key": "BUSINESS_ID"
+    },
     "value": "11 111 111"
   },
   {
-    "group": "COMPANY",
-    "key": "TAX_ID",
-    "language": "",
+    "key": {
+      "group": "COMPANY",
+      "key": "TAX_ID"
+    },
     "value": "1111111111"
   },
   {
-    "group": "COMPANY",
-    "key": "VAT_REG_NO",
-    "language": "",
+    "key": {
+      "group": "COMPANY",
+      "key": "VAT_REG_NO"
+    },
     "value": "SK1111111111"
   },
   {
-    "group": "COMPANY",
-    "key": "MAP_URL",
-    "language": "",
+    "key": {
+      "group": "COMPANY",
+      "key": "MAP_URL"
+    },
     "value": "https://maps.google.com/maps?q=Zvolen&t=&z=13&ie=UTF8&iwloc=&output=embed"
   },
   {
-    "group": "AUTH_RESET_PASSWORD_MAIL",
-    "key": "SUBJECT",
-    "language": "en",
+    "key": {
+      "group": "AUTH_RESET_PASSWORD_MAIL",
+      "key": "SUBJECT"
+    },
     "value": "Password activation"
   },
   {
-    "group": "AUTH_RESET_PASSWORD_MAIL",
-    "key": "SUBJECT",
-    "language": "sk",
-    "value": "Aktivácia hesla"
-  },
-  {
-    "group": "AUTH_RESET_PASSWORD_MAIL",
-    "key": "TITLE",
-    "language": "en",
+    "key": {
+      "group": "AUTH_RESET_PASSWORD_MAIL",
+      "key": "TITLE"
+    },
     "value": "Password activation"
   },
   {
-    "group": "AUTH_RESET_PASSWORD_MAIL",
-    "key": "TITLE",
-    "language": "sk",
-    "value": "Aktivácia hesla"
-  },
-  {
-    "group": "AUTH_RESET_PASSWORD_MAIL",
-    "key": "MESSAGE",
-    "language": "en",
+    "key": {
+      "group": "AUTH_RESET_PASSWORD_MAIL",
+      "key": "MESSAGE"
+    },
     "value": "We have generated a new password for you."
   },
   {
-    "group": "AUTH_RESET_PASSWORD_MAIL",
-    "key": "MESSAGE",
-    "language": "sk",
-    "value": "Vygenerovali sme pre Vás nové heslo."
-  },
-  {
-    "group": "AUTH_RESET_PASSWORD_MAIL",
-    "key": "PASSWORD_MESSAGE",
-    "language": "en",
+    "key": {
+      "group": "AUTH_RESET_PASSWORD_MAIL",
+      "key": "PASSWORD_MESSAGE"
+    },
     "value": "New password: {0}"
   },
   {
-    "group": "AUTH_RESET_PASSWORD_MAIL",
-    "key": "PASSWORD_MESSAGE",
-    "language": "sk",
-    "value": "Nové heslo: {0}"
-  },
-  {
-    "group": "AUTH_RESET_PASSWORD_MAIL",
-    "key": "LINK",
-    "language": "en",
+    "key": {
+      "group": "AUTH_RESET_PASSWORD_MAIL",
+      "key": "LINK"
+    },
     "value": "Click to activate the password."
   },
   {
-    "group": "AUTH_RESET_PASSWORD_MAIL",
-    "key": "LINK",
-    "language": "sk",
-    "value": "Kliknutím aktivujete heslo."
-  },
-  {
-    "group": "AUTH_SIGN_UP_MAIL",
-    "key": "SUBJECT",
-    "language": "en",
+    "key": {
+      "group": "AUTH_SIGN_UP_MAIL",
+      "key": "SUBJECT"
+    },
     "value": "Account activation"
   },
   {
-    "group": "AUTH_SIGN_UP_MAIL",
-    "key": "SUBJECT",
-    "language": "sk",
-    "value": "Aktivácia účtu"
-  },
-  {
-    "group": "AUTH_SIGN_UP_MAIL",
-    "key": "TITLE",
-    "language": "en",
+    "key": {
+      "group": "AUTH_SIGN_UP_MAIL",
+      "key": "TITLE"
+    },
     "value": "Account activation"
   },
   {
-    "group": "AUTH_SIGN_UP_MAIL",
-    "key": "TITLE",
-    "language": "sk",
-    "value": "Aktivácia účtu"
-  },
-  {
-    "group": "AUTH_SIGN_UP_MAIL",
-    "key": "MESSAGE",
-    "language": "en",
+    "key": {
+      "group": "AUTH_SIGN_UP_MAIL",
+      "key": "MESSAGE"
+    },
     "value": "Your account has been created."
   },
   {
-    "group": "AUTH_SIGN_UP_MAIL",
-    "key": "MESSAGE",
-    "language": "sk",
-    "value": "Váš účet bol vytvorený."
-  },
-  {
-    "group": "AUTH_SIGN_UP_MAIL",
-    "key": "LINK",
-    "language": "en",
+    "key": {
+      "group": "AUTH_SIGN_UP_MAIL",
+      "key": "LINK"
+    },
     "value": "Click to activate your account."
-  },
-  {
-    "group": "AUTH_SIGN_UP_MAIL",
-    "key": "LINK",
-    "language": "sk",
-    "value": "Kliknutím aktivujete svoj účet."
   }
 ]
