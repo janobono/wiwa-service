@@ -1,0 +1,88 @@
+package sk.janobono.wiwa.api.controller.ui;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import sk.janobono.wiwa.BaseIntegrationTest;
+import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
+import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
+import sk.janobono.wiwa.component.ImageUtil;
+import sk.janobono.wiwa.dal.domain.ApplicationPropertyKeyDo;
+import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
+import sk.janobono.wiwa.model.WiwaProperty;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class IndexControllerTest extends BaseIntegrationTest {
+
+    @Autowired
+    public ImageUtil imageUtil;
+
+    @Autowired
+    public ApplicationPropertyRepository applicationPropertyRepository;
+
+    @Test
+    void fullTest() {
+        // logo
+        final byte[] logo = restTemplate.getForObject(getURI("/ui/logo"), byte[].class);
+        assertThat(logo).isEqualTo(imageUtil.generateMessageImage(null));
+
+        // title
+        final String title = restTemplate.getForObject(getURI("/ui/title"), String.class);
+        assertThat(title).isEqualTo("WIWA - Internet store");
+
+        // welcome-text
+        final String welcomeText = restTemplate.getForObject(getURI("/ui/welcome-text"), String.class);
+        assertThat(welcomeText).isEqualTo("If you plan to make the furniture yourself, we offer you the opportunity to order from us quality prepared furniture parts for your kitchen, office or other interior project. We will provide you with the required materials (DTD, MDF, HDF), cutting and gluing the edges exactly according to your wishes.");
+
+        // application-info
+        final ApplicationInfoSo applicationInfo = restTemplate.getForObject(getURI("/ui/application-info"), ApplicationInfoSo.class);
+        assertThat(applicationInfo).isNotNull();
+        assertThat(applicationInfo.items().size()).isEqualTo(3);
+        assertThat(applicationInfo.items().get(0).title()).isEqualTo("Cutting and edging");
+        assertThat(applicationInfo.items().get(0).text()).isEqualTo("Cutting and edging chipboard precisely to measure, laminated chipboards and ABS edges in more than 150 decors.");
+        assertThat(applicationInfo.items().get(0).imageFileName()).isEqualTo("cutting-and-edging.png");
+
+        // company-info
+        final CompanyInfoSo companyInfoDto = restTemplate.getForObject(getURI("/ui/company-info"), CompanyInfoSo.class);
+        assertThat(companyInfoDto).isNotNull();
+        assertThat(companyInfoDto.name()).isEqualTo("WIWA, Ltd.");
+        assertThat(companyInfoDto.street()).isEqualTo("Street 12/4567");
+        assertThat(companyInfoDto.city()).isEqualTo("Zvolen");
+        assertThat(companyInfoDto.zipCode()).isEqualTo("960 01");
+        assertThat(companyInfoDto.state()).isEqualTo("Slovakia");
+        assertThat(companyInfoDto.phone()).isEqualTo("+421 111 111 111");
+        assertThat(companyInfoDto.mail()).isEqualTo("mail@domain.sk");
+        assertThat(companyInfoDto.businessId()).isEqualTo("11 111 111");
+        assertThat(companyInfoDto.taxId()).isEqualTo("1111111111");
+        assertThat(companyInfoDto.vatRegNo()).isEqualTo("SK1111111111");
+        assertThat(companyInfoDto.commercialRegisterInfo()).isEqualTo("The company is registered in the Commercial Register of the District Court in Zvolen, section Sro, insert number 11111/P");
+        assertThat(companyInfoDto.mapUrl()).isEqualTo("https://maps.google.com/maps?q=Zvolen&t=&z=13&ie=UTF8&iwloc=&output=embed");
+
+        // cookies-info
+        final String cookiesInfo = restTemplate.getForObject(getURI("/ui/cookies-info"), String.class);
+        assertThat(cookiesInfo).isEqualTo(
+                applicationPropertyRepository.findById(new ApplicationPropertyKeyDo(
+                        WiwaProperty.APP_COOKIES_INFO.getGroup(),
+                        WiwaProperty.APP_COOKIES_INFO.getKey()
+                )).orElseThrow().getValue()
+        );
+
+        // gdpr-info
+        final String gdprInfo = restTemplate.getForObject(getURI("/ui/gdpr-info"), String.class);
+        assertThat(gdprInfo).isEqualTo(
+                applicationPropertyRepository.findById(new ApplicationPropertyKeyDo(
+                        WiwaProperty.APP_GDPR_INFO.getGroup(),
+                        WiwaProperty.APP_GDPR_INFO.getKey()
+                )).orElseThrow().getValue()
+        );
+
+        // working-hours
+        final String workingHours = restTemplate.getForObject(getURI("/ui/working-hours"), String.class);
+        assertThat(workingHours).isEqualTo(
+                applicationPropertyRepository.findById(new ApplicationPropertyKeyDo(
+                        WiwaProperty.APP_WORKING_HOURS.getGroup(),
+                        WiwaProperty.APP_WORKING_HOURS.getKey()
+                )).orElseThrow().getValue()
+        );
+    }
+}
