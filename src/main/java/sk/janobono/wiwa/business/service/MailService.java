@@ -31,7 +31,7 @@ public class MailService {
                     mail.attachments() != null && !mail.attachments().isEmpty()
             );
             messageHelper.setFrom(mail.from());
-            if (!Optional.ofNullable(mail.replyTo()).map(String::isBlank).orElse(true)) {
+            if (Optional.ofNullable(mail.replyTo()).filter(s -> !s.isBlank()).isPresent()) {
                 messageHelper.setReplyTo(mail.replyTo());
             }
             mail.recipients().forEach(recipient -> {

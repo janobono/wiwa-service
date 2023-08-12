@@ -3,22 +3,22 @@ package sk.janobono.wiwa.dal.model;
 import jakarta.persistence.criteria.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.util.StringUtils;
 import sk.janobono.wiwa.business.model.user.UserSearchCriteriaSo;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.dal.domain.UserDo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public record UserSearchCriteriaDo(ScDf scDf, UserSearchCriteriaSo criteria) implements Specification<UserDo> {
 
     public Predicate toPredicate(final Root<UserDo> root, final CriteriaQuery<?> criteriaQuery, final CriteriaBuilder criteriaBuilder) {
         criteriaQuery.distinct(true);
-        if (!StringUtils.hasLength(criteria.searchField())
-                && !StringUtils.hasLength(criteria.username())
-                && !StringUtils.hasLength(criteria.email())
+        if (Optional.ofNullable(criteria.searchField()).filter(s -> !s.isBlank()).isEmpty()
+                && Optional.ofNullable(criteria.username()).filter(s -> !s.isBlank()).isEmpty()
+                && Optional.ofNullable(criteria.email()).filter(s -> !s.isBlank()).isEmpty()
         ) {
             log.debug("Empty criteria.");
             return criteriaQuery.getRestriction();
@@ -26,15 +26,15 @@ public record UserSearchCriteriaDo(ScDf scDf, UserSearchCriteriaSo criteria) imp
 
         final List<Predicate> predicates = new ArrayList<>();
         // search field
-        if (StringUtils.hasLength(criteria.searchField())) {
+        if (Optional.ofNullable(criteria.searchField()).filter(s -> !s.isBlank()).isPresent()) {
             predicates.add(searchFieldToPredicate(criteria.searchField(), root, criteriaBuilder));
         }
         // username
-        if (StringUtils.hasLength(criteria.username())) {
+        if (Optional.ofNullable(criteria.username()).filter(s -> !s.isBlank()).isPresent()) {
             predicates.add(criteriaBuilder.like(root.get("username"), "%" + criteria.username() + "%"));
         }
         // email
-        if (StringUtils.hasLength(criteria.username())) {
+        if (Optional.ofNullable(criteria.email()).filter(s -> !s.isBlank()).isPresent()) {
             predicates.add(criteriaBuilder.like(toScDf(root.get("email"), criteriaBuilder), "%" + scDf.toScDf(criteria.email()) + "%"));
         }
         return criteriaQuery.where(criteriaBuilder.and(predicates.toArray(Predicate[]::new))).getRestriction();

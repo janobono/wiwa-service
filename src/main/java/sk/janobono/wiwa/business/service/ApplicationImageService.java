@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.component.LocalStorage;
+import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.ApplicationImageDo;
 import sk.janobono.wiwa.dal.repository.ApplicationImageRepository;
@@ -26,6 +27,7 @@ public class ApplicationImageService {
     private final ApplicationImageMapper applicationImageMapper;
     private final ImageUtil imageUtil;
     private final LocalStorage localStorage;
+    private final ScDf scDf;
     private final ApplicationImageRepository applicationImageRepository;
 
     public Page<ApplicationImage> getApplicationImages(final Pageable pageable) {
@@ -34,7 +36,7 @@ public class ApplicationImageService {
     }
 
     public ResourceEntity getApplicationImage(final String fileName) {
-        return applicationImageRepository.findById(localStorage.stripAndLowerCase(fileName))
+        return applicationImageRepository.findById(scDf.toStripAndLowerCase(fileName))
                 .map(applicationImageDo -> new ResourceEntity(
                         applicationImageDo.getFileName(),
                         applicationImageDo.getFileType(),
@@ -49,7 +51,7 @@ public class ApplicationImageService {
 
     @Transactional
     public ApplicationImage setApplicationImage(final MultipartFile multipartFile) {
-        final String fileName = localStorage.stripAndLowerCase(multipartFile.getOriginalFilename());
+        final String fileName = scDf.toStripAndLowerCase(multipartFile.getOriginalFilename());
         final String fileType = Optional.ofNullable(multipartFile.getContentType())
                 .orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 

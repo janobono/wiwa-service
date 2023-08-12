@@ -27,15 +27,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             final HttpServletRequest httpServletRequest,
             final HttpServletResponse httpServletResponse,
             final FilterChain filterChain) throws IOException, ServletException {
-        final String authorizationHeader = httpServletRequest.getHeader("Authorization");
-        if (!Optional.ofNullable(authorizationHeader).map(String::isBlank).orElse(true) && authorizationHeader.startsWith("Bearer ")) {
-            final String token = authorizationHeader.replace("Bearer ", "");
-            final User user = jwtToken.parseToken(token);
-            final List<SimpleGrantedAuthority> authorities = user.authorities().stream()
-                    .map(authority -> new SimpleGrantedAuthority(authority.toString())).collect(Collectors.toList());
-            SecurityContextHolder.getContext()
-                    .setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
-        }
+        Optional.ofNullable(httpServletRequest.getHeader("Authorization"))
+                .filter(s -> !s.isBlank())
+                .filter(s -> s.startsWith("Bearer "))
+                .map(s -> s.replace("Bearer ", ""))
+                .ifPresent(token -> {
+                    final User user = jwtToken.parseToken(token);
+                    final List<SimpleGrantedAuthority> authorities = user.authorities().stream()
+                            .map(authority -> new SimpleGrantedAuthority(authority.toString())).collect(Collectors.toList());
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
+                });
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 }

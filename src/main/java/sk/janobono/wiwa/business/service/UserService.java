@@ -22,7 +22,6 @@ import sk.janobono.wiwa.model.Authority;
 import sk.janobono.wiwa.model.User;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -49,22 +48,22 @@ public class UserService {
 
     @Transactional
     public User addUser(final UserDataSo userData) {
-        if (userRepository.existsByUsername(stripAndLowerCase(userData.username()))) {
+        if (userRepository.existsByUsername(scDf.toStripAndLowerCase(userData.username()))) {
             throw WiwaException.USER_USERNAME_IS_USED.exception("Username is used");
         }
-        if (userRepository.existsByEmail(stripAndLowerCase(userData.email()))) {
+        if (userRepository.existsByEmail(scDf.toStripAndLowerCase(userData.email()))) {
             throw WiwaException.USER_EMAIL_IS_USED.exception("Email is used");
         }
 
         final UserDo userDo = new UserDo();
-        userDo.setUsername(stripAndLowerCase(userData.username()));
+        userDo.setUsername(scDf.toStripAndLowerCase(userData.username()));
         userDo.setPassword(passwordEncoder.encode(randomString.alphaNumeric(3, 2, 1, 6, 6)));
         userDo.setTitleBefore(userData.titleBefore());
         userDo.setFirstName(userData.firstName());
         userDo.setMidName(userData.midName());
         userDo.setLastName(userData.lastName());
         userDo.setTitleAfter(userData.titleAfter());
-        userDo.setEmail(stripAndLowerCase(userData.email()));
+        userDo.setEmail(scDf.toStripAndLowerCase(userData.email()));
         userDo.setGdpr(userData.gdpr());
         userDo.setConfirmed(userData.confirmed());
         userDo.setEnabled(userData.enabled());
@@ -124,13 +123,6 @@ public class UserService {
         }
 
         userRepository.deleteById(id);
-    }
-
-    private String stripAndLowerCase(final String s) {
-        if (!Optional.ofNullable(s).map(String::isBlank).orElse(true)) {
-            return s.strip().toLowerCase();
-        }
-        return s;
     }
 
     private Set<AuthorityDo> mapAuthorities(final Set<Authority> authorities) {

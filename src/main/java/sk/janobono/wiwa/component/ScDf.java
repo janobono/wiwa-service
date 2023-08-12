@@ -8,28 +8,43 @@ import java.util.Optional;
 @Component
 public class ScDf {
 
+    public String toLowerCase(final String text) {
+        return Optional.ofNullable(text)
+                .map(String::toLowerCase)
+                .orElse(text);
+    }
+
+    public String toStripAndLowerCase(final String text) {
+        return Optional.ofNullable(text)
+                .map(String::strip)
+                .map(String::toLowerCase)
+                .orElse(text);
+    }
+
     public String toDf(final String text) {
-        if (Optional.ofNullable(text).map(String::isBlank).orElse(true)) {
-            return null;
-        } else {
-            final StringBuilder ret = new StringBuilder();
-            final char[] cha = text.toCharArray();
-            for (final char aCha : cha) {
-                final byte[] ba = Normalizer.normalize(String.valueOf(aCha), Normalizer.Form.NFD).getBytes();
-                if (ba[0] >= 41 && ba[0] < 123) {
-                    ret.append((char) ba[0]);
-                } else {
-                    ret.append(aCha);
-                }
-            }
-            return ret.toString();
-        }
+        return Optional.ofNullable(text)
+                .filter(s -> !s.isBlank())
+                .map(s -> {
+                    final StringBuilder ret = new StringBuilder();
+                    final char[] cha = s.toCharArray();
+                    for (final char aCha : cha) {
+                        final byte[] ba = Normalizer.normalize(String.valueOf(aCha), Normalizer.Form.NFD).getBytes();
+                        if (ba[0] >= 41 && ba[0] < 123) {
+                            ret.append((char) ba[0]);
+                        } else {
+                            ret.append(aCha);
+                        }
+                    }
+                    return ret.toString();
+                })
+                .orElse(null);
     }
 
     public String toScDf(final String text) {
-        if (Optional.ofNullable(text).map(String::isBlank).orElse(true)) {
-            return null;
-        }
-        return toDf(text).toLowerCase().trim();
+        return Optional.ofNullable(text)
+                .filter(s -> !s.isBlank())
+                .map(this::toDf)
+                .map(this::toLowerCase)
+                .orElse(null);
     }
 }

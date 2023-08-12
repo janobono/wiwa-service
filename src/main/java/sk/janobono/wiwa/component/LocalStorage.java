@@ -49,11 +49,7 @@ public class LocalStorage {
     }
 
     public String getFileType(final MultipartFile file) {
-        String result = file.getContentType();
-        if (Optional.ofNullable(result).map(String::isBlank).orElse(true)) {
-            result = "application/octet-stream";
-        }
-        return result;
+        return Optional.ofNullable(file.getContentType()).orElse("application/octet-stream");
     }
 
     public byte[] getFileData(final MultipartFile file) {
@@ -284,13 +280,6 @@ public class LocalStorage {
                 bos.write(bytesIn, 0, read);
             }
         }
-    }
-
-    public String stripAndLowerCase(final String s) {
-        if (!Optional.ofNullable(s).map(String::isBlank).orElse(true)) {
-            return s.strip().toLowerCase();
-        }
-        return s;
     }
 
     public boolean isImageFile(final String fileType) {

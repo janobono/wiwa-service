@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -205,11 +204,10 @@ public abstract class BaseIntegrationTest {
         return content;
     }
 
-    public MultiValueMap<String, String> pageableToParams(final Pageable pageable) {
-        final MultiValueMap<String, String> result = new LinkedMultiValueMap<>();
+    public void addPageableToParams(final MultiValueMap<String, String> params, final Pageable pageable) {
         if (pageable.isPaged()) {
-            result.add("page", Integer.toString(pageable.getPageNumber()));
-            result.add("size", Integer.toString(pageable.getPageSize()));
+            params.add("page", Integer.toString(pageable.getPageNumber()));
+            params.add("size", Integer.toString(pageable.getPageSize()));
             if (pageable.getSort().isSorted()) {
                 final StringBuilder sb = new StringBuilder();
                 List<Sort.Order> orderList = pageable.getSort().get().filter(Sort.Order::isAscending).collect(Collectors.toList());
@@ -228,9 +226,14 @@ public abstract class BaseIntegrationTest {
                 }
                 String sort = sb.toString();
                 sort = sort.substring(0, sort.length() - 1);
-                result.add("sort", sort);
+                params.add("sort", sort);
             }
         }
-        return result;
+    }
+
+    public void addToParams(final MultiValueMap<String, String> params, final String key, final String value) {
+        Optional.ofNullable(value).ifPresent(v -> {
+            params.add(key, v);
+        });
     }
 }

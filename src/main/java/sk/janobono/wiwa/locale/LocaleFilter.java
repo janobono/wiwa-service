@@ -22,10 +22,10 @@ public class LocaleFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain) throws ServletException, IOException {
-        final String locale = request.getParameter("locale");
-        if (!Optional.ofNullable(locale).map(String::isBlank).orElse(true)) {
-            requestLocale.setLocale(StringUtils.parseLocale(locale));
-        }
+        Optional.ofNullable(request.getParameter("locale"))
+                .filter(s -> !s.isBlank())
+                .map(StringUtils::parseLocale)
+                .ifPresent(requestLocale::setLocale);
         filterChain.doFilter(request, response);
     }
 }

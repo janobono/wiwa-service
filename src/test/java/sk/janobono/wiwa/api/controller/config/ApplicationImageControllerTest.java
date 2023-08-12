@@ -56,8 +56,10 @@ class ApplicationImageControllerTest extends BaseIntegrationTest {
         headers.setBearerAuth(token);
 
         final Pageable pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "fileName", "fileType");
+        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        addPageableToParams(params, pageable);
         final ResponseEntity<JsonNode> response = restTemplate.exchange(
-                getURI("/config/application-images", pageableToParams(pageable)),
+                getURI("/config/application-images", params),
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
                 JsonNode.class

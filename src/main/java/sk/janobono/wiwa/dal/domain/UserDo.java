@@ -55,7 +55,7 @@ public class UserDo {
     @Column(name = "enabled")
     private boolean enabled;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "wiwa_user_authority",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},

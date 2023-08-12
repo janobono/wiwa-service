@@ -12,10 +12,7 @@ import sk.janobono.wiwa.business.model.mail.MailContentSo;
 import sk.janobono.wiwa.business.model.mail.MailLinkSo;
 import sk.janobono.wiwa.business.model.mail.MailSo;
 import sk.janobono.wiwa.business.model.mail.MailTemplate;
-import sk.janobono.wiwa.component.Captcha;
-import sk.janobono.wiwa.component.JwtToken;
-import sk.janobono.wiwa.component.RandomString;
-import sk.janobono.wiwa.component.VerificationToken;
+import sk.janobono.wiwa.component.*;
 import sk.janobono.wiwa.config.AuthConfigProperties;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.UserDo;
@@ -43,6 +40,7 @@ public class AuthService {
     private final Captcha captcha;
     private final JwtToken jwtToken;
     private final RandomString randomString;
+    private final ScDf scDf;
     private final MailService mailService;
     private final VerificationToken verificationToken;
     private final UserMapper userMapper;
@@ -69,14 +67,14 @@ public class AuthService {
     @Transactional
     public AuthenticationResponseSo changeEmail(final ChangeEmailSo changeEmail) {
         captcha.checkTokenValid(changeEmail.captchaText(), changeEmail.captchaToken());
-        if (userRepository.existsByEmail(stripAndLowerCase(changeEmail.email()))) {
+        if (userRepository.existsByEmail(scDf.toStripAndLowerCase(changeEmail.email()))) {
             throw WiwaException.USER_EMAIL_IS_USED.exception("Email is used");
         }
         final User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final UserDo userDo = getUser(principal.id());
         checkEnabled(userDo);
         checkPassword(userDo, changeEmail.password());
-        userDo.setEmail(changeEmail.email());
+        userDo.setEmail(scDf.toStripAndLowerCase(changeEmail.email()));
         return createAuthenticationResponse(userRepository.save(userDo));
     }
 
@@ -121,7 +119,7 @@ public class AuthService {
 
     public void resetPassword(final ResetPasswordSo resetPassword) {
         captcha.checkTokenValid(resetPassword.captchaText(), resetPassword.captchaToken());
-        final UserDo userDo = userRepository.findByEmail(stripAndLowerCase(resetPassword.email())).orElseThrow(
+        final UserDo userDo = userRepository.findByEmail(scDf.toStripAndLowerCase(resetPassword.email())).orElseThrow(
                 () -> WiwaException.USER_NOT_FOUND.exception("User with email {0} not found", resetPassword.email())
         );
         checkEnabled(userDo);
@@ -129,7 +127,7 @@ public class AuthService {
     }
 
     public AuthenticationResponseSo signIn(final SignInSo signIn) {
-        final UserDo userDo = userRepository.findByUsername(stripAndLowerCase(signIn.username())).orElseThrow(
+        final UserDo userDo = userRepository.findByUsername(scDf.toStripAndLowerCase(signIn.username())).orElseThrow(
                 () -> WiwaException.USER_NOT_FOUND.exception("User with username {0} not found", signIn.username())
         );
         checkEnabled(userDo);
@@ -140,24 +138,24 @@ public class AuthService {
     @Transactional
     public AuthenticationResponseSo signUp(final SignUpSo signUp) {
         captcha.checkTokenValid(signUp.captchaText(), signUp.captchaToken());
-        if (userRepository.existsByUsername(stripAndLowerCase(signUp.username()))) {
+        if (userRepository.existsByUsername(scDf.toStripAndLowerCase(signUp.username()))) {
             throw WiwaException.USER_USERNAME_IS_USED.exception("Username is used");
         }
-        if (userRepository.existsByEmail(stripAndLowerCase(signUp.email()))) {
+        if (userRepository.existsByEmail(scDf.toStripAndLowerCase(signUp.email()))) {
             throw WiwaException.USER_EMAIL_IS_USED.exception("Email is used");
         }
         if (!signUp.gdpr()) {
             throw WiwaException.GDPR.exception("GDPR has to be confirmed");
         }
         UserDo userDo = new UserDo();
-        userDo.setUsername(stripAndLowerCase(signUp.username()));
+        userDo.setUsername(scDf.toStripAndLowerCase(signUp.username()));
         userDo.setPassword(passwordEncoder.encode(signUp.password()));
         userDo.setTitleBefore(signUp.titleBefore());
         userDo.setFirstName(signUp.firstName());
         userDo.setMidName(signUp.midName());
         userDo.setLastName(signUp.lastName());
         userDo.setTitleAfter(signUp.titleAfter());
-        userDo.setEmail(stripAndLowerCase(signUp.email()));
+        userDo.setEmail(scDf.toStripAndLowerCase(signUp.email()));
         userDo.setGdpr(signUp.gdpr());
         userDo.setConfirmed(false);
         userDo.setEnabled(true);
@@ -309,12 +307,5 @@ public class AuthService {
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private String stripAndLowerCase(final String s) {
-        if (!Optional.ofNullable(s).map(String::isBlank).orElse(true)) {
-            return s.strip().toLowerCase();
-        }
-        return s;
     }
 }
