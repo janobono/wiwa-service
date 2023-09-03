@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -31,6 +32,8 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -235,5 +238,54 @@ public abstract class BaseIntegrationTest {
         Optional.ofNullable(value).ifPresent(v -> {
             params.add(key, v);
         });
+    }
+
+    protected <T> T getEntity(final Class<T> clazz, final HttpHeaders headers, final String path, final Long id) {
+        final ResponseEntity<T> response = restTemplate.exchange(getURI(path + "/{id}", Map.of("id", Long.toString(id))), HttpMethod.GET, new HttpEntity<>(headers), clazz);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        return response.getBody();
+    }
+
+    protected <T> Page<T> getEntities(final Class<T> clazz, final HttpHeaders headers, final String path, final MultiValueMap<String, String> params, final Pageable pageable) {
+        addPageableToParams(params, pageable);
+        final ResponseEntity<JsonNode> response = restTemplate.exchange(
+                getURI(path, params),
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                JsonNode.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        return getPage(response.getBody(), pageable, clazz);
+    }
+
+    protected <T> T addEntity(final Class<T> clazz, final HttpHeaders headers, final String path, final Object entityData) {
+        final ResponseEntity<T> response = restTemplate.exchange(getURI(path), HttpMethod.POST, new HttpEntity<>(entityData, headers), clazz);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).isNotNull();
+        return response.getBody();
+    }
+
+    protected <T> T setEntity(final Class<T> clazz, final HttpHeaders headers, final String path, final Long id, final Object entityData) {
+        final ResponseEntity<T> response = restTemplate.exchange(
+                getURI(path + "/{id}", Map.of("id", id.toString())),
+                HttpMethod.PUT,
+                new HttpEntity<>(entityData, headers),
+                clazz
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        return response.getBody();
+    }
+
+    protected void deleteEntity(final HttpHeaders headers, final String path, final Long id) {
+        final ResponseEntity<Void> response = restTemplate.exchange(
+                getURI(path + "/{id}", Map.of("id", Long.toString(id))),
+                HttpMethod.DELETE,
+                new HttpEntity<>(headers),
+                Void.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 }

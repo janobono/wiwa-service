@@ -10,13 +10,13 @@ import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
+import sk.janobono.wiwa.dal.domain.ApplicationImageDo;
+import sk.janobono.wiwa.dal.repository.ApplicationImageRepository;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.mapper.ApplicationImageMapper;
 import sk.janobono.wiwa.model.ApplicationImage;
 import sk.janobono.wiwa.model.ResourceEntity;
 import sk.janobono.wiwa.model.WiwaProperty;
-import sk.janobono.wiwa.dal.domain.ApplicationImageDo;
-import sk.janobono.wiwa.dal.repository.ApplicationImageRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;

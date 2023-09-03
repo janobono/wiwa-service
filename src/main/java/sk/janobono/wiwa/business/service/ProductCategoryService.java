@@ -29,9 +29,9 @@ public class ProductCategoryService {
 
     public Page<ProductCategorySo> getProductCategories(final ProductCategorySearchCriteriaSo criteria, final Pageable pageable) {
         final Pageable categoriesPageable;
-        if(pageable.getSort().isEmpty()){
+        if (pageable.getSort().isEmpty()) {
             categoriesPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.ASC, "sortNum");
-        }else{
+        } else {
             categoriesPageable = pageable;
         }
         return productCategoryRepository.findAll(new ProductCategorySearchCriteriaDo(scDf, criteria), categoriesPageable)

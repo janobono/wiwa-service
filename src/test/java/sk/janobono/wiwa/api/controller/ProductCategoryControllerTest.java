@@ -1,6 +1,5 @@
 package sk.janobono.wiwa.api.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -30,16 +29,15 @@ class ProductCategoryControllerTest extends BaseIntegrationTest {
 
         final List<ProductCategorySo> categories = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            final ProductCategorySo parentCategory = addCategory(headers, i, null);
+            final ProductCategorySo parentCategory = addProductCategory(headers, new ProductCategoryDataSo(null, "code-" + i, "name-" + i));
             categories.add(parentCategory);
             for (int j = 0; j < 5; j++) {
-                categories.add(addCategory(headers, j, parentCategory.id()));
+                categories.add(addProductCategory(headers, new ProductCategoryDataSo(parentCategory.id(), "code-" + parentCategory.id() + "-" + j, "name-" + parentCategory.id() + "-" + j)));
             }
         }
 
         for (final ProductCategorySo productCategorySo : categories) {
-            assertThat(productCategorySo).usingRecursiveComparison(RecursiveComparisonConfiguration.builder().withIgnoredFields("leafNode").build())
-                    .isEqualTo(getCategory(headers, productCategorySo.id()));
+            assertThat(productCategorySo).usingRecursiveComparison(RecursiveComparisonConfiguration.builder().withIgnoredFields("leafNode").build()).isEqualTo(getCategory(headers, productCategorySo.id()));
         }
 
         categories.clear();
@@ -76,47 +74,27 @@ class ProductCategoryControllerTest extends BaseIntegrationTest {
         rootCategories = getCategories(headers, true, null, null, null, null, null, Pageable.unpaged()).stream().toList();
         assertThat(movedCategory).usingRecursiveComparison().isEqualTo(rootCategories.get(0));
 
-        rootCategories.forEach(
-                rootCategory -> {
-                    final List<ProductCategorySo> children = getCategories(headers, null, rootCategory.id(), null, null, null, null, Pageable.unpaged()).stream().toList();
-                    children.forEach(
-                            child -> {
-                                assertThat(child.leafNode()).isTrue();
-                            });
-                });
+        rootCategories.forEach(rootCategory -> {
+            final List<ProductCategorySo> children = getCategories(headers, null, rootCategory.id(), null, null, null, null, Pageable.unpaged()).stream().toList();
+            children.forEach(child -> {
+                assertThat(child.leafNode()).isTrue();
+            });
+        });
 
-        rootCategories.forEach(
-                rootCategory -> {
-                    final List<ProductCategorySo> children = getCategories(headers, null, rootCategory.id(), null, null, null, null, Pageable.unpaged()).stream().toList();
-                    children.forEach(
-                            child -> {
-                                deleteProductCategory(headers, child.id());
-                            });
-                    deleteProductCategory(headers, rootCategory.id());
-                }
-        );
+        rootCategories.forEach(rootCategory -> {
+            final List<ProductCategorySo> children = getCategories(headers, null, rootCategory.id(), null, null, null, null, Pageable.unpaged()).stream().toList();
+            children.forEach(child -> {
+                deleteProductCategory(headers, child.id());
+            });
+            deleteProductCategory(headers, rootCategory.id());
+        });
     }
 
     private ProductCategorySo getCategory(final HttpHeaders headers, final Long id) {
-        final ResponseEntity<ProductCategorySo> response = restTemplate.exchange(
-                getURI("/product-categories/{id}", Map.of("id", Long.toString(id))),
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                ProductCategorySo.class
-        );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        return response.getBody();
+        return getEntity(ProductCategorySo.class, headers, "/product-categories", id);
     }
 
-    private Page<ProductCategorySo> getCategories(final HttpHeaders headers,
-                                                  final Boolean rootCategories,
-                                                  final Long parentCategoryId,
-                                                  final String searchField,
-                                                  final String code,
-                                                  final String name,
-                                                  final String treeCode,
-                                                  final Pageable pageable) {
+    private Page<ProductCategorySo> getCategories(final HttpHeaders headers, final Boolean rootCategories, final Long parentCategoryId, final String searchField, final String code, final String name, final String treeCode, final Pageable pageable) {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         Optional.ofNullable(rootCategories).ifPresent(v -> addToParams(params, "root-categories", v.toString()));
         Optional.ofNullable(parentCategoryId).ifPresent(v -> addToParams(params, "parent-category-id", v.toString()));
@@ -124,73 +102,29 @@ class ProductCategoryControllerTest extends BaseIntegrationTest {
         Optional.ofNullable(code).ifPresent(v -> addToParams(params, "code", v));
         Optional.ofNullable(name).ifPresent(v -> addToParams(params, "name", v));
         Optional.ofNullable(treeCode).ifPresent(v -> addToParams(params, "tree-code", v));
-        addPageableToParams(params, pageable);
-        final ResponseEntity<JsonNode> response = restTemplate.exchange(
-                getURI("/product-categories", params),
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                JsonNode.class
-        );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        return getPage(response.getBody(), pageable, ProductCategorySo.class);
+        return getEntities(ProductCategorySo.class, headers, "/product-categories", params, pageable);
     }
 
-    private ProductCategorySo addCategory(final HttpHeaders headers, final int index, final Long parentId) {
-        final ResponseEntity<ProductCategorySo> response = restTemplate.exchange(
-                getURI("/product-categories"),
-                HttpMethod.POST,
-                new HttpEntity<>(new ProductCategoryDataSo(
-                        parentId,
-                        Optional.ofNullable(parentId).map(pi -> "code-" + pi + "-" + index).orElse("code-" + index),
-                        Optional.ofNullable(parentId).map(pi -> "name-" + pi + "-" + index).orElse("name-" + index)
-                ), headers),
-                ProductCategorySo.class
-        );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody()).isNotNull();
-        return response.getBody();
+    private ProductCategorySo addProductCategory(final HttpHeaders headers, final ProductCategoryDataSo productCategoryData) {
+        return addEntity(ProductCategorySo.class, headers, "/product-categories", productCategoryData);
     }
 
-    private void setProductCategory(final HttpHeaders headers, final Long id, final ProductCategoryDataSo productCategoryDataSo) {
-        final ResponseEntity<ProductCategorySo> response = restTemplate.exchange(
-                getURI("/product-categories/{id}", Map.of("id", id.toString())),
-                HttpMethod.PUT,
-                new HttpEntity<>(productCategoryDataSo, headers),
-                ProductCategorySo.class
-        );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
+    private ProductCategorySo setProductCategory(final HttpHeaders headers, final Long id, final ProductCategoryDataSo productCategoryData) {
+        return setEntity(ProductCategorySo.class, headers, "/product-categories", id, productCategoryData);
     }
 
     private void deleteProductCategory(final HttpHeaders headers, final Long id) {
-        final ResponseEntity<Void> response = restTemplate.exchange(
-                getURI("/product-categories/{id}", Map.of("id", Long.toString(id))),
-                HttpMethod.DELETE,
-                new HttpEntity<>(headers),
-                Void.class
-        );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        deleteEntity(headers, "/product-categories", id);
     }
 
     private void moveProductCategoryUp(final HttpHeaders headers, final Long id) {
-        final ResponseEntity<ProductCategorySo> response = restTemplate.exchange(
-                getURI("/product-categories/{id}/move-up", Map.of("id", Long.toString(id))),
-                HttpMethod.PATCH,
-                new HttpEntity<>(headers),
-                ProductCategorySo.class
-        );
+        final ResponseEntity<ProductCategorySo> response = restTemplate.exchange(getURI("/product-categories/{id}/move-up", Map.of("id", Long.toString(id))), HttpMethod.PATCH, new HttpEntity<>(headers), ProductCategorySo.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
     }
 
     private void moveProductCategoryDown(final HttpHeaders headers, final Long id) {
-        final ResponseEntity<ProductCategorySo> response = restTemplate.exchange(
-                getURI("/product-categories/{id}/move-down", Map.of("id", Long.toString(id))),
-                HttpMethod.PATCH,
-                new HttpEntity<>(headers),
-                ProductCategorySo.class
-        );
+        final ResponseEntity<ProductCategorySo> response = restTemplate.exchange(getURI("/product-categories/{id}/move-down", Map.of("id", Long.toString(id))), HttpMethod.PATCH, new HttpEntity<>(headers), ProductCategorySo.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
     }

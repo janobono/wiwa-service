@@ -16,4 +16,12 @@ public class TimeUtil {
     public LocalDate toLocalDate(final ZonedDateTime zonedDateTime) {
         return zonedDateTime.toLocalDate();
     }
+
+    public boolean isAfterOrEquals(final LocalDate date1, final LocalDate date2) {
+        return date1.isAfter(date2) || date1.isEqual(date2);
+    }
+
+    public boolean isBeforeOrEquals(final LocalDate date1, final LocalDate date2) {
+        return date1.isBefore(date2) || date1.isEqual(date2);
+    }
 }

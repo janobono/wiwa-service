@@ -1,5 +1,6 @@
 -- EXTENSION
-create extension if not exists unaccent;
+create
+extension if not exists unaccent;
 
 -- TABLE
 create table wiwa_application_image
@@ -81,6 +82,7 @@ create table wiwa_product
 
 create table wiwa_product_attribute
 (
+    id         bigserial primary key,
     product_id bigint       not null references wiwa_product (id) on delete cascade,
     key        varchar(255) not null,
     value      varchar(255) not null,
@@ -89,8 +91,9 @@ create table wiwa_product_attribute
 
 create table wiwa_product_image
 (
+    id         bigserial primary key,
     product_id bigint       not null references wiwa_product (id) on delete cascade,
-    file_name  varchar(255) primary key,
+    file_name  varchar(255) not null,
     file_type  varchar(255) not null,
     thumbnail  bytea        not null,
     data       bytea        not null,
@@ -99,6 +102,7 @@ create table wiwa_product_image
 
 create table wiwa_product_unit_price
 (
+    id         bigserial primary key,
     product_id bigint         not null references wiwa_product (id) on delete cascade,
     valid_from date           not null,
     valid_to   date,

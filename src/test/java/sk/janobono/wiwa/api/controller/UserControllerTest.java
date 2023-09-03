@@ -1,6 +1,5 @@
 package sk.janobono.wiwa.api.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -70,29 +69,11 @@ class UserControllerTest extends BaseIntegrationTest {
     }
 
     private User getUser(final HttpHeaders headers, final Long id) {
-        final ResponseEntity<User> response = restTemplate.exchange(
-                getURI("/users/{id}", Map.of("id", Long.toString(id))),
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                User.class
-        );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        return response.getBody();
+        return getEntity(User.class, headers, "/users", id);
     }
 
     private Page<User> getUsers(final HttpHeaders headers, final Pageable pageable) {
-        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        addPageableToParams(params, pageable);
-        final ResponseEntity<JsonNode> response = restTemplate.exchange(
-                getURI("/users", params),
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                JsonNode.class
-        );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        return getPage(response.getBody(), pageable, User.class);
+        return getEntities(User.class, headers, "/users", new LinkedMultiValueMap<>(), pageable);
     }
 
     private Page<User> getUsers(final HttpHeaders headers, final String searchField, final String username, final String email, final Pageable pageable) {
@@ -100,59 +81,34 @@ class UserControllerTest extends BaseIntegrationTest {
         addToParams(params, "search-field", searchField);
         addToParams(params, "username", username);
         addToParams(params, "email", email);
-        addPageableToParams(params, pageable);
-        final ResponseEntity<JsonNode> response = restTemplate.exchange(
-                getURI("/users", params),
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                JsonNode.class
-        );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        return getPage(response.getBody(), pageable, User.class);
+        return getEntities(User.class, headers, "/users", params, pageable);
     }
 
     private User addUser(final HttpHeaders headers, final int index) {
-        final ResponseEntity<User> response = restTemplate.exchange(
-                getURI("/users"),
-                HttpMethod.POST,
-                new HttpEntity<>(new UserDataSo(
-                        "user" + index,
-                        "before" + index,
-                        "First" + index,
-                        "Mid" + index,
-                        "Last" + index,
-                        "after" + index,
-                        "mail" + index + "@domain.com",
-                        true,
-                        false,
-                        false,
-                        Set.of(Authority.W_CUSTOMER)
-                ), headers),
-                User.class
-        );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody()).isNotNull();
-        return response.getBody();
+        return addEntity(User.class, headers, "/users", new UserDataSo(
+                "user" + index,
+                "before" + index,
+                "First" + index,
+                "Mid" + index,
+                "Last" + index,
+                "after" + index,
+                "mail" + index + "@domain.com",
+                true,
+                false,
+                false,
+                Set.of(Authority.W_CUSTOMER)
+        ));
     }
 
-    private void setUser(final HttpHeaders headers, final User userDto) {
-        final ResponseEntity<User> response = restTemplate.exchange(
-                getURI("/users/{id}", Map.of("id", Long.toString(userDto.id()))),
-                HttpMethod.PUT,
-                new HttpEntity<>(new UserProfileSo(
-                        userDto.titleBefore() + "changed",
-                        userDto.firstName() + "changed",
+    private User setUser(final HttpHeaders headers, final User user) {
+        return setEntity(User.class, headers, "/users", user.id(),
+                new UserProfileSo(
+                        user.titleBefore() + "changed",
+                        user.firstName() + "changed",
                         null,
-                        userDto.lastName() + "changed",
-                        userDto.titleAfter() + "changed"
-                ), headers),
-                User.class
-        );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        final User result = response.getBody();
-        assertThat(result.midName()).isNull();
+                        user.lastName() + "changed",
+                        user.titleAfter() + "changed"
+                ));
     }
 
     private void setAuthorities(final HttpHeaders headers, final User userDto) {
@@ -194,12 +150,6 @@ class UserControllerTest extends BaseIntegrationTest {
     }
 
     private void deleteUser(final HttpHeaders headers, final Long id) {
-        final ResponseEntity<Void> response = restTemplate.exchange(
-                getURI("/users/{id}", Map.of("id", Long.toString(id))),
-                HttpMethod.DELETE,
-                new HttpEntity<>(headers),
-                Void.class
-        );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        deleteEntity(headers, "/users", id);
     }
 }
