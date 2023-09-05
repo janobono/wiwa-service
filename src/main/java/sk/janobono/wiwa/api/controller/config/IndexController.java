@@ -2,7 +2,6 @@ package sk.janobono.wiwa.api.controller.config;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,16 +26,16 @@ public class IndexController {
         return webImageUtil.toWeb(uiService.setLogo(multipartFile));
     }
 
-    @PostMapping(value = "/title", produces = MediaType.TEXT_PLAIN_VALUE)
+    @PostMapping(value = "/title")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public String setTitle(@RequestBody final SingleValueBody<String> data) {
-        return uiService.setTitle(data.value());
+    public SingleValueBody<String> setTitle(@RequestBody final SingleValueBody<String> data) {
+        return new SingleValueBody<>(uiService.setTitle(data.value()));
     }
 
-    @PostMapping(value = "/welcome-text", produces = MediaType.TEXT_PLAIN_VALUE)
+    @PostMapping(value = "/welcome-text")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public String setWelcomeText(@RequestBody final SingleValueBody<String> data) {
-        return uiService.setWelcomeText(data.value());
+    public SingleValueBody<String> setWelcomeText(@RequestBody final SingleValueBody<String> data) {
+        return new SingleValueBody<>(uiService.setWelcomeText(data.value()));
     }
 
     @PostMapping("/application-info")
@@ -51,21 +50,21 @@ public class IndexController {
         return uiService.setCompanyInfo(data);
     }
 
-    @PostMapping(value = "/cookies-info", produces = MediaType.TEXT_MARKDOWN_VALUE)
+    @PostMapping(value = "/cookies-info")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public String setCookiesInfo(@RequestBody final SingleValueBody<String> data) {
-        return uiService.setCookiesInfo(data.value());
+    public SingleValueBody<String> setCookiesInfo(@RequestBody final SingleValueBody<String> data) {
+        return new SingleValueBody<>(uiService.setCookiesInfo(data.value()));
     }
 
-    @PostMapping(value = "/gdpr-info", produces = MediaType.TEXT_MARKDOWN_VALUE)
+    @PostMapping(value = "/gdpr-info")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public String setGdprInfo(@RequestBody final SingleValueBody<String> data) {
-        return uiService.setGdprInfo(data.value());
+    public SingleValueBody<String> setGdprInfo(@RequestBody final SingleValueBody<String> data) {
+        return new SingleValueBody<>(uiService.setGdprInfo(data.value()));
     }
 
-    @PostMapping(value = "/working-hours", produces = MediaType.TEXT_MARKDOWN_VALUE)
+    @PostMapping(value = "/working-hours")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public String setWorkingHours(@RequestBody final SingleValueBody<String> data) {
-        return uiService.setWorkingHours(data.value());
+    public SingleValueBody<String> setWorkingHours(@RequestBody final SingleValueBody<String> data) {
+        return new SingleValueBody<>(uiService.setWorkingHours(data.value()));
     }
 }

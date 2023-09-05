@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sk.janobono.wiwa.api.model.SingleValueBody;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
 import sk.janobono.wiwa.business.service.UiService;
@@ -20,9 +21,9 @@ public class IndexController {
 
     private final UiService uiService;
 
-    @GetMapping(value = "/default-locale", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String getDefaultLocale() {
-        return uiService.getDefaultLocale();
+    @GetMapping(value = "/default-locale")
+    public SingleValueBody<String> getDefaultLocale() {
+        return new SingleValueBody<>(uiService.getDefaultLocale());
     }
 
 
@@ -35,14 +36,14 @@ public class IndexController {
                 .body(resourceEntity.resource());
     }
 
-    @GetMapping(value = "/title", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String getTitle() {
-        return uiService.getTitle();
+    @GetMapping(value = "/title")
+    public SingleValueBody<String> getTitle() {
+        return new SingleValueBody<>(uiService.getTitle());
     }
 
-    @GetMapping(value = "/welcome-text", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String getWelcomeText() {
-        return uiService.getWelcomeText();
+    @GetMapping(value = "/welcome-text")
+    public SingleValueBody<String> getWelcomeText() {
+        return new SingleValueBody<>(uiService.getWelcomeText());
     }
 
     @GetMapping("/application-info")
@@ -55,18 +56,18 @@ public class IndexController {
         return uiService.getCompanyInfo();
     }
 
-    @GetMapping(value = "/cookies-info", produces = MediaType.TEXT_MARKDOWN_VALUE)
-    public String getCookiesInfo() {
-        return uiService.getCookiesInfo();
+    @GetMapping(value = "/cookies-info")
+    public SingleValueBody<String> getCookiesInfo() {
+        return new SingleValueBody<>(uiService.getCookiesInfo());
     }
 
-    @GetMapping(value = "/gdpr-info", produces = MediaType.TEXT_MARKDOWN_VALUE)
-    public String getGdprInfo() {
-        return uiService.getGdprInfo();
+    @GetMapping(value = "/gdpr-info")
+    public SingleValueBody<String> getGdprInfo() {
+        return new SingleValueBody<>(uiService.getGdprInfo());
     }
 
-    @GetMapping(value = "/working-hours", produces = MediaType.TEXT_MARKDOWN_VALUE)
-    public String getWorkingHours() {
-        return uiService.getWorkingHours();
+    @GetMapping(value = "/working-hours")
+    public SingleValueBody<String> getWorkingHours() {
+        return new SingleValueBody<>(uiService.getWorkingHours());
     }
 }

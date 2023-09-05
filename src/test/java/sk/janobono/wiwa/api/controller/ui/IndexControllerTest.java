@@ -1,5 +1,6 @@
 package sk.janobono.wiwa.api.controller.ui;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import sk.janobono.wiwa.BaseIntegrationTest;
@@ -9,6 +10,8 @@ import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.dal.domain.ApplicationPropertyKeyDo;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 import sk.janobono.wiwa.model.WiwaProperty;
+
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,11 +30,11 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(logo).isEqualTo(imageUtil.generateMessageImage(null));
 
         // title
-        final String title = restTemplate.getForObject(getURI("/ui/title"), String.class);
+        final String title = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/title"), JsonNode.class)).get("value").textValue();
         assertThat(title).isEqualTo("WIWA - Internet store");
 
         // welcome-text
-        final String welcomeText = restTemplate.getForObject(getURI("/ui/welcome-text"), String.class);
+        final String welcomeText = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/welcome-text"), JsonNode.class)).get("value").textValue();
         assertThat(welcomeText).isEqualTo("If you plan to make the furniture yourself, we offer you the opportunity to order from us quality prepared furniture parts for your kitchen, office or other interior project. We will provide you with the required materials (DTD, MDF, HDF), cutting and gluing the edges exactly according to your wishes.");
 
         // application-info
@@ -59,7 +62,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(companyInfoDto.mapUrl()).isEqualTo("https://maps.google.com/maps?q=Zvolen&t=&z=13&ie=UTF8&iwloc=&output=embed");
 
         // cookies-info
-        final String cookiesInfo = restTemplate.getForObject(getURI("/ui/cookies-info"), String.class);
+        final String cookiesInfo = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/cookies-info"), JsonNode.class)).get("value").textValue();
         assertThat(cookiesInfo).isEqualTo(
                 applicationPropertyRepository.findById(new ApplicationPropertyKeyDo(
                         WiwaProperty.APP_COOKIES_INFO.getGroup(),
@@ -68,7 +71,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         );
 
         // gdpr-info
-        final String gdprInfo = restTemplate.getForObject(getURI("/ui/gdpr-info"), String.class);
+        final String gdprInfo = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/gdpr-info"), JsonNode.class)).get("value").textValue();
         assertThat(gdprInfo).isEqualTo(
                 applicationPropertyRepository.findById(new ApplicationPropertyKeyDo(
                         WiwaProperty.APP_GDPR_INFO.getGroup(),
@@ -77,7 +80,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         );
 
         // working-hours
-        final String workingHours = restTemplate.getForObject(getURI("/ui/working-hours"), String.class);
+        final String workingHours = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/working-hours"), JsonNode.class)).get("value").textValue();
         assertThat(workingHours).isEqualTo(
                 applicationPropertyRepository.findById(new ApplicationPropertyKeyDo(
                         WiwaProperty.APP_WORKING_HOURS.getGroup(),

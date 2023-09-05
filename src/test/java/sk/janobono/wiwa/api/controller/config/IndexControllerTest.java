@@ -1,5 +1,6 @@
 package sk.janobono.wiwa.api.controller.config;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -16,6 +17,7 @@ import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,30 +62,30 @@ class IndexControllerTest extends BaseIntegrationTest {
 
         // title
         headers.setContentType(MediaType.APPLICATION_JSON);
-        final ResponseEntity<String> title = restTemplate.exchange(
+        final ResponseEntity<JsonNode> title = restTemplate.exchange(
                 getURI("/config/title"),
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new SingleValueBody<>("test"),
                         headers
                 ),
-                String.class
+                JsonNode.class
         );
         assertThat(title.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(title.getBody()).isEqualTo("test");
+        assertThat(Objects.requireNonNull(title.getBody()).get("value").asText()).isEqualTo("test");
 
         // welcome-text
-        final ResponseEntity<String> welcomeText = restTemplate.exchange(
+        final ResponseEntity<JsonNode> welcomeText = restTemplate.exchange(
                 getURI("/config/welcome-text"),
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new SingleValueBody<>("test"),
                         headers
                 ),
-                String.class
+                JsonNode.class
         );
         assertThat(welcomeText.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(welcomeText.getBody()).isEqualTo("test");
+        assertThat(Objects.requireNonNull(welcomeText.getBody()).get("value").asText()).isEqualTo("test");
 
         // application-info
         final ResponseEntity<ApplicationInfoSo> applicationInfo = restTemplate.exchange(
@@ -144,42 +146,42 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(companyInfo.getBody().mapUrl()).isEqualTo("testMapUrl");
 
         // cookies-info
-        final ResponseEntity<String> cookiesInfo = restTemplate.exchange(
+        final ResponseEntity<JsonNode> cookiesInfo = restTemplate.exchange(
                 getURI("/config/cookies-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new SingleValueBody<>("test"),
                         headers
                 ),
-                String.class
+                JsonNode.class
         );
         assertThat(cookiesInfo.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(cookiesInfo.getBody()).isEqualTo("test");
+        assertThat(Objects.requireNonNull(cookiesInfo.getBody()).get("value").asText()).isEqualTo("test");
 
         // gdpr-info
-        final ResponseEntity<String> gdprInfo = restTemplate.exchange(
+        final ResponseEntity<JsonNode> gdprInfo = restTemplate.exchange(
                 getURI("/config/gdpr-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new SingleValueBody<>("test"),
                         headers
                 ),
-                String.class
+                JsonNode.class
         );
         assertThat(gdprInfo.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(gdprInfo.getBody()).isEqualTo("test");
+        assertThat(Objects.requireNonNull(gdprInfo.getBody()).get("value").asText()).isEqualTo("test");
 
         // working-hours
-        final ResponseEntity<String> workingHours = restTemplate.exchange(
+        final ResponseEntity<JsonNode> workingHours = restTemplate.exchange(
                 getURI("/config/working-hours"),
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new SingleValueBody<>("test"),
                         headers
                 ),
-                String.class
+                JsonNode.class
         );
         assertThat(workingHours.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(workingHours.getBody()).isEqualTo("test");
+        assertThat(Objects.requireNonNull(workingHours.getBody()).get("value").asText()).isEqualTo("test");
     }
 }
