@@ -77,32 +77,33 @@ docker volume rm $(docker volume ls -q --filter dangling=true)
 
 ## environment variables
 
-| Name                            | Default                              |
-|---------------------------------|--------------------------------------|
-| PORT                            | 8080                                 |
-| CONTEXT_PATH                    | /api                                 |
-| LOG_LEVEL                       | debug                                |
-| DB_URL                          | jdbc:postgresql://localhost:5432/app |
-| DB_USER                         | app                                  |
-| DB_PASS                         | app                                  |
-| DB_POOL_SIZE                    | 5                                    |
-| DB_POOL_IDLE                    | 2                                    |
-| MAIL_HOST                       | localhost                            |
-| MAIL_PORT                       | 1025                                 |
-| MAIL_USER                       |                                      |
-| MAIL_PASS                       |                                      |
-| MAIL_AUTH                       | false                                |
-| MAIL_TLS_ENABLE                 | false                                |
-| DEFAULT_LOCALE                  | en_US                                |
-| WEB_URL                         | http://localhost:8080                |
-| MAIL                            | mail@wiwa.sk                         |
-| INIT_DATA_PATH                  | ./data                               |
-| MAX_IMAGE_RESOLUTION            | 1000                                 |
-| MAX_THUMBNAIL_RESOLUTION        | 130                                  |
-| CAPTCHA_LENGTH                  | 4                                    |
-| SIGN_UP_TOKEN_EXPIRES_IN        | 120                                  |
-| RESET_PASSWORD_TOKEN_EXPIRES_IN | 120                                  |
-| REFRESH_TOKEN_EXPIRES_IN        | 36                                   |
-| TOKEN_ISSUER                    | wiwa                                 |
-| TOKEN_EXPIRES_IN                | 1                                    |
-| VERIFICATION_TOKEN_ISSUER       | verification                         |
+| Name                               | Default                              |
+|------------------------------------|--------------------------------------|
+| PORT                               | 8080                                 |
+| CONTEXT_PATH                       | /api                                 |
+| LOG_LEVEL                          | debug                                |
+| DB_URL                             | jdbc:postgresql://localhost:5432/app |
+| DB_USER                            | app                                  |
+| DB_PASS                            | app                                  |
+| DB_POOL_SIZE                       | 5                                    |
+| DB_POOL_IDLE                       | 2                                    |
+| MAIL_HOST                          | localhost                            |
+| MAIL_PORT                          | 1025                                 |
+| MAIL_USER                          |                                      |
+| MAIL_PASS                          |                                      |
+| MAIL_AUTH                          | false                                |
+| MAIL_TLS_ENABLE                    | false                                |
+| DEFAULT_LOCALE                     | en_US                                |
+| WEB_URL                            | http://localhost:8080                |
+| MAIL                               | mail@wiwa.sk                         |
+| INIT_DATA_PATH                     | ./data                               |
+| MAX_IMAGE_RESOLUTION               | 1000                                 |
+| MAX_THUMBNAIL_RESOLUTION           | 130                                  |
+| CAPTCHA_LENGTH                     | 4                                    |
+| SIGN_UP_TOKEN_EXPIRES_IN           | 120                                  |
+| RESET_PASSWORD_TOKEN_EXPIRES_IN    | 120                                  |
+| REFRESH_TOKEN_EXPIRES_IN           | 36                                   |
+| TOKEN_ISSUER                       | wiwa                                 |
+| TOKEN_EXPIRES_IN                   | 1                                    |
+| SECURITY_PUBLIC_PATH_PATTERN_REGEX |                                      |
+| VERIFICATION_TOKEN_ISSUER          | verification                         |

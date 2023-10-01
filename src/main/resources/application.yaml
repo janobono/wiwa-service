@@ -111,5 +111,7 @@ app:
   jwt:
     issuer: ${TOKEN_ISSUER:wiwa}
     expiration: ${TOKEN_EXPIRES_IN:1}
+  security:
+    public-path-pattern-regex: ${SECURITY_PUBLIC_PATH_PATTERN_REGEX:^(/actuator/(health|info|metrics|metrics/.*)|/api-docs.*|/swagger-ui.*|/auth/(confirm|reset-password|sign-in|sign-up|refresh)|/captcha|/ui/.*)$}
   verification:
     issuer: ${VERIFICATION_TOKEN_ISSUER:verification}

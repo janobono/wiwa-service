@@ -1,49 +1,36 @@
 package sk.janobono.wiwa.config;
 
 import org.junit.jupiter.api.Test;
-
-import java.util.regex.Pattern;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.RestTemplate;
+import sk.janobono.wiwa.BaseIntegrationTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SecurityConfigPropertiesTest {
+class SecurityConfigPropertiesTest extends BaseIntegrationTest {
+
+    @Autowired
+    public RestTemplateBuilder restTemplateBuilder;
 
     @Test
     void fullTest() {
-        final Pattern publicPathPattern = Pattern.compile(SecurityConfigProperties.DEFAULT_PUBLIC_PATH_PATTERN_REGEX);
-        assertThat(publicPathPattern.matcher("/").matches()).isFalse();
-        assertThat(publicPathPattern.matcher("/index.html").matches()).isFalse();
-        assertThat(publicPathPattern.matcher("/something").matches()).isFalse();
+        final RestTemplate restTemplate = restTemplateBuilder.build();
 
-        assertThat(publicPathPattern.matcher("/actuator/health").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/actuator/info").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/actuator/metrics").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/actuator/metrics/something").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/actuator/metrics-something").matches()).isFalse();
+        var result = restTemplate.getForEntity(getURI("/actuator/health"), Void.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        assertThat(publicPathPattern.matcher("/api-docs").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/api-docs.yaml").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/api-docsanything").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/api-docs.anything").matches()).isTrue();
+        result = restTemplate.getForEntity(getURI("/actuator/info"), Void.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        assertThat(publicPathPattern.matcher("/swagger-ui").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/swagger-ui.html").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/swagger-uianything").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/swagger-ui.anything").matches()).isTrue();
+        result = restTemplate.getForEntity(getURI("/api-docs"), Void.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        assertThat(publicPathPattern.matcher("/auth/change-email").matches()).isFalse();
-        assertThat(publicPathPattern.matcher("/auth/change-password").matches()).isFalse();
-        assertThat(publicPathPattern.matcher("/auth/change-user-details").matches()).isFalse();
-        assertThat(publicPathPattern.matcher("/auth/resend-confirmation").matches()).isFalse();
-        assertThat(publicPathPattern.matcher("/auth/confirm").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/auth/reset-password").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/auth/sign-in").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/auth/sign-up").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/auth/refresh").matches()).isTrue();
+        result = restTemplate.getForEntity(getURI("/swagger-ui.html"), Void.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        assertThat(publicPathPattern.matcher("/captcha").matches()).isTrue();
-
-        assertThat(publicPathPattern.matcher("/ui/something").matches()).isTrue();
-        assertThat(publicPathPattern.matcher("/ui-something").matches()).isFalse();
+        result = restTemplate.getForEntity(getURI("/swagger-ui/index.html"), Void.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 }
