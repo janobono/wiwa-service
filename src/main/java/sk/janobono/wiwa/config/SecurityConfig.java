@@ -14,6 +14,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import sk.janobono.wiwa.component.JwtToken;
 import sk.janobono.wiwa.security.ApplicationAccessDeniedHandler;
@@ -29,6 +32,7 @@ import java.util.regex.Pattern;
 public class SecurityConfig {
 
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final CorsConfigProperties corsConfigProperties;
     private final SecurityConfigProperties securityConfigProperties;
     private final JwtToken jwtToken;
 
@@ -41,7 +45,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(final HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(configurationSource()))
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -62,6 +66,17 @@ public class SecurityConfig {
                 );
 
         return httpSecurity.build();
+    }
+
+    private CorsConfigurationSource configurationSource() {
+        final CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(corsConfigProperties.allowedOrigins());
+        corsConfiguration.setAllowedMethods(corsConfigProperties.allowedMethods());
+        corsConfiguration.setAllowedHeaders(corsConfigProperties.allowedHeaders());
+        corsConfiguration.setAllowCredentials(corsConfigProperties.allowCredentials());
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+        return source;
     }
 
     private RequestMatcher permitAllRequestMatcher() {

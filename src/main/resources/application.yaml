@@ -115,3 +115,8 @@ app:
     public-path-pattern-regex: ${SECURITY_PUBLIC_PATH_PATTERN_REGEX:^(/actuator/(health|info|metrics|metrics/.*)|/api-docs.*|/swagger-ui.*|/auth/(confirm|reset-password|sign-in|sign-up|refresh)|/captcha|/ui/.*)$}
   verification:
     issuer: ${VERIFICATION_TOKEN_ISSUER:verification}
+  cors:
+    allowedOrigins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+    allowedMethods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,OPTIONS,PATCH}
+    allowedHeaders: ${CORS_ALLOWED_HEADERS:Authorization,Content-Type,X-Request-Id,X-Request-Origin}
+    allowCredentials: ${CORS_ALLOW_CREDENTIALS:true}
