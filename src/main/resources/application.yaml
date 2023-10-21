@@ -98,7 +98,7 @@ springdoc:
 app:
   common:
     default-locale: ${DEFAULT_LOCALE:en_US}
-    web-url: ${WEB_URL:http://localhost:8080}
+    web-url: ${WEB_URL:http://localhost:3000}
     mail: ${MAIL:mail@wiwa.sk}
     init-data-path: ${INIT_DATA_PATH:./data}
     max-image-resolution: ${MAX_IMAGE_RESOLUTION:1000}
