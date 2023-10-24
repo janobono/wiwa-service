@@ -10,7 +10,6 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties("app.common")
 @Validated
 public record CommonConfigProperties(
-        @DefaultValue("en_US") String defaultLocale,
         @NotEmpty String webUrl,
         @NotEmpty @Email String mail,
         @NotEmpty String initDataPath,

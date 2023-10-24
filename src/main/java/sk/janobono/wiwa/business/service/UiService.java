@@ -31,10 +31,6 @@ public class UiService {
     private final ApplicationPropertyService applicationPropertyService;
     private final ApplicationImageRepository applicationImageRepository;
 
-    public String getDefaultLocale() {
-        return commonConfigProperties.defaultLocale();
-    }
-
     public ResourceEntity getLogo() {
         return applicationImageService.getApplicationImage("logo.png");
     }

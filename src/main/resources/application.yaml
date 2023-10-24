@@ -97,7 +97,6 @@ springdoc:
 # ===============================
 app:
   common:
-    default-locale: ${DEFAULT_LOCALE:en_US}
     web-url: ${WEB_URL:http://localhost:3000}
     mail: ${MAIL:mail@wiwa.sk}
     init-data-path: ${INIT_DATA_PATH:./data}

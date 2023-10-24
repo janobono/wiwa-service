@@ -21,12 +21,6 @@ public class IndexController {
 
     private final UiService uiService;
 
-    @GetMapping(value = "/default-locale")
-    public SingleValueBody<String> getDefaultLocale() {
-        return new SingleValueBody<>(uiService.getDefaultLocale());
-    }
-
-
     @GetMapping("/logo")
     public ResponseEntity<Resource> getLogo() {
         final ResourceEntity resourceEntity = uiService.getLogo();
