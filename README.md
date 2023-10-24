@@ -93,7 +93,6 @@ docker volume rm $(docker volume ls -q --filter dangling=true)
 | MAIL_PASS                          |                                      |
 | MAIL_AUTH                          | false                                |
 | MAIL_TLS_ENABLE                    | false                                |
-| DEFAULT_LOCALE                     | en_US                                |
 | WEB_URL                            | http://localhost:8080                |
 | MAIL                               | mail@wiwa.sk                         |
 | INIT_DATA_PATH                     | ./data                               |
