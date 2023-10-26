@@ -303,7 +303,7 @@ public class AuthService {
 
     private String getTokenUrl(final String webUrl, final String token) {
         try {
-            return webUrl + "/auth/confirm/" + URLEncoder.encode(token, StandardCharsets.UTF_8);
+            return webUrl + "/confirm/" + URLEncoder.encode(token, StandardCharsets.UTF_8);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
