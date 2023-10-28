@@ -116,6 +116,6 @@ app:
     issuer: ${VERIFICATION_TOKEN_ISSUER:verification}
   cors:
     allowedOrigins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
-    allowedMethods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,OPTIONS,PATCH}
+    allowedMethods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,OPTIONS,PATCH,DELETE}
     allowedHeaders: ${CORS_ALLOWED_HEADERS:Authorization,Content-Type,X-Request-Id,X-Request-Origin}
     allowCredentials: ${CORS_ALLOW_CREDENTIALS:true}
