@@ -10,7 +10,6 @@ import org.springframework.util.MultiValueMap;
 import sk.janobono.wiwa.BaseIntegrationTest;
 import sk.janobono.wiwa.api.model.ApplicationImageWeb;
 import sk.janobono.wiwa.api.model.SingleValueBody;
-import sk.janobono.wiwa.business.model.ui.ApplicationInfoItemSo;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
 import sk.janobono.wiwa.component.ImageUtil;
@@ -92,20 +91,14 @@ class IndexControllerTest extends BaseIntegrationTest {
                 getURI("/config/application-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
-                        new ApplicationInfoSo(
-                                List.of(
-                                        new ApplicationInfoItemSo("testTitleEn", "testTextEn", "testImageEn")
-                                )
-                        ),
+                        new ApplicationInfoSo(List.of("testTextEn")),
                         headers
                 ),
                 ApplicationInfoSo.class
         );
         assertThat(applicationInfo.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(applicationInfo.getBody()).isNotNull();
-        assertThat(applicationInfo.getBody().items().get(0).title()).isEqualTo("testTitleEn");
-        assertThat(applicationInfo.getBody().items().get(0).text()).isEqualTo("testTextEn");
-        assertThat(applicationInfo.getBody().items().get(0).imageFileName()).isEqualTo("testImageEn");
+        assertThat(applicationInfo.getBody().items().get(0)).isEqualTo("testTextEn");
 
         // company-info
         final ResponseEntity<CompanyInfoSo> companyInfo = restTemplate.exchange(

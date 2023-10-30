@@ -8,83 +8,6 @@
   },
   {
     "key": {
-      "group": "APP",
-      "key": "WELCOME_TEXT"
-    },
-    "value": "If you plan to make the furniture yourself, we offer you the opportunity to order from us quality prepared furniture parts for your kitchen, office or other interior project. We will provide you with the required materials (DTD, MDF, HDF), cutting and gluing the edges exactly according to your wishes."
-  },
-  {
-    "key": {
-      "group": "APP_INFO_SLIDE",
-      "key": "COUNT"
-    },
-    "value": "3"
-  },
-  {
-    "key": {
-      "group": "APP_INFO_SLIDE",
-      "key": "0_TITLE"
-    },
-    "value": "Cutting and edging"
-  },
-  {
-    "key": {
-      "group": "APP_INFO_SLIDE",
-      "key": "0_TEXT"
-    },
-    "value": "Cutting and edging chipboard precisely to measure, laminated chipboards and ABS edges in more than 150 decors."
-  },
-  {
-    "key": {
-      "group": "APP_INFO_SLIDE",
-      "key": "0_IMAGE"
-    },
-    "value": "cutting-and-edging.png"
-  },
-  {
-    "key": {
-      "group": "APP_INFO_SLIDE",
-      "key": "1_TITLE"
-    },
-    "value": "Online ordering"
-  },
-  {
-    "key": {
-      "group": "APP_INFO_SLIDE",
-      "key": "1_TEXT"
-    },
-    "value": "A simple, convenient, safe and fast way of online ordering. Choose the material, specify the type of part, dimensions, quantity."
-  },
-  {
-    "key": {
-      "group": "APP_INFO_SLIDE",
-      "key": "1_IMAGE"
-    },
-    "value": "online-ordering.png"
-  },
-  {
-    "key": {
-      "group": "APP_INFO_SLIDE",
-      "key": "2_TITLE"
-    },
-    "value": "Manufacture and delivery"
-  },
-  {
-    "key": {
-      "group": "APP_INFO_SLIDE",
-      "key": "2_TEXT"
-    },
-    "value": "Now just wait for your furniture parts, we will manufacture and deliver them exactly according to your requirements."
-  },
-  {
-    "key": {
-      "group": "APP_INFO_SLIDE",
-      "key": "2_IMAGE"
-    },
-    "value": "manufacture-and-delivery.png"
-  },
-  {
-    "key": {
       "group": "COMPANY",
       "key": "NAME"
     },
@@ -229,5 +152,12 @@
       "key": "LINK"
     },
     "value": "Click to activate your account."
+  },
+  {
+    "key": {
+      "group": "APP_INFO_SLIDE",
+      "key": "COUNT"
+    },
+    "value": "3"
   }
 ]

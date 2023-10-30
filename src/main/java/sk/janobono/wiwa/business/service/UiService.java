@@ -5,7 +5,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.business.model.ui.ApplicationInfoItemSo;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
 import sk.janobono.wiwa.component.ImageUtil;
@@ -47,9 +46,7 @@ public class UiService {
         final ApplicationInfoSo result = new ApplicationInfoSo(new ArrayList<>());
         final int count = Integer.parseInt(applicationPropertyService.getProperty(WiwaProperty.APP_INFO_SLIDE_COUNT));
         for (int i = 0; i < count; i++) {
-            result.items().add(new ApplicationInfoItemSo(applicationPropertyService.getProperty(WiwaProperty.APP_INFO_SLIDE_X_TITLE, i),
-                    applicationPropertyService.getProperty(WiwaProperty.APP_INFO_SLIDE_X_TEXT, i),
-                    applicationPropertyService.getProperty(WiwaProperty.APP_INFO_SLIDE_X_IMAGE, i)));
+            result.items().add(applicationPropertyService.getProperty(WiwaProperty.APP_INFO_SLIDE_X_TEXT, i));
         }
         return result;
     }
@@ -126,10 +123,7 @@ public class UiService {
     public ApplicationInfoSo setApplicationInfo(final ApplicationInfoSo applicationInfo) {
         applicationPropertyService.setApplicationProperty(WiwaProperty.APP_INFO_SLIDE_COUNT.getGroup(), WiwaProperty.APP_INFO_SLIDE_COUNT.getKey(), Integer.toString(applicationInfo.items().size()));
         for (int i = 0; i < applicationInfo.items().size(); i++) {
-            final ApplicationInfoItemSo applicationInfoItemDto = applicationInfo.items().get(i);
-            applicationPropertyService.setApplicationProperty(WiwaProperty.APP_INFO_SLIDE_X_TITLE.getGroup(), WiwaProperty.APP_INFO_SLIDE_X_TITLE.getKey(i), applicationInfoItemDto.title());
-            applicationPropertyService.setApplicationProperty(WiwaProperty.APP_INFO_SLIDE_X_TEXT.getGroup(), WiwaProperty.APP_INFO_SLIDE_X_TEXT.getKey(i), applicationInfoItemDto.text());
-            applicationPropertyService.setApplicationProperty(WiwaProperty.APP_INFO_SLIDE_X_IMAGE.getGroup(), WiwaProperty.APP_INFO_SLIDE_X_IMAGE.getKey(i), applicationInfoItemDto.imageFileName());
+            applicationPropertyService.setApplicationProperty(WiwaProperty.APP_INFO_SLIDE_X_TEXT.getGroup(), WiwaProperty.APP_INFO_SLIDE_X_TEXT.getKey(i), applicationInfo.items().get(i));
         }
         return applicationInfo;
     }
