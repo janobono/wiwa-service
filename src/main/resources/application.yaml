@@ -104,9 +104,9 @@ app:
     max-thumbnail-resolution: ${MAX_THUMBNAIL_RESOLUTION:130}
     captcha-length: ${CAPTCHA_LENGTH:4}
   auth:
-    sign-up-token-expiration: ${SIGN_UP_TOKEN_EXPIRES_IN:120}
-    reset-password-token-expiration: ${RESET_PASSWORD_TOKEN_EXPIRES_IN:120}
-    refresh-token-expiration: ${REFRESH_TOKEN_EXPIRES_IN:36}
+    sign-up-token-expiration: ${SIGN_UP_TOKEN_EXPIRES_IN:1200}
+    reset-password-token-expiration: ${RESET_PASSWORD_TOKEN_EXPIRES_IN:1200}
+    refresh-token-expiration: ${REFRESH_TOKEN_EXPIRES_IN:5}
   jwt:
     issuer: ${TOKEN_ISSUER:wiwa}
     expiration: ${TOKEN_EXPIRES_IN:1}

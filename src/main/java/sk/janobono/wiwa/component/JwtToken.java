@@ -49,7 +49,7 @@ public class JwtToken {
         keyGen.initialize(1024);
         final KeyPair keyPair = keyGen.generateKeyPair();
         this.algorithm = Algorithm.RSA256((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
-        this.expiration = TimeUnit.HOURS.toMillis(jwtConfigProperties.expiration());
+        this.expiration = TimeUnit.MINUTES.toMillis(jwtConfigProperties.expiration());
         this.issuer = jwtConfigProperties.issuer();
     }
 

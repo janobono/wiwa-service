@@ -205,7 +205,7 @@ public class AuthService {
         final String token = verificationToken.generateToken(
                 data,
                 issuedAt,
-                issuedAt + TimeUnit.HOURS.toMillis(authConfigProperties.refreshTokenExpiration())
+                issuedAt + TimeUnit.MINUTES.toMillis(authConfigProperties.refreshTokenExpiration())
         );
         return new AuthenticationResponseSo(jwtToken.generateToken(userMapper.mapToUser(user), issuedAt), token);
     }
@@ -237,7 +237,7 @@ public class AuthService {
         final String token = verificationToken.generateToken(
                 data,
                 issuedAt,
-                issuedAt + TimeUnit.HOURS.toMillis(authConfigProperties.resetPasswordTokenExpiration())
+                issuedAt + TimeUnit.MINUTES.toMillis(authConfigProperties.resetPasswordTokenExpiration())
         );
 
         mailService.sendEmail(new MailSo(
@@ -278,7 +278,7 @@ public class AuthService {
         final String token = verificationToken.generateToken(
                 data,
                 issuedAt,
-                issuedAt + TimeUnit.HOURS.toMillis(authConfigProperties.signUpTokenExpiration())
+                issuedAt + TimeUnit.MINUTES.toMillis(authConfigProperties.signUpTokenExpiration())
         );
 
         mailService.sendEmail(new MailSo(
