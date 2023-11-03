@@ -26,6 +26,8 @@ services:
       - MAIL_HOST=smtp
       - MAIL_PORT=1025
       - INIT_DATA_PATH=./data
+      - REFRESH_TOKEN_EXPIRES_IN=120
+      - TOKEN_EXPIRES_IN=60
     ports:
       - 8080:8080
     depends_on:
