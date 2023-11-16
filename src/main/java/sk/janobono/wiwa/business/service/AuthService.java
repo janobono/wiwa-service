@@ -260,7 +260,7 @@ public class AuthService {
                                 )
                         ),
                         new MailLinkSo(
-                                getTokenUrl(appConfigProperties.webUrl(), token),
+                                getTokenUrl(appConfigProperties.webUrl(), appConfigProperties.confirmPath(), token),
                                 applicationPropertyService.getProperty(
                                         WiwaProperty.AUTH_RESET_PASSWORD_MAIL_LINK
                                 )
@@ -293,7 +293,7 @@ public class AuthService {
                                 applicationPropertyService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_MESSAGE)
                         ),
                         new MailLinkSo(
-                                getTokenUrl(appConfigProperties.webUrl(), token),
+                                getTokenUrl(appConfigProperties.webUrl(), appConfigProperties.confirmPath(), token),
                                 applicationPropertyService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_LINK)
                         )
                 ),
@@ -301,9 +301,9 @@ public class AuthService {
         ));
     }
 
-    private String getTokenUrl(final String webUrl, final String token) {
+    private String getTokenUrl(final String webUrl, final String path, final String token) {
         try {
-            return webUrl + "/confirm/" + URLEncoder.encode(token, StandardCharsets.UTF_8);
+            return webUrl + path + URLEncoder.encode(token, StandardCharsets.UTF_8);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public record CommonConfigProperties(
         @NotEmpty String webUrl,
+        @NotEmpty String confirmPath,
         @NotEmpty @Email String mail,
         @NotEmpty String initDataPath,
         @DefaultValue("1000") Integer maxImageResolution,

@@ -1,4 +1,4 @@
-FROM maven:3-eclipse-temurin-17-focal as builder
+FROM maven:3-eclipse-temurin-17-alpine as builder
 
 WORKDIR /app
 
