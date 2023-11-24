@@ -61,6 +61,15 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(companyInfoDto.commercialRegisterInfo()).isEqualTo("The company is registered in the Commercial Register of the District Court in Zvolen, section Sro, insert number 11111/P");
         assertThat(companyInfoDto.mapUrl()).isEqualTo("https://maps.google.com/maps?q=Zvolen&t=&z=13&ie=UTF8&iwloc=&output=embed");
 
+        // business-conditions
+        final String businessConditions = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/business-conditions"), JsonNode.class)).get("value").textValue();
+        assertThat(businessConditions).isEqualTo(
+                applicationPropertyRepository.findById(new ApplicationPropertyKeyDo(
+                        WiwaProperty.APP_BUSINESS_CONDITIONS.getGroup(),
+                        WiwaProperty.APP_BUSINESS_CONDITIONS.getKey()
+                )).orElseThrow().getValue()
+        );
+
         // cookies-info
         final String cookiesInfo = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/cookies-info"), JsonNode.class)).get("value").textValue();
         assertThat(cookiesInfo).isEqualTo(

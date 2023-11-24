@@ -138,6 +138,19 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(companyInfo.getBody().commercialRegisterInfo()).isEqualTo("testCommercialRegisterInfoEn");
         assertThat(companyInfo.getBody().mapUrl()).isEqualTo("testMapUrl");
 
+        // business-conditions
+        final ResponseEntity<JsonNode> businessConditions = restTemplate.exchange(
+                getURI("/config/business-conditions"),
+                HttpMethod.POST,
+                new HttpEntity<>(
+                        new SingleValueBody<>("test"),
+                        headers
+                ),
+                JsonNode.class
+        );
+        assertThat(businessConditions.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(Objects.requireNonNull(businessConditions.getBody()).get("value").asText()).isEqualTo("test");
+
         // cookies-info
         final ResponseEntity<JsonNode> cookiesInfo = restTemplate.exchange(
                 getURI("/config/cookies-info"),

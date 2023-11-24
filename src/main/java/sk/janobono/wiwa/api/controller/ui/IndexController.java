@@ -50,6 +50,11 @@ public class IndexController {
         return uiService.getCompanyInfo();
     }
 
+    @GetMapping(value = "/business-conditions")
+    public SingleValueBody<String> getBusinessConditions() {
+        return new SingleValueBody<>(uiService.getBusinessConditions());
+    }
+
     @GetMapping(value = "/cookies-info")
     public SingleValueBody<String> getCookiesInfo() {
         return new SingleValueBody<>(uiService.getCookiesInfo());

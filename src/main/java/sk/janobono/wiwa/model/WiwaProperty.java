@@ -6,6 +6,7 @@ public enum WiwaProperty implements ApplicationPropertyKey {
 
     APP_TITLE("APP", "TITLE"),
     APP_WELCOME_TEXT("APP", "WELCOME_TEXT"),
+    APP_BUSINESS_CONDITIONS("APP", "BUSINESS_CONDITIONS"),
     APP_COOKIES_INFO("APP", "COOKIES_INFO"),
     APP_GDPR_INFO("APP", "GDPR_INFO"),
     APP_WORKING_HOURS("APP", "WORKING_HOURS"),

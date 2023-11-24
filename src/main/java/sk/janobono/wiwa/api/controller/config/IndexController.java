@@ -50,6 +50,12 @@ public class IndexController {
         return uiService.setCompanyInfo(data);
     }
 
+    @PostMapping(value = "/business-conditions")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public SingleValueBody<String> setBusinessConditions(@RequestBody final SingleValueBody<String> data) {
+        return new SingleValueBody<>(uiService.setBusinessConditions(data.value()));
+    }
+
     @PostMapping(value = "/cookies-info")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public SingleValueBody<String> setCookiesInfo(@RequestBody final SingleValueBody<String> data) {

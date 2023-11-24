@@ -66,6 +66,10 @@ public class UiService {
                 applicationPropertyService.getProperty(WiwaProperty.COMPANY_MAP_URL));
     }
 
+    public String getBusinessConditions() {
+        return applicationPropertyService.getProperty(WiwaProperty.APP_BUSINESS_CONDITIONS);
+    }
+
     public String getCookiesInfo() {
         return applicationPropertyService.getProperty(WiwaProperty.APP_COOKIES_INFO);
     }
@@ -143,6 +147,10 @@ public class UiService {
         applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_COMMERCIAL_REGISTER_INFO.getGroup(), WiwaProperty.COMPANY_COMMERCIAL_REGISTER_INFO.getKey(), companyInfo.commercialRegisterInfo());
         applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_MAP_URL.getGroup(), WiwaProperty.COMPANY_MAP_URL.getKey(), companyInfo.mapUrl());
         return companyInfo;
+    }
+
+    public String setBusinessConditions(final String businessConditions) {
+        return applicationPropertyService.setApplicationProperty(WiwaProperty.APP_BUSINESS_CONDITIONS.getGroup(), WiwaProperty.APP_BUSINESS_CONDITIONS.getKey(), businessConditions);
     }
 
     public String setCookiesInfo(final String cookiesInfo) {
