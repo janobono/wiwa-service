@@ -2,9 +2,9 @@ version: '3.8'
 
 services:
   pg:
-    image: postgres:alpine
+    image: public.ecr.aws/docker/library/postgres:alpine
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
       - POSTGRES_DB=app
       - POSTGRES_USER=app
@@ -15,7 +15,7 @@ services:
   smtp:
     image: maildev/maildev:latest
     ports:
-      - 8081:1080
+      - "8081:1080"
 
   wiwa-service:
     image: sk.janobono.wiwa/wiwa-service:latest
@@ -29,7 +29,7 @@ services:
       - REFRESH_TOKEN_EXPIRES_IN=120
       - TOKEN_EXPIRES_IN=60
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
       - pg
       - smtp

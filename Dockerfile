@@ -1,4 +1,4 @@
-FROM maven:3-eclipse-temurin-17-alpine as builder
+FROM public.ecr.aws/docker/library/maven:3-eclipse-temurin-17-alpine as builder
 
 WORKDIR /app
 
@@ -6,21 +6,14 @@ COPY . .
 
 RUN mvn clean install -DskipTests
 
-FROM eclipse-temurin:17-jre-alpine as extractor
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:17-al2023-headless as extractor
 WORKDIR app
 COPY --from=builder /app/target/*.jar app.jar
 RUN java -Djarmode=layertools -jar app.jar extract
 
-FROM eclipse-temurin:17-jre-alpine as production
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:17-al2023-headless as production
 
 WORKDIR /app
-
-RUN addgroup --gid 1000 app; \
-    adduser --disabled-password --gecos "" --home "$(pwd)" --ingroup app --no-create-home --uid 1000 app
-
-RUN chown -R app:app /app
-
-USER app
 
 COPY data ./data
 
