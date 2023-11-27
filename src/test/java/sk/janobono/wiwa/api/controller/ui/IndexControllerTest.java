@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import sk.janobono.wiwa.BaseIntegrationTest;
+import sk.janobono.wiwa.api.model.ApplicationPropertiesWeb;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
 import sk.janobono.wiwa.component.ImageUtil;
@@ -25,6 +26,14 @@ class IndexControllerTest extends BaseIntegrationTest {
 
     @Test
     void fullTest() {
+        // application-info
+        final ApplicationPropertiesWeb applicationProperties = restTemplate.getForObject(getURI("/ui/application-properties"), ApplicationPropertiesWeb.class);
+        assertThat(applicationProperties).isNotNull();
+        assertThat(applicationProperties.defaultLocale()).isEqualTo("en_US");
+        assertThat(applicationProperties.appTitle()).isEqualTo("Wiwa");
+        assertThat(applicationProperties.appDescription()).isEqualTo("Woodworking Industry Web Application");
+        assertThat(applicationProperties.tokenExpiresIn()).isEqualTo(1);
+
         // logo
         final byte[] logo = restTemplate.getForObject(getURI("/ui/logo"), byte[].class);
         assertThat(logo).isEqualTo(imageUtil.generateMessageImage(null));

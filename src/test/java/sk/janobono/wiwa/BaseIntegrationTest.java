@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class BaseIntegrationTest {
 
     public static PostgreSQLContainer<?> postgresDB = new PostgreSQLContainer<>
-            ("postgres:15-alpine")
+            ("postgres:16-alpine")
             .withDatabaseName("app")
             .withUsername("app")
             .withPassword("app");

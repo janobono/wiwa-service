@@ -97,6 +97,9 @@ springdoc:
 # ===============================
 app:
   common:
+    default-locale: ${DEFAULT_LOCALE:en_US}
+    app-title: ${APP_TITLE:Wiwa}
+    app-description: ${APP_DESCRIPTION:Woodworking Industry Web Application}
     web-url: ${WEB_URL:http://localhost:3000}
     confirm-path: ${CONFIRM_PATH:/ui/confirm/}
     mail: ${MAIL:mail@wiwa.sk}

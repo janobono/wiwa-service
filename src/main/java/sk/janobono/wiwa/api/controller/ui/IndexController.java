@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sk.janobono.wiwa.api.model.ApplicationPropertiesWeb;
 import sk.janobono.wiwa.api.model.SingleValueBody;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
@@ -20,6 +21,11 @@ import sk.janobono.wiwa.model.ResourceEntity;
 public class IndexController {
 
     private final UiService uiService;
+
+    @GetMapping("/application-properties")
+    public ApplicationPropertiesWeb getApplicationProperties() {
+        return uiService.getApplicationProperties();
+    }
 
     @GetMapping("/logo")
     public ResponseEntity<Resource> getLogo() {

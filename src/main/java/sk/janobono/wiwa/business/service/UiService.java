@@ -5,10 +5,12 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import sk.janobono.wiwa.api.model.ApplicationPropertiesWeb;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
+import sk.janobono.wiwa.config.JwtConfigProperties;
 import sk.janobono.wiwa.dal.domain.ApplicationImageDo;
 import sk.janobono.wiwa.dal.repository.ApplicationImageRepository;
 import sk.janobono.wiwa.exception.WiwaException;
@@ -24,11 +26,21 @@ import java.util.ArrayList;
 @Service
 public class UiService {
     private final CommonConfigProperties commonConfigProperties;
+    private final JwtConfigProperties jwtConfigProperties;
     private final ApplicationImageMapper applicationImageMapper;
     private final ImageUtil imageUtil;
     private final ApplicationImageService applicationImageService;
     private final ApplicationPropertyService applicationPropertyService;
     private final ApplicationImageRepository applicationImageRepository;
+
+    public ApplicationPropertiesWeb getApplicationProperties() {
+        return new ApplicationPropertiesWeb(
+                commonConfigProperties.defaultLocale(),
+                commonConfigProperties.appTitle(),
+                commonConfigProperties.appDescription(),
+                jwtConfigProperties.expiration()
+        );
+    }
 
     public ResourceEntity getLogo() {
         return applicationImageService.getApplicationImage("logo.png");
