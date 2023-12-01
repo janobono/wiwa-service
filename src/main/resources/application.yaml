@@ -100,7 +100,7 @@ app:
     default-locale: ${DEFAULT_LOCALE:en_US}
     app-title: ${APP_TITLE:Wiwa}
     app-description: ${APP_DESCRIPTION:Woodworking Industry Web Application}
-    web-url: ${WEB_URL:http://localhost:3000}
+    web-url: ${WEB_URL:http://localhost:5173}
     confirm-path: ${CONFIRM_PATH:/ui/confirm/}
     mail: ${MAIL:mail@wiwa.sk}
     init-data-path: ${INIT_DATA_PATH:./data}
@@ -119,7 +119,7 @@ app:
   verification:
     issuer: ${VERIFICATION_TOKEN_ISSUER:verification}
   cors:
-    allowedOrigins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+    allowedOrigins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
     allowedMethods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,OPTIONS,PATCH,DELETE}
     allowedHeaders: ${CORS_ALLOWED_HEADERS:Authorization,Content-Type,X-Request-Id,X-Request-Origin}
     allowCredentials: ${CORS_ALLOW_CREDENTIALS:true}
