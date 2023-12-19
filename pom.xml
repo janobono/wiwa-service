@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.5</version>
+        <version>3.2.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>sk.janobono.wiwa</groupId>
@@ -16,6 +16,7 @@
         <java.version>17</java.version>
 
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+        <sk.r3n.version>6.0.3</sk.r3n.version>
     </properties>
 
     <dependencies>
@@ -25,7 +26,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -46,6 +47,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -89,6 +94,12 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>sk.r3n</groupId>
+            <artifactId>r3n-sql</artifactId>
+            <version>${sk.r3n.version}</version>
         </dependency>
         <!-- Test -->
         <dependency>
@@ -162,6 +173,26 @@
                         <includeLayerTools>true</includeLayerTools>
                     </layers>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>sk.r3n</groupId>
+                <artifactId>r3n-maven-plugin</artifactId>
+                <version>${sk.r3n.version}</version>
+                <configuration>
+                    <blobFile>false</blobFile>
+                    <targetPackage>sk.janobono.wiwa.dal</targetPackage>
+                    <jdbcDriver>org.postgresql.Driver</jdbcDriver>
+                    <jdbcUrl>jdbc:postgresql://localhost:5432/app</jdbcUrl>
+                    <jdbcUser>app</jdbcUser>
+                    <jdbcPassword>app</jdbcPassword>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

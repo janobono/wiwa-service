@@ -8,8 +8,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.BaseIntegrationTest;
 import sk.janobono.wiwa.api.model.SingleValueBody;
+import sk.janobono.wiwa.business.model.codelist.CodeListDataSo;
+import sk.janobono.wiwa.business.model.codelist.CodeListItemDataSo;
+import sk.janobono.wiwa.business.model.codelist.CodeListItemSo;
+import sk.janobono.wiwa.business.model.codelist.CodeListSo;
 import sk.janobono.wiwa.business.model.user.UserDataSo;
 import sk.janobono.wiwa.business.model.user.UserProfileSo;
 import sk.janobono.wiwa.model.Authority;
@@ -18,11 +21,10 @@ import sk.janobono.wiwa.model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UserControllerTest extends BaseIntegrationTest {
+class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void allUserControllerMethods() throws Exception {
@@ -54,16 +56,29 @@ class UserControllerTest extends BaseIntegrationTest {
         assertThat(page.getContent().size()).isEqualTo(5);
 
         pageable = PageRequest.of(0, 5);
-        page = getUsers(headers, "0", "user0", "mail0@domain.com", pageable);
+        page = getUsers(headers, "0", "user0", "mail0@domain.com", null, pageable);
         assertThat(page.getTotalElements()).isEqualTo(1);
         assertThat(page.getTotalPages()).isEqualTo(1);
         assertThat(page.getContent().size()).isEqualTo(1);
+
+        final CodeListSo testCodeList = addCodeList(headers, new CodeListDataSo("code", "name"));
+        final CodeListItemSo codeListItemSo = addCodeListItem(headers, testCodeList.id(), new CodeListItemDataSo(null, "code", "value"));
 
         for (final User user : users) {
             setUser(headers, user);
             setAuthorities(headers, user);
             setConfirmed(headers, user);
             setEnabled(headers, user);
+
+            setCodeListItems(headers, user, List.of(codeListItemSo.id()));
+
+            page = getUsers(headers, null, user.username(), null, List.of(codeListItemSo.code()), pageable);
+            assertThat(page.getTotalElements()).isEqualTo(1);
+            assertThat(page.getTotalPages()).isEqualTo(1);
+            assertThat(page.getContent().size()).isEqualTo(1);
+
+            setCodeListItems(headers, user, List.of());
+
             deleteUser(headers, user.id());
         }
     }
@@ -76,11 +91,12 @@ class UserControllerTest extends BaseIntegrationTest {
         return getEntities(User.class, headers, "/users", new LinkedMultiValueMap<>(), pageable);
     }
 
-    private Page<User> getUsers(final HttpHeaders headers, final String searchField, final String username, final String email, final Pageable pageable) {
+    private Page<User> getUsers(final HttpHeaders headers, final String searchField, final String username, final String email, final List<String> codeListItems, final Pageable pageable) {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        addToParams(params, "search-field", searchField);
+        addToParams(params, "searchField", searchField);
         addToParams(params, "username", username);
         addToParams(params, "email", email);
+        addToParams(params, "codeListItems", codeListItems);
         return getEntities(User.class, headers, "/users", params, pageable);
     }
 
@@ -96,7 +112,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 true,
                 false,
                 false,
-                Set.of(Authority.W_CUSTOMER)
+                List.of(Authority.W_CUSTOMER)
         ));
     }
 
@@ -111,12 +127,12 @@ class UserControllerTest extends BaseIntegrationTest {
                 ));
     }
 
-    private void setAuthorities(final HttpHeaders headers, final User userDto) {
+    private void setAuthorities(final HttpHeaders headers, final User user) {
         final ResponseEntity<User> response = restTemplate.exchange(
-                getURI("/users/{id}/authorities", Map.of("id", Long.toString(userDto.id()))),
+                getURI("/users/{id}/authorities", Map.of("id", Long.toString(user.id()))),
                 HttpMethod.PATCH,
                 new HttpEntity<>(
-                        new SingleValueBody<>(new Authority[]{Authority.W_CUSTOMER, Authority.W_EMPLOYEE})
+                        new Authority[]{Authority.W_CUSTOMER, Authority.W_EMPLOYEE}
                         , headers),
                 User.class
         );
@@ -125,9 +141,9 @@ class UserControllerTest extends BaseIntegrationTest {
         assertThat(response.getBody().authorities().size()).isEqualTo(2);
     }
 
-    private void setConfirmed(final HttpHeaders headers, final User userDto) {
+    private void setConfirmed(final HttpHeaders headers, final User user) {
         final ResponseEntity<User> response = restTemplate.exchange(
-                getURI("/users/{id}/confirm", Map.of("id", Long.toString(userDto.id()))),
+                getURI("/users/{id}/confirm", Map.of("id", Long.toString(user.id()))),
                 HttpMethod.PATCH,
                 new HttpEntity<>(new SingleValueBody<>(Boolean.TRUE), headers),
                 User.class
@@ -137,9 +153,9 @@ class UserControllerTest extends BaseIntegrationTest {
         assertThat(response.getBody().confirmed()).isTrue();
     }
 
-    private void setEnabled(final HttpHeaders headers, final User userDto) {
+    private void setEnabled(final HttpHeaders headers, final User user) {
         final ResponseEntity<User> response = restTemplate.exchange(
-                getURI("/users/{id}/enable", Map.of("id", Long.toString(userDto.id()))),
+                getURI("/users/{id}/enable", Map.of("id", Long.toString(user.id()))),
                 HttpMethod.PATCH,
                 new HttpEntity<>(new SingleValueBody<>(Boolean.TRUE), headers),
                 User.class
@@ -147,6 +163,18 @@ class UserControllerTest extends BaseIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().enabled()).isTrue();
+    }
+
+    private void setCodeListItems(final HttpHeaders headers, final User user, final List<Long> itemIds) {
+        final ResponseEntity<User> response = restTemplate.exchange(
+                getURI("/users/{id}/code-list-items", Map.of("id", Long.toString(user.id()))),
+                HttpMethod.PATCH,
+                new HttpEntity<>(itemIds, headers),
+                User.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().codeListItems().size()).isEqualTo(itemIds.size());
     }
 
     private void deleteUser(final HttpHeaders headers, final Long id) {

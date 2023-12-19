@@ -1,163 +1,117 @@
 [
   {
-    "key": {
-      "group": "APP",
-      "key": "TITLE"
-    },
+    "group": "APP",
+    "key": "TITLE",
     "value": "WIWA - Internet store"
   },
   {
-    "key": {
-      "group": "COMPANY",
-      "key": "NAME"
-    },
+    "group": "COMPANY",
+    "key": "NAME",
     "value": "WIWA, Ltd."
   },
   {
-    "key": {
-      "group": "COMPANY",
-      "key": "STREET"
-    },
+    "group": "COMPANY",
+    "key": "STREET",
     "value": "Street 12/4567"
   },
   {
-    "key": {
-      "group": "COMPANY",
-      "key": "CITY"
-    },
+    "group": "COMPANY",
+    "key": "CITY",
     "value": "Zvolen"
   },
   {
-    "key": {
-      "group": "COMPANY",
-      "key": "ZIP_CODE"
-    },
+    "group": "COMPANY",
+    "key": "ZIP_CODE",
     "value": "960 01"
   },
   {
-    "key": {
-      "group": "COMPANY",
-      "key": "STATE"
-    },
+    "group": "COMPANY",
+    "key": "STATE",
     "value": "Slovakia"
   },
   {
-    "key": {
-      "group": "COMPANY",
-      "key": "PHONE"
-    },
+    "group": "COMPANY",
+    "key": "PHONE",
     "value": "+421 111 111 111"
   },
   {
-    "key": {
-      "group": "COMPANY",
-      "key": "MAIL"
-    },
+    "group": "COMPANY",
+    "key": "MAIL",
     "value": "mail@domain.sk"
   },
   {
-    "key": {
-      "group": "COMPANY",
-      "key": "COMMERCIAL_REGISTER_INFO"
-    },
+    "group": "COMPANY",
+    "key": "COMMERCIAL_REGISTER_INFO",
     "value": "The company is registered in the Commercial Register of the District Court in Zvolen, section Sro, insert number 11111/P"
   },
   {
-    "key": {
-      "group": "COMPANY",
-      "key": "BUSINESS_ID"
-    },
+    "group": "COMPANY",
+    "key": "BUSINESS_ID",
     "value": "11 111 111"
   },
   {
-    "key": {
-      "group": "COMPANY",
-      "key": "TAX_ID"
-    },
+    "group": "COMPANY",
+    "key": "TAX_ID",
     "value": "1111111111"
   },
   {
-    "key": {
-      "group": "COMPANY",
-      "key": "VAT_REG_NO"
-    },
+    "group": "COMPANY",
+    "key": "VAT_REG_NO",
     "value": "SK1111111111"
   },
   {
-    "key": {
-      "group": "COMPANY",
-      "key": "MAP_URL"
-    },
+    "group": "COMPANY",
+    "key": "MAP_URL",
     "value": "https://maps.google.com/maps?q=Zvolen&t=&z=13&ie=UTF8&iwloc=&output=embed"
   },
   {
-    "key": {
-      "group": "AUTH_RESET_PASSWORD_MAIL",
-      "key": "SUBJECT"
-    },
+    "group": "AUTH_RESET_PASSWORD_MAIL",
+    "key": "SUBJECT",
     "value": "Password activation"
   },
   {
-    "key": {
-      "group": "AUTH_RESET_PASSWORD_MAIL",
-      "key": "TITLE"
-    },
+    "group": "AUTH_RESET_PASSWORD_MAIL",
+    "key": "TITLE",
     "value": "Password activation"
   },
   {
-    "key": {
-      "group": "AUTH_RESET_PASSWORD_MAIL",
-      "key": "MESSAGE"
-    },
+    "group": "AUTH_RESET_PASSWORD_MAIL",
+    "key": "MESSAGE",
     "value": "We have generated a new password for you."
   },
   {
-    "key": {
-      "group": "AUTH_RESET_PASSWORD_MAIL",
-      "key": "PASSWORD_MESSAGE"
-    },
+    "group": "AUTH_RESET_PASSWORD_MAIL",
+    "key": "PASSWORD_MESSAGE",
     "value": "New password: {0}"
   },
   {
-    "key": {
-      "group": "AUTH_RESET_PASSWORD_MAIL",
-      "key": "LINK"
-    },
+    "group": "AUTH_RESET_PASSWORD_MAIL",
+    "key": "LINK",
     "value": "Click to activate the password."
   },
   {
-    "key": {
-      "group": "AUTH_SIGN_UP_MAIL",
-      "key": "SUBJECT"
-    },
+    "group": "AUTH_SIGN_UP_MAIL",
+    "key": "SUBJECT",
     "value": "Account activation"
   },
   {
-    "key": {
-      "group": "AUTH_SIGN_UP_MAIL",
-      "key": "TITLE"
-    },
+    "group": "AUTH_SIGN_UP_MAIL",
+    "key": "TITLE",
     "value": "Account activation"
   },
   {
-    "key": {
-      "group": "AUTH_SIGN_UP_MAIL",
-      "key": "MESSAGE"
-    },
+    "group": "AUTH_SIGN_UP_MAIL",
+    "key": "MESSAGE",
     "value": "Your account has been created."
   },
   {
-    "key": {
-      "group": "AUTH_SIGN_UP_MAIL",
-      "key": "LINK"
-    },
+    "group": "AUTH_SIGN_UP_MAIL",
+    "key": "LINK",
     "value": "Click to activate your account."
   },
   {
-    "key": {
-      "group": "APP_INFO_SLIDE",
-      "key": "COUNT"
-    },
+    "group": "APP_INFO_SLIDE",
+    "key": "COUNT",
     "value": "3"
   }
 ]

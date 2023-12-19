@@ -5,12 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.api.component.WebImageUtil;
-import sk.janobono.wiwa.api.model.ApplicationImageWeb;
 import sk.janobono.wiwa.api.model.SingleValueBody;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
 import sk.janobono.wiwa.business.service.UiService;
+import sk.janobono.wiwa.model.ApplicationImage;
 
 @RequiredArgsConstructor
 @RestController("config")
@@ -18,12 +17,11 @@ import sk.janobono.wiwa.business.service.UiService;
 public class IndexController {
 
     private final UiService uiService;
-    private final WebImageUtil webImageUtil;
 
     @PostMapping("/logo")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ApplicationImageWeb setLogo(final @RequestParam("file") MultipartFile multipartFile) {
-        return webImageUtil.toWeb(uiService.setLogo(multipartFile));
+    public ApplicationImage setLogo(final @RequestParam("file") MultipartFile multipartFile) {
+        return uiService.setLogo(multipartFile);
     }
 
     @PostMapping(value = "/title")

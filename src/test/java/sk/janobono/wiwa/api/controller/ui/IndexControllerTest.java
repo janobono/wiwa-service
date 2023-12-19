@@ -3,12 +3,11 @@ package sk.janobono.wiwa.api.controller.ui;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import sk.janobono.wiwa.BaseIntegrationTest;
+import sk.janobono.wiwa.api.controller.BaseControllerTest;
 import sk.janobono.wiwa.api.model.ApplicationPropertiesWeb;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
 import sk.janobono.wiwa.component.ImageUtil;
-import sk.janobono.wiwa.dal.domain.ApplicationPropertyKeyDo;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 import sk.janobono.wiwa.model.WiwaProperty;
 
@@ -16,7 +15,7 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class IndexControllerTest extends BaseIntegrationTest {
+class IndexControllerTest extends BaseControllerTest {
 
     @Autowired
     public ImageUtil imageUtil;
@@ -32,7 +31,7 @@ class IndexControllerTest extends BaseIntegrationTest {
         assertThat(applicationProperties.defaultLocale()).isEqualTo("en_US");
         assertThat(applicationProperties.appTitle()).isEqualTo("Wiwa");
         assertThat(applicationProperties.appDescription()).isEqualTo("Woodworking Industry Web Application");
-        assertThat(applicationProperties.tokenExpiresIn()).isEqualTo(1);
+        assertThat(applicationProperties.tokenExpiresIn()).isEqualTo(15);
 
         // logo
         final byte[] logo = restTemplate.getForObject(getURI("/ui/logo"), byte[].class);
@@ -73,37 +72,37 @@ class IndexControllerTest extends BaseIntegrationTest {
         // business-conditions
         final String businessConditions = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/business-conditions"), JsonNode.class)).get("value").textValue();
         assertThat(businessConditions).isEqualTo(
-                applicationPropertyRepository.findById(new ApplicationPropertyKeyDo(
+                applicationPropertyRepository.findByGroupAndKey(
                         WiwaProperty.APP_BUSINESS_CONDITIONS.getGroup(),
                         WiwaProperty.APP_BUSINESS_CONDITIONS.getKey()
-                )).orElseThrow().getValue()
+                ).orElseThrow().getValue()
         );
 
         // cookies-info
         final String cookiesInfo = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/cookies-info"), JsonNode.class)).get("value").textValue();
         assertThat(cookiesInfo).isEqualTo(
-                applicationPropertyRepository.findById(new ApplicationPropertyKeyDo(
+                applicationPropertyRepository.findByGroupAndKey(
                         WiwaProperty.APP_COOKIES_INFO.getGroup(),
                         WiwaProperty.APP_COOKIES_INFO.getKey()
-                )).orElseThrow().getValue()
+                ).orElseThrow().getValue()
         );
 
         // gdpr-info
         final String gdprInfo = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/gdpr-info"), JsonNode.class)).get("value").textValue();
         assertThat(gdprInfo).isEqualTo(
-                applicationPropertyRepository.findById(new ApplicationPropertyKeyDo(
+                applicationPropertyRepository.findByGroupAndKey(
                         WiwaProperty.APP_GDPR_INFO.getGroup(),
                         WiwaProperty.APP_GDPR_INFO.getKey()
-                )).orElseThrow().getValue()
+                ).orElseThrow().getValue()
         );
 
         // working-hours
         final String workingHours = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/working-hours"), JsonNode.class)).get("value").textValue();
         assertThat(workingHours).isEqualTo(
-                applicationPropertyRepository.findById(new ApplicationPropertyKeyDo(
+                applicationPropertyRepository.findByGroupAndKey(
                         WiwaProperty.APP_WORKING_HOURS.getGroup(),
                         WiwaProperty.APP_WORKING_HOURS.getKey()
-                )).orElseThrow().getValue()
+                ).orElseThrow().getValue()
         );
     }
 }

@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import sk.janobono.wiwa.model.Authority;
 
 import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/authorities")
@@ -16,7 +15,7 @@ public class AuthorityController {
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('w-admin')")
-    public Set<Authority> getAuthorities() {
-        return Arrays.stream(Authority.values()).collect(Collectors.toSet());
+    public List<Authority> getAuthorities() {
+        return Arrays.stream(Authority.values()).toList();
     }
 }

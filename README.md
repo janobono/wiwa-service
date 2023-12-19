@@ -93,6 +93,10 @@ docker volume rm $(docker volume ls -q --filter dangling=true)
 | MAIL_PASS                          |                                      |
 | MAIL_AUTH                          | false                                |
 | MAIL_TLS_ENABLE                    | false                                |
+| DEFAULT_LOCALE                     | en_US                                |
+| APP_TITLE                          | Wiwa                                 |
+| APP_DESCRIPTION                    | Woodworking Industry Web Application |
+| APP_CURRENCY                       | €                                    |
 | WEB_URL                            | http://localhost:8080                |
 | CONFIRM_PATH                       | /ui/confirm/                         |
 | MAIL                               | mail@wiwa.sk                         |
@@ -107,3 +111,7 @@ docker volume rm $(docker volume ls -q --filter dangling=true)
 | TOKEN_EXPIRES_IN                   | 1 (min)                              |
 | SECURITY_PUBLIC_PATH_PATTERN_REGEX |                                      |
 | VERIFICATION_TOKEN_ISSUER          | verification                         |
+| CORS_ALLOWED_ORIGINS               | http://localhost:5173                |
+| CORS_ALLOWED_METHODS               | GET,POST,PUT,OPTIONS,PATCH,DELETE    |
+| CORS_ALLOWED_HEADERS               | Authorization,Content-Type           |
+| CORS_ALLOW_CREDENTIALS             | true                                 |

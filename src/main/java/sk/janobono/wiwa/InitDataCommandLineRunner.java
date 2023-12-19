@@ -5,20 +5,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import sk.janobono.wiwa.component.LocalStorage;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.ApplicationPropertyDo;
-import sk.janobono.wiwa.dal.domain.ApplicationPropertyKeyDo;
 import sk.janobono.wiwa.dal.domain.AuthorityDo;
+import sk.janobono.wiwa.dal.domain.QuantityUnitDo;
 import sk.janobono.wiwa.dal.domain.UserDo;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 import sk.janobono.wiwa.dal.repository.AuthorityRepository;
+import sk.janobono.wiwa.dal.repository.QuantityUnitRepository;
 import sk.janobono.wiwa.dal.repository.UserRepository;
 import sk.janobono.wiwa.model.Authority;
 
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Component
@@ -27,10 +31,10 @@ public class InitDataCommandLineRunner implements CommandLineRunner {
     private final ObjectMapper objectMapper;
     private final CommonConfigProperties commonConfigProperties;
     private final PasswordEncoder passwordEncoder;
-    private final LocalStorage localStorage;
     private final AuthorityRepository authorityRepository;
     private final UserRepository userRepository;
     private final ApplicationPropertyRepository applicationPropertyRepository;
+    private final QuantityUnitRepository quantityUnitRepository;
 
     @Override
     public void run(final String... args) throws Exception {
@@ -38,32 +42,30 @@ public class InitDataCommandLineRunner implements CommandLineRunner {
         initAuthorities();
         initUsers();
         initApplicationProperties(dataDir);
+        initQuantityUnits(dataDir);
     }
 
     private void initAuthorities() {
         if (authorityRepository.count() == 0L) {
             for (final Authority authority : Authority.values()) {
-                final AuthorityDo authorityDo = new AuthorityDo();
-                authorityDo.setAuthority(authority);
-                authorityRepository.save(authorityDo);
+                authorityRepository.save(AuthorityDo.builder().authority(authority).build());
             }
         }
     }
 
     private void initUsers() throws Exception {
         if (userRepository.count() == 0L) {
-            final Set<AuthorityDo> authorities = new HashSet<>(authorityRepository.findAll());
-            final UserDo userDo = new UserDo();
-            userDo.setUsername("wiwa");
-            userDo.setPassword(passwordEncoder.encode("wiwa"));
-            userDo.setFirstName("wiwa");
-            userDo.setLastName("wiwa");
-            userDo.setEmail(commonConfigProperties.mail());
-            userDo.setGdpr(true);
-            userDo.setConfirmed(true);
-            userDo.setEnabled(true);
-            userDo.setAuthorities(authorities);
-            userRepository.save(userDo);
+            final UserDo userDo = userRepository.save(UserDo.builder()
+                    .username("wiwa")
+                    .password(passwordEncoder.encode("wiwa"))
+                    .firstName("wiwa")
+                    .lastName("wiwa")
+                    .email(commonConfigProperties.mail())
+                    .gdpr(true)
+                    .confirmed(true)
+                    .enabled(true)
+                    .build());
+            authorityRepository.saveUserAuthorities(userDo.getId(), authorityRepository.findAll().stream().map(AuthorityDo::getAuthority).toList());
         }
     }
 
@@ -82,12 +84,36 @@ public class InitDataCommandLineRunner implements CommandLineRunner {
                         .toList();
                 for (final File dataFile : dataFiles) {
                     final String[] propertyId = dataFile.getName().replaceAll(".md", "").split("-");
-                    applicationPropertyRepository.save(new ApplicationPropertyDo(
-                            new ApplicationPropertyKeyDo(propertyId[0], propertyId[1]),
-                            new String(localStorage.getFileData(dataFile.toPath()))
-                    ));
+                    applicationPropertyRepository.save(ApplicationPropertyDo.builder()
+                            .group(propertyId[0])
+                            .key(propertyId[1])
+                            .value(new String(getFileData(dataFile.toPath()))
+                            ).build()
+                    );
                 }
             }
+        }
+    }
+
+    private void initQuantityUnits(final Path dataDir) throws Exception {
+        if (quantityUnitRepository.count() == 0L) {
+            final Path dataPath = dataDir.resolve("quantity-units.json");
+            if (dataPath.toFile().exists()) {
+                final QuantityUnitDo[] quantityUnits = objectMapper
+                        .readValue(dataPath.toFile(), QuantityUnitDo[].class);
+                quantityUnitRepository.saveAll(Arrays.asList(quantityUnits));
+            }
+        }
+    }
+
+    private byte[] getFileData(final Path file) {
+        try (
+                final FileInputStream is = new FileInputStream(file.toFile());
+                final DataInputStream di = new DataInputStream(is)
+        ) {
+            return di.readAllBytes();
+        } catch (final Exception e) {
+            throw new RuntimeException("Local storage exception.", e);
         }
     }
 }

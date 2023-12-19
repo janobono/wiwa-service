@@ -1,0 +1,82 @@
+[
+  {
+    "id": "EUR",
+    "type": "MONETARY",
+    "unit": "€"
+  },
+  {
+    "id": "MILLIMETER",
+    "type": "DISTANCE",
+    "unit": "mm"
+  },
+  {
+    "id": "CENTIMETER",
+    "type": "DISTANCE",
+    "unit": "cm"
+  },
+  {
+    "id": "METER",
+    "type": "DISTANCE",
+    "unit": "m"
+  },
+  {
+    "id": "SQUARE_METER",
+    "type": "AREA",
+    "unit": "m2"
+  },
+  {
+    "id": "MILLILITER",
+    "type": "VOLUME",
+    "unit": "ml"
+  },
+  {
+    "id": "LITER",
+    "type": "VOLUME",
+    "unit": "l"
+  },
+  {
+    "id": "CUBICMETER",
+    "type": "VOLUME",
+    "unit": "m3"
+  },
+  {
+    "id": "SECOND",
+    "type": "TEMPORAL",
+    "unit": "s"
+  },
+  {
+    "id": "MINUTE",
+    "type": "TEMPORAL",
+    "unit": "m"
+  },
+  {
+    "id": "HOUR",
+    "type": "TEMPORAL",
+    "unit": "h"
+  },
+  {
+    "id": "DAY",
+    "type": "TEMPORAL",
+    "unit": "d"
+  },
+  {
+    "id": "GRAM",
+    "type": "MASS",
+    "unit": "g"
+  },
+  {
+    "id": "KILOGRAM",
+    "type": "MASS",
+    "unit": "kg"
+  },
+  {
+    "id": "PIECE",
+    "type": "PACK",
+    "unit": "piece"
+  },
+  {
+    "id": "PACKAGE",
+    "type": "PACK",
+    "unit": "package"
+  }
+]

@@ -1,25 +1,22 @@
 package sk.janobono.wiwa.business.model.product;
 
+import lombok.Builder;
+import sk.janobono.wiwa.model.ApplicationImage;
 import sk.janobono.wiwa.model.ProductStockStatus;
-import sk.janobono.wiwa.model.ProductType;
-import sk.janobono.wiwa.model.Quantity;
 
+import java.util.List;
+
+@Builder
 public record ProductSo(
         Long id,
-        ProductType type,
         String code,
-        String boardCode,
-        String structureCode,
         String name,
         String note,
-        Quantity saleUnit,
-        Quantity unitPrice,
-        Quantity weight,
-        Quantity netWeight,
-        Quantity length,
-        Quantity width,
-        Quantity thickness,
-        Boolean orientation,
-        ProductStockStatus stockStatus
+        ProductStockStatus stockStatus,
+        List<ProductAttributeSo> attributes,
+        List<ApplicationImage> images,
+        List<ProductQuantitySo> quantities,
+        List<ProductUnitPriceSo> unitPrices,
+        List<Long> codeListItems
 ) {
 }

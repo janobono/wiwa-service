@@ -1,7 +1,6 @@
 package sk.janobono.wiwa.model;
 
 import org.junit.jupiter.api.Test;
-import sk.janobono.wiwa.model.Authority;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

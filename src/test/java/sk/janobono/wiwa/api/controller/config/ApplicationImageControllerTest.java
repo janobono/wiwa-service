@@ -11,13 +11,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.BaseIntegrationTest;
-import sk.janobono.wiwa.api.model.ApplicationImageWeb;
+import sk.janobono.wiwa.api.controller.BaseControllerTest;
 import sk.janobono.wiwa.component.ImageUtil;
+import sk.janobono.wiwa.model.ApplicationImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ApplicationImageControllerTest extends BaseIntegrationTest {
+class ApplicationImageControllerTest extends BaseControllerTest {
 
     @Autowired
     public ImageUtil imageUtil;
@@ -39,11 +39,11 @@ class ApplicationImageControllerTest extends BaseIntegrationTest {
         });
         final HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
 
-        final ResponseEntity<ApplicationImageWeb> uploadedImage = restTemplate.exchange(
+        final ResponseEntity<ApplicationImage> uploadedImage = restTemplate.exchange(
                 getURI("/config/application-images"),
                 HttpMethod.POST,
                 httpEntity,
-                ApplicationImageWeb.class
+                ApplicationImage.class
         );
         assertThat(uploadedImage.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(uploadedImage.getBody()).isNotNull();
@@ -66,7 +66,7 @@ class ApplicationImageControllerTest extends BaseIntegrationTest {
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        final Page<ApplicationImageWeb> page = getPage(response.getBody(), pageable, ApplicationImageWeb.class);
+        final Page<ApplicationImage> page = getPage(response.getBody(), pageable, ApplicationImage.class);
         assertThat(page.getTotalElements()).isEqualTo(1);
         assertThat(page.getContent().get(0).fileName()).isEqualTo("test.png");
         assertThat(page.getContent().get(0).thumbnail().startsWith("data:" + MediaType.IMAGE_PNG_VALUE)).isTrue();

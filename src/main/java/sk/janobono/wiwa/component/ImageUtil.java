@@ -1,6 +1,13 @@
 package sk.janobono.wiwa.component;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+import sk.janobono.wiwa.dal.domain.ApplicationImageDo;
+import sk.janobono.wiwa.dal.domain.ProductImageDo;
+import sk.janobono.wiwa.model.ApplicationImage;
 
 import javax.imageio.*;
 import javax.imageio.metadata.IIOMetadata;
@@ -8,13 +15,54 @@ import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.text.MessageFormat;
+import java.util.Base64;
 
 @Component
 public class ImageUtil {
+
+    public ApplicationImage toApplicationImage(final ApplicationImageDo applicationImageDo) {
+        return new ApplicationImage(
+                applicationImageDo.getFileName(),
+                applicationImageDo.getFileType(),
+                toThumbnail(applicationImageDo.getFileType(), applicationImageDo.getThumbnail())
+        );
+    }
+
+    public ApplicationImage toApplicationImage(final ProductImageDo productImageDo) {
+        return new ApplicationImage(
+                productImageDo.getFileName(),
+                productImageDo.getFileType(),
+                toThumbnail(productImageDo.getFileType(), productImageDo.getThumbnail())
+        );
+    }
+
+    public boolean isImageFile(final String fileType) {
+        return fileType.equals(MediaType.IMAGE_GIF_VALUE)
+                || fileType.equals(MediaType.IMAGE_JPEG_VALUE)
+                || fileType.equals(MediaType.IMAGE_PNG_VALUE);
+    }
+
+    public byte[] getFileData(final MultipartFile file) {
+        try (
+                final InputStream is = new BufferedInputStream(file.getInputStream());
+                final ByteArrayOutputStream os = new ByteArrayOutputStream()
+        ) {
+            read(is, os);
+            return os.toByteArray();
+        } catch (final Exception e) {
+            throw new RuntimeException("Local storage exception.", e);
+        }
+    }
+
+    public Resource getDataResource(final byte[] data) {
+        return new ByteArrayResource(data);
+    }
+
+    public String toThumbnail(final String fileType, final byte[] data) {
+        return MessageFormat.format("data:{0};base64,{1}", fileType, Base64.getEncoder().encodeToString(data));
+    }
 
     public byte[] scaleImage(final String fileType, final byte[] data, final int maxWidth, final int maxHeight) {
         try {
@@ -205,6 +253,17 @@ public class ImageUtil {
             }
             imageWriter.setOutput(ios);
             imageWriter.write(metadata, new IIOImage(bufferedImage, null, metadata), imageWriteParam);
+        }
+    }
+
+    private void read(final InputStream is, final ByteArrayOutputStream os) throws IOException {
+        final byte[] buffer = new byte[1024];
+        int bytesRead = 0;
+        while (bytesRead != -1) {
+            bytesRead = is.read(buffer);
+            if (bytesRead > 0) {
+                os.write(buffer, 0, bytesRead);
+            }
         }
     }
 }

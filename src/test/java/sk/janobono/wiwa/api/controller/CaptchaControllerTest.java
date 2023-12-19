@@ -5,12 +5,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import sk.janobono.wiwa.BaseIntegrationTest;
 import sk.janobono.wiwa.business.model.captcha.CaptchaSo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CaptchaControllerTest extends BaseIntegrationTest {
+class CaptchaControllerTest extends BaseControllerTest {
 
     @Test
     void captcha() {

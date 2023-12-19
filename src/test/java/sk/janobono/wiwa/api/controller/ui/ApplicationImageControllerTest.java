@@ -2,14 +2,14 @@ package sk.janobono.wiwa.api.controller.ui;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import sk.janobono.wiwa.BaseIntegrationTest;
+import sk.janobono.wiwa.api.controller.BaseControllerTest;
 import sk.janobono.wiwa.component.ImageUtil;
 
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ApplicationImageControllerTest extends BaseIntegrationTest {
+class ApplicationImageControllerTest extends BaseControllerTest {
 
     @Autowired
     public ImageUtil imageUtil;

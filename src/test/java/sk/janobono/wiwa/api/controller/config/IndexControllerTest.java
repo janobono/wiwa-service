@@ -7,20 +7,20 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.BaseIntegrationTest;
-import sk.janobono.wiwa.api.model.ApplicationImageWeb;
+import sk.janobono.wiwa.api.controller.BaseControllerTest;
 import sk.janobono.wiwa.api.model.SingleValueBody;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
+import sk.janobono.wiwa.model.ApplicationImage;
 
 import java.util.List;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class IndexControllerTest extends BaseIntegrationTest {
+class IndexControllerTest extends BaseControllerTest {
 
     @Autowired
     public ImageUtil imageUtil;
@@ -47,11 +47,11 @@ class IndexControllerTest extends BaseIntegrationTest {
         });
         final HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
 
-        final ResponseEntity<ApplicationImageWeb> uploadedImage = restTemplate.exchange(
+        final ResponseEntity<ApplicationImage> uploadedImage = restTemplate.exchange(
                 getURI("/config/logo"),
                 HttpMethod.POST,
                 httpEntity,
-                ApplicationImageWeb.class
+                ApplicationImage.class
         );
         assertThat(uploadedImage.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(uploadedImage.getBody()).isNotNull();

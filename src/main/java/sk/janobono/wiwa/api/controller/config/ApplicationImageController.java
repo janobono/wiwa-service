@@ -6,9 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.api.component.WebImageUtil;
-import sk.janobono.wiwa.api.model.ApplicationImageWeb;
 import sk.janobono.wiwa.business.service.ApplicationImageService;
+import sk.janobono.wiwa.model.ApplicationImage;
 
 @RequiredArgsConstructor
 @RestController("config-application-images")
@@ -16,18 +15,17 @@ import sk.janobono.wiwa.business.service.ApplicationImageService;
 public class ApplicationImageController {
 
     private final ApplicationImageService applicationImageService;
-    private final WebImageUtil webImageUtil;
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public Page<ApplicationImageWeb> getApplicationImages(final Pageable pageable) {
-        return applicationImageService.getApplicationImages(pageable).map(webImageUtil::toWeb);
+    public Page<ApplicationImage> getApplicationImages(final Pageable pageable) {
+        return applicationImageService.getApplicationImages(pageable);
     }
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public ApplicationImageWeb upload(@RequestParam("file") final MultipartFile multipartFile) {
-        return webImageUtil.toWeb(applicationImageService.setApplicationImage(multipartFile));
+    public ApplicationImage upload(@RequestParam("file") final MultipartFile multipartFile) {
+        return applicationImageService.setApplicationImage(multipartFile);
     }
 
     @DeleteMapping("/{fileName}")

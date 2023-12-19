@@ -15,7 +15,7 @@ import sk.janobono.wiwa.business.service.UserService;
 import sk.janobono.wiwa.model.Authority;
 import sk.janobono.wiwa.model.User;
 
-import java.util.Set;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,12 +27,19 @@ public class UserController {
     @GetMapping
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager', 'w-employee')")
     public Page<User> getUsers(
-            @RequestParam(value = "search-field", required = false) final String searchField,
+            @RequestParam(value = "searchField", required = false) final String searchField,
             @RequestParam(value = "username", required = false) final String username,
             @RequestParam(value = "email", required = false) final String email,
+            @RequestParam(value = "codeListItems", required = false) final List<String> codeListItems,
             final Pageable pageable
     ) {
-        return userService.getUsers(new UserSearchCriteriaSo(searchField, username, email), pageable);
+        final UserSearchCriteriaSo criteria = UserSearchCriteriaSo.builder()
+                .searchField(searchField)
+                .username(username)
+                .email(email)
+                .codeListItems(codeListItems)
+                .build();
+        return userService.getUsers(criteria, pageable);
     }
 
     @GetMapping("/{id}")
@@ -56,8 +63,8 @@ public class UserController {
 
     @PatchMapping("/{id}/authorities")
     @PreAuthorize("hasAuthority('w-admin')")
-    public User setAuthorities(@PathVariable("id") final Long id, @Valid @RequestBody final SingleValueBody<Set<Authority>> authorities) {
-        return userService.setAuthorities(id, authorities.value());
+    public User setAuthorities(@PathVariable("id") final Long id, @Valid @RequestBody final List<Authority> authorities) {
+        return userService.setAuthorities(id, authorities);
     }
 
     @PatchMapping("/{id}/confirm")
@@ -70,6 +77,12 @@ public class UserController {
     @PreAuthorize("hasAuthority('w-admin')")
     public User setEnabled(@PathVariable("id") final Long id, @Valid @RequestBody final SingleValueBody<Boolean> enabled) {
         return userService.setEnabled(id, enabled.value());
+    }
+
+    @PatchMapping("/{id}/code-list-items")
+    @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
+    public User setUserCodeListItems(@PathVariable("id") final Long id, @RequestBody final List<Long> itemIds) {
+        return userService.setUserCodeListItems(id, itemIds);
     }
 
     @DeleteMapping("/{id}")

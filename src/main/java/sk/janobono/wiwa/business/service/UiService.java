@@ -3,7 +3,6 @@ package sk.janobono.wiwa.business.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.api.model.ApplicationPropertiesWeb;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
@@ -14,7 +13,6 @@ import sk.janobono.wiwa.config.JwtConfigProperties;
 import sk.janobono.wiwa.dal.domain.ApplicationImageDo;
 import sk.janobono.wiwa.dal.repository.ApplicationImageRepository;
 import sk.janobono.wiwa.exception.WiwaException;
-import sk.janobono.wiwa.mapper.ApplicationImageMapper;
 import sk.janobono.wiwa.model.ApplicationImage;
 import sk.janobono.wiwa.model.ResourceEntity;
 import sk.janobono.wiwa.model.WiwaProperty;
@@ -27,7 +25,6 @@ import java.util.ArrayList;
 public class UiService {
     private final CommonConfigProperties commonConfigProperties;
     private final JwtConfigProperties jwtConfigProperties;
-    private final ApplicationImageMapper applicationImageMapper;
     private final ImageUtil imageUtil;
     private final ApplicationImageService applicationImageService;
     private final ApplicationPropertyService applicationPropertyService;
@@ -94,7 +91,6 @@ public class UiService {
         return applicationPropertyService.getProperty(WiwaProperty.APP_WORKING_HOURS);
     }
 
-    @Transactional
     public ApplicationImage setLogo(final MultipartFile multipartFile) {
         final String fileName = "logo.png";
         final String fileType = multipartFile.getContentType() != null ? multipartFile.getContentType() : MediaType.APPLICATION_OCTET_STREAM_VALUE;
@@ -110,21 +106,21 @@ public class UiService {
             throw new RuntimeException(e);
         }
 
-        final ApplicationImageDo applicationImageDo = new ApplicationImageDo();
-        applicationImageDo.setFileName(fileName);
-        applicationImageDo.setFileType(fileType);
-        applicationImageDo.setThumbnail(imageUtil.scaleImage(
-                fileType,
-                data,
-                commonConfigProperties.maxThumbnailResolution(), commonConfigProperties.maxThumbnailResolution())
-        );
-        applicationImageDo.setData(imageUtil.scaleImage(
-                fileType,
-                data,
-                commonConfigProperties.maxImageResolution(), commonConfigProperties.maxImageResolution())
-        );
+        final ApplicationImageDo applicationImageDo = ApplicationImageDo.builder()
+                .fileName(fileName)
+                .fileType(fileType)
+                .thumbnail(imageUtil.scaleImage(
+                        fileType,
+                        data,
+                        commonConfigProperties.maxThumbnailResolution(), commonConfigProperties.maxThumbnailResolution())
+                )
+                .data(imageUtil.scaleImage(
+                        fileType,
+                        data,
+                        commonConfigProperties.maxImageResolution(), commonConfigProperties.maxImageResolution()))
+                .build();
 
-        return applicationImageMapper.map(applicationImageRepository.save(applicationImageDo));
+        return imageUtil.toApplicationImage(applicationImageRepository.save(applicationImageDo));
     }
 
     public String setTitle(final String title) {
@@ -135,7 +131,6 @@ public class UiService {
         return applicationPropertyService.setApplicationProperty(WiwaProperty.APP_WELCOME_TEXT.getGroup(), WiwaProperty.APP_WELCOME_TEXT.getKey(), welcomeText);
     }
 
-    @Transactional
     public ApplicationInfoSo setApplicationInfo(final ApplicationInfoSo applicationInfo) {
         applicationPropertyService.setApplicationProperty(WiwaProperty.APP_INFO_SLIDE_COUNT.getGroup(), WiwaProperty.APP_INFO_SLIDE_COUNT.getKey(), Integer.toString(applicationInfo.items().size()));
         for (int i = 0; i < applicationInfo.items().size(); i++) {
@@ -144,7 +139,6 @@ public class UiService {
         return applicationInfo;
     }
 
-    @Transactional
     public CompanyInfoSo setCompanyInfo(final CompanyInfoSo companyInfo) {
         applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_NAME.getGroup(), WiwaProperty.COMPANY_NAME.getKey(), companyInfo.name());
         applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_STREET.getGroup(), WiwaProperty.COMPANY_STREET.getKey(), companyInfo.street());

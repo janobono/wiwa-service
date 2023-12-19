@@ -1,7 +1,10 @@
 package sk.janobono.wiwa.model;
 
-import java.util.Set;
+import lombok.Builder;
 
+import java.util.List;
+
+@Builder
 public record User(
         Long id,
         String username,
@@ -14,6 +17,7 @@ public record User(
         Boolean gdpr,
         Boolean confirmed,
         Boolean enabled,
-        Set<Authority> authorities
+        List<Authority> authorities,
+        List<Long> codeListItems
 ) {
 }

@@ -5,33 +5,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.business.component.TimeUtil;
-import sk.janobono.wiwa.business.model.product.ProductDataSo;
-import sk.janobono.wiwa.business.model.product.ProductSearchCriteriaSo;
-import sk.janobono.wiwa.business.model.product.ProductSo;
-import sk.janobono.wiwa.business.model.product.ProductUnitPriceSo;
+import sk.janobono.wiwa.business.model.product.*;
 import sk.janobono.wiwa.component.ImageUtil;
-import sk.janobono.wiwa.component.LocalStorage;
 import sk.janobono.wiwa.component.ScDf;
+import sk.janobono.wiwa.component.TimeUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.*;
-import sk.janobono.wiwa.dal.model.ProductSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
-import sk.janobono.wiwa.mapper.ApplicationImageMapper;
 import sk.janobono.wiwa.model.ApplicationImage;
-import sk.janobono.wiwa.model.ProductAttributeKey;
-import sk.janobono.wiwa.model.Quantity;
 import sk.janobono.wiwa.model.ResourceEntity;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -39,219 +28,235 @@ public class ProductService {
 
     private final CommonConfigProperties commonConfigProperties;
     private final ImageUtil imageUtil;
-    private final LocalStorage localStorage;
     private final ScDf scDf;
     private final TimeUtil timeUtil;
-    private final ApplicationImageMapper applicationImageMapper;
     private final ProductRepository productRepository;
     private final ProductAttributeRepository productAttributeRepository;
-    private final ProductCategoryRepository productCategoryRepository;
     private final ProductImageRepository productImageRepository;
+    private final ProductQuantityRepository productQuantityRepository;
     private final ProductUnitPriceRepository productUnitPriceRepository;
+    private final CodeListItemRepository codeListItemRepository;
+    private final QuantityUnitRepository quantityUnitRepository;
 
     public Page<ProductSo> getProducts(final ProductSearchCriteriaSo criteria, final Pageable pageable) {
-        return productRepository.findAll(new ProductSearchCriteriaDo(scDf, criteria), pageable).map(this::toProductSo);
+        return productRepository.findAll(criteria, pageable).map(this::toProductSo);
     }
 
     public ProductSo getProduct(final Long id) {
         return toProductSo(getProductDo(id));
     }
 
-    @Transactional
-    public ProductSo addProduct(final ProductDataSo productData) {
-        if (isCodeUsed(null, productData.code())) {
-            throw WiwaException.CODE_IS_USED.exception("Product code {0} is used", productData.code());
+    public ProductSo addProduct(final ProductDataSo data) {
+        if (isCodeUsed(null, data.code())) {
+            throw WiwaException.CODE_IS_USED.exception("Product code {0} is used", data.code());
         }
-        ProductDo productDo = new ProductDo();
-        productDo.setType(productData.type());
-        productDo.setCode(productData.code());
-        productDo.setName(productData.name());
-        productDo.setStockStatus(productData.stockStatus());
-        updateProductData(productDo, productData);
-        productDo = productRepository.save(productDo);
-
-        productDo.getAttributes().addAll(productAttributeRepository.saveAll(toProductAttributes(productDo, productData)));
+        final ProductDo productDo = productRepository.save(ProductDo.builder()
+                .code(data.code())
+                .name(data.name())
+                .note(data.note())
+                .stockStatus(data.stockStatus())
+                .build()
+        );
+        setProductAttributes(productDo.getId(), data);
+        setProductQuantities(productDo.getId(), data);
         return toProductSo(productDo);
     }
 
-    @Transactional
-    public ProductSo setProduct(final Long id, final ProductDataSo productData) {
-        ProductDo productDo = getProductDo(id);
-        if (isCodeUsed(id, productData.code())) {
-            throw WiwaException.CODE_IS_USED.exception("Product code {0} is used", productData.code());
+    public ProductSo setProduct(final Long id, final ProductDataSo data) {
+        final ProductDo productDo = getProductDo(id);
+        if (isCodeUsed(id, data.code())) {
+            throw WiwaException.CODE_IS_USED.exception("Product code {0} is used", data.code());
         }
-        productAttributeRepository.deleteByProductId(productDo.getId());
-
-        updateProductData(productDo, productData);
-        productDo = productRepository.save(productDo);
-
-        productDo.getAttributes().addAll(productAttributeRepository.saveAll(toProductAttributes(productDo, productData)));
+        productDo.setCode(data.code());
+        productDo.setName(data.name());
+        productDo.setNote(data.note());
+        productDo.setStockStatus(data.stockStatus());
+        productRepository.save(productDo);
+        setProductAttributes(id, data);
+        setProductQuantities(id, data);
         return toProductSo(productDo);
     }
 
-    @Transactional
     public void deleteProduct(final Long id) {
         getProductDo(id);
         productRepository.deleteById(id);
     }
 
-    public List<ApplicationImage> getProductImages(final Long productId) {
-        getProductDo(productId);
-        return productImageRepository.findAllByProductId(productId).stream().map(applicationImageMapper::map).toList();
-    }
-
     public ResourceEntity getProductImage(final Long productId, final String fileName) {
-        getProductDo(productId);
-        return productImageRepository.findByProductIdAndFileName(productId, scDf.toStripAndLowerCase(fileName)).map(productImageDo -> new ResourceEntity(productImageDo.getFileName(), productImageDo.getFileType(), localStorage.getDataResource(productImageDo.getData()))).orElse(new ResourceEntity(fileName, MediaType.IMAGE_PNG_VALUE, localStorage.getDataResource(imageUtil.generateMessageImage(null))));
+        if (!productRepository.existsById(productId)) {
+            throw WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", productId);
+        }
+        return productImageRepository.findByProductIdAndFileName(productId, scDf.toStripAndLowerCase(fileName))
+                .map(productImageDo -> new ResourceEntity(productImageDo.getFileName(),
+                        productImageDo.getFileType(),
+                        imageUtil.getDataResource(productImageDo.getData())))
+                .orElse(new ResourceEntity(fileName,
+                        MediaType.IMAGE_PNG_VALUE,
+                        imageUtil.getDataResource(imageUtil.generateMessageImage(null)))
+                );
     }
 
-    @Transactional
-    public ApplicationImage setProductImage(final Long productId, final MultipartFile multipartFile) {
-        getProductDo(productId);
+    public ProductSo setProductImage(final Long productId, final MultipartFile multipartFile) {
+        if (!productRepository.existsById(productId)) {
+            throw WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", productId);
+        }
+
         final String fileName = scDf.toStripAndLowerCase(multipartFile.getOriginalFilename());
         final String fileType = Optional.ofNullable(multipartFile.getContentType()).orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
-        if (!localStorage.isImageFile(fileType)) {
+        if (!imageUtil.isImageFile(fileType)) {
             throw WiwaException.APPLICATION_IMAGE_NOT_SUPPORTED.exception("Unsupported file type {0}", fileType);
         }
 
-        final ProductImageDo productImageDo = productImageRepository.findByProductIdAndFileName(productId, fileName).orElse(new ProductImageDo());
+        final ProductImageDo productImageDo = productImageRepository.findByProductIdAndFileName(productId, fileName)
+                .orElse(ProductImageDo.builder().build());
         productImageDo.setProductId(productId);
         productImageDo.setFileName(fileName);
         productImageDo.setFileType(fileType);
-        productImageDo.setThumbnail(imageUtil.scaleImage(fileType, localStorage.getFileData(multipartFile), commonConfigProperties.maxThumbnailResolution(), commonConfigProperties.maxThumbnailResolution()));
-        productImageDo.setData(imageUtil.scaleImage(fileType, localStorage.getFileData(multipartFile), commonConfigProperties.maxImageResolution(), commonConfigProperties.maxImageResolution()));
-        return applicationImageMapper.map(productImageRepository.save(productImageDo));
+        productImageDo.setThumbnail(imageUtil.scaleImage(fileType,
+                imageUtil.getFileData(multipartFile),
+                commonConfigProperties.maxThumbnailResolution(),
+                commonConfigProperties.maxThumbnailResolution()));
+        productImageDo.setData(imageUtil.scaleImage(fileType,
+                imageUtil.getFileData(multipartFile),
+                commonConfigProperties.maxImageResolution(),
+                commonConfigProperties.maxImageResolution()));
+        productImageRepository.save(productImageDo);
+
+        return toProductSo(getProductDo(productId));
     }
 
-    @Transactional
-    public void deleteProductImage(final Long productId, final String fileName) {
-        productImageRepository.findByProductIdAndFileName(productId, fileName).ifPresent(productImageDo -> productImageRepository.deleteById(productImageDo.getId()));
+    public ProductSo deleteProductImage(final Long productId, final String fileName) {
+        if (!productRepository.existsById(productId)) {
+            throw WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", productId);
+        }
+        productImageRepository.findByProductIdAndFileName(productId, fileName)
+                .ifPresent(productImageDo -> productImageRepository.deleteById(productImageDo.getId()));
+        return toProductSo(getProductDo(productId));
     }
 
-    public List<ProductUnitPriceSo> getProductUnitPrices(final Long productId) {
-        return getProductDo(productId).getProductUnitPrices().stream().map(this::toProductUnitPriceSo).toList();
-    }
+    public ProductSo setProductUnitPrices(final Long productId, final List<ProductUnitPriceDataSo> productUnitPrices) {
+        if (!productRepository.existsById(productId)) {
+            throw WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", productId);
+        }
 
-    @Transactional
-    public List<ProductUnitPriceSo> setProductUnitPrices(final Long productId, final List<ProductUnitPriceSo> productUnitPrices) {
-        final ProductDo productDo = getProductDo(productId);
-        productUnitPriceRepository.deleteByProductId(productId);
-        final List<ProductUnitPriceDo> result = new ArrayList<>();
-
+        final List<ProductUnitPriceDo> batch = new ArrayList<>();
         if (!productUnitPrices.isEmpty()) {
-            final List<ProductUnitPriceSo> orderedPrices = productUnitPrices.stream().sorted((o1, o2) -> o2.validFrom().compareTo(o1.validFrom())).toList();
+            final List<ProductUnitPriceDataSo> orderedPrices = productUnitPrices.stream()
+                    .sorted((o1, o2) -> o2.validFrom().compareTo(o1.validFrom())).toList();
 
-            ProductUnitPriceSo previous = null;
-            for (final ProductUnitPriceSo current : orderedPrices) {
-                final ProductUnitPriceDo productUnitPriceDo = new ProductUnitPriceDo();
-                productUnitPriceDo.setProductId(productDo.getId());
-                productUnitPriceDo.setValidFrom(timeUtil.toLocalDate(current.validFrom()));
-                productUnitPriceDo.setValidTo(previous != null ? timeUtil.toLocalDate(previous.validFrom()) : null);
-                productUnitPriceDo.setPrice(toQuantityDo(current.price()).orElse(null));
-                result.add(productUnitPriceRepository.save(productUnitPriceDo));
+            ProductUnitPriceDataSo previous = null;
+            for (final ProductUnitPriceDataSo current : orderedPrices) {
+                batch.add(ProductUnitPriceDo.builder()
+                        .productId(productId)
+                        .unitId(current.unitId())
+                        .validFrom(timeUtil.toLocalDate(current.validFrom()))
+                        .validTo(previous != null ? timeUtil.toLocalDate(previous.validFrom()) : null)
+                        .value(current.value())
+                        .build()
+                );
                 previous = current;
             }
         }
-        return result.stream().map(this::toProductUnitPriceSo).toList();
+        productUnitPriceRepository.saveProductUnitPrices(productId, batch);
+        return toProductSo(getProductDo(productId));
     }
 
-    public List<Long> getProductCategoryIds(final Long productId) {
+    public ProductSo setProductCodeListItems(final Long productId, final List<Long> itemIds) {
         final ProductDo productDo = getProductDo(productId);
-        return productDo.getProductCategories().stream().map(ProductCategoryDo::getId).toList();
-    }
 
-    public List<Long> setProductCategoryIds(final Long productId, final List<Long> productCategoryIds) {
-        final ProductDo productDo = getProductDo(productId);
-        final List<ProductCategoryDo> productCategories = productCategoryIds.stream().map(id -> productCategoryRepository.findById(id).orElseThrow(() -> WiwaException.PRODUCT_CATEGORY_NOT_FOUND.exception("Product category with id {0} not found", id))).toList();
-        productDo.getProductCategories().clear();
-        productDo.getProductCategories().addAll(productCategories);
-        return productRepository.save(productDo).getProductCategories().stream().map(ProductCategoryDo::getId).toList();
-    }
+        codeListItemRepository.saveProductCodeListItems(productDo.getId(), itemIds);
 
-    private ProductSo toProductSo(final ProductDo product) {
-        return new ProductSo(
-                product.getId(),
-                product.getType(),
-                product.getCode(),
-                getAttributeValue(product, ProductAttributeKey.BOARD_CODE).orElse(null),
-                getAttributeValue(product, ProductAttributeKey.STRUCTURE_CODE).orElse(null),
-                product.getName(),
-                product.getNote(),
-                toQuantity(product.getSaleUnit()).orElse(null),
-                getCurrentUnitPrice(product).orElse(null),
-                toQuantity(product.getWeight()).orElse(null),
-                toQuantity(product.getNetWeight()).orElse(null),
-                toQuantity(product.getLength()).orElse(null),
-                toQuantity(product.getWidth()).orElse(null),
-                toQuantity(product.getThickness()).orElse(null),
-                getAttributeValue(product, ProductAttributeKey.ORIENTATION).map(Boolean::parseBoolean).orElse(null),
-                product.getStockStatus());
-    }
-
-    private boolean isCodeUsed(final Long id, final String code) {
-        return Optional.ofNullable(id).map(productId -> productRepository.countByIdNotAndCode(productId, code) > 0).orElse(productRepository.countByCode(code) > 0);
+        return toProductSo(productDo);
     }
 
     private ProductDo getProductDo(final Long id) {
-        return productRepository.findById(id).orElseThrow(() -> WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", id));
+        return productRepository.findById(id)
+                .orElseThrow(() -> WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", id));
     }
 
-    private ProductUnitPriceSo toProductUnitPriceSo(final ProductUnitPriceDo productUnitPrice) {
-        return new ProductUnitPriceSo(timeUtil.toZonedDateTime(productUnitPrice.getValidFrom()), toQuantity(productUnitPrice.getPrice()).orElse(null));
+    private ProductSo toProductSo(final ProductDo productDo) {
+        return ProductSo.builder()
+                .id(productDo.getId())
+                .code(productDo.getCode())
+                .name(productDo.getName())
+                .note(productDo.getNote())
+                .stockStatus(productDo.getStockStatus())
+                .attributes(toAttributes(productDo.getId()))
+                .images(toImages(productDo.getId()))
+                .quantities(toQuantities(productDo.getId()))
+                .unitPrices(toUnitPrices(productDo.getId()))
+                .codeListItems(toCodeListItems(productDo.getId()))
+                .build();
     }
 
-    private Optional<String> getAttributeValue(final ProductDo product, final ProductAttributeKey key) {
-        return product.getAttributes().stream().filter(attribute -> key.name().equals(attribute.getKey())).findFirst().map(ProductAttributeDo::getValue);
+    private List<ProductAttributeSo> toAttributes(final Long productId) {
+        return productAttributeRepository.findAllByProductId(productId).stream()
+                .map(attribute -> new ProductAttributeSo(attribute.getKey(), attribute.getValue()))
+                .toList();
     }
 
-    private Optional<Quantity> toQuantity(final QuantityDo quantityDo) {
-        return Optional.ofNullable(quantityDo).map(quantity -> new Quantity(quantity.getValue(), quantity.getUnit()));
+    private List<ApplicationImage> toImages(final Long productId) {
+        return productImageRepository.findAllByProductId(productId);
     }
 
-    private Optional<Quantity> getCurrentUnitPrice(final ProductDo product) {
-        final LocalDate date = LocalDate.now();
-        return product.getProductUnitPrices().stream().filter(productUnitPrice -> timeUtil.isBeforeOrEquals(date, productUnitPrice.getValidFrom())).filter(productUnitPrice -> productUnitPrice.getValidTo() == null || timeUtil.isAfterOrEquals(date, productUnitPrice.getValidTo())).min(Comparator.comparing(ProductUnitPriceDo::getValidFrom)).map(ProductUnitPriceDo::getPrice).map(this::toQuantity).filter(Optional::isPresent).map(Optional::get);
+    private List<ProductQuantitySo> toQuantities(final Long productId) {
+        return productQuantityRepository.findAllByProductId(productId).stream()
+                .map(quantity -> {
+                    final QuantityUnitDo quantityUnitDo = quantityUnitRepository.findById(quantity.getUnitId())
+                            .orElseThrow();
+                    return new ProductQuantitySo(quantity.getKey(), quantity.getValue(), quantityUnitDo.getUnit());
+                })
+                .toList();
     }
 
-    private void updateProductData(final ProductDo product, final ProductDataSo productData) {
-        product.setType(productData.type());
-        product.setCode(productData.code());
-        product.setName(productData.name());
-        product.setNote(productData.note());
-        product.setSaleUnit(toQuantityDo(productData.saleUnit()).orElse(null));
-        product.setWeight(toQuantityDo(productData.weight()).orElse(null));
-        product.setNetWeight(toQuantityDo(productData.netWeight()).orElse(null));
-        product.setLength(toQuantityDo(productData.length()).orElse(null));
-        product.setWidth(toQuantityDo(productData.width()).orElse(null));
-        product.setThickness(toQuantityDo(productData.thickness()).orElse(null));
-        product.setStockStatus(productData.stockStatus());
+    private List<ProductUnitPriceSo> toUnitPrices(final Long productId) {
+        return productUnitPriceRepository.findAllByProductId(productId).stream()
+                .map(price -> {
+                    final QuantityUnitDo quantityUnitDo = quantityUnitRepository.findById(price.getUnitId())
+                            .orElseThrow();
+                    return new ProductUnitPriceSo(timeUtil.toZonedDateTime(price.getValidFrom()),
+                            price.getValue(),
+                            quantityUnitDo.getUnit());
+                })
+                .toList();
     }
 
-    private List<ProductAttributeDo> toProductAttributes(final ProductDo product, final ProductDataSo productData) {
-        return Stream.of(
-                toProductAttribute(product, ProductAttributeKey.BOARD_CODE, productData.boardCode()),
-                toProductAttribute(product, ProductAttributeKey.STRUCTURE_CODE, productData.structureCode()),
-                toProductAttribute(product, ProductAttributeKey.ORIENTATION, Optional.ofNullable(productData.orientation()).map(Object::toString).orElse(null))
-        ).filter(Optional::isPresent).map(Optional::get).toList();
+    private List<Long> toCodeListItems(final Long productId) {
+        return codeListItemRepository.findByProductId(productId).stream()
+                .map(CodeListItemDo::getId)
+                .toList();
     }
 
-    private Optional<QuantityDo> toQuantityDo(final Quantity quantity) {
-        return Optional.ofNullable(quantity).map(q -> {
-            final QuantityDo quantityDo = new QuantityDo();
-            quantityDo.setValue(q.value());
-            quantityDo.setUnit(q.unit());
-            return quantityDo;
-        });
+    private boolean isCodeUsed(final Long id, final String code) {
+        return Optional.ofNullable(id).map(productId -> productRepository.countByIdNotAndCode(productId, code) > 0)
+                .orElse(productRepository.countByCode(code) > 0);
     }
 
-    private Optional<ProductAttributeDo> toProductAttribute(final ProductDo product, final ProductAttributeKey key, final String value) {
-        return Optional.ofNullable(value).map(v -> {
-            final ProductAttributeDo productAttributeDo = new ProductAttributeDo();
-            productAttributeDo.setProductId(product.getId());
-            productAttributeDo.setKey(key.name());
-            productAttributeDo.setValue(v);
-            return productAttributeDo;
-        });
+    private void setProductAttributes(final Long productId, final ProductDataSo data) {
+        final List<ProductAttributeDo> attributes = Optional.ofNullable(data.attributes()).stream()
+                .flatMap(Collection::stream)
+                .map(attribute -> ProductAttributeDo.builder()
+                        .productId(productId)
+                        .key(attribute.key())
+                        .value(attribute.value())
+                        .build()
+                )
+                .toList();
+        productAttributeRepository.saveProductAttributes(productId, attributes);
+    }
+
+    private void setProductQuantities(final Long productId, final ProductDataSo data) {
+        final List<ProductQuantityDo> quantities = Optional.ofNullable(data.quantities()).stream()
+                .flatMap(Collection::stream)
+                .map(quantity -> ProductQuantityDo.builder()
+                        .productId(productId)
+                        .unitId(quantity.unitId())
+                        .key(quantity.key())
+                        .value(quantity.value())
+                        .build()
+                )
+                .toList();
+        productQuantityRepository.saveProductQuantities(productId, quantities);
     }
 }

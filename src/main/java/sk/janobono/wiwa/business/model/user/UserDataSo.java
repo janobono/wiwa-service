@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import sk.janobono.wiwa.model.Authority;
 
-import java.util.Set;
+import java.util.List;
 
 public record UserDataSo(
         @NotBlank @Size(max = 255) String username,
@@ -19,22 +19,6 @@ public record UserDataSo(
         @NotNull Boolean gdpr,
         @NotNull Boolean confirmed,
         @NotNull Boolean enabled,
-        Set<Authority> authorities
+        List<Authority> authorities
 ) {
-    @Override
-    public String toString() {
-        return "UserDataSo{" +
-                "username='" + username + '\'' +
-                ", titleBefore='" + titleBefore + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", midName='" + midName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", titleAfter='" + titleAfter + '\'' +
-                ", email='" + email + '\'' +
-                ", gdpr=" + gdpr +
-                ", confirmed=" + confirmed +
-                ", enabled=" + enabled +
-                ", authorities=" + authorities +
-                '}';
-    }
 }

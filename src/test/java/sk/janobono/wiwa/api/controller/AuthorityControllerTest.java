@@ -2,12 +2,11 @@ package sk.janobono.wiwa.api.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.*;
-import sk.janobono.wiwa.BaseIntegrationTest;
 import sk.janobono.wiwa.model.Authority;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AuthorityControllerTest extends BaseIntegrationTest {
+class AuthorityControllerTest extends BaseControllerTest {
 
     @Test
     void getAllAuthorities() {

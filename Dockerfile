@@ -1,15 +1,18 @@
 FROM public.ecr.aws/docker/library/maven:3-eclipse-temurin-17-alpine as builder
 
+RUN apk add git
+
+WORKDIR /r3n
+
+RUN git clone -b 6.0.3 https://github.com/janobono/r3n-api.git .
+
+RUN mvn clean install -DskipTests
+
 WORKDIR /app
 
 COPY . .
 
 RUN mvn clean install -DskipTests
-
-FROM public.ecr.aws/amazoncorretto/amazoncorretto:17-al2023-headless as extractor
-WORKDIR app
-COPY --from=builder /app/target/*.jar app.jar
-RUN java -Djarmode=layertools -jar app.jar extract
 
 FROM public.ecr.aws/amazoncorretto/amazoncorretto:17-al2023-headless as production
 
@@ -17,11 +20,8 @@ WORKDIR /app
 
 COPY data ./data
 
-COPY --from=extractor app/dependencies/ ./
-COPY --from=extractor app/spring-boot-loader/ ./
-COPY --from=extractor app/snapshot-dependencies/ ./
-COPY --from=extractor app/application/ ./
+COPY --from=builder app/target/wiwa-service-*.jar ./wiwa-service.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java","org.springframework.boot.loader.JarLauncher"]
+CMD java -jar wiwa-service.jar

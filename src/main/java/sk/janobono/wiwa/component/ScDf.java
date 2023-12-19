@@ -8,12 +8,6 @@ import java.util.Optional;
 @Component
 public class ScDf {
 
-    public String toLowerCase(final String text) {
-        return Optional.ofNullable(text)
-                .map(String::toLowerCase)
-                .orElse(text);
-    }
-
     public String toStripAndLowerCase(final String text) {
         return Optional.ofNullable(text)
                 .map(String::strip)
@@ -44,7 +38,7 @@ public class ScDf {
         return Optional.ofNullable(text)
                 .filter(s -> !s.isBlank())
                 .map(this::toDf)
-                .map(this::toLowerCase)
+                .map(this::toStripAndLowerCase)
                 .orElse(null);
     }
 }

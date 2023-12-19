@@ -1,5 +1,6 @@
 package sk.janobono.wiwa.api.controller;
 
+import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -8,25 +9,26 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.BaseIntegrationTest;
-import sk.janobono.wiwa.api.model.ApplicationImageWeb;
-import sk.janobono.wiwa.api.model.SingleValueBody;
+import sk.janobono.wiwa.business.model.codelist.CodeListDataSo;
+import sk.janobono.wiwa.business.model.codelist.CodeListItemDataSo;
+import sk.janobono.wiwa.business.model.codelist.CodeListItemSo;
+import sk.janobono.wiwa.business.model.codelist.CodeListSo;
 import sk.janobono.wiwa.business.model.product.*;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
+import sk.janobono.wiwa.model.ApplicationImage;
+import sk.janobono.wiwa.model.ProductAttributeKey;
+import sk.janobono.wiwa.model.ProductQuantityKey;
 import sk.janobono.wiwa.model.ProductStockStatus;
-import sk.janobono.wiwa.model.ProductType;
-import sk.janobono.wiwa.model.Quantity;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ProductControllerTest extends BaseIntegrationTest {
-
+class ProductControllerTest extends BaseControllerTest {
     @Autowired
     public CommonConfigProperties commonConfigProperties;
 
@@ -43,80 +45,71 @@ class ProductControllerTest extends BaseIntegrationTest {
         final List<ProductSo> products = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             products.add(addProduct(headers, new ProductDataSo(
-                    ProductType.UNDEFINED,
                     "code-undefined-" + i,
-                    null,
-                    null,
                     "name-undefined-" + i,
                     null,
-                    new Quantity(new BigDecimal("0.000"), "p."),
+                    ProductStockStatus.OUT_OF_STOCK,
                     null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    ProductStockStatus.OUT_OF_STOCK
+                    List.of(new ProductQuantityDataSo(ProductQuantityKey.SALE, new BigDecimal("0.000"), "PIECE"))
             )));
 
             products.add(addProduct(headers, new ProductDataSo(
-                    ProductType.BOARD,
                     "code-board-" + i,
-                    "BC" + i,
-                    "SC" + i,
                     "name-board-" + i,
                     "this is board " + i,
-                    new Quantity(new BigDecimal("1.000"), "p."),
-                    new Quantity(BigDecimal.valueOf(i + 1).setScale(3), "kg"),
-                    new Quantity(BigDecimal.valueOf(i + 1).subtract(new BigDecimal("0.5")).setScale(3), "kg"),
-                    new Quantity(new BigDecimal("2800.000"), "mm"),
-                    new Quantity(new BigDecimal("2070.000"), "mm"),
-                    new Quantity(new BigDecimal("18.000"), "mm"),
-                    i % 2 == 0,
-                    ProductStockStatus.ON_STOCK
+                    ProductStockStatus.ON_STOCK,
+                    List.of(
+                            new ProductAttributeSo(ProductAttributeKey.BOARD_CODE, "BC" + i),
+                            new ProductAttributeSo(ProductAttributeKey.STRUCTURE_CODE, "SC" + i),
+                            new ProductAttributeSo(ProductAttributeKey.ORIENTATION, Boolean.toString(i % 2 == 0))
+                    ),
+                    List.of(
+                            new ProductQuantityDataSo(ProductQuantityKey.SALE, new BigDecimal("1.000"), "PIECE"),
+                            new ProductQuantityDataSo(ProductQuantityKey.WEIGHT, BigDecimal.valueOf(i + 1).setScale(3, RoundingMode.HALF_UP), "KILOGRAM"),
+                            new ProductQuantityDataSo(ProductQuantityKey.NET_WEIGHT, BigDecimal.valueOf(i + 1).subtract(new BigDecimal("0.5")).setScale(3, RoundingMode.HALF_UP), "KILOGRAM"),
+                            new ProductQuantityDataSo(ProductQuantityKey.LENGTH, new BigDecimal("2800.000"), "MILLIMETER"),
+                            new ProductQuantityDataSo(ProductQuantityKey.WIDTH, new BigDecimal("2070.000"), "MILLIMETER"),
+                            new ProductQuantityDataSo(ProductQuantityKey.THICKNESS, new BigDecimal("18.000"), "MILLIMETER")
+                    )
             )));
 
             products.add(addProduct(headers, new ProductDataSo(
-                    ProductType.EDGE,
                     "code-edge-" + i,
-                    null,
-                    null,
                     "name-edge-" + i,
                     "this is edge " + i,
-                    new Quantity(new BigDecimal("1.000"), "mm"),
-                    new Quantity(new BigDecimal("1.000"), "kg/m"),
-                    new Quantity(new BigDecimal("0.900"), "kg/m"),
+                    ProductStockStatus.ON_INQUIRE,
                     null,
-                    new Quantity(i % 2 == 0 ? new BigDecimal("22.000") : new BigDecimal("44.000"), "mm"),
-                    new Quantity(new BigDecimal("2.500"), "mm"),
-                    i % 2 == 0,
-                    ProductStockStatus.ON_INQUIRE
+                    List.of(
+                            new ProductQuantityDataSo(ProductQuantityKey.SALE, new BigDecimal("1.000"), "MILLIMETER"),
+                            new ProductQuantityDataSo(ProductQuantityKey.WEIGHT, new BigDecimal("1.000"), "GRAM"),
+                            new ProductQuantityDataSo(ProductQuantityKey.NET_WEIGHT, new BigDecimal("0.900"), "GRAM"),
+                            new ProductQuantityDataSo(ProductQuantityKey.WIDTH, i % 2 == 0 ? new BigDecimal("22.000") : new BigDecimal("44.000"), "MILLIMETER"),
+                            new ProductQuantityDataSo(ProductQuantityKey.THICKNESS, new BigDecimal("2.500"), "MILLIMETER")
+                    )
             )));
 
             products.add(addProduct(headers, new ProductDataSo(
-                    ProductType.SERVICE,
                     "code-service-" + i,
-                    null,
-                    null,
                     "name-service-" + i,
                     "this is service " + i,
-                    new Quantity(new BigDecimal("1.000"), "p."),
+                    ProductStockStatus.TO_ORDER,
                     null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    ProductStockStatus.TO_ORDER
+                    List.of(
+                            new ProductQuantityDataSo(ProductQuantityKey.SALE, new BigDecimal("1.000"), "PIECE")
+                    )
             )));
         }
 
         for (final ProductSo product : products) {
-            assertThat(product).usingRecursiveComparison().isEqualTo(getProduct(headers, product.id()));
+            assertThat(product)
+                    .usingRecursiveComparison(RecursiveComparisonConfiguration.builder()
+                            .withIgnoredFields("attributes", "images", "quantities", "unitPrices", "codeListItems")
+                            .build())
+                    .isEqualTo(getProduct(headers, product.id()));
         }
 
         ProductSo testProduct = products.stream()
-                .filter(p -> p.type() == ProductType.BOARD)
+                .filter(p -> p.code().equals("code-board-0"))
                 .findFirst()
                 .orElseThrow();
         final Long testProductId = testProduct.id();
@@ -124,20 +117,23 @@ class ProductControllerTest extends BaseIntegrationTest {
         assertThat(productIndex).isNotEqualTo(-1);
 
         testProduct = setProduct(headers, testProduct.id(), new ProductDataSo(
-                ProductType.BOARD,
                 "SP01",
                 "SPBC01",
-                "SPSC01",
-                "Test board",
                 "This is test board",
-                testProduct.saleUnit(),
-                testProduct.weight(),
-                testProduct.netWeight(),
-                testProduct.length(),
-                testProduct.width(),
-                testProduct.thickness(),
-                testProduct.orientation(),
-                ProductStockStatus.ON_INQUIRE
+                ProductStockStatus.ON_INQUIRE,
+                List.of(
+                        new ProductAttributeSo(ProductAttributeKey.BOARD_CODE, "SPSC01"),
+                        new ProductAttributeSo(ProductAttributeKey.STRUCTURE_CODE, "Test board"),
+                        new ProductAttributeSo(ProductAttributeKey.ORIENTATION, "false")
+                ),
+                List.of(
+                        new ProductQuantityDataSo(ProductQuantityKey.SALE, new BigDecimal("1.000"), "PIECE"),
+                        new ProductQuantityDataSo(ProductQuantityKey.WEIGHT, BigDecimal.valueOf(1).setScale(3, RoundingMode.HALF_UP), "KILOGRAM"),
+                        new ProductQuantityDataSo(ProductQuantityKey.NET_WEIGHT, BigDecimal.valueOf(1).subtract(new BigDecimal("0.5")).setScale(3, RoundingMode.HALF_UP), "KILOGRAM"),
+                        new ProductQuantityDataSo(ProductQuantityKey.LENGTH, new BigDecimal("2800.000"), "MILLIMETER"),
+                        new ProductQuantityDataSo(ProductQuantityKey.WIDTH, new BigDecimal("2070.000"), "MILLIMETER"),
+                        new ProductQuantityDataSo(ProductQuantityKey.THICKNESS, new BigDecimal("18.000"), "MILLIMETER")
+                )
         ));
         products.set(productIndex, testProduct);
 
@@ -145,14 +141,13 @@ class ProductControllerTest extends BaseIntegrationTest {
             assertThat(product).usingRecursiveComparison().isEqualTo(getProduct(headers, product.id()));
         }
 
-        final List<ApplicationImageWeb> productImages = Stream.of("test01.png", "test02.png", "test03.png")
-                .map(fileName -> setProductImage(token, testProductId, fileName))
-                .toList();
+        setProductImage(token, testProductId, "test01.png");
+        setProductImage(token, testProductId, "test02.png");
+        final List<ApplicationImage> productImages = setProductImage(token, testProductId, "test03.png").images();
+        final List<ApplicationImage> savedProductImages = getProduct(headers, testProductId).images();
 
-        final List<ApplicationImageWeb> savedProductImages = getProductImages(headers, testProductId);
-
-        for (final ApplicationImageWeb originalImage : productImages) {
-            final ApplicationImageWeb savedImage = savedProductImages.stream()
+        for (final ApplicationImage originalImage : productImages) {
+            final ApplicationImage savedImage = savedProductImages.stream()
                     .filter(s -> s.fileName().equals(originalImage.fileName()))
                     .findFirst()
                     .orElseThrow();
@@ -167,88 +162,60 @@ class ProductControllerTest extends BaseIntegrationTest {
         }
 
         List<ProductUnitPriceSo> productUnitPrices = setProductUnitPrices(headers, testProductId, List.of(
-                new ProductUnitPriceSo(ZonedDateTime.now(), new Quantity(new BigDecimal("100.000"), "eur"))
-        ));
-        List<ProductUnitPriceSo> savedProductUnitPrices = getProductUnitPrices(headers, testProductId);
-        assertThat(productUnitPrices.get(0)).usingRecursiveComparison().isEqualTo(savedProductUnitPrices.get(0));
+                new ProductUnitPriceDataSo(ZonedDateTime.now(), new BigDecimal("100.000"), "EUR")
+        )).unitPrices();
+        assertThat(productUnitPrices.get(0).value()).isEqualTo(new BigDecimal("100.000"));
+        assertThat(productUnitPrices.get(0).unit()).isEqualTo("€");
 
-        final ProductCategorySo productCategory01 = addEntity(ProductCategorySo.class, headers, "/product-categories", new ProductCategoryDataSo(
-                null, "code1", "test-category1"
-        ));
-        final ProductCategorySo productCategory02 = addEntity(ProductCategorySo.class, headers, "/product-categories", new ProductCategoryDataSo(
-                null, "code2", "test-category2"
-        ));
-        List<Long> productCategoryIds = setProductCategoryIds(headers, testProductId, List.of(productCategory01.id()));
-        List<Long> savedProductCategoryIds = getProductCategoryIds(headers, testProductId);
-        assertThat(productCategoryIds.size()).isEqualTo(1);
-        assertThat(productCategoryIds.get(0)).isEqualTo(productCategory01.id());
-        assertThat(productCategoryIds.get(0)).isEqualTo(savedProductCategoryIds.get(0));
+        final CodeListSo codeListSo = addCodeList(headers, new CodeListDataSo("code", "test-code-list"));
+        final CodeListItemSo codeListItem01 = addCodeListItem(headers, codeListSo.id(), new CodeListItemDataSo(null, "code1", "test-item1"));
+        final CodeListItemSo codeListItem02 = addCodeListItem(headers, codeListSo.id(), new CodeListItemDataSo(null, "code2", "test-item2"));
+        List<Long> codeListItems = setProductCodeListItems(headers, testProductId, List.of(codeListItem01.id())).codeListItems();
+        List<Long> savedCodeListItems = getProduct(headers, testProductId).codeListItems();
+        assertThat(codeListItems.size()).isEqualTo(1);
+        assertThat(codeListItems.get(0)).isEqualTo(codeListItem01.id());
+        assertThat(codeListItems.get(0)).isEqualTo(savedCodeListItems.get(0));
 
-        productCategoryIds = setProductCategoryIds(headers, testProductId, List.of(productCategory02.id()));
-        savedProductCategoryIds = getProductCategoryIds(headers, testProductId);
-        assertThat(productCategoryIds.size()).isEqualTo(1);
-        assertThat(productCategoryIds.get(0)).isEqualTo(productCategory02.id());
-        assertThat(productCategoryIds.get(0)).isEqualTo(savedProductCategoryIds.get(0));
+        codeListItems = setProductCodeListItems(headers, testProductId, List.of(codeListItem02.id())).codeListItems();
+        savedCodeListItems = getProduct(headers, testProductId).codeListItems();
+        assertThat(codeListItems.size()).isEqualTo(1);
+        assertThat(codeListItems.get(0)).isEqualTo(codeListItem02.id());
+        assertThat(codeListItems.get(0)).isEqualTo(savedCodeListItems.get(0));
 
-        productCategoryIds = setProductCategoryIds(headers, testProductId, List.of(productCategory01.id(), productCategory02.id()));
-        savedProductCategoryIds = getProductCategoryIds(headers, testProductId);
-        assertThat(productCategoryIds.size()).isEqualTo(2);
-        assertThat(productCategoryIds.get(0)).isEqualTo(savedProductCategoryIds.get(0));
-        assertThat(productCategoryIds.get(1)).isEqualTo(savedProductCategoryIds.get(1));
+        codeListItems = setProductCodeListItems(headers, testProductId, List.of(codeListItem01.id(), codeListItem02.id())).codeListItems();
+        savedCodeListItems = getProduct(headers, testProductId).codeListItems();
+        assertThat(codeListItems.size()).isEqualTo(2);
+        assertThat(codeListItems.get(0)).isEqualTo(savedCodeListItems.get(0));
+        assertThat(codeListItems.get(1)).isEqualTo(savedCodeListItems.get(1));
 
-        Page<ProductSo> searchResult = getProducts(headers, "board 1", null, null, null, null, null, null, null, null, null, null, null, null, Pageable.unpaged());
-        assertThat(searchResult.getTotalElements()).isEqualTo(2);
-
-        searchResult = getProducts(headers, null, ProductType.BOARD, null, null, null, null, null, null, null, null, null, null, null, Pageable.unpaged());
-        assertThat(searchResult.getTotalElements()).isEqualTo(10);
-
-        searchResult = getProducts(headers, null, null, "code-service-1", null, null, null, null, null, null, null, null, null, null, Pageable.unpaged());
+        Page<ProductSo> searchResult = getProducts(headers, "board-1", null, null, null, null, Pageable.unpaged());
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
 
-        searchResult = getProducts(headers, null, null, null, "name-edge-1", null, null, null, null, null, null, null, null, null, Pageable.unpaged());
+        searchResult = getProducts(headers, null, "code-service-1", null, null, null, Pageable.unpaged());
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
 
-        searchResult = getProducts(headers, null, null, null, null, "code1", null, null, null, null, null, null, null, null, Pageable.unpaged());
+        searchResult = getProducts(headers, null, null, "name-edge-1", null, null, Pageable.unpaged());
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
 
-        searchResult = getProducts(headers, null, null, null, null, "code2", null, null, null, null, null, null, null, null, Pageable.unpaged());
+        searchResult = getProducts(headers, null, null, null, null, List.of("code1"), Pageable.unpaged());
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
 
-        searchResult = getProducts(headers, null, null, null, null, null, "BC1", null, null, null, null, null, null, null, Pageable.unpaged());
+        searchResult = getProducts(headers, null, null, null, null, List.of("code2"), Pageable.unpaged());
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
 
-        searchResult = getProducts(headers, null, null, null, null, null, null, "SC1", null, null, null, null, null, null, Pageable.unpaged());
-        assertThat(searchResult.getTotalElements()).isEqualTo(1);
-
-        searchResult = getProducts(headers, null, null, null, null, null, null, null, ProductStockStatus.ON_INQUIRE, null, null, null, null, null, Pageable.unpaged());
+        searchResult = getProducts(headers, null, null, null, ProductStockStatus.ON_INQUIRE, null, Pageable.unpaged());
         assertThat(searchResult.getTotalElements()).isEqualTo(11);
 
-        searchResult = getProducts(headers, null, null, null, null, null, null, null, null, new BigDecimal("100"), null, null, null, null, Pageable.unpaged());
-        assertThat(searchResult.getTotalElements()).isEqualTo(1);
-
-        searchResult = getProducts(headers, null, null, null, null, null, null, null, null, null, new BigDecimal("100"), null, null, null, Pageable.unpaged());
-        assertThat(searchResult.getTotalElements()).isEqualTo(1);
-
-        searchResult = getProducts(headers, null, null, null, null, null, null, null, null, new BigDecimal("100"), new BigDecimal("100"), null, null, null, Pageable.unpaged());
-        assertThat(searchResult.getTotalElements()).isEqualTo(1);
-
-        searchResult = getProducts(headers, null, null, null, null, null, null, null, null, null, null, new BigDecimal("18"), "mm", null, Pageable.unpaged());
-        assertThat(searchResult.getTotalElements()).isEqualTo(10);
-
-        searchResult = getProducts(headers, null, null, null, null, null, null, null, null, null, null, null, null, true, Pageable.unpaged());
-        assertThat(searchResult.getTotalElements()).isEqualTo(10);
-
-        productUnitPrices = setProductUnitPrices(headers, testProductId, Collections.emptyList());
-        savedProductUnitPrices = getProductUnitPrices(headers, testProductId);
+        productUnitPrices = setProductUnitPrices(headers, testProductId, Collections.emptyList()).unitPrices();
         assertThat(productUnitPrices.size()).isEqualTo(0);
-        assertThat(productUnitPrices.size()).isEqualTo(savedProductUnitPrices.size());
+        assertThat(productUnitPrices.size()).isEqualTo(getProduct(headers, testProductId).unitPrices().size());
 
-        productCategoryIds = setProductCategoryIds(headers, testProductId, Collections.emptyList());
-        savedProductCategoryIds = getProductCategoryIds(headers, testProductId);
-        assertThat(productCategoryIds.size()).isEqualTo(0);
-        assertThat(productCategoryIds.size()).isEqualTo(savedProductCategoryIds.size());
+        codeListItems = setProductCodeListItems(headers, testProductId, Collections.emptyList()).codeListItems();
+        savedCodeListItems = getProduct(headers, testProductId).codeListItems();
+        assertThat(codeListItems.size()).isEqualTo(0);
+        assertThat(codeListItems.size()).isEqualTo(savedCodeListItems.size());
 
-        for (final ApplicationImageWeb originalImage : productImages) {
+        for (final ApplicationImage originalImage : productImages) {
             deleteProductImage(headers, testProductId, originalImage.fileName());
         }
         for (final ProductSo product : products) {
@@ -262,33 +229,17 @@ class ProductControllerTest extends BaseIntegrationTest {
 
     private Page<ProductSo> getProducts(final HttpHeaders headers,
                                         final String searchField,
-                                        final ProductType type,
                                         final String code,
                                         final String name,
-                                        final String categoryCode,
-                                        final String boardCode,
-                                        final String structureCode,
-                                        final ProductStockStatus productStockStatus,
-                                        final BigDecimal unitPriceFrom,
-                                        final BigDecimal unitPriceTo,
-                                        final BigDecimal thicknessValue,
-                                        final String thicknessUnit,
-                                        final Boolean orientation,
+                                        final ProductStockStatus stockStatus,
+                                        final List<String> codeListItems,
                                         final Pageable pageable) {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        Optional.ofNullable(searchField).ifPresent(v -> addToParams(params, "search-field", v));
-        Optional.ofNullable(type).ifPresent(v -> addToParams(params, "type", v.name()));
+        Optional.ofNullable(searchField).ifPresent(v -> addToParams(params, "searchField", v));
         Optional.ofNullable(code).ifPresent(v -> addToParams(params, "code", v));
         Optional.ofNullable(name).ifPresent(v -> addToParams(params, "name", v));
-        Optional.ofNullable(categoryCode).ifPresent(v -> addToParams(params, "category-code", v));
-        Optional.ofNullable(boardCode).ifPresent(v -> addToParams(params, "board-code", v));
-        Optional.ofNullable(structureCode).ifPresent(v -> addToParams(params, "structure-code", v));
-        Optional.ofNullable(productStockStatus).ifPresent(v -> addToParams(params, "stock-status", v.name()));
-        Optional.ofNullable(unitPriceFrom).ifPresent(v -> addToParams(params, "unit-price-from", v.toPlainString()));
-        Optional.ofNullable(unitPriceTo).ifPresent(v -> addToParams(params, "unit-price-to", v.toPlainString()));
-        Optional.ofNullable(thicknessValue).ifPresent(v -> addToParams(params, "thickness-value", v.toPlainString()));
-        Optional.ofNullable(thicknessUnit).ifPresent(v -> addToParams(params, "thickness-unit", v));
-        Optional.ofNullable(orientation).ifPresent(v -> addToParams(params, "orientation", v.toString()));
+        Optional.ofNullable(stockStatus).ifPresent(v -> addToParams(params, "stockStatus", v.name()));
+        Optional.ofNullable(codeListItems).ifPresent(l -> addToParams(params, "codeListItems", l));
         return getEntities(ProductSo.class, headers, "/products", params, pageable);
     }
 
@@ -304,16 +255,6 @@ class ProductControllerTest extends BaseIntegrationTest {
         deleteEntity(headers, "/products", id);
     }
 
-    private List<ApplicationImageWeb> getProductImages(final HttpHeaders headers, final Long id) {
-        final ResponseEntity<ApplicationImageWeb[]> response = restTemplate.exchange(
-                getURI("/products/{id}/product-images", Map.of("id", Long.toString(id))),
-                HttpMethod.GET, new HttpEntity<>(headers),
-                ApplicationImageWeb[].class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        return Arrays.asList(response.getBody());
-    }
-
     private byte[] getProductImage(final HttpHeaders headers, final Long id, final String fileName) {
         final ResponseEntity<byte[]> response = restTemplate.exchange(
                 getURI("/products/{id}/product-images/{fileName}", Map.of("id", Long.toString(id), "fileName", fileName)),
@@ -325,7 +266,7 @@ class ProductControllerTest extends BaseIntegrationTest {
         return response.getBody();
     }
 
-    private ApplicationImageWeb setProductImage(final String token, final Long id, final String fileName) {
+    private ProductSo setProductImage(final String token, final Long id, final String fileName) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.setBearerAuth(token);
@@ -339,71 +280,50 @@ class ProductControllerTest extends BaseIntegrationTest {
         });
         final HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
 
-        final ResponseEntity<ApplicationImageWeb> uploadedImage = restTemplate.exchange(
+        final ResponseEntity<ProductSo> response = restTemplate.exchange(
                 getURI("/products/{id}/product-images", Map.of("id", Long.toString(id))),
                 HttpMethod.POST,
                 httpEntity,
-                ApplicationImageWeb.class
+                ProductSo.class
         );
-        assertThat(uploadedImage.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(uploadedImage.getBody()).isNotNull();
-        assertThat(uploadedImage.hasBody()).isTrue();
-        assertThat(uploadedImage.getBody().fileName()).isEqualTo(fileName);
-        assertThat(uploadedImage.getBody().thumbnail().startsWith("data:" + MediaType.IMAGE_PNG_VALUE)).isTrue();
-        return uploadedImage.getBody();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        return response.getBody();
     }
 
-    public void deleteProductImage(final HttpHeaders headers, final Long id, final String fileName) {
-        final ResponseEntity<Void> response = restTemplate.exchange(
+    public ProductSo deleteProductImage(final HttpHeaders headers, final Long id, final String fileName) {
+        final ResponseEntity<ProductSo> response = restTemplate.exchange(
                 getURI("/products/{id}/product-images/{fileName}", Map.of("id", Long.toString(id), "fileName", fileName)),
                 HttpMethod.DELETE,
                 new HttpEntity<>(headers),
-                Void.class
+                ProductSo.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    public List<ProductUnitPriceSo> getProductUnitPrices(final HttpHeaders headers, final Long id) {
-        final ResponseEntity<ProductUnitPriceSo[]> response = restTemplate.exchange(
-                getURI("/products/{id}/product-unit-prices", Map.of("id", Long.toString(id))),
-                HttpMethod.GET, new HttpEntity<>(headers),
-                ProductUnitPriceSo[].class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        return Arrays.asList(response.getBody());
+        return response.getBody();
     }
 
-    public List<ProductUnitPriceSo> setProductUnitPrices(final HttpHeaders headers, final Long id, final List<ProductUnitPriceSo> productUnitPrices) {
-        final ResponseEntity<ProductUnitPriceSo[]> response = restTemplate.exchange(
+    public ProductSo setProductUnitPrices(final HttpHeaders headers, final Long id, final List<ProductUnitPriceDataSo> productUnitPrices) {
+        final ResponseEntity<ProductSo> response = restTemplate.exchange(
                 getURI("/products/{id}/product-unit-prices", Map.of("id", id.toString())),
                 HttpMethod.POST,
-                new HttpEntity<>(new SingleValueBody<>(productUnitPrices), headers),
-                ProductUnitPriceSo[].class
+                new HttpEntity<>(productUnitPrices, headers),
+                ProductSo.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        return Arrays.asList(response.getBody());
+        return response.getBody();
     }
 
-    public List<Long> getProductCategoryIds(final HttpHeaders headers, final Long id) {
-        final ResponseEntity<Long[]> response = restTemplate.exchange(
-                getURI("/products/{id}/product-category-ids", Map.of("id", Long.toString(id))),
-                HttpMethod.GET, new HttpEntity<>(headers),
-                Long[].class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        return Arrays.asList(response.getBody());
-    }
-
-    public List<Long> setProductCategoryIds(final HttpHeaders headers, final Long id, final List<Long> productCategoryIds) {
-        final ResponseEntity<Long[]> response = restTemplate.exchange(
-                getURI("/products/{id}/product-category-ids", Map.of("id", id.toString())),
+    public ProductSo setProductCodeListItems(final HttpHeaders headers, final Long id, final List<Long> itemIds) {
+        final ResponseEntity<ProductSo> response = restTemplate.exchange(
+                getURI("/products/{id}/code-list-items", Map.of("id", Long.toString(id))),
                 HttpMethod.POST,
-                new HttpEntity<>(new SingleValueBody<>(productCategoryIds), headers),
-                Long[].class
+                new HttpEntity<>(itemIds, headers),
+                ProductSo.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        return Arrays.asList(response.getBody());
+        return response.getBody();
     }
 }

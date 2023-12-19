@@ -17,8 +17,10 @@ public enum WiwaException {
     USER_USERNAME_IS_USED,
     CODE_IS_USED,
     PRODUCT_NOT_FOUND,
-    PRODUCT_CATEGORY_NOT_FOUND,
-    PRODUCT_CATEGORY_NOT_EMPTY;
+    CODE_LIST_NOT_FOUND,
+    CODE_LIST_ITEM_NOT_FOUND,
+    CODE_LIST_ITEM_NOT_EMPTY,
+    QUANTITY_UNIT_NOT_FOUND;
 
     public ApplicationException exception(final String pattern, final Object... arguments) {
         return exception(null, pattern, arguments);
