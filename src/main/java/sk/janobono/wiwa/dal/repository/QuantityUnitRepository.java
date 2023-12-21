@@ -76,7 +76,8 @@ public class QuantityUnitRepository {
             final List<Object[]> rows = sqlBuilder.select(connection,
                     Query.SELECT(MetaColumnWiwaQuantityUnit.columns())
                             .FROM(MetaTable.WIWA_QUANTITY_UNIT.table())
-                            .ORDER_BY(MetaColumnWiwaQuantityUnit.ID.column(), Order.ASC)
+                            .ORDER_BY(MetaColumnWiwaQuantityUnit.TYPE.column(), Order.ASC)
+                            .ORDER_BY(MetaColumnWiwaQuantityUnit.UNIT.column(), Order.ASC)
             );
             return rows.stream()
                     .map(WiwaQuantityUnitDto::toObject)
