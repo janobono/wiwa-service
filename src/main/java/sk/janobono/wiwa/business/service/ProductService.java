@@ -135,18 +135,18 @@ public class ProductService {
         return toProductSo(getProductDo(productId));
     }
 
-    public ProductSo setProductUnitPrices(final Long productId, final List<ProductUnitPriceDataSo> productUnitPrices) {
+    public ProductSo setProductUnitPrices(final Long productId, final List<ProductUnitPriceSo> productUnitPrices) {
         if (!productRepository.existsById(productId)) {
             throw WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", productId);
         }
 
         final List<ProductUnitPriceDo> batch = new ArrayList<>();
         if (!productUnitPrices.isEmpty()) {
-            final List<ProductUnitPriceDataSo> orderedPrices = productUnitPrices.stream()
+            final List<ProductUnitPriceSo> orderedPrices = productUnitPrices.stream()
                     .sorted((o1, o2) -> o2.validFrom().compareTo(o1.validFrom())).toList();
 
-            ProductUnitPriceDataSo previous = null;
-            for (final ProductUnitPriceDataSo current : orderedPrices) {
+            ProductUnitPriceSo previous = null;
+            for (final ProductUnitPriceSo current : orderedPrices) {
                 batch.add(ProductUnitPriceDo.builder()
                         .productId(productId)
                         .unitId(current.unitId())
@@ -217,7 +217,7 @@ public class ProductService {
                             .orElseThrow();
                     return new ProductUnitPriceSo(timeUtil.toZonedDateTime(price.getValidFrom()),
                             price.getValue(),
-                            quantityUnitDo.getUnit());
+                            quantityUnitDo.getId());
                 })
                 .toList();
     }

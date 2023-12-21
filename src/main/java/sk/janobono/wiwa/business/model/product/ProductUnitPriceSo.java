@@ -1,11 +1,14 @@
 package sk.janobono.wiwa.business.model.product;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 public record ProductUnitPriceSo(
-        ZonedDateTime validFrom,
-        BigDecimal value,
-        String unit
+        @NotNull ZonedDateTime validFrom,
+        @NotNull BigDecimal value,
+        @NotEmpty String unitId
 ) {
 }

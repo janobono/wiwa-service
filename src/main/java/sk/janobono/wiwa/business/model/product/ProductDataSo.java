@@ -13,6 +13,6 @@ public record ProductDataSo(
         String note,
         @NotNull ProductStockStatus stockStatus,
         List<ProductAttributeSo> attributes,
-        List<ProductQuantityDataSo> quantities
+        List<ProductQuantitySo> quantities
 ) {
 }
