@@ -205,7 +205,7 @@ public class ProductService {
                 .map(quantity -> {
                     final QuantityUnitDo quantityUnitDo = quantityUnitRepository.findById(quantity.getUnitId())
                             .orElseThrow();
-                    return new ProductQuantitySo(quantity.getKey(), quantity.getValue(), quantityUnitDo.getUnit());
+                    return new ProductQuantitySo(quantity.getKey(), quantity.getValue(), quantityUnitDo.getId());
                 })
                 .toList();
     }

@@ -7,6 +7,6 @@ import java.math.BigDecimal;
 public record ProductQuantitySo(
         ProductQuantityKey key,
         BigDecimal value,
-        String unit
+        String unitId
 ) {
 }
