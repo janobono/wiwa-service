@@ -15,6 +15,7 @@ import sk.janobono.wiwa.exception.WiwaException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -101,7 +102,7 @@ public class CodeListService {
         final Optional<CodeListItemDo> parent = getParentCodeListItem(data.parentId());
 
         final Long previousParentId = codeListItemDo.getParentId();
-        final boolean parentChanged = !Optional.ofNullable(previousParentId).orElse(-1L).equals(data.parentId());
+        final boolean parentChanged = !Objects.equals(previousParentId, data.parentId());
 
         codeListItemDo.setCodeListId(codeListDo.getId());
         codeListItemDo.setParentId(data.parentId());
