@@ -57,9 +57,9 @@ public class CodeListController {
         codeListService.deleteCodeList(id);
     }
 
-    @GetMapping("/{id}/items")
+    @GetMapping("/items")
     public Page<CodeListItemSo> getCodeListItems(
-            @PathVariable("id") final Long id,
+            @RequestParam(value = "codeListId", required = false) final Long codeListId,
             @RequestParam(value = "root", required = false) final Boolean root,
             @RequestParam(value = "parent-id", required = false) final Long parentId,
             @RequestParam(value = "search-field", required = false) final String searchField,
@@ -69,7 +69,7 @@ public class CodeListController {
             final Pageable pageable
     ) {
         final CodeListItemSearchCriteriaSo criteria = CodeListItemSearchCriteriaSo.builder()
-                .codeListId(id)
+                .codeListId(codeListId)
                 .root(root)
                 .parentId(parentId)
                 .searchField(searchField)
@@ -80,40 +80,40 @@ public class CodeListController {
         return codeListService.getCodeListItems(criteria, pageable);
     }
 
-    @GetMapping("/{id}/items/{itemId}")
+    @GetMapping("/items/{itemId}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListItemSo getCodeListItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId) {
-        return codeListService.getCodeListItem(id, itemId);
+    public CodeListItemSo getCodeListItem(@PathVariable("itemId") final Long itemId) {
+        return codeListService.getCodeListItem(itemId);
     }
 
-    @PostMapping("/{id}/items")
+    @PostMapping("/items")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     @ResponseStatus(HttpStatus.CREATED)
-    public CodeListItemSo addCodeListItem(@PathVariable("id") final Long id, @Valid @RequestBody final CodeListItemDataSo data) {
-        return codeListService.addCodeListItem(id, data);
+    public CodeListItemSo addCodeListItem(@Valid @RequestBody final CodeListItemDataSo data) {
+        return codeListService.addCodeListItem(data);
     }
 
-    @PutMapping("/{id}/items/{itemId}")
+    @PutMapping("/items/{itemId}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListItemSo setCodeListItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId, @Valid @RequestBody final CodeListItemDataSo data) {
-        return codeListService.setCodeListItem(id, itemId, data);
+    public CodeListItemSo setCodeListItem(@PathVariable("itemId") final Long itemId, @Valid @RequestBody final CodeListItemDataSo data) {
+        return codeListService.setCodeListItem(itemId, data);
     }
 
-    @DeleteMapping("/{id}/items/{itemId}")
+    @DeleteMapping("/items/{itemId}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public void deleteCodeListItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId) {
-        codeListService.deleteCodeListItem(id, itemId);
+    public void deleteCodeListItem(@PathVariable("itemId") final Long itemId) {
+        codeListService.deleteCodeListItem(itemId);
     }
 
-    @PatchMapping("/{id}/items/{itemId}/move-up")
+    @PatchMapping("/items/{itemId}/move-up")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListItemSo moveCodeListItemUp(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId) {
-        return codeListService.moveCodeListItemUp(id, itemId);
+    public CodeListItemSo moveCodeListItemUp(@PathVariable("itemId") final Long itemId) {
+        return codeListService.moveCodeListItemUp(itemId);
     }
 
-    @PatchMapping("/{id}/items/{itemId}/move-down")
+    @PatchMapping("/items/{itemId}/move-down")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListItemSo moveCodeListItemDown(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId) {
-        return codeListService.moveCodeListItemDown(id, itemId);
+    public CodeListItemSo moveCodeListItemDown(@PathVariable("itemId") final Long itemId) {
+        return codeListService.moveCodeListItemDown(itemId);
     }
 }

@@ -66,7 +66,7 @@ public class BaseControllerTest extends BaseIntegrationTest {
                     final List<T> content;
                     try {
                         content = getListFromNode(jsonNode.get("content"), clazz);
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         throw new RuntimeException(e);
                     }
                     return new PageImpl<>(content, pageable, totalElements);
@@ -95,7 +95,7 @@ public class BaseControllerTest extends BaseIntegrationTest {
                     }
                     sb.append("ASC,");
                 }
-                orderList = pageable.getSort().get().filter(Sort.Order::isDescending).collect(Collectors.toList());
+                orderList = pageable.getSort().get().filter(Sort.Order::isDescending).toList();
                 if (!orderList.isEmpty()) {
                     for (final Sort.Order order : orderList) {
                         sb.append(order.getProperty()).append(',');
@@ -174,7 +174,7 @@ public class BaseControllerTest extends BaseIntegrationTest {
         return addEntity(CodeListSo.class, headers, "/code-lists", data);
     }
 
-    protected CodeListItemSo addCodeListItem(final HttpHeaders headers, final Long id, final CodeListItemDataSo data) {
-        return addEntity(CodeListItemSo.class, headers, "/code-lists/" + id + "/items", data);
+    protected CodeListItemSo addCodeListItem(final HttpHeaders headers, final CodeListItemDataSo data) {
+        return addEntity(CodeListItemSo.class, headers, "/code-lists/items", data);
     }
 }

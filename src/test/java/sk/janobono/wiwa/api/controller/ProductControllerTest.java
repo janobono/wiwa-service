@@ -168,8 +168,8 @@ class ProductControllerTest extends BaseControllerTest {
         assertThat(productUnitPrices.get(0).unitId()).isEqualTo("EUR");
 
         final CodeListSo codeListSo = addCodeList(headers, new CodeListDataSo("code", "test-code-list"));
-        final CodeListItemSo codeListItem01 = addCodeListItem(headers, codeListSo.id(), new CodeListItemDataSo(null, "code1", "test-item1"));
-        final CodeListItemSo codeListItem02 = addCodeListItem(headers, codeListSo.id(), new CodeListItemDataSo(null, "code2", "test-item2"));
+        final CodeListItemSo codeListItem01 = addCodeListItem(headers, new CodeListItemDataSo(codeListSo.id(), null, "code1", "test-item1"));
+        final CodeListItemSo codeListItem02 = addCodeListItem(headers, new CodeListItemDataSo(codeListSo.id(), null, "code2", "test-item2"));
         List<Long> codeListItems = setProductCodeListItems(headers, testProductId, List.of(codeListItem01.id())).codeListItems();
         List<Long> savedCodeListItems = getProduct(headers, testProductId).codeListItems();
         assertThat(codeListItems.size()).isEqualTo(1);

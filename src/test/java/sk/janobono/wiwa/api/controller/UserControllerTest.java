@@ -62,7 +62,7 @@ class UserControllerTest extends BaseControllerTest {
         assertThat(page.getContent().size()).isEqualTo(1);
 
         final CodeListSo testCodeList = addCodeList(headers, new CodeListDataSo("code", "name"));
-        final CodeListItemSo codeListItemSo = addCodeListItem(headers, testCodeList.id(), new CodeListItemDataSo(null, "code", "value"));
+        final CodeListItemSo codeListItemSo = addCodeListItem(headers, new CodeListItemDataSo(testCodeList.id(), null, "code", "value"));
 
         for (final User user : users) {
             setUser(headers, user);

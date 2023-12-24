@@ -68,16 +68,16 @@ public class CodeListService {
         return codeListItemRepository.findAll(criteria, pageable).map(this::toCodeListItemSo);
     }
 
-    public CodeListItemSo getCodeListItem(final Long id, final Long itemId) {
-        return toCodeListItemSo(getCodeListItemDo(id, itemId));
+    public CodeListItemSo getCodeListItem(final Long itemId) {
+        return toCodeListItemSo(getCodeListItemDo(itemId));
     }
 
-    public CodeListItemSo addCodeListItem(final Long id, final CodeListItemDataSo data) {
+    public CodeListItemSo addCodeListItem(final CodeListItemDataSo data) {
         if (isCodeUsed(null, data)) {
             throw WiwaException.CODE_IS_USED.exception("Code list item code {0} is used", data.code());
         }
 
-        final CodeListDo codeListDo = getCodeListDo(id);
+        final CodeListDo codeListDo = getCodeListDo(data.codeListId());
         final Optional<CodeListItemDo> parentCodeListItem = getParentCodeListItem(data.parentId());
         return toCodeListItemSo(codeListItemRepository.save(CodeListItemDo.builder()
                 .codeListId(codeListDo.getId())
@@ -85,26 +85,23 @@ public class CodeListService {
                 .treeCode(getItemTreeCode(parentCodeListItem, data.code()))
                 .code(data.code())
                 .value(data.value())
-                .sortNum(getNextSortNum(id, parentCodeListItem))
+                .sortNum(getNextSortNum(data.codeListId(), parentCodeListItem))
                 .build())
         );
     }
 
-    public CodeListItemSo setCodeListItem(final Long id, final Long itemId, final CodeListItemDataSo data) {
+    public CodeListItemSo setCodeListItem(final Long itemId, final CodeListItemDataSo data) {
         if (isCodeUsed(itemId, data)) {
             throw WiwaException.CODE_IS_USED.exception("Code list item code {0} is used", data.code());
         }
 
-        final CodeListDo codeListDo = getCodeListDo(id);
-
-        CodeListItemDo codeListItemDo = getCodeListItemDo(id, itemId);
+        CodeListItemDo codeListItemDo = getCodeListItemDo(itemId);
 
         final Optional<CodeListItemDo> parent = getParentCodeListItem(data.parentId());
 
         final Long previousParentId = codeListItemDo.getParentId();
         final boolean parentChanged = !Objects.equals(previousParentId, data.parentId());
 
-        codeListItemDo.setCodeListId(codeListDo.getId());
         codeListItemDo.setParentId(data.parentId());
         if (parentChanged) {
             codeListItemDo.setTreeCode(getItemTreeCode(parent, data.code()));
@@ -112,32 +109,32 @@ public class CodeListService {
         codeListItemDo.setCode(data.code());
         codeListItemDo.setValue(data.value());
         if (parentChanged) {
-            codeListItemDo.setSortNum(getNextSortNum(id, parent));
+            codeListItemDo.setSortNum(getNextSortNum(codeListItemDo.getCodeListId(), parent));
         }
 
         codeListItemDo = codeListItemRepository.save(codeListItemDo);
 
         if (parentChanged) {
-            sortItems(id, previousParentId);
+            sortItems(codeListItemDo.getCodeListId(), previousParentId);
         }
 
         return toCodeListItemSo(codeListItemRepository.save(codeListItemDo));
     }
 
-    public void deleteCodeListItem(final Long id, final Long itemId) {
-        final CodeListItemDo codeListItemDo = getCodeListItemDo(id, itemId);
+    public void deleteCodeListItem(final Long itemId) {
+        final CodeListItemDo codeListItemDo = getCodeListItemDo(itemId);
         if (!isLeafItem(itemId)) {
             throw WiwaException.CODE_LIST_ITEM_NOT_EMPTY.exception("Code list item with id {0} not empty", itemId);
         }
         codeListItemRepository.deleteById(itemId);
-        sortItems(id, codeListItemDo.getParentId());
+        sortItems(codeListItemDo.getCodeListId(), codeListItemDo.getParentId());
     }
 
-    public CodeListItemSo moveCodeListItemUp(final Long id, final Long itemId) {
-        final CodeListItemDo codeListItemDo = getCodeListItemDo(id, itemId);
-        sortItems(id, codeListItemDo.getParentId());
+    public CodeListItemSo moveCodeListItemUp(final Long itemId) {
+        final CodeListItemDo codeListItemDo = getCodeListItemDo(itemId);
+        sortItems(codeListItemDo.getCodeListId(), codeListItemDo.getParentId());
 
-        final List<CodeListItemDo> children = getItems(id, codeListItemDo.getParentId());
+        final List<CodeListItemDo> children = getItems(codeListItemDo.getCodeListId(), codeListItemDo.getParentId());
         final int categoryIndex = children.indexOf(codeListItemDo);
         if (categoryIndex > 0) {
             final List<CodeListItemDo> batch = new ArrayList<>();
@@ -153,14 +150,14 @@ public class CodeListService {
             codeListItemRepository.saveAll(batch);
         }
 
-        return toCodeListItemSo(getCodeListItemDo(id, itemId));
+        return toCodeListItemSo(getCodeListItemDo(itemId));
     }
 
-    public CodeListItemSo moveCodeListItemDown(final Long id, final Long itemId) {
-        final CodeListItemDo codeListItemDo = getCodeListItemDo(id, itemId);
-        sortItems(id, codeListItemDo.getParentId());
+    public CodeListItemSo moveCodeListItemDown(final Long itemId) {
+        final CodeListItemDo codeListItemDo = getCodeListItemDo(itemId);
+        sortItems(codeListItemDo.getCodeListId(), codeListItemDo.getParentId());
 
-        final List<CodeListItemDo> children = getItems(id, codeListItemDo.getParentId());
+        final List<CodeListItemDo> children = getItems(codeListItemDo.getCodeListId(), codeListItemDo.getParentId());
         final int categoryIndex = children.indexOf(codeListItemDo);
         if (categoryIndex < children.size() - 1) {
             final List<CodeListItemDo> batch = new ArrayList<>();
@@ -176,7 +173,7 @@ public class CodeListService {
             codeListItemRepository.saveAll(batch);
         }
 
-        return toCodeListItemSo(getCodeListItemDo(id, itemId));
+        return toCodeListItemSo(getCodeListItemDo(itemId));
     }
 
     private CodeListDo getCodeListDo(final Long id) {
@@ -184,10 +181,9 @@ public class CodeListService {
                 .orElseThrow(() -> WiwaException.CODE_LIST_NOT_FOUND.exception("Code list with id {0} not found", id));
     }
 
-    private CodeListItemDo getCodeListItemDo(final Long id, final Long itemId) {
+    private CodeListItemDo getCodeListItemDo(final Long itemId) {
         return codeListItemRepository.findById(itemId)
-                .filter(codeListCodeDo -> codeListCodeDo.getCodeListId().equals(id))
-                .orElseThrow(() -> WiwaException.CODE_LIST_ITEM_NOT_FOUND.exception("Code list item with code list id {0} and id {1} not found", id, itemId));
+                .orElseThrow(() -> WiwaException.CODE_LIST_ITEM_NOT_FOUND.exception("Code list item with id {0} not found", itemId));
     }
 
     private boolean isCodeUsed(final Long id, final CodeListDataSo data) {

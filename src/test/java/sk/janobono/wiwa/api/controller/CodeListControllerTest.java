@@ -34,10 +34,13 @@ class CodeListControllerTest extends BaseControllerTest {
             final CodeListSo codeList = addCodeList(headers, new CodeListDataSo("code-" + i, "name-" + i));
             codeLists.add(codeList);
             for (int j = 0; j < 5; j++) {
-                final CodeListItemSo root = addCodeListItem(headers, codeList.id(), new CodeListItemDataSo(
-                        null, "code-" + i + "-" + j, "value-" + i + "-" + j));
+                final CodeListItemSo root = addCodeListItem(headers,
+                        new CodeListItemDataSo(codeList.id(), null, "code-" + i + "-" + j, "value-" + i + "-" + j)
+                );
                 for (int k = 0; k < 10; k++) {
-                    addCodeListItem(headers, codeList.id(), new CodeListItemDataSo(root.id(), "code-" + i + "-" + j + "-" + k, "value-" + i + "-" + j + "-" + k));
+                    addCodeListItem(headers,
+                            new CodeListItemDataSo(codeList.id(), root.id(), "code-" + i + "-" + j + "-" + k, "value-" + i + "-" + j + "-" + k)
+                    );
                 }
                 codeListItems.add(root);
             }
@@ -50,7 +53,7 @@ class CodeListControllerTest extends BaseControllerTest {
                                     .withIgnoredFields("leafNode")
                                     .build()
                     )
-                    .isEqualTo(getCodeListItem(headers, codeListItemSo.codeListId(), codeListItemSo.id()));
+                    .isEqualTo(getCodeListItem(headers, codeListItemSo.id()));
         }
 
         codeLists.clear();
@@ -66,7 +69,7 @@ class CodeListControllerTest extends BaseControllerTest {
         }
 
         for (final CodeListItemSo codeListItemSo : codeListItems) {
-            assertThat(codeListItemSo).usingRecursiveComparison().isEqualTo(getCodeListItem(headers, codeListItemSo.codeListId(), codeListItemSo.id()));
+            assertThat(codeListItemSo).usingRecursiveComparison().isEqualTo(getCodeListItem(headers, codeListItemSo.id()));
         }
 
         final List<CodeListSo> searchCodeLists = getCodeLists(headers, "name-", null, null, Pageable.unpaged()).stream().toList();
@@ -94,7 +97,7 @@ class CodeListControllerTest extends BaseControllerTest {
         assertThat(changedCodeList.code()).isEqualTo("code-x");
         assertThat(changedCodeList.name()).isEqualTo("name-x");
 
-        final CodeListItemSo changedCodeListItem = setCodeListItem(headers, 1L, 1L, new CodeListItemDataSo(null, "code-x", "value-x"));
+        final CodeListItemSo changedCodeListItem = setCodeListItem(headers, 1L, new CodeListItemDataSo(1L, null, "code-x", "value-x"));
         assertThat(changedCodeListItem.code()).isEqualTo("code-x");
         assertThat(changedCodeListItem.value()).isEqualTo("value-x");
         assertThat(changedCodeListItem.leafNode()).isFalse();
@@ -103,10 +106,10 @@ class CodeListControllerTest extends BaseControllerTest {
         assertThat(rootCodeListItems.size()).isEqualTo(5);
 
         final CodeListItemSo movedItem = rootCodeListItems.get(0);
-        moveCodeListItemDown(headers, movedItem.codeListId(), movedItem.id());
+        moveCodeListItemDown(headers, movedItem.id());
         rootCodeListItems = getCodeListItems(headers, 1L, true, null, null, null, null, null, Pageable.unpaged()).stream().toList();
         assertThat(movedItem).usingRecursiveComparison().isEqualTo(rootCodeListItems.get(1));
-        moveCodeListItemUp(headers, movedItem.codeListId(), movedItem.id());
+        moveCodeListItemUp(headers, movedItem.id());
         rootCodeListItems = getCodeListItems(headers, 1L, true, null, null, null, null, null, Pageable.unpaged()).stream().toList();
         assertThat(movedItem).usingRecursiveComparison().isEqualTo(rootCodeListItems.get(0));
 
@@ -120,9 +123,9 @@ class CodeListControllerTest extends BaseControllerTest {
         codeListItems.forEach(codeListItemSo -> {
             getCodeListItems(headers, codeListItemSo.codeListId(), null, codeListItemSo.id(), null, null, null, null, Pageable.unpaged())
                     .forEach(child -> {
-                        deleteCodeListItem(headers, codeListItemSo.codeListId(), child.id());
+                        deleteCodeListItem(headers, child.id());
                     });
-            deleteCodeListItem(headers, codeListItemSo.codeListId(), codeListItemSo.id());
+            deleteCodeListItem(headers, codeListItemSo.id());
         });
 
         codeLists.forEach(codeListSo -> {
@@ -134,8 +137,8 @@ class CodeListControllerTest extends BaseControllerTest {
         return getEntity(CodeListSo.class, headers, "/code-lists", id);
     }
 
-    private CodeListItemSo getCodeListItem(final HttpHeaders headers, final Long codeListId, final Long id) {
-        return getEntity(CodeListItemSo.class, headers, "/code-lists/" + codeListId + "/items", id);
+    private CodeListItemSo getCodeListItem(final HttpHeaders headers, final Long id) {
+        return getEntity(CodeListItemSo.class, headers, "/code-lists/items", id);
     }
 
     private Page<CodeListSo> getCodeLists(final HttpHeaders headers, final String searchField, final String code, final String name, final Pageable pageable) {
@@ -148,39 +151,40 @@ class CodeListControllerTest extends BaseControllerTest {
 
     private Page<CodeListItemSo> getCodeListItems(final HttpHeaders headers, final Long codeListId, final Boolean root, final Long parentId, final String searchField, final String code, final String value, final String treeCode, final Pageable pageable) {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        Optional.ofNullable(codeListId).ifPresent(v -> addToParams(params, "codeListId", v.toString()));
         Optional.ofNullable(root).ifPresent(v -> addToParams(params, "root", v.toString()));
         Optional.ofNullable(parentId).ifPresent(v -> addToParams(params, "parent-id", v.toString()));
         Optional.ofNullable(searchField).ifPresent(v -> addToParams(params, "search-field", v));
         Optional.ofNullable(code).ifPresent(v -> addToParams(params, "code", v));
         Optional.ofNullable(value).ifPresent(v -> addToParams(params, "value", v));
         Optional.ofNullable(treeCode).ifPresent(v -> addToParams(params, "tree-code", v));
-        return getEntities(CodeListItemSo.class, headers, "/code-lists/" + codeListId + "/items", params, pageable);
+        return getEntities(CodeListItemSo.class, headers, "/code-lists/items", params, pageable);
     }
 
     private CodeListSo setCodeList(final HttpHeaders headers, final Long id, final CodeListDataSo data) {
         return setEntity(CodeListSo.class, headers, "/code-lists", id, data);
     }
 
-    private CodeListItemSo setCodeListItem(final HttpHeaders headers, final Long codeListId, final Long id, final CodeListItemDataSo data) {
-        return setEntity(CodeListItemSo.class, headers, "/code-lists/" + codeListId + "/items", id, data);
+    private CodeListItemSo setCodeListItem(final HttpHeaders headers, final Long id, final CodeListItemDataSo data) {
+        return setEntity(CodeListItemSo.class, headers, "/code-lists/items", id, data);
     }
 
     private void deleteCodeList(final HttpHeaders headers, final Long id) {
         deleteEntity(headers, "/code-lists", id);
     }
 
-    private void deleteCodeListItem(final HttpHeaders headers, final Long codeListId, final Long id) {
-        deleteEntity(headers, "/code-lists/" + codeListId + "/items", id);
+    private void deleteCodeListItem(final HttpHeaders headers, final Long id) {
+        deleteEntity(headers, "/code-lists/items", id);
     }
 
-    private void moveCodeListItemUp(final HttpHeaders headers, final Long codeListId, final Long id) {
-        final ResponseEntity<CodeListItemSo> response = restTemplate.exchange(getURI("/code-lists/{id}/items/{itemId}/move-up", Map.of("id", Long.toString(codeListId), "itemId", Long.toString(id))), HttpMethod.PATCH, new HttpEntity<>(headers), CodeListItemSo.class);
+    private void moveCodeListItemUp(final HttpHeaders headers, final Long id) {
+        final ResponseEntity<CodeListItemSo> response = restTemplate.exchange(getURI("/code-lists/items/{itemId}/move-up", Map.of("itemId", Long.toString(id))), HttpMethod.PATCH, new HttpEntity<>(headers), CodeListItemSo.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
     }
 
-    private void moveCodeListItemDown(final HttpHeaders headers, final Long codeListId, final Long id) {
-        final ResponseEntity<CodeListItemSo> response = restTemplate.exchange(getURI("/code-lists/{id}/items/{itemId}/move-down", Map.of("id", Long.toString(codeListId), "itemId", Long.toString(id))), HttpMethod.PATCH, new HttpEntity<>(headers), CodeListItemSo.class);
+    private void moveCodeListItemDown(final HttpHeaders headers, final Long id) {
+        final ResponseEntity<CodeListItemSo> response = restTemplate.exchange(getURI("/code-lists/items/{itemId}/move-down", Map.of("itemId", Long.toString(id))), HttpMethod.PATCH, new HttpEntity<>(headers), CodeListItemSo.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
     }
