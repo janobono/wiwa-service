@@ -4,10 +4,10 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 
 public record ProductUnitPriceSo(
-        @NotNull ZonedDateTime validFrom,
+        @NotNull LocalDate validFrom,
         @NotNull BigDecimal value,
         @NotEmpty String unitId
 ) {

@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.business.model.product.*;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.component.ScDf;
-import sk.janobono.wiwa.component.TimeUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.*;
 import sk.janobono.wiwa.dal.repository.*;
@@ -29,7 +28,6 @@ public class ProductService {
     private final CommonConfigProperties commonConfigProperties;
     private final ImageUtil imageUtil;
     private final ScDf scDf;
-    private final TimeUtil timeUtil;
     private final ProductRepository productRepository;
     private final ProductAttributeRepository productAttributeRepository;
     private final ProductImageRepository productImageRepository;
@@ -150,8 +148,8 @@ public class ProductService {
                 batch.add(ProductUnitPriceDo.builder()
                         .productId(productId)
                         .unitId(current.unitId())
-                        .validFrom(timeUtil.toLocalDate(current.validFrom()))
-                        .validTo(previous != null ? timeUtil.toLocalDate(previous.validFrom()) : null)
+                        .validFrom(current.validFrom())
+                        .validTo(previous != null ? previous.validFrom() : null)
                         .value(current.value())
                         .build()
                 );
@@ -215,9 +213,7 @@ public class ProductService {
                 .map(price -> {
                     final QuantityUnitDo quantityUnitDo = quantityUnitRepository.findById(price.getUnitId())
                             .orElseThrow();
-                    return new ProductUnitPriceSo(timeUtil.toZonedDateTime(price.getValidFrom()),
-                            price.getValue(),
-                            quantityUnitDo.getId());
+                    return new ProductUnitPriceSo(price.getValidFrom(), price.getValue(), quantityUnitDo.getId());
                 })
                 .toList();
     }

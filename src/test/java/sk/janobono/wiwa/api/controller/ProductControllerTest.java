@@ -23,7 +23,7 @@ import sk.janobono.wiwa.model.ProductStockStatus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -162,7 +162,7 @@ class ProductControllerTest extends BaseControllerTest {
         }
 
         List<ProductUnitPriceSo> productUnitPrices = setProductUnitPrices(headers, testProductId, List.of(
-                new ProductUnitPriceSo(ZonedDateTime.now(), new BigDecimal("100.000"), "EUR")
+                new ProductUnitPriceSo(LocalDate.now(), new BigDecimal("100.000"), "EUR")
         )).unitPrices();
         assertThat(productUnitPrices.get(0).value()).isEqualTo(new BigDecimal("100.000"));
         assertThat(productUnitPrices.get(0).unitId()).isEqualTo("EUR");
