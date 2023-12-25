@@ -56,7 +56,7 @@ create table wiwa_product
     id           bigserial primary key,
     code         varchar(255)                       not null unique,
     name         varchar(255) collate "sk-SK-x-icu" not null,
-    note         text collate "sk-SK-x-icu",
+    description  text,
     stock_status varchar(255)                       not null
 );
 

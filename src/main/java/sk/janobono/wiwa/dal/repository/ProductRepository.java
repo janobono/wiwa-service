@@ -261,8 +261,8 @@ public class ProductRepository {
                                 MetaColumnWiwaProduct.NAME.column(),
                                 criteriaUtil.mapDirection(order)
                         );
-                        case "note" -> select.ORDER_BY(
-                                MetaColumnWiwaProduct.NOTE.column(),
+                        case "description" -> select.ORDER_BY(
+                                MetaColumnWiwaProduct.DESCRIPTION.column(),
                                 criteriaUtil.mapDirection(order)
                         );
                         case "stockStatus" -> select.ORDER_BY(

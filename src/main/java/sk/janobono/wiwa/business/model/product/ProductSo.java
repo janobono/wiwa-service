@@ -11,7 +11,7 @@ public record ProductSo(
         Long id,
         String code,
         String name,
-        String note,
+        String description,
         ProductStockStatus stockStatus,
         List<ProductAttributeSo> attributes,
         List<ApplicationImage> images,

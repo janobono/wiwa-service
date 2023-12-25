@@ -51,7 +51,7 @@ public class ProductService {
         final ProductDo productDo = productRepository.save(ProductDo.builder()
                 .code(data.code())
                 .name(data.name())
-                .note(data.note())
+                .description(data.description())
                 .stockStatus(data.stockStatus())
                 .build()
         );
@@ -67,7 +67,7 @@ public class ProductService {
         }
         productDo.setCode(data.code());
         productDo.setName(data.name());
-        productDo.setNote(data.note());
+        productDo.setDescription(data.description());
         productDo.setStockStatus(data.stockStatus());
         productRepository.save(productDo);
         setProductAttributes(id, data);
@@ -178,7 +178,7 @@ public class ProductService {
                 .id(productDo.getId())
                 .code(productDo.getCode())
                 .name(productDo.getName())
-                .note(productDo.getNote())
+                .description(productDo.getDescription())
                 .stockStatus(productDo.getStockStatus())
                 .attributes(toAttributes(productDo.getId()))
                 .images(toImages(productDo.getId()))

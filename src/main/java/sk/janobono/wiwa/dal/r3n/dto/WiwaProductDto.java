@@ -4,7 +4,7 @@ public record WiwaProductDto(
         Long id,
         String code,
         String name,
-        String note,
+        String description,
         String stockStatus
 ) {
 
@@ -13,7 +13,7 @@ public record WiwaProductDto(
                 wiwaProductDto.id,
                 wiwaProductDto.code,
                 wiwaProductDto.name,
-                wiwaProductDto.note,
+                wiwaProductDto.description,
                 wiwaProductDto.stockStatus
         };
     }

@@ -11,7 +11,7 @@ public enum MetaColumnWiwaProduct {
     ID("id", DataType.LONG),
     CODE("code", DataType.STRING),
     NAME("name", DataType.STRING),
-    NOTE("note", DataType.STRING),
+    DESCRIPTION("description", DataType.STRING),
     STOCK_STATUS("stock_status", DataType.STRING);
 
     private final String columnName;

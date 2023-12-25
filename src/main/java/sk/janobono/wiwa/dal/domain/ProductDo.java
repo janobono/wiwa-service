@@ -10,6 +10,6 @@ public class ProductDo {
     private Long id;
     private String code;
     private String name;
-    private String note;
+    private String description;
     private ProductStockStatus stockStatus;
 }

@@ -10,7 +10,7 @@ import java.util.List;
 public record ProductDataSo(
         @NotBlank @Size(max = 255) String code,
         @NotBlank @Size(max = 255) String name,
-        String note,
+        String description,
         @NotNull ProductStockStatus stockStatus,
         List<ProductAttributeSo> attributes,
         List<ProductQuantitySo> quantities
