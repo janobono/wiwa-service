@@ -143,7 +143,7 @@ class CodeListControllerTest extends BaseControllerTest {
 
     private Page<CodeListSo> getCodeLists(final HttpHeaders headers, final String searchField, final String code, final String name, final Pageable pageable) {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        Optional.ofNullable(searchField).ifPresent(v -> addToParams(params, "search-field", v));
+        Optional.ofNullable(searchField).ifPresent(v -> addToParams(params, "searchField", v));
         Optional.ofNullable(code).ifPresent(v -> addToParams(params, "code", v));
         Optional.ofNullable(name).ifPresent(v -> addToParams(params, "name", v));
         return getEntities(CodeListSo.class, headers, "/code-lists", params, pageable);
@@ -153,11 +153,11 @@ class CodeListControllerTest extends BaseControllerTest {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         Optional.ofNullable(codeListId).ifPresent(v -> addToParams(params, "codeListId", v.toString()));
         Optional.ofNullable(root).ifPresent(v -> addToParams(params, "root", v.toString()));
-        Optional.ofNullable(parentId).ifPresent(v -> addToParams(params, "parent-id", v.toString()));
-        Optional.ofNullable(searchField).ifPresent(v -> addToParams(params, "search-field", v));
+        Optional.ofNullable(parentId).ifPresent(v -> addToParams(params, "parentId", v.toString()));
+        Optional.ofNullable(searchField).ifPresent(v -> addToParams(params, "searchField", v));
         Optional.ofNullable(code).ifPresent(v -> addToParams(params, "code", v));
         Optional.ofNullable(value).ifPresent(v -> addToParams(params, "value", v));
-        Optional.ofNullable(treeCode).ifPresent(v -> addToParams(params, "tree-code", v));
+        Optional.ofNullable(treeCode).ifPresent(v -> addToParams(params, "treeCode", v));
         return getEntities(CodeListItemSo.class, headers, "/code-lists/items", params, pageable);
     }
 

@@ -19,7 +19,7 @@ public class CodeListController {
 
     @GetMapping
     public Page<CodeListSo> getCodeLists(
-            @RequestParam(value = "search-field", required = false) final String searchField,
+            @RequestParam(value = "searchField", required = false) final String searchField,
             @RequestParam(value = "code", required = false) final String code,
             @RequestParam(value = "name", required = false) final String name,
             final Pageable pageable
@@ -61,11 +61,11 @@ public class CodeListController {
     public Page<CodeListItemSo> getCodeListItems(
             @RequestParam(value = "codeListId", required = false) final Long codeListId,
             @RequestParam(value = "root", required = false) final Boolean root,
-            @RequestParam(value = "parent-id", required = false) final Long parentId,
-            @RequestParam(value = "search-field", required = false) final String searchField,
+            @RequestParam(value = "parentId", required = false) final Long parentId,
+            @RequestParam(value = "searchField", required = false) final String searchField,
             @RequestParam(value = "code", required = false) final String code,
             @RequestParam(value = "value", required = false) final String value,
-            @RequestParam(value = "tree-code", required = false) final String treeCode,
+            @RequestParam(value = "treeCode", required = false) final String treeCode,
             final Pageable pageable
     ) {
         final CodeListItemSearchCriteriaSo criteria = CodeListItemSearchCriteriaSo.builder()
