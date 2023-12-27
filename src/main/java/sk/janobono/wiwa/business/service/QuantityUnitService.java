@@ -2,6 +2,7 @@ package sk.janobono.wiwa.business.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import sk.janobono.wiwa.business.model.quantityunit.QuantityUnitDataSo;
 import sk.janobono.wiwa.dal.domain.QuantityUnitDo;
 import sk.janobono.wiwa.dal.repository.QuantityUnitRepository;
 import sk.janobono.wiwa.exception.WiwaException;
@@ -21,20 +22,35 @@ public class QuantityUnitService {
                 .toList();
     }
 
-    public QuantityUnit getQuantityUnit(final String id) {
+    public QuantityUnit getQuantityUnit(final Long id) {
         return toQuantityUnit(
                 quantityUnitRepository.findById(id)
                         .orElseThrow(() -> WiwaException.QUANTITY_UNIT_NOT_FOUND.exception("Quantity unit with id {0} not found", id))
         );
     }
 
-    public QuantityUnit setQuantityUnit(final QuantityUnit quantityUnit) {
-        return toQuantityUnit(
-                quantityUnitRepository.save(toQuantityUnitDo(quantityUnit))
+    public QuantityUnit addQuantityUnit(final QuantityUnitDataSo data) {
+        return toQuantityUnit(quantityUnitRepository.save(
+                QuantityUnitDo.builder()
+                        .type(data.type())
+                        .name(data.name())
+                        .unit(data.unit())
+                        .build())
         );
     }
 
-    public void deleteQuantityUnit(final String id) {
+    public QuantityUnit setQuantityUnit(final Long id, final QuantityUnitDataSo data) {
+        return toQuantityUnit(quantityUnitRepository.save(
+                QuantityUnitDo.builder()
+                        .id(id)
+                        .type(data.type())
+                        .name(data.name())
+                        .unit(data.unit())
+                        .build())
+        );
+    }
+
+    public void deleteQuantityUnit(final Long id) {
         if (!quantityUnitRepository.existsById(id)) {
             throw WiwaException.QUANTITY_UNIT_NOT_FOUND.exception("Quantity unit with id {0} not found", id);
         }
@@ -45,15 +61,8 @@ public class QuantityUnitService {
         return new QuantityUnit(
                 quantityUnitDo.getId(),
                 quantityUnitDo.getType(),
+                quantityUnitDo.getName(),
                 quantityUnitDo.getUnit()
         );
-    }
-
-    private QuantityUnitDo toQuantityUnitDo(final QuantityUnit quantityUnit) {
-        return QuantityUnitDo.builder()
-                .id(quantityUnit.id())
-                .type(quantityUnit.type())
-                .unit(quantityUnit.unit())
-                .build();
     }
 }

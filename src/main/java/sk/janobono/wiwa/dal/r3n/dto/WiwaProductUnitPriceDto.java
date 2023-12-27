@@ -6,7 +6,7 @@ import java.time.LocalDate;
 public record WiwaProductUnitPriceDto(
         Long id,
         Long productId,
-        String unitId,
+        Long unitId,
         LocalDate validFrom,
         LocalDate validTo,
         BigDecimal value
@@ -27,7 +27,7 @@ public record WiwaProductUnitPriceDto(
         return new WiwaProductUnitPriceDto(
                 (Long) array[0],
                 (Long) array[1],
-                (String) array[2],
+                (Long) array[2],
                 (LocalDate) array[3],
                 (LocalDate) array[4],
                 (BigDecimal) array[5]

@@ -4,9 +4,10 @@ import sk.r3n.sql.Sequence;
 
 public enum MetaSequence {
 
+    WIWA_CODE_LIST_ITEM_ID_SEQ("wiwa_code_list_item_id_seq"),
+    WIWA_QUANTITY_UNIT_ID_SEQ("wiwa_quantity_unit_id_seq"),
     WIWA_AUTHORITY_ID_SEQ("wiwa_authority_id_seq"),
     WIWA_CODE_LIST_ID_SEQ("wiwa_code_list_id_seq"),
-    WIWA_CODE_LIST_ITEM_ID_SEQ("wiwa_code_list_item_id_seq"),
     WIWA_PRODUCT_ID_SEQ("wiwa_product_id_seq"),
     WIWA_PRODUCT_ATTRIBUTE_ID_SEQ("wiwa_product_attribute_id_seq"),
     WIWA_PRODUCT_IMAGE_ID_SEQ("wiwa_product_image_id_seq"),

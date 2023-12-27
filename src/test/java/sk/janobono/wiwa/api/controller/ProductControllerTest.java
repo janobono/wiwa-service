@@ -50,7 +50,7 @@ class ProductControllerTest extends BaseControllerTest {
                     null,
                     ProductStockStatus.OUT_OF_STOCK,
                     null,
-                    List.of(new ProductQuantitySo(ProductQuantityKey.SALE, new BigDecimal("0.000"), "PIECE"))
+                    List.of(new ProductQuantitySo(ProductQuantityKey.SALE, new BigDecimal("0.000"), 1L))
             )));
 
             products.add(addProduct(headers, new ProductDataSo(
@@ -64,12 +64,12 @@ class ProductControllerTest extends BaseControllerTest {
                             new ProductAttributeSo(ProductAttributeKey.ORIENTATION, Boolean.toString(i % 2 == 0))
                     ),
                     List.of(
-                            new ProductQuantitySo(ProductQuantityKey.SALE, new BigDecimal("1.000"), "PIECE"),
-                            new ProductQuantitySo(ProductQuantityKey.WEIGHT, BigDecimal.valueOf(i + 1).setScale(3, RoundingMode.HALF_UP), "KILOGRAM"),
-                            new ProductQuantitySo(ProductQuantityKey.NET_WEIGHT, BigDecimal.valueOf(i + 1).subtract(new BigDecimal("0.5")).setScale(3, RoundingMode.HALF_UP), "KILOGRAM"),
-                            new ProductQuantitySo(ProductQuantityKey.LENGTH, new BigDecimal("2800.000"), "MILLIMETER"),
-                            new ProductQuantitySo(ProductQuantityKey.WIDTH, new BigDecimal("2070.000"), "MILLIMETER"),
-                            new ProductQuantitySo(ProductQuantityKey.THICKNESS, new BigDecimal("18.000"), "MILLIMETER")
+                            new ProductQuantitySo(ProductQuantityKey.SALE, new BigDecimal("1.000"), 1L),
+                            new ProductQuantitySo(ProductQuantityKey.WEIGHT, BigDecimal.valueOf(i + 1).setScale(3, RoundingMode.HALF_UP), 1L),
+                            new ProductQuantitySo(ProductQuantityKey.NET_WEIGHT, BigDecimal.valueOf(i + 1).subtract(new BigDecimal("0.5")).setScale(3, RoundingMode.HALF_UP), 1L),
+                            new ProductQuantitySo(ProductQuantityKey.LENGTH, new BigDecimal("2800.000"), 1L),
+                            new ProductQuantitySo(ProductQuantityKey.WIDTH, new BigDecimal("2070.000"), 1L),
+                            new ProductQuantitySo(ProductQuantityKey.THICKNESS, new BigDecimal("18.000"), 1L)
                     )
             )));
 
@@ -80,11 +80,11 @@ class ProductControllerTest extends BaseControllerTest {
                     ProductStockStatus.ON_INQUIRE,
                     null,
                     List.of(
-                            new ProductQuantitySo(ProductQuantityKey.SALE, new BigDecimal("1.000"), "MILLIMETER"),
-                            new ProductQuantitySo(ProductQuantityKey.WEIGHT, new BigDecimal("1.000"), "GRAM"),
-                            new ProductQuantitySo(ProductQuantityKey.NET_WEIGHT, new BigDecimal("0.900"), "GRAM"),
-                            new ProductQuantitySo(ProductQuantityKey.WIDTH, i % 2 == 0 ? new BigDecimal("22.000") : new BigDecimal("44.000"), "MILLIMETER"),
-                            new ProductQuantitySo(ProductQuantityKey.THICKNESS, new BigDecimal("2.500"), "MILLIMETER")
+                            new ProductQuantitySo(ProductQuantityKey.SALE, new BigDecimal("1.000"), 1L),
+                            new ProductQuantitySo(ProductQuantityKey.WEIGHT, new BigDecimal("1.000"), 1L),
+                            new ProductQuantitySo(ProductQuantityKey.NET_WEIGHT, new BigDecimal("0.900"), 1L),
+                            new ProductQuantitySo(ProductQuantityKey.WIDTH, i % 2 == 0 ? new BigDecimal("22.000") : new BigDecimal("44.000"), 1L),
+                            new ProductQuantitySo(ProductQuantityKey.THICKNESS, new BigDecimal("2.500"), 1L)
                     )
             )));
 
@@ -95,7 +95,7 @@ class ProductControllerTest extends BaseControllerTest {
                     ProductStockStatus.TO_ORDER,
                     null,
                     List.of(
-                            new ProductQuantitySo(ProductQuantityKey.SALE, new BigDecimal("1.000"), "PIECE")
+                            new ProductQuantitySo(ProductQuantityKey.SALE, new BigDecimal("1.000"), 1L)
                     )
             )));
         }
@@ -127,12 +127,12 @@ class ProductControllerTest extends BaseControllerTest {
                         new ProductAttributeSo(ProductAttributeKey.ORIENTATION, "false")
                 ),
                 List.of(
-                        new ProductQuantitySo(ProductQuantityKey.SALE, new BigDecimal("1.000"), "PIECE"),
-                        new ProductQuantitySo(ProductQuantityKey.WEIGHT, BigDecimal.valueOf(1).setScale(3, RoundingMode.HALF_UP), "KILOGRAM"),
-                        new ProductQuantitySo(ProductQuantityKey.NET_WEIGHT, BigDecimal.valueOf(1).subtract(new BigDecimal("0.5")).setScale(3, RoundingMode.HALF_UP), "KILOGRAM"),
-                        new ProductQuantitySo(ProductQuantityKey.LENGTH, new BigDecimal("2800.000"), "MILLIMETER"),
-                        new ProductQuantitySo(ProductQuantityKey.WIDTH, new BigDecimal("2070.000"), "MILLIMETER"),
-                        new ProductQuantitySo(ProductQuantityKey.THICKNESS, new BigDecimal("18.000"), "MILLIMETER")
+                        new ProductQuantitySo(ProductQuantityKey.SALE, new BigDecimal("1.000"), 1L),
+                        new ProductQuantitySo(ProductQuantityKey.WEIGHT, BigDecimal.valueOf(1).setScale(3, RoundingMode.HALF_UP), 1L),
+                        new ProductQuantitySo(ProductQuantityKey.NET_WEIGHT, BigDecimal.valueOf(1).subtract(new BigDecimal("0.5")).setScale(3, RoundingMode.HALF_UP), 1L),
+                        new ProductQuantitySo(ProductQuantityKey.LENGTH, new BigDecimal("2800.000"), 1L),
+                        new ProductQuantitySo(ProductQuantityKey.WIDTH, new BigDecimal("2070.000"), 1L),
+                        new ProductQuantitySo(ProductQuantityKey.THICKNESS, new BigDecimal("18.000"), 1L)
                 )
         ));
         products.set(productIndex, testProduct);
@@ -162,10 +162,10 @@ class ProductControllerTest extends BaseControllerTest {
         }
 
         List<ProductUnitPriceSo> productUnitPrices = setProductUnitPrices(headers, testProductId, List.of(
-                new ProductUnitPriceSo(LocalDate.now(), new BigDecimal("100.000"), "EUR")
+                new ProductUnitPriceSo(LocalDate.now(), new BigDecimal("100.000"), 1L)
         )).unitPrices();
         assertThat(productUnitPrices.get(0).value()).isEqualTo(new BigDecimal("100.000"));
-        assertThat(productUnitPrices.get(0).unitId()).isEqualTo("EUR");
+        assertThat(productUnitPrices.get(0).unitId()).isEqualTo(1L);
 
         final CodeListSo codeListSo = addCodeList(headers, new CodeListDataSo("code", "test-code-list"));
         final CodeListItemSo codeListItem01 = addCodeListItem(headers, new CodeListItemDataSo(codeListSo.id(), null, "code1", "test-item1"));

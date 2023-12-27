@@ -8,8 +8,9 @@ import java.util.List;
 
 public enum MetaColumnWiwaQuantityUnit {
 
-    ID("id", DataType.STRING),
+    ID("id", DataType.LONG),
     TYPE("type", DataType.STRING),
+    NAME("name", DataType.STRING),
     UNIT("unit", DataType.STRING);
 
     private final String columnName;

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public class ProductQuantityDo {
     private Long id;
     private Long productId;
-    private String unitId;
+    private Long unitId;
     private ProductQuantityKey key;
     private BigDecimal value;
 }

@@ -7,7 +7,8 @@ import sk.janobono.wiwa.model.QuantityType;
 @Builder
 @Data
 public class QuantityUnitDo {
-    private String id;
+    private Long id;
     private QuantityType type;
+    private String name;
     private String unit;
 }

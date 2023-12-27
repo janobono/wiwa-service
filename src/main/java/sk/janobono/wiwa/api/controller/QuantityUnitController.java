@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import sk.janobono.wiwa.business.model.quantityunit.QuantityUnitDataSo;
 import sk.janobono.wiwa.business.service.QuantityUnitService;
 import sk.janobono.wiwa.model.QuantityUnit;
 
@@ -25,26 +26,26 @@ public class QuantityUnitController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public QuantityUnit getQuantityUnit(@PathVariable("id") final String id) {
+    public QuantityUnit getQuantityUnit(@PathVariable("id") final Long id) {
         return quantityUnitService.getQuantityUnit(id);
     }
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     @ResponseStatus(HttpStatus.CREATED)
-    public QuantityUnit addQuantityUnit(@Valid @RequestBody final QuantityUnit quantityUnit) {
-        return quantityUnitService.setQuantityUnit(quantityUnit);
+    public QuantityUnit addQuantityUnit(@Valid @RequestBody final QuantityUnitDataSo quantityUnitData) {
+        return quantityUnitService.addQuantityUnit(quantityUnitData);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public QuantityUnit setQuantityUnit(@Valid @RequestBody final QuantityUnit quantityUnit) {
-        return quantityUnitService.setQuantityUnit(quantityUnit);
+    public QuantityUnit setQuantityUnit(@PathVariable("id") final Long id, @Valid @RequestBody final QuantityUnitDataSo quantityUnitData) {
+        return quantityUnitService.setQuantityUnit(id, quantityUnitData);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public void deleteQuantityUnit(@PathVariable("id") final String id) {
+    public void deleteQuantityUnit(@PathVariable("id") final Long id) {
         quantityUnitService.deleteQuantityUnit(id);
     }
 }

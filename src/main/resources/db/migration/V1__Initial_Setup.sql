@@ -21,10 +21,10 @@ create table wiwa_application_property
 
 create table wiwa_quantity_unit
 (
-    id   varchar(255) not null,
+    id   bigserial primary key,
     type varchar(255) not null,
-    unit varchar(255) not null,
-    primary key (id)
+    name varchar(255) not null,
+    unit varchar(255) not null
 );
 
 create table wiwa_authority
@@ -84,7 +84,7 @@ create table wiwa_product_quantity
 (
     id         bigserial primary key,
     product_id bigint         not null references wiwa_product (id) on delete cascade,
-    unit_id    varchar(255)   not null references wiwa_quantity_unit (id) on delete cascade,
+    unit_id    bigint         not null references wiwa_quantity_unit (id) on delete cascade,
     key        varchar(255)   not null,
     value      numeric(19, 3) not null,
     unique (product_id, key)
@@ -94,7 +94,7 @@ create table wiwa_product_unit_price
 (
     id         bigserial primary key,
     product_id bigint         not null references wiwa_product (id) on delete cascade,
-    unit_id    varchar(255)   not null references wiwa_quantity_unit (id) on delete cascade,
+    unit_id    bigint         not null references wiwa_quantity_unit (id) on delete cascade,
     valid_from date           not null,
     valid_to   date,
     value      numeric(19, 3) not null,

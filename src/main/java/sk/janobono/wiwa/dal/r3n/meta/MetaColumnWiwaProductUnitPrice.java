@@ -10,7 +10,7 @@ public enum MetaColumnWiwaProductUnitPrice {
 
     ID("id", DataType.LONG),
     PRODUCT_ID("product_id", DataType.LONG),
-    UNIT_ID("unit_id", DataType.STRING),
+    UNIT_ID("unit_id", DataType.LONG),
     VALID_FROM("valid_from", DataType.DATE),
     VALID_TO("valid_to", DataType.DATE),
     VALUE("value", DataType.BIG_DECIMAL);

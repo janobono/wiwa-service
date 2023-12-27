@@ -48,7 +48,7 @@ public class QuantityUnitRepository {
         }
     }
 
-    public void deleteById(final String id) {
+    public void deleteById(final Long id) {
         log.debug("deleteById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
@@ -61,7 +61,7 @@ public class QuantityUnitRepository {
         }
     }
 
-    public boolean existsById(final String id) {
+    public boolean existsById(final Long id) {
         log.debug("existsById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             return existsById(connection, id);
@@ -88,7 +88,7 @@ public class QuantityUnitRepository {
         }
     }
 
-    public Optional<QuantityUnitDo> findById(final String id) {
+    public Optional<QuantityUnitDo> findById(final Long id) {
         log.debug("findById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -135,7 +135,7 @@ public class QuantityUnitRepository {
         }
     }
 
-    private boolean existsById(final Connection connection, final String id) throws SQLException {
+    private boolean existsById(final Connection connection, final Long id) throws SQLException {
         final List<Object[]> rows = sqlBuilder.select(connection,
                 Query.SELECT(MetaColumnWiwaQuantityUnit.ID.column()).COUNT()
                         .FROM(MetaTable.WIWA_QUANTITY_UNIT.table())
@@ -148,20 +148,23 @@ public class QuantityUnitRepository {
     }
 
     private WiwaQuantityUnitDto insert(final Connection connection, final WiwaQuantityUnitDto wiwaQuantityUnitDto) throws SQLException {
-        sqlBuilder.insert(connection,
+        final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaQuantityUnit.columns(), 1);
+        final Object[] values = criteriaUtil.removeFirst(WiwaQuantityUnitDto.toArray(wiwaQuantityUnitDto), 1);
+
+        final Long id = (Long) sqlBuilder.insert(connection,
                 Query.INSERT()
-                        .INTO(MetaTable.WIWA_QUANTITY_UNIT.table(), MetaColumnWiwaQuantityUnit.columns())
-                        .VALUES(WiwaQuantityUnitDto.toArray(wiwaQuantityUnitDto))
-        );
-        return wiwaQuantityUnitDto;
+                        .INTO(MetaTable.WIWA_QUANTITY_UNIT.table(), columns)
+                        .VALUES(values).RETURNING(MetaColumnWiwaQuantityUnit.ID.column()));
+
+        return WiwaQuantityUnitDto.toObject(criteriaUtil.concat(new Object[]{id}, values));
     }
 
     private QuantityUnitDo save(final Connection connection, final QuantityUnitDo quantityUnitDo) throws SQLException {
         final WiwaQuantityUnitDto result;
-        if (existsById(connection, quantityUnitDo.getId())) {
-            result = update(connection, mapper.toWiwaQuantityUnitDto(quantityUnitDo));
-        } else {
+        if (quantityUnitDo.getId() == null) {
             result = insert(connection, mapper.toWiwaQuantityUnitDto(quantityUnitDo));
+        } else {
+            result = update(connection, mapper.toWiwaQuantityUnitDto(quantityUnitDo));
         }
         return mapper.toQuantityUnitDo(result);
     }

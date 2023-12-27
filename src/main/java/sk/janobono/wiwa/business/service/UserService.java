@@ -41,30 +41,30 @@ public class UserService {
         return userUtilService.mapToUser(userUtilService.getUserDo(id));
     }
 
-    public User addUser(final UserDataSo userData) {
-        if (userRepository.existsByUsername(scDf.toStripAndLowerCase(userData.username()))) {
+    public User addUser(final UserDataSo data) {
+        if (userRepository.existsByUsername(scDf.toStripAndLowerCase(data.username()))) {
             throw WiwaException.USER_USERNAME_IS_USED.exception("Username is used");
         }
 
-        if (userRepository.existsByEmail(scDf.toStripAndLowerCase(userData.email()))) {
+        if (userRepository.existsByEmail(scDf.toStripAndLowerCase(data.email()))) {
             throw WiwaException.USER_EMAIL_IS_USED.exception("Email is used");
         }
 
         final UserDo userDo = userRepository.save(
                 UserDo.builder()
-                        .username(scDf.toStripAndLowerCase(userData.username()))
+                        .username(scDf.toStripAndLowerCase(data.username()))
                         .password(passwordEncoder.encode(randomString.alphaNumeric(3, 2, 1, 6, 6)))
-                        .titleBefore(userData.titleBefore())
-                        .firstName(userData.firstName())
-                        .midName(userData.midName())
-                        .lastName(userData.lastName())
-                        .titleAfter(userData.titleAfter())
-                        .email(scDf.toStripAndLowerCase(userData.email()))
-                        .gdpr(userData.gdpr())
-                        .confirmed(userData.confirmed())
-                        .enabled(userData.enabled()).build()
+                        .titleBefore(data.titleBefore())
+                        .firstName(data.firstName())
+                        .midName(data.midName())
+                        .lastName(data.lastName())
+                        .titleAfter(data.titleAfter())
+                        .email(scDf.toStripAndLowerCase(data.email()))
+                        .gdpr(data.gdpr())
+                        .confirmed(data.confirmed())
+                        .enabled(data.enabled()).build()
         );
-        authorityRepository.saveUserAuthorities(userDo.getId(), userData.authorities());
+        authorityRepository.saveUserAuthorities(userDo.getId(), data.authorities());
         return userUtilService.mapToUser(userDo);
     }
 

@@ -51,8 +51,8 @@ public class UserController {
     @PostMapping
     @PreAuthorize("hasAuthority('w-admin')")
     @ResponseStatus(HttpStatus.CREATED)
-    public User addUser(@Valid @RequestBody final UserDataSo userDataSo) {
-        return userService.addUser(userDataSo);
+    public User addUser(@Valid @RequestBody final UserDataSo data) {
+        return userService.addUser(data);
     }
 
     @PutMapping("/{id}")

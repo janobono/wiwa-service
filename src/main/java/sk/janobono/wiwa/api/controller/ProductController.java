@@ -58,14 +58,14 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductSo addProduct(@Valid @RequestBody final ProductDataSo productDataSo) {
-        return productService.addProduct(productDataSo);
+    public ProductSo addProduct(@Valid @RequestBody final ProductDataSo data) {
+        return productService.addProduct(data);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ProductSo setProduct(@PathVariable("id") final Long id, @Valid @RequestBody final ProductDataSo productDataSo) {
-        return productService.setProduct(id, productDataSo);
+    public ProductSo setProduct(@PathVariable("id") final Long id, @Valid @RequestBody final ProductDataSo data) {
+        return productService.setProduct(id, data);
     }
 
     @DeleteMapping("/{id}")

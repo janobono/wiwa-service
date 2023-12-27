@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import sk.janobono.wiwa.business.model.quantityunit.QuantityUnitDataSo;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.ApplicationPropertyDo;
 import sk.janobono.wiwa.dal.domain.AuthorityDo;
@@ -99,9 +100,15 @@ public class InitDataCommandLineRunner implements CommandLineRunner {
         if (quantityUnitRepository.count() == 0L) {
             final Path dataPath = dataDir.resolve("quantity-units.json");
             if (dataPath.toFile().exists()) {
-                final QuantityUnitDo[] quantityUnits = objectMapper
-                        .readValue(dataPath.toFile(), QuantityUnitDo[].class);
-                quantityUnitRepository.saveAll(Arrays.asList(quantityUnits));
+                final QuantityUnitDataSo[] quantityUnits = objectMapper
+                        .readValue(dataPath.toFile(), QuantityUnitDataSo[].class);
+                quantityUnitRepository.saveAll(Arrays.stream(quantityUnits).map(
+                        data -> QuantityUnitDo.builder()
+                                .type(data.type())
+                                .name(data.name())
+                                .unit(data.unit())
+                                .build()
+                ).toList());
             }
         }
     }

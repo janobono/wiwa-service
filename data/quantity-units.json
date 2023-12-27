@@ -1,82 +1,82 @@
 [
   {
-    "id": "EUR",
     "type": "MONETARY",
+    "name": "euro",
     "unit": "€"
   },
   {
-    "id": "MILLIMETER",
     "type": "DISTANCE",
+    "name": "millimeter",
     "unit": "mm"
   },
   {
-    "id": "CENTIMETER",
     "type": "DISTANCE",
+    "name": "centimeter",
     "unit": "cm"
   },
   {
-    "id": "METER",
     "type": "DISTANCE",
+    "name": "meter",
     "unit": "m"
   },
   {
-    "id": "SQUARE_METER",
     "type": "AREA",
+    "name": "square meter",
     "unit": "m2"
   },
   {
-    "id": "MILLILITER",
     "type": "VOLUME",
+    "name": "milliliter",
     "unit": "ml"
   },
   {
-    "id": "LITER",
     "type": "VOLUME",
+    "name": "liter",
     "unit": "l"
   },
   {
-    "id": "CUBICMETER",
     "type": "VOLUME",
+    "name": "cubic meter",
     "unit": "m3"
   },
   {
-    "id": "SECOND",
     "type": "TEMPORAL",
+    "name": "second",
     "unit": "s"
   },
   {
-    "id": "MINUTE",
     "type": "TEMPORAL",
+    "name": "minute",
     "unit": "m"
   },
   {
-    "id": "HOUR",
     "type": "TEMPORAL",
+    "name": "hour",
     "unit": "h"
   },
   {
-    "id": "DAY",
     "type": "TEMPORAL",
+    "name": "day",
     "unit": "d"
   },
   {
-    "id": "GRAM",
     "type": "MASS",
+    "name": "gram",
     "unit": "g"
   },
   {
-    "id": "KILOGRAM",
     "type": "MASS",
+    "name": "kilogram",
     "unit": "kg"
   },
   {
-    "id": "PIECE",
     "type": "PACK",
-    "unit": "piece"
+    "name": "piece",
+    "unit": "p"
   },
   {
-    "id": "PACKAGE",
     "type": "PACK",
-    "unit": "package"
+    "name": "package",
+    "unit": "pkg"
   }
 ]

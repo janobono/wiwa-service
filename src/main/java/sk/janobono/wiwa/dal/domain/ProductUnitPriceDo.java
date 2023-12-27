@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public class ProductUnitPriceDo {
     private Long id;
     private Long productId;
-    private String unitId;
+    private Long unitId;
     private LocalDate validFrom;
     private LocalDate validTo;
     private BigDecimal value;

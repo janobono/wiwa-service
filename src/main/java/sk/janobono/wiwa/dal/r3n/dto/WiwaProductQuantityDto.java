@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public record WiwaProductQuantityDto(
         Long id,
         Long productId,
-        String unitId,
+        Long unitId,
         String key,
         BigDecimal value
 ) {
@@ -24,7 +24,7 @@ public record WiwaProductQuantityDto(
         return new WiwaProductQuantityDto(
                 (Long) array[0],
                 (Long) array[1],
-                (String) array[2],
+                (Long) array[2],
                 (String) array[3],
                 (BigDecimal) array[4]
         );

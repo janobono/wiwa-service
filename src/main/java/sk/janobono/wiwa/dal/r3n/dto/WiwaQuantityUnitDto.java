@@ -1,8 +1,9 @@
 package sk.janobono.wiwa.dal.r3n.dto;
 
 public record WiwaQuantityUnitDto(
-        String id,
+        Long id,
         String type,
+        String name,
         String unit
 ) {
 
@@ -10,15 +11,17 @@ public record WiwaQuantityUnitDto(
         return new Object[]{
                 wiwaQuantityUnitDto.id,
                 wiwaQuantityUnitDto.type,
+                wiwaQuantityUnitDto.name,
                 wiwaQuantityUnitDto.unit
         };
     }
 
     public static WiwaQuantityUnitDto toObject(final Object[] array) {
         return new WiwaQuantityUnitDto(
-                (String) array[0],
+                (Long) array[0],
                 (String) array[1],
-                (String) array[2]
+                (String) array[2],
+                (String) array[3]
         );
     }
 }
