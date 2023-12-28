@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.api.model.ApplicationPropertiesWeb;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
+import sk.janobono.wiwa.business.model.ui.UnitSo;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.config.JwtConfigProperties;
@@ -20,8 +21,7 @@ import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -94,10 +94,10 @@ public class UiService {
         return applicationPropertyService.getProperty(WiwaProperty.APP_WORKING_HOURS);
     }
 
-    public Map<Unit, String> getUnits() {
+    public List<UnitSo> getUnits() {
         return applicationPropertyService.getProperties(WiwaProperty.UNIT_GROUP.getGroup()).entrySet().stream()
-                .map(entry -> Map.entry(Unit.valueOf(entry.getKey()), entry.getValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .map(entry -> new UnitSo(Unit.valueOf(entry.getKey()), entry.getValue()))
+                .toList();
     }
 
     public ApplicationImage setLogo(final MultipartFile multipartFile) {
@@ -180,9 +180,9 @@ public class UiService {
         return applicationPropertyService.setApplicationProperty(WiwaProperty.APP_WORKING_HOURS.getGroup(), WiwaProperty.APP_WORKING_HOURS.getKey(), workingHours);
     }
 
-    public Map<Unit, String> setUnits(final Map<Unit, String> data) {
-        for (final Map.Entry<Unit, String> entry : data.entrySet()) {
-            applicationPropertyService.setApplicationProperty(WiwaProperty.UNIT_GROUP.getGroup(), entry.getKey().name(), entry.getValue());
+    public List<UnitSo> setUnits(final List<UnitSo> data) {
+        for (final UnitSo unit : data) {
+            applicationPropertyService.setApplicationProperty(WiwaProperty.UNIT_GROUP.getGroup(), unit.id().name(), unit.value());
         }
         return data;
     }

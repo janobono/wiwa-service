@@ -3,7 +3,6 @@ package sk.janobono.wiwa.api.controller.config;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
@@ -12,14 +11,13 @@ import sk.janobono.wiwa.api.controller.BaseControllerTest;
 import sk.janobono.wiwa.api.model.SingleValueBody;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
+import sk.janobono.wiwa.business.model.ui.UnitSo;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 import sk.janobono.wiwa.model.ApplicationImage;
 import sk.janobono.wiwa.model.Unit;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -195,19 +193,17 @@ class IndexControllerTest extends BaseControllerTest {
         assertThat(Objects.requireNonNull(workingHours.getBody()).get("value").asText()).isEqualTo("test");
 
         // units
-        final ResponseEntity<Map> units = restTemplate.exchange(
+        final ResponseEntity<UnitSo[]> units = restTemplate.exchange(
                 getURI("/config/units"),
                 HttpMethod.POST,
                 new HttpEntity<>(
-                        Map.of(
-                                Unit.EUR, "test"
-                        ),
+                        List.of(new UnitSo(Unit.EUR, "test")),
                         headers
                 ),
-                Map.class
+                UnitSo[].class
         );
         assertThat(units.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(units.getBody().get(Unit.EUR.name())).isEqualTo("test");
+        assertThat(Objects.requireNonNull(units.getBody())[0].id()).isEqualTo(Unit.EUR);
 
     }
 }

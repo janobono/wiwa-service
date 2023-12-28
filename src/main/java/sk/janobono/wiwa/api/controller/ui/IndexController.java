@@ -12,10 +12,12 @@ import sk.janobono.wiwa.api.model.ApplicationPropertiesWeb;
 import sk.janobono.wiwa.api.model.SingleValueBody;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
+import sk.janobono.wiwa.business.model.ui.UnitSo;
 import sk.janobono.wiwa.business.service.UiService;
 import sk.janobono.wiwa.model.ResourceEntity;
 import sk.janobono.wiwa.model.Unit;
 
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -80,7 +82,7 @@ public class IndexController {
     }
 
     @GetMapping(value = "/units")
-    public Map<Unit, String> getUnits() {
+    public List<UnitSo> getUnits() {
         return uiService.getUnits();
     }
 }

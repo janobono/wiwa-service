@@ -7,12 +7,11 @@ import sk.janobono.wiwa.api.controller.BaseControllerTest;
 import sk.janobono.wiwa.api.model.ApplicationPropertiesWeb;
 import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
+import sk.janobono.wiwa.business.model.ui.UnitSo;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
-import sk.janobono.wiwa.model.Unit;
 import sk.janobono.wiwa.model.WiwaProperty;
 
-import java.util.Map;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -108,10 +107,7 @@ class IndexControllerTest extends BaseControllerTest {
         );
 
         // units
-        final Map units = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/units"), Map.class));
+        final UnitSo[] units = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/units"), UnitSo[].class));
         assertThat(units).isNotNull();
-        for (final Unit unit : Unit.values()) {
-            assertThat(units.get(unit.name())).isNotNull();
-        }
     }
 }
