@@ -5,18 +5,18 @@ import java.math.BigDecimal;
 public record WiwaProductQuantityDto(
         Long id,
         Long productId,
-        Long unitId,
         String key,
-        BigDecimal value
+        BigDecimal value,
+        String unit
 ) {
 
     public static Object[] toArray(final WiwaProductQuantityDto wiwaProductQuantityDto) {
         return new Object[]{
                 wiwaProductQuantityDto.id,
                 wiwaProductQuantityDto.productId,
-                wiwaProductQuantityDto.unitId,
                 wiwaProductQuantityDto.key,
-                wiwaProductQuantityDto.value
+                wiwaProductQuantityDto.value,
+                wiwaProductQuantityDto.unit
         };
     }
 
@@ -24,9 +24,9 @@ public record WiwaProductQuantityDto(
         return new WiwaProductQuantityDto(
                 (Long) array[0],
                 (Long) array[1],
-                (Long) array[2],
-                (String) array[3],
-                (BigDecimal) array[4]
+                (String) array[2],
+                (BigDecimal) array[3],
+                (String) array[4]
         );
     }
 }

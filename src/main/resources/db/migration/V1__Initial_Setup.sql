@@ -1,6 +1,6 @@
 -- EXTENSION
 create
-extension if not exists unaccent;
+    extension if not exists unaccent;
 
 -- TABLE
 create table wiwa_application_image
@@ -17,14 +17,6 @@ create table wiwa_application_property
     property_key   varchar(255) not null,
     property_value text         not null,
     primary key (property_group, property_key)
-);
-
-create table wiwa_quantity_unit
-(
-    id   bigserial primary key,
-    type varchar(255) not null,
-    name varchar(255) not null,
-    unit varchar(255) not null
 );
 
 create table wiwa_authority
@@ -84,9 +76,9 @@ create table wiwa_product_quantity
 (
     id         bigserial primary key,
     product_id bigint         not null references wiwa_product (id) on delete cascade,
-    unit_id    bigint         not null references wiwa_quantity_unit (id) on delete cascade,
     key        varchar(255)   not null,
     value      numeric(19, 3) not null,
+    unit       varchar(255)   not null,
     unique (product_id, key)
 );
 
@@ -94,10 +86,10 @@ create table wiwa_product_unit_price
 (
     id         bigserial primary key,
     product_id bigint         not null references wiwa_product (id) on delete cascade,
-    unit_id    bigint         not null references wiwa_quantity_unit (id) on delete cascade,
     valid_from date           not null,
     valid_to   date,
     value      numeric(19, 3) not null,
+    unit       varchar(255)   not null,
     unique (product_id, valid_from)
 );
 
@@ -147,11 +139,9 @@ create index idx_wiwa_product_attribute on wiwa_product_attribute (product_id);
 
 create index idx_wiwa_product_image on wiwa_product_image (product_id);
 
-create index idx_wiwa_product_quantity1 on wiwa_product_quantity (product_id);
-create index idx_wiwa_product_quantity2 on wiwa_product_quantity (unit_id);
+create index idx_wiwa_product_quantity on wiwa_product_quantity (product_id);
 
-create index idx_wiwa_product_unit_price1 on wiwa_product_unit_price (product_id);
-create index idx_wiwa_product_unit_price2 on wiwa_product_unit_price (unit_id);
+create index idx_wiwa_product_unit_price on wiwa_product_unit_price (product_id);
 
 create index idx_wiwa_user on wiwa_user (username);
 

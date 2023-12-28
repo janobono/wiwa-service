@@ -61,6 +61,23 @@ public class ApplicationPropertyRepository {
         }
     }
 
+    public List<ApplicationPropertyDo> findByGroup(final String group) {
+        log.debug("findByGroup({})", group);
+        try (final Connection connection = dataSource.getConnection()) {
+            final List<Object[]> rows = sqlBuilder.select(connection,
+                    Query.SELECT(MetaColumnWiwaApplicationProperty.columns())
+                            .FROM(MetaTable.WIWA_APPLICATION_PROPERTY.table())
+                            .WHERE(MetaColumnWiwaApplicationProperty.PROPERTY_GROUP.column(), Condition.EQUALS, group)
+            );
+            return rows.stream()
+                    .map(WiwaApplicationPropertyDto::toObject)
+                    .map(mapper::toApplicationPropertyDo)
+                    .toList();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Optional<ApplicationPropertyDo> findByGroupAndKey(final String group, final String key) {
         log.debug("findByGroupAndKey({},{})", group, key);
         try (final Connection connection = dataSource.getConnection()) {

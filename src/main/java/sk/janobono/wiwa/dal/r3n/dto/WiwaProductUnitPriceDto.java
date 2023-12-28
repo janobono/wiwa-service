@@ -6,20 +6,20 @@ import java.time.LocalDate;
 public record WiwaProductUnitPriceDto(
         Long id,
         Long productId,
-        Long unitId,
         LocalDate validFrom,
         LocalDate validTo,
-        BigDecimal value
+        BigDecimal value,
+        String unit
 ) {
 
     public static Object[] toArray(final WiwaProductUnitPriceDto wiwaProductUnitPriceDto) {
         return new Object[]{
                 wiwaProductUnitPriceDto.id,
                 wiwaProductUnitPriceDto.productId,
-                wiwaProductUnitPriceDto.unitId,
                 wiwaProductUnitPriceDto.validFrom,
                 wiwaProductUnitPriceDto.validTo,
-                wiwaProductUnitPriceDto.value
+                wiwaProductUnitPriceDto.value,
+                wiwaProductUnitPriceDto.unit
         };
     }
 
@@ -27,10 +27,10 @@ public record WiwaProductUnitPriceDto(
         return new WiwaProductUnitPriceDto(
                 (Long) array[0],
                 (Long) array[1],
-                (Long) array[2],
+                (LocalDate) array[2],
                 (LocalDate) array[3],
-                (LocalDate) array[4],
-                (BigDecimal) array[5]
+                (BigDecimal) array[4],
+                (String) array[5]
         );
     }
 }

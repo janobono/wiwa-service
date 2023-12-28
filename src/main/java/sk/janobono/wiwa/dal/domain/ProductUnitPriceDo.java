@@ -2,6 +2,7 @@ package sk.janobono.wiwa.dal.domain;
 
 import lombok.Builder;
 import lombok.Data;
+import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,8 +12,8 @@ import java.time.LocalDate;
 public class ProductUnitPriceDo {
     private Long id;
     private Long productId;
-    private Long unitId;
     private LocalDate validFrom;
     private LocalDate validTo;
     private BigDecimal value;
+    private Unit unit;
 }

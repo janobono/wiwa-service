@@ -3,6 +3,7 @@ package sk.janobono.wiwa.dal.domain;
 import lombok.Builder;
 import lombok.Data;
 import sk.janobono.wiwa.model.ProductQuantityKey;
+import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 
@@ -11,7 +12,7 @@ import java.math.BigDecimal;
 public class ProductQuantityDo {
     private Long id;
     private Long productId;
-    private Long unitId;
     private ProductQuantityKey key;
     private BigDecimal value;
+    private Unit unit;
 }

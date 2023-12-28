@@ -15,10 +15,13 @@ import sk.janobono.wiwa.dal.repository.ApplicationImageRepository;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.ApplicationImage;
 import sk.janobono.wiwa.model.ResourceEntity;
+import sk.janobono.wiwa.model.Unit;
 import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -89,6 +92,12 @@ public class UiService {
 
     public String getWorkingHours() {
         return applicationPropertyService.getProperty(WiwaProperty.APP_WORKING_HOURS);
+    }
+
+    public Map<Unit, String> getUnits() {
+        return applicationPropertyService.getProperties(WiwaProperty.UNIT_GROUP.getGroup()).entrySet().stream()
+                .map(entry -> Map.entry(Unit.valueOf(entry.getKey()), entry.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public ApplicationImage setLogo(final MultipartFile multipartFile) {
@@ -169,5 +178,12 @@ public class UiService {
 
     public String setWorkingHours(final String workingHours) {
         return applicationPropertyService.setApplicationProperty(WiwaProperty.APP_WORKING_HOURS.getGroup(), WiwaProperty.APP_WORKING_HOURS.getKey(), workingHours);
+    }
+
+    public Map<Unit, String> setUnits(final Map<Unit, String> data) {
+        for (final Map.Entry<Unit, String> entry : data.entrySet()) {
+            applicationPropertyService.setApplicationProperty(WiwaProperty.UNIT_GROUP.getGroup(), entry.getKey().name(), entry.getValue());
+        }
+        return data;
     }
 }

@@ -10,9 +10,9 @@ public enum MetaColumnWiwaProductQuantity {
 
     ID("id", DataType.LONG),
     PRODUCT_ID("product_id", DataType.LONG),
-    UNIT_ID("unit_id", DataType.LONG),
     KEY("key", DataType.STRING),
-    VALUE("value", DataType.BIG_DECIMAL);
+    VALUE("value", DataType.BIG_DECIMAL),
+    UNIT("unit", DataType.STRING);
 
     private final String columnName;
 

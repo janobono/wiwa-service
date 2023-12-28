@@ -36,7 +36,9 @@ public enum WiwaProperty implements ApplicationPropertyKey {
     AUTH_SIGN_UP_MAIL_SUBJECT("AUTH_SIGN_UP_MAIL", "SUBJECT"),
     AUTH_SIGN_UP_MAIL_TITLE("AUTH_SIGN_UP_MAIL", "TITLE"),
     AUTH_SIGN_UP_MAIL_MESSAGE("AUTH_SIGN_UP_MAIL", "MESSAGE"),
-    AUTH_SIGN_UP_MAIL_LINK("AUTH_SIGN_UP_MAIL", "LINK");
+    AUTH_SIGN_UP_MAIL_LINK("AUTH_SIGN_UP_MAIL", "LINK"),
+
+    UNIT_GROUP("UNIT", "");
 
     private final String group;
     private final String keyPattern;

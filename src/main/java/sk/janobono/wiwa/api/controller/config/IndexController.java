@@ -10,6 +10,9 @@ import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
 import sk.janobono.wiwa.business.service.UiService;
 import sk.janobono.wiwa.model.ApplicationImage;
+import sk.janobono.wiwa.model.Unit;
+
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController("config")
@@ -70,5 +73,11 @@ public class IndexController {
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public SingleValueBody<String> setWorkingHours(@RequestBody final SingleValueBody<String> data) {
         return new SingleValueBody<>(uiService.setWorkingHours(data.value()));
+    }
+
+    @PostMapping(value = "/units")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public Map<Unit, String> setUnits(@RequestBody final Map<Unit, String> data) {
+        return uiService.setUnits(data);
     }
 }

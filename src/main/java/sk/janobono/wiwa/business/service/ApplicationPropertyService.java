@@ -7,7 +7,10 @@ import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.ApplicationPropertyKey;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -20,6 +23,11 @@ public class ApplicationPropertyService {
                 () -> WiwaException.APPLICATION_PROPERTY_NOT_FOUND.exception(
                         "Application Property {0},{1} not found", key.getGroup(), key.getKey(arguments)
                 ));
+    }
+
+    public Map<String, String> getProperties(final String group) {
+        final List<ApplicationPropertyDo> properties = applicationPropertyRepository.findByGroup(group);
+        return properties.stream().collect(Collectors.toMap(ApplicationPropertyDo::getKey, ApplicationPropertyDo::getValue));
     }
 
     private Optional<ApplicationPropertyDo> getApplicationProperty(final ApplicationPropertyKey key, final Object... arguments) {

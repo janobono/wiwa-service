@@ -1,5 +1,90 @@
 [
   {
+    "group": "UNIT",
+    "key": "EUR",
+    "value": "€"
+  },
+  {
+    "group": "UNIT",
+    "key": "MILLIMETER",
+    "value": "mm"
+  },
+  {
+    "group": "UNIT",
+    "key": "CENTIMETER",
+    "value": "cm"
+  },
+  {
+    "group": "UNIT",
+    "key": "METER",
+    "value": "m"
+  },
+  {
+    "group": "UNIT",
+    "key": "KILOMETER",
+    "value": "km"
+  },
+  {
+    "group": "UNIT",
+    "key": "SQUARE_METER",
+    "value": "m2"
+  },
+  {
+    "group": "UNIT",
+    "key": "MILLILITER",
+    "value": "ml"
+  },
+  {
+    "group": "UNIT",
+    "key": "LITER",
+    "value": "l"
+  },
+  {
+    "group": "UNIT",
+    "key": "CUBIC_METER",
+    "value": "m3"
+  },
+  {
+    "group": "UNIT",
+    "key": "SECOND",
+    "value": "s"
+  },
+  {
+    "group": "UNIT",
+    "key": "MINUTE",
+    "value": "m"
+  },
+  {
+    "group": "UNIT",
+    "key": "HOUR",
+    "value": "h"
+  },
+  {
+    "group": "UNIT",
+    "key": "DAY",
+    "value": "d"
+  },
+  {
+    "group": "UNIT",
+    "key": "GRAM",
+    "value": "g"
+  },
+  {
+    "group": "UNIT",
+    "key": "KILOGRAM",
+    "value": "kg"
+  },
+  {
+    "group": "UNIT",
+    "key": "PIECE",
+    "value": "p"
+  },
+  {
+    "group": "UNIT",
+    "key": "PACKAGE",
+    "value": "pkg"
+  },
+  {
     "group": "APP",
     "key": "TITLE",
     "value": "WIWA - Internet store"

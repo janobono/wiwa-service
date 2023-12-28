@@ -14,6 +14,9 @@ import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
 import sk.janobono.wiwa.business.service.UiService;
 import sk.janobono.wiwa.model.ResourceEntity;
+import sk.janobono.wiwa.model.Unit;
+
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController("ui")
@@ -74,5 +77,10 @@ public class IndexController {
     @GetMapping(value = "/working-hours")
     public SingleValueBody<String> getWorkingHours() {
         return new SingleValueBody<>(uiService.getWorkingHours());
+    }
+
+    @GetMapping(value = "/units")
+    public Map<Unit, String> getUnits() {
+        return uiService.getUnits();
     }
 }

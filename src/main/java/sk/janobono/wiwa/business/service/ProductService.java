@@ -34,7 +34,6 @@ public class ProductService {
     private final ProductQuantityRepository productQuantityRepository;
     private final ProductUnitPriceRepository productUnitPriceRepository;
     private final CodeListItemRepository codeListItemRepository;
-    private final QuantityUnitRepository quantityUnitRepository;
 
     public Page<ProductSo> getProducts(final ProductSearchCriteriaSo criteria, final Pageable pageable) {
         return productRepository.findAll(criteria, pageable).map(this::toProductSo);
@@ -147,7 +146,7 @@ public class ProductService {
             for (final ProductUnitPriceSo current : orderedPrices) {
                 batch.add(ProductUnitPriceDo.builder()
                         .productId(productId)
-                        .unitId(current.unitId())
+                        .unit(current.unit())
                         .validFrom(current.validFrom())
                         .validTo(previous != null ? previous.validFrom() : null)
                         .value(current.value())
@@ -200,21 +199,13 @@ public class ProductService {
 
     private List<ProductQuantitySo> toQuantities(final Long productId) {
         return productQuantityRepository.findAllByProductId(productId).stream()
-                .map(quantity -> {
-                    final QuantityUnitDo quantityUnitDo = quantityUnitRepository.findById(quantity.getUnitId())
-                            .orElseThrow();
-                    return new ProductQuantitySo(quantity.getKey(), quantity.getValue(), quantityUnitDo.getId());
-                })
+                .map(quantity -> new ProductQuantitySo(quantity.getKey(), quantity.getValue(), quantity.getUnit()))
                 .toList();
     }
 
     private List<ProductUnitPriceSo> toUnitPrices(final Long productId) {
         return productUnitPriceRepository.findAllByProductId(productId).stream()
-                .map(price -> {
-                    final QuantityUnitDo quantityUnitDo = quantityUnitRepository.findById(price.getUnitId())
-                            .orElseThrow();
-                    return new ProductUnitPriceSo(price.getValidFrom(), price.getValue(), quantityUnitDo.getId());
-                })
+                .map(price -> new ProductUnitPriceSo(price.getValidFrom(), price.getValue(), price.getUnit()))
                 .toList();
     }
 
@@ -247,7 +238,7 @@ public class ProductService {
                 .flatMap(Collection::stream)
                 .map(quantity -> ProductQuantityDo.builder()
                         .productId(productId)
-                        .unitId(quantity.unitId())
+                        .unit(quantity.unit())
                         .key(quantity.key())
                         .value(quantity.value())
                         .build()

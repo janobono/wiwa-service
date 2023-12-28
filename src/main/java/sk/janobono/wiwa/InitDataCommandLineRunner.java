@@ -5,15 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import sk.janobono.wiwa.business.model.quantityunit.QuantityUnitDataSo;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.ApplicationPropertyDo;
 import sk.janobono.wiwa.dal.domain.AuthorityDo;
-import sk.janobono.wiwa.dal.domain.QuantityUnitDo;
 import sk.janobono.wiwa.dal.domain.UserDo;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 import sk.janobono.wiwa.dal.repository.AuthorityRepository;
-import sk.janobono.wiwa.dal.repository.QuantityUnitRepository;
 import sk.janobono.wiwa.dal.repository.UserRepository;
 import sk.janobono.wiwa.model.Authority;
 
@@ -35,7 +32,6 @@ public class InitDataCommandLineRunner implements CommandLineRunner {
     private final AuthorityRepository authorityRepository;
     private final UserRepository userRepository;
     private final ApplicationPropertyRepository applicationPropertyRepository;
-    private final QuantityUnitRepository quantityUnitRepository;
 
     @Override
     public void run(final String... args) throws Exception {
@@ -43,7 +39,6 @@ public class InitDataCommandLineRunner implements CommandLineRunner {
         initAuthorities();
         initUsers();
         initApplicationProperties(dataDir);
-        initQuantityUnits(dataDir);
     }
 
     private void initAuthorities() {
@@ -92,23 +87,6 @@ public class InitDataCommandLineRunner implements CommandLineRunner {
                             ).build()
                     );
                 }
-            }
-        }
-    }
-
-    private void initQuantityUnits(final Path dataDir) throws Exception {
-        if (quantityUnitRepository.count() == 0L) {
-            final Path dataPath = dataDir.resolve("quantity-units.json");
-            if (dataPath.toFile().exists()) {
-                final QuantityUnitDataSo[] quantityUnits = objectMapper
-                        .readValue(dataPath.toFile(), QuantityUnitDataSo[].class);
-                quantityUnitRepository.saveAll(Arrays.stream(quantityUnits).map(
-                        data -> QuantityUnitDo.builder()
-                                .type(data.type())
-                                .name(data.name())
-                                .unit(data.unit())
-                                .build()
-                ).toList());
             }
         }
     }
