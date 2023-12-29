@@ -21,6 +21,7 @@ import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -97,6 +98,7 @@ public class UiService {
     public List<UnitSo> getUnits() {
         return applicationPropertyService.getProperties(WiwaProperty.UNIT_GROUP.getGroup()).entrySet().stream()
                 .map(entry -> new UnitSo(Unit.valueOf(entry.getKey()), entry.getValue()))
+                .sorted(Comparator.comparingInt(o -> o.id().ordinal()))
                 .toList();
     }
 
