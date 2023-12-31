@@ -16,10 +16,7 @@ import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.ApplicationImage;
 import sk.janobono.wiwa.model.ResourceEntity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -190,6 +187,7 @@ public class ProductService {
     private List<ProductAttributeSo> toAttributes(final Long productId) {
         return productAttributeRepository.findAllByProductId(productId).stream()
                 .map(attribute -> new ProductAttributeSo(attribute.getKey(), attribute.getValue()))
+                .sorted(Comparator.comparingInt(a -> a.key().ordinal()))
                 .toList();
     }
 
@@ -200,6 +198,7 @@ public class ProductService {
     private List<ProductQuantitySo> toQuantities(final Long productId) {
         return productQuantityRepository.findAllByProductId(productId).stream()
                 .map(quantity -> new ProductQuantitySo(quantity.getKey(), quantity.getValue(), quantity.getUnit()))
+                .sorted(Comparator.comparingInt(o -> o.key().ordinal()))
                 .toList();
     }
 
