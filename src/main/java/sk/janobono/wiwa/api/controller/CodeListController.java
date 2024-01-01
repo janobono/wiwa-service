@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import sk.janobono.wiwa.business.model.codelist.*;
+import sk.janobono.wiwa.business.model.codelist.CodeListDataSo;
+import sk.janobono.wiwa.business.model.codelist.CodeListSearchCriteriaSo;
+import sk.janobono.wiwa.business.model.codelist.CodeListSo;
 import sk.janobono.wiwa.business.service.CodeListService;
 
 @RequiredArgsConstructor
@@ -55,65 +57,5 @@ public class CodeListController {
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public void deleteCodeList(@PathVariable("id") final Long id) {
         codeListService.deleteCodeList(id);
-    }
-
-    @GetMapping("/items")
-    public Page<CodeListItemSo> getCodeListItems(
-            @RequestParam(value = "codeListId", required = false) final Long codeListId,
-            @RequestParam(value = "root", required = false) final Boolean root,
-            @RequestParam(value = "parentId", required = false) final Long parentId,
-            @RequestParam(value = "searchField", required = false) final String searchField,
-            @RequestParam(value = "code", required = false) final String code,
-            @RequestParam(value = "value", required = false) final String value,
-            @RequestParam(value = "treeCode", required = false) final String treeCode,
-            final Pageable pageable
-    ) {
-        final CodeListItemSearchCriteriaSo criteria = CodeListItemSearchCriteriaSo.builder()
-                .codeListId(codeListId)
-                .root(root)
-                .parentId(parentId)
-                .searchField(searchField)
-                .code(code)
-                .value(value)
-                .treeCode(treeCode)
-                .build();
-        return codeListService.getCodeListItems(criteria, pageable);
-    }
-
-    @GetMapping("/items/{itemId}")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListItemSo getCodeListItem(@PathVariable("itemId") final Long itemId) {
-        return codeListService.getCodeListItem(itemId);
-    }
-
-    @PostMapping("/items")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    @ResponseStatus(HttpStatus.CREATED)
-    public CodeListItemSo addCodeListItem(@Valid @RequestBody final CodeListItemDataSo data) {
-        return codeListService.addCodeListItem(data);
-    }
-
-    @PutMapping("/items/{itemId}")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListItemSo setCodeListItem(@PathVariable("itemId") final Long itemId, @Valid @RequestBody final CodeListItemDataSo data) {
-        return codeListService.setCodeListItem(itemId, data);
-    }
-
-    @DeleteMapping("/items/{itemId}")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public void deleteCodeListItem(@PathVariable("itemId") final Long itemId) {
-        codeListService.deleteCodeListItem(itemId);
-    }
-
-    @PatchMapping("/items/{itemId}/move-up")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListItemSo moveCodeListItemUp(@PathVariable("itemId") final Long itemId) {
-        return codeListService.moveCodeListItemUp(itemId);
-    }
-
-    @PatchMapping("/items/{itemId}/move-down")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListItemSo moveCodeListItemDown(@PathVariable("itemId") final Long itemId) {
-        return codeListService.moveCodeListItemDown(itemId);
     }
 }

@@ -138,7 +138,7 @@ class CodeListControllerTest extends BaseControllerTest {
     }
 
     private CodeListItemSo getCodeListItem(final HttpHeaders headers, final Long id) {
-        return getEntity(CodeListItemSo.class, headers, "/code-lists/items", id);
+        return getEntity(CodeListItemSo.class, headers, "/code-list-items", id);
     }
 
     private Page<CodeListSo> getCodeLists(final HttpHeaders headers, final String searchField, final String code, final String name, final Pageable pageable) {
@@ -158,7 +158,7 @@ class CodeListControllerTest extends BaseControllerTest {
         Optional.ofNullable(code).ifPresent(v -> addToParams(params, "code", v));
         Optional.ofNullable(value).ifPresent(v -> addToParams(params, "value", v));
         Optional.ofNullable(treeCode).ifPresent(v -> addToParams(params, "treeCode", v));
-        return getEntities(CodeListItemSo.class, headers, "/code-lists/items", params, pageable);
+        return getEntities(CodeListItemSo.class, headers, "/code-list-items", params, pageable);
     }
 
     private CodeListSo setCodeList(final HttpHeaders headers, final Long id, final CodeListDataSo data) {
@@ -166,7 +166,7 @@ class CodeListControllerTest extends BaseControllerTest {
     }
 
     private CodeListItemSo setCodeListItem(final HttpHeaders headers, final Long id, final CodeListItemDataSo data) {
-        return setEntity(CodeListItemSo.class, headers, "/code-lists/items", id, data);
+        return setEntity(CodeListItemSo.class, headers, "/code-list-items", id, data);
     }
 
     private void deleteCodeList(final HttpHeaders headers, final Long id) {
@@ -174,17 +174,17 @@ class CodeListControllerTest extends BaseControllerTest {
     }
 
     private void deleteCodeListItem(final HttpHeaders headers, final Long id) {
-        deleteEntity(headers, "/code-lists/items", id);
+        deleteEntity(headers, "/code-list-items", id);
     }
 
     private void moveCodeListItemUp(final HttpHeaders headers, final Long id) {
-        final ResponseEntity<CodeListItemSo> response = restTemplate.exchange(getURI("/code-lists/items/{itemId}/move-up", Map.of("itemId", Long.toString(id))), HttpMethod.PATCH, new HttpEntity<>(headers), CodeListItemSo.class);
+        final ResponseEntity<CodeListItemSo> response = restTemplate.exchange(getURI("/code-list-items/{id}/move-up", Map.of("id", Long.toString(id))), HttpMethod.PATCH, new HttpEntity<>(headers), CodeListItemSo.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
     }
 
     private void moveCodeListItemDown(final HttpHeaders headers, final Long id) {
-        final ResponseEntity<CodeListItemSo> response = restTemplate.exchange(getURI("/code-lists/items/{itemId}/move-down", Map.of("itemId", Long.toString(id))), HttpMethod.PATCH, new HttpEntity<>(headers), CodeListItemSo.class);
+        final ResponseEntity<CodeListItemSo> response = restTemplate.exchange(getURI("/code-list-items/{id}/move-down", Map.of("id", Long.toString(id))), HttpMethod.PATCH, new HttpEntity<>(headers), CodeListItemSo.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
     }

@@ -175,6 +175,6 @@ public class BaseControllerTest extends BaseIntegrationTest {
     }
 
     protected CodeListItemSo addCodeListItem(final HttpHeaders headers, final CodeListItemDataSo data) {
-        return addEntity(CodeListItemSo.class, headers, "/code-lists/items", data);
+        return addEntity(CodeListItemSo.class, headers, "/code-list-items", data);
     }
 }
