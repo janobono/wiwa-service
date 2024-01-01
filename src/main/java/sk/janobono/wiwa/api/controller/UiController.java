@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api.controller.ui;
+package sk.janobono.wiwa.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -15,15 +15,13 @@ import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
 import sk.janobono.wiwa.business.model.ui.UnitSo;
 import sk.janobono.wiwa.business.service.UiService;
 import sk.janobono.wiwa.model.ResourceEntity;
-import sk.janobono.wiwa.model.Unit;
 
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
-@RestController("ui")
+@RestController
 @RequestMapping(path = "/ui")
-public class IndexController {
+public class UiController {
 
     private final UiService uiService;
 

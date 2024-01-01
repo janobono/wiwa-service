@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api.controller.config;
+package sk.janobono.wiwa.api.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class IndexControllerTest extends BaseControllerTest {
+class ConfigControllerTest extends BaseControllerTest {
 
     @Autowired
     public ImageUtil imageUtil;

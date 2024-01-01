@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api.controller.config;
+package sk.janobono.wiwa.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +15,9 @@ import sk.janobono.wiwa.model.ApplicationImage;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RestController("config")
+@RestController
 @RequestMapping(path = "/config")
-public class IndexController {
+public class ConfigController {
 
     private final UiService uiService;
 

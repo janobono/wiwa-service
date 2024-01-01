@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api.controller.config;
+package sk.janobono.wiwa.api.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
@@ -14,6 +14,8 @@ import org.springframework.util.MultiValueMap;
 import sk.janobono.wiwa.api.controller.BaseControllerTest;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.model.ApplicationImage;
+
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,7 +33,7 @@ class ApplicationImageControllerTest extends BaseControllerTest {
         headers.setBearerAuth(token);
 
         final MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
-        form.add("file", new ByteArrayResource(imageUtil.generateMessageImage("test")) {
+        form.add("file", new ByteArrayResource(imageUtil.generateMessageImage(null)) {
             @Override
             public String getFilename() {
                 return "test.png";
@@ -50,6 +52,13 @@ class ApplicationImageControllerTest extends BaseControllerTest {
         assertThat(uploadedImage.hasBody()).isTrue();
         assertThat(uploadedImage.getBody().fileName()).isEqualTo("test.png");
         assertThat(uploadedImage.getBody().thumbnail().startsWith("data:" + MediaType.IMAGE_PNG_VALUE)).isTrue();
+
+        final byte[] data = restTemplate.getForObject(
+                getURI("/ui/application-images/{fileName}", Collections.singletonMap("fileName", "test2.png")),
+                byte[].class
+        );
+        assertThat(data).isNotNull();
+        assertThat(data).isEqualTo(imageUtil.generateMessageImage(null));
 
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
