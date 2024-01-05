@@ -33,6 +33,7 @@ public class UiService {
     private final ApplicationImageService applicationImageService;
     private final ApplicationPropertyService applicationPropertyService;
     private final ApplicationImageRepository applicationImageRepository;
+    private final ProductService productService;
 
     public ApplicationPropertiesWeb getApplicationProperties() {
         return new ApplicationPropertiesWeb(
@@ -187,5 +188,13 @@ public class UiService {
             applicationPropertyService.setApplicationProperty(WiwaProperty.UNIT_GROUP.getGroup(), unit.id().name(), unit.value());
         }
         return data;
+    }
+
+    public ResourceEntity getApplicationImage(final String fileName) {
+        return applicationImageService.getApplicationImage(fileName);
+    }
+
+    public ResourceEntity getProductImage(final Long productId, final String fileName) {
+        return productService.getProductImage(productId, fileName);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sk.janobono.wiwa.api.model.ApplicationPropertiesWeb;
@@ -82,5 +83,23 @@ public class UiController {
     @GetMapping(value = "/units")
     public List<UnitSo> getUnits() {
         return uiService.getUnits();
+    }
+
+    @GetMapping("/application-images/{fileName}")
+    public ResponseEntity<Resource> getApplicationImage(@PathVariable("fileName") final String fileName) {
+        final ResourceEntity resourceEntity = uiService.getApplicationImage(fileName);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(resourceEntity.contentType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntity.fileName() + "\"")
+                .body(resourceEntity.resource());
+    }
+
+    @GetMapping("/product-images/{id}/{fileName}")
+    public ResponseEntity<Resource> getProductImage(@PathVariable("id") final Long productId, @PathVariable("fileName") final String fileName) {
+        final ResourceEntity resourceEntity = uiService.getProductImage(productId, fileName);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(resourceEntity.contentType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntity.fileName() + "\"")
+                .body(resourceEntity.resource());
     }
 }
