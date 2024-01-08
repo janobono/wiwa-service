@@ -6,6 +6,7 @@ import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,7 @@ public class ProductConfigService {
     public List<Long> getProductCategories() {
         return applicationPropertyService.getPropertyValue(WiwaProperty.PRODUCT_CATEGORIES)
                 .map(value -> Arrays.stream(value.split(",")).map(Long::valueOf).toList())
-                .orElse(null);
+                .orElse(Collections.emptyList());
     }
 
     public List<Long> setProductCategories(final List<Long> data) {
@@ -81,7 +82,7 @@ public class ProductConfigService {
     public List<Long> getSearchCategories() {
         return applicationPropertyService.getPropertyValue(WiwaProperty.PRODUCT_SEARCH_CATEGORIES)
                 .map(value -> Arrays.stream(value.split(",")).map(Long::valueOf).toList())
-                .orElse(null);
+                .orElse(Collections.emptyList());
     }
 
     public List<Long> setSearchCategories(final List<Long> data) {

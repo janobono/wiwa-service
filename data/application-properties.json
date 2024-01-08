@@ -198,5 +198,10 @@
     "group": "APP_INFO_SLIDE",
     "key": "COUNT",
     "value": "3"
+  },
+  {
+    "group": "PRODUCT",
+    "key": "VAT_RATE",
+    "value": "20"
   }
 ]
