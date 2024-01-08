@@ -29,13 +29,13 @@ public class ProductConfigController {
         return new SingleValueBody<>(productConfigService.setVatRate(data.value()));
     }
 
-    @GetMapping(value = "/product-categories-id")
+    @GetMapping(value = "/product-categories")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public List<Long> getProductCategories() {
         return productConfigService.getProductCategories();
     }
 
-    @PostMapping(value = "/product-categories-id")
+    @PostMapping(value = "/product-categories")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public List<Long> setProductCategories(@Valid @RequestBody final List<Long> data) {
         return productConfigService.setProductCategories(data);
