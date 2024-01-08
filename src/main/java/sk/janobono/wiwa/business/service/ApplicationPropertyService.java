@@ -18,11 +18,15 @@ public class ApplicationPropertyService {
     private final ApplicationPropertyRepository applicationPropertyRepository;
 
     public String getProperty(final ApplicationPropertyKey key, final Object... arguments) {
-        final Optional<ApplicationPropertyDo> property = getApplicationProperty(key, arguments);
-        return property.map(ApplicationPropertyDo::getValue).orElseThrow(
+        return getPropertyValue(key, arguments).orElseThrow(
                 () -> WiwaException.APPLICATION_PROPERTY_NOT_FOUND.exception(
                         "Application Property {0},{1} not found", key.getGroup(), key.getKey(arguments)
                 ));
+    }
+
+    public Optional<String> getPropertyValue(final ApplicationPropertyKey key, final Object... arguments) {
+        final Optional<ApplicationPropertyDo> property = getApplicationProperty(key, arguments);
+        return property.map(ApplicationPropertyDo::getValue);
     }
 
     public Map<String, String> getProperties(final String group) {
