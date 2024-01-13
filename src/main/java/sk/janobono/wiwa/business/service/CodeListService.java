@@ -66,7 +66,7 @@ public class CodeListService {
     private boolean isCodeUsed(final Long id, final CodeListDataSo data) {
         return Optional.ofNullable(id)
                 .map(codeListId -> codeListRepository.countByIdNotAndCode(codeListId, data.code()) > 0)
-                .orElse(codeListRepository.countByCode(data.code()) > 0);
+                .orElseGet(() -> codeListRepository.countByCode(data.code()) > 0);
     }
 
     private CodeListSo toCodeListSo(final CodeListDo codeListDo) {

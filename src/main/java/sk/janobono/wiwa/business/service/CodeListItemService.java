@@ -143,7 +143,7 @@ public class CodeListItemService {
     private boolean isCodeUsed(final Long id, final CodeListItemDataSo data) {
         return Optional.ofNullable(id)
                 .map(id_ -> codeListItemRepository.countByIdNotAndCode(id_, data.code()) > 0)
-                .orElse(codeListItemRepository.countByCode(data.code()) > 0);
+                .orElseGet(() -> codeListItemRepository.countByCode(data.code()) > 0);
     }
 
     private Optional<CodeListItemDo> getParentCodeListItem(final Long parentId) {
@@ -181,7 +181,7 @@ public class CodeListItemService {
     private Integer getNextSortNum(final Long id, final Optional<CodeListItemDo> parent) {
         return parent
                 .map(category -> codeListItemRepository.countByParentId(category.getId()))
-                .orElse(codeListItemRepository.countByCodeListIdAndParentIdNull(id));
+                .orElseGet(() -> codeListItemRepository.countByCodeListIdAndParentIdNull(id));
     }
 
     private void sortItems(final Long id, final Long parentItemId) {
@@ -199,7 +199,7 @@ public class CodeListItemService {
                         .codeListId(id)
                         .parentId(parentCategoryId)
                         .build())
-                .orElse(CodeListItemSearchCriteriaSo.builder()
+                .orElseGet(() -> CodeListItemSearchCriteriaSo.builder()
                         .codeListId(id)
                         .root(true)
                         .build());

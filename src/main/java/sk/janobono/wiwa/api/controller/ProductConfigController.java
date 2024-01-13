@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import sk.janobono.wiwa.api.model.SingleValueBody;
+import sk.janobono.wiwa.business.model.productconfig.ProductCategoryItemDataSo;
+import sk.janobono.wiwa.business.model.productconfig.ProductCategoryItemSo;
+import sk.janobono.wiwa.business.model.productconfig.ProductCategorySo;
 import sk.janobono.wiwa.business.service.ProductConfigService;
 
 import java.math.BigDecimal;
@@ -31,61 +34,61 @@ public class ProductConfigController {
 
     @GetMapping(value = "/product-categories")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<Long> getProductCategories() {
+    public List<ProductCategorySo> getProductCategories() {
         return productConfigService.getProductCategories();
     }
 
     @PostMapping(value = "/product-categories")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<Long> setProductCategories(@Valid @RequestBody final List<Long> data) {
+    public List<ProductCategorySo> setProductCategories(@Valid @RequestBody final List<Long> data) {
         return productConfigService.setProductCategories(data);
     }
 
-    @GetMapping(value = "/board-category-id")
+    @GetMapping(value = "/board-category-item")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public SingleValueBody<Long> getBoardCategoryId() {
-        return new SingleValueBody<>(productConfigService.getBoardCategoryId());
+    public ProductCategoryItemSo getBoardCategoryItem() {
+        return productConfigService.getBoardCategoryItem();
     }
 
-    @PostMapping(value = "/board-category-id")
+    @PostMapping(value = "/board-category-item")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public SingleValueBody<Long> setBoardCategoryId(@Valid @RequestBody final SingleValueBody<Long> data) {
-        return new SingleValueBody<>(productConfigService.setBoardCategoryId(data.value()));
+    public ProductCategoryItemSo setBoardCategoryItem(@Valid @RequestBody final ProductCategoryItemDataSo data) {
+        return productConfigService.setBoardCategoryItem(data);
     }
 
-    @GetMapping(value = "/edge-category-id")
+    @GetMapping(value = "/edge-category-item")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public SingleValueBody<Long> getEdgeCategoryId() {
-        return new SingleValueBody<>(productConfigService.getEdgeCategoryId());
+    public ProductCategoryItemSo getEdgeCategoryItem() {
+        return productConfigService.getEdgeCategoryItem();
     }
 
-    @PostMapping(value = "/edge-category-id")
+    @PostMapping(value = "/edge-category-item")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public SingleValueBody<Long> setEdgeCategoryId(@Valid @RequestBody final SingleValueBody<Long> data) {
-        return new SingleValueBody<>(productConfigService.setEdgeCategoryId(data.value()));
+    public ProductCategoryItemSo setEdgeCategoryItem(@Valid @RequestBody final ProductCategoryItemDataSo data) {
+        return productConfigService.setEdgeCategoryItem(data);
     }
 
-    @GetMapping(value = "/service-category-id")
+    @GetMapping(value = "/service-category-item")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public SingleValueBody<Long> getServiceCategoryId() {
-        return new SingleValueBody<>(productConfigService.getServiceCategoryId());
+    public ProductCategoryItemSo getServiceCategoryItem() {
+        return productConfigService.getServiceCategoryItem();
     }
 
-    @PostMapping(value = "/service-category-id")
+    @PostMapping(value = "/service-category-item")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public SingleValueBody<Long> setServiceCategoryId(@Valid @RequestBody final SingleValueBody<Long> data) {
-        return new SingleValueBody<>(productConfigService.setServiceCategoryId(data.value()));
+    public ProductCategoryItemSo setServiceCategoryItem(@Valid @RequestBody final ProductCategoryItemDataSo data) {
+        return productConfigService.setServiceCategoryItem(data);
     }
 
-    @GetMapping(value = "/search-categories")
+    @GetMapping(value = "/search-items")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<Long> getSearchCategories() {
-        return productConfigService.getSearchCategories();
+    public List<ProductCategoryItemSo> getSearchItems() {
+        return productConfigService.getSearchItems();
     }
 
-    @PostMapping(value = "/search-categories")
+    @PostMapping(value = "/search-items")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<Long> setSearchCategories(@Valid @RequestBody final List<Long> data) {
-        return productConfigService.setSearchCategories(data);
+    public List<ProductCategoryItemSo> setSearchItems(@Valid @RequestBody final List<ProductCategoryItemDataSo> data) {
+        return productConfigService.setSearchItems(data);
     }
 }

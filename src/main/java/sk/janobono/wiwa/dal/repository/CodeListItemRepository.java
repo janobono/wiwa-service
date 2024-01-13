@@ -111,6 +111,24 @@ public class CodeListItemRepository {
         }
     }
 
+    public boolean existsById(final Long id) {
+        log.debug("existsById({})", id);
+        try (final Connection connection = dataSource.getConnection()) {
+            final List<Object[]> rows = sqlBuilder.select(connection,
+                    Query.SELECT(MetaColumnWiwaCodeListItem.ID.column()).COUNT()
+                            .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
+                            .WHERE(MetaColumnWiwaCodeListItem.ID.column(), Condition.EQUALS, id)
+            );
+            return rows.stream()
+                    .findFirst()
+                    .map(row -> (Integer) row[0])
+                    .map(i -> i > 0)
+                    .orElse(false);
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void deleteById(final Long id) {
         log.debug("deleteById({})", id);
         try (final Connection connection = dataSource.getConnection()) {

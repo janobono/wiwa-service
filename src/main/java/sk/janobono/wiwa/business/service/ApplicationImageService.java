@@ -37,7 +37,7 @@ public class ApplicationImageService {
                         applicationImageDo.getFileType(),
                         imageUtil.getDataResource(applicationImageDo.getData())
                 ))
-                .orElse(new ResourceEntity(
+                .orElseGet(() -> new ResourceEntity(
                         fileName,
                         MediaType.IMAGE_PNG_VALUE,
                         imageUtil.getDataResource(imageUtil.generateMessageImage(null))
