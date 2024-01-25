@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.business.model.productconfig;
+package sk.janobono.wiwa.business.model.product;
 
 public record ProductCategorySo(Long id, String name) {
 }

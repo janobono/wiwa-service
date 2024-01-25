@@ -100,7 +100,7 @@ class ProductControllerTest extends BaseControllerTest {
         for (final ProductSo product : products) {
             assertThat(product)
                     .usingRecursiveComparison(RecursiveComparisonConfiguration.builder()
-                            .withIgnoredFields("attributes", "images", "quantities", "unitPrices", "codeListItems")
+                            .withIgnoredFields("attributes", "images", "quantities", "unitPrices", "categoryItems")
                             .build())
                     .isEqualTo(getProduct(headers, product.id()));
         }
@@ -167,23 +167,26 @@ class ProductControllerTest extends BaseControllerTest {
         final CodeListSo codeListSo = addCodeList(headers, new CodeListDataSo("code", "test-code-list"));
         final CodeListItemSo codeListItem01 = addCodeListItem(headers, new CodeListItemDataSo(codeListSo.id(), null, "code1", "test-item1"));
         final CodeListItemSo codeListItem02 = addCodeListItem(headers, new CodeListItemDataSo(codeListSo.id(), null, "code2", "test-item2"));
-        List<Long> codeListItems = setProductCodeListItems(headers, testProductId, List.of(codeListItem01.id())).codeListItems();
-        List<Long> savedCodeListItems = getProduct(headers, testProductId).codeListItems();
-        assertThat(codeListItems.size()).isEqualTo(1);
-        assertThat(codeListItems.get(0)).isEqualTo(codeListItem01.id());
-        assertThat(codeListItems.get(0)).isEqualTo(savedCodeListItems.get(0));
+        List<ProductCategoryItemSo> categoryItems = setProductCodeListItems(headers, testProductId,
+                List.of(new ProductCategoryItemDataSo(codeListSo.id(), codeListItem01.id()))).categoryItems();
+        List<ProductCategoryItemSo> savedCategoryItems = getProduct(headers, testProductId).categoryItems();
+        assertThat(categoryItems.size()).isEqualTo(1);
+        assertThat(categoryItems.get(0).id()).isEqualTo(codeListItem01.id());
+        assertThat(categoryItems.get(0)).isEqualTo(savedCategoryItems.get(0));
 
-        codeListItems = setProductCodeListItems(headers, testProductId, List.of(codeListItem02.id())).codeListItems();
-        savedCodeListItems = getProduct(headers, testProductId).codeListItems();
-        assertThat(codeListItems.size()).isEqualTo(1);
-        assertThat(codeListItems.get(0)).isEqualTo(codeListItem02.id());
-        assertThat(codeListItems.get(0)).isEqualTo(savedCodeListItems.get(0));
+        categoryItems = setProductCodeListItems(headers, testProductId,
+                List.of(new ProductCategoryItemDataSo(codeListSo.id(), codeListItem02.id()))).categoryItems();
+        savedCategoryItems = getProduct(headers, testProductId).categoryItems();
+        assertThat(categoryItems.size()).isEqualTo(1);
+        assertThat(categoryItems.get(0).id()).isEqualTo(codeListItem02.id());
+        assertThat(categoryItems.get(0)).isEqualTo(savedCategoryItems.get(0));
 
-        codeListItems = setProductCodeListItems(headers, testProductId, List.of(codeListItem01.id(), codeListItem02.id())).codeListItems();
-        savedCodeListItems = getProduct(headers, testProductId).codeListItems();
-        assertThat(codeListItems.size()).isEqualTo(2);
-        assertThat(codeListItems.get(0)).isEqualTo(savedCodeListItems.get(0));
-        assertThat(codeListItems.get(1)).isEqualTo(savedCodeListItems.get(1));
+        categoryItems = setProductCodeListItems(headers, testProductId,
+                List.of(new ProductCategoryItemDataSo(codeListSo.id(), codeListItem01.id()), new ProductCategoryItemDataSo(codeListSo.id(), codeListItem02.id()))).categoryItems();
+        savedCategoryItems = getProduct(headers, testProductId).categoryItems();
+        assertThat(categoryItems.size()).isEqualTo(2);
+        assertThat(categoryItems.get(0).id()).isEqualTo(savedCategoryItems.get(0).id());
+        assertThat(categoryItems.get(1)).isEqualTo(savedCategoryItems.get(1));
 
         Page<ProductSo> searchResult = getProducts(headers, "board-1", null, null, null, null, Pageable.unpaged());
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
@@ -207,10 +210,10 @@ class ProductControllerTest extends BaseControllerTest {
         assertThat(productUnitPrices.size()).isEqualTo(0);
         assertThat(productUnitPrices.size()).isEqualTo(getProduct(headers, testProductId).unitPrices().size());
 
-        codeListItems = setProductCodeListItems(headers, testProductId, Collections.emptyList()).codeListItems();
-        savedCodeListItems = getProduct(headers, testProductId).codeListItems();
-        assertThat(codeListItems.size()).isEqualTo(0);
-        assertThat(codeListItems.size()).isEqualTo(savedCodeListItems.size());
+        categoryItems = setProductCodeListItems(headers, testProductId, Collections.emptyList()).categoryItems();
+        savedCategoryItems = getProduct(headers, testProductId).categoryItems();
+        assertThat(categoryItems.size()).isEqualTo(0);
+        assertThat(categoryItems.size()).isEqualTo(savedCategoryItems.size());
 
         for (final ApplicationImage originalImage : productImages) {
             deleteProductImage(headers, testProductId, originalImage.fileName());
@@ -312,11 +315,11 @@ class ProductControllerTest extends BaseControllerTest {
         return response.getBody();
     }
 
-    public ProductSo setProductCodeListItems(final HttpHeaders headers, final Long id, final List<Long> itemIds) {
+    public ProductSo setProductCodeListItems(final HttpHeaders headers, final Long id, final List<ProductCategoryItemDataSo> categoryItems) {
         final ResponseEntity<ProductSo> response = restTemplate.exchange(
-                getURI("/products/{id}/code-list-items", Map.of("id", Long.toString(id))),
+                getURI("/products/{id}/category-items", Map.of("id", Long.toString(id))),
                 HttpMethod.POST,
-                new HttpEntity<>(itemIds, headers),
+                new HttpEntity<>(categoryItems, headers),
                 ProductSo.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

@@ -3,9 +3,10 @@ package sk.janobono.wiwa.business.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sk.janobono.wiwa.business.model.productconfig.ProductCategoryItemDataSo;
-import sk.janobono.wiwa.business.model.productconfig.ProductCategoryItemSo;
-import sk.janobono.wiwa.business.model.productconfig.ProductCategorySo;
+import sk.janobono.wiwa.business.model.product.ProductCategoryDataSo;
+import sk.janobono.wiwa.business.model.product.ProductCategoryItemDataSo;
+import sk.janobono.wiwa.business.model.product.ProductCategoryItemSo;
+import sk.janobono.wiwa.business.model.product.ProductCategorySo;
 import sk.janobono.wiwa.dal.domain.CodeListDo;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.repository.CodeListItemRepository;
@@ -45,8 +46,9 @@ public class ProductConfigService {
                 .orElse(Collections.emptyList());
     }
 
-    public List<ProductCategorySo> setProductCategories(final List<Long> data) {
+    public List<ProductCategorySo> setProductCategories(final List<ProductCategoryDataSo> data) {
         final List<ProductCategorySo> result = data.stream()
+                .map(ProductCategoryDataSo::categoryId)
                 .map(codeListRepository::findById)
                 .flatMap(Optional::stream)
                 .map(codeListDo -> new ProductCategorySo(codeListDo.getId(), codeListDo.getCode() + ":" + codeListDo.getName()))

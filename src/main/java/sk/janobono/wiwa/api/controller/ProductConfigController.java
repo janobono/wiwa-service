@@ -5,9 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import sk.janobono.wiwa.api.model.SingleValueBody;
-import sk.janobono.wiwa.business.model.productconfig.ProductCategoryItemDataSo;
-import sk.janobono.wiwa.business.model.productconfig.ProductCategoryItemSo;
-import sk.janobono.wiwa.business.model.productconfig.ProductCategorySo;
+import sk.janobono.wiwa.business.model.product.ProductCategoryDataSo;
+import sk.janobono.wiwa.business.model.product.ProductCategoryItemDataSo;
+import sk.janobono.wiwa.business.model.product.ProductCategoryItemSo;
+import sk.janobono.wiwa.business.model.product.ProductCategorySo;
 import sk.janobono.wiwa.business.service.ProductConfigService;
 
 import java.math.BigDecimal;
@@ -40,7 +41,7 @@ public class ProductConfigController {
 
     @PostMapping(value = "/product-categories")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<ProductCategorySo> setProductCategories(@Valid @RequestBody final List<Long> data) {
+    public List<ProductCategorySo> setProductCategories(@Valid @RequestBody final List<ProductCategoryDataSo> data) {
         return productConfigService.setProductCategories(data);
     }
 

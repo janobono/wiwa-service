@@ -17,6 +17,6 @@ public record ProductSo(
         List<ApplicationImage> images,
         List<ProductQuantitySo> quantities,
         List<ProductUnitPriceSo> unitPrices,
-        List<Long> codeListItems
+        List<ProductCategoryItemSo> categoryItems
 ) {
 }

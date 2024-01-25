@@ -12,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.business.model.product.ProductDataSo;
-import sk.janobono.wiwa.business.model.product.ProductSearchCriteriaSo;
-import sk.janobono.wiwa.business.model.product.ProductSo;
-import sk.janobono.wiwa.business.model.product.ProductUnitPriceSo;
+import sk.janobono.wiwa.business.model.product.*;
 import sk.janobono.wiwa.business.service.ProductService;
 import sk.janobono.wiwa.model.ProductStockStatus;
 import sk.janobono.wiwa.model.ResourceEntity;
@@ -102,9 +99,9 @@ public class ProductController {
         return productService.setProductUnitPrices(id, productUnitPrices);
     }
 
-    @PostMapping("/{id}/code-list-items")
+    @PostMapping("/{id}/category-items")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public ProductSo setProductCodeListItems(@PathVariable("id") final Long id, @RequestBody final List<Long> itemIds) {
-        return productService.setProductCodeListItems(id, itemIds);
+    public ProductSo setProductCategoryItems(@PathVariable("id") final Long id, @RequestBody final List<ProductCategoryItemDataSo> categoryItems) {
+        return productService.setProductCategoryItems(id, categoryItems);
     }
 }

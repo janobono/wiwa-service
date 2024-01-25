@@ -30,6 +30,7 @@ public class ProductService {
     private final ProductImageRepository productImageRepository;
     private final ProductQuantityRepository productQuantityRepository;
     private final ProductUnitPriceRepository productUnitPriceRepository;
+    private final CodeListRepository codeListRepository;
     private final CodeListItemRepository codeListItemRepository;
 
     public Page<ProductSo> getProducts(final ProductSearchCriteriaSo criteria, final Pageable pageable) {
@@ -156,10 +157,14 @@ public class ProductService {
         return toProductSo(getProductDo(productId));
     }
 
-    public ProductSo setProductCodeListItems(final Long productId, final List<Long> itemIds) {
+    public ProductSo setProductCategoryItems(final Long productId, final List<ProductCategoryItemDataSo> categoryItems) {
         final ProductDo productDo = getProductDo(productId);
 
-        codeListItemRepository.saveProductCodeListItems(productDo.getId(), itemIds);
+        codeListItemRepository.saveProductCodeListItems(productDo.getId(),
+                categoryItems.stream()
+                        .map(ProductCategoryItemDataSo::itemId)
+                        .toList()
+        );
 
         return toProductSo(productDo);
     }
@@ -180,7 +185,7 @@ public class ProductService {
                 .images(toImages(productDo.getId()))
                 .quantities(toQuantities(productDo.getId()))
                 .unitPrices(toUnitPrices(productDo.getId()))
-                .codeListItems(toCodeListItems(productDo.getId()))
+                .categoryItems(toProductCategoryItems(productDo.getId()))
                 .build();
     }
 
@@ -208,10 +213,20 @@ public class ProductService {
                 .toList();
     }
 
-    private List<Long> toCodeListItems(final Long productId) {
+    private List<ProductCategoryItemSo> toProductCategoryItems(final Long productId) {
         return codeListItemRepository.findByProductId(productId).stream()
-                .map(CodeListItemDo::getId)
+                .map(this::toProductCategoryItem)
                 .toList();
+    }
+
+    private ProductCategoryItemSo toProductCategoryItem(final CodeListItemDo codeListItemDo) {
+        final CodeListDo codeList = codeListRepository.findById(codeListItemDo.getCodeListId())
+                .orElseThrow(() -> WiwaException.CODE_LIST_NOT_FOUND.exception("Code list with id {0} not found", codeListItemDo.getCodeListId()));
+        return new ProductCategoryItemSo(
+                codeListItemDo.getId(),
+                codeListItemDo.getValue(),
+                new ProductCategorySo(codeList.getId(), codeList.getName())
+        );
     }
 
     private boolean isCodeUsed(final Long id, final String code) {
