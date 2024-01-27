@@ -2,20 +2,15 @@ package sk.janobono.wiwa.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.business.model.product.*;
 import sk.janobono.wiwa.business.service.ProductService;
 import sk.janobono.wiwa.model.ProductStockStatus;
-import sk.janobono.wiwa.model.ResourceEntity;
 
 import java.util.List;
 
@@ -71,28 +66,19 @@ public class ProductController {
         productService.deleteProduct(id);
     }
 
-    @GetMapping("/{id}/product-images/{fileName}")
-    public ResponseEntity<Resource> getProductImage(@PathVariable("id") final Long id, @PathVariable("fileName") final String fileName) {
-        final ResourceEntity resourceEntity = productService.getProductImage(id, fileName);
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(resourceEntity.contentType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntity.fileName() + "\"")
-                .body(resourceEntity.resource());
-    }
-
-    @PostMapping("/{id}/product-images")
+    @PostMapping("/{id}/images")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public ProductSo setProductImage(@PathVariable("id") final Long id, @RequestParam("file") final MultipartFile multipartFile) {
         return productService.setProductImage(id, multipartFile);
     }
 
-    @DeleteMapping("/{id}/product-images/{fileName}")
+    @DeleteMapping("/{id}/images/{fileName}")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
     public ProductSo deleteProductImage(@PathVariable("id") final Long id, @PathVariable("fileName") final String fileName) {
         return productService.deleteProductImage(id, fileName);
     }
 
-    @PostMapping("/{id}/product-unit-prices")
+    @PostMapping("/{id}/unit-prices")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
     public ProductSo setProductUnitPrices(@PathVariable("id") final Long id,
                                           @Valid @RequestBody final List<ProductUnitPriceSo> productUnitPrices) {

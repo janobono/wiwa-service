@@ -149,7 +149,7 @@ class ProductControllerTest extends BaseControllerTest {
                     .findFirst()
                     .orElseThrow();
             assertThat(savedImage).usingRecursiveComparison().isEqualTo(originalImage);
-            assertThat(getProductImage(headers, testProductId, savedImage.fileName()))
+            assertThat(getProductImage(testProductId, savedImage.fileName()))
                     .isEqualTo(imageUtil.scaleImage(
                             "png",
                             imageUtil.generateMessageImage(savedImage.fileName()),
@@ -255,15 +255,11 @@ class ProductControllerTest extends BaseControllerTest {
         deleteEntity(headers, "/products", id);
     }
 
-    private byte[] getProductImage(final HttpHeaders headers, final Long id, final String fileName) {
-        final ResponseEntity<byte[]> response = restTemplate.exchange(
-                getURI("/products/{id}/product-images/{fileName}", Map.of("id", Long.toString(id), "fileName", fileName)),
-                HttpMethod.GET, new HttpEntity<>(headers),
+    private byte[] getProductImage(final Long id, final String fileName) {
+        return restTemplate.getForObject(
+                getURI("/ui/product-images/{id}/{fileName}", Map.of("id", Long.toString(id), "fileName", fileName)),
                 byte[].class
         );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        return response.getBody();
     }
 
     private ProductSo setProductImage(final String token, final Long id, final String fileName) {
@@ -281,7 +277,7 @@ class ProductControllerTest extends BaseControllerTest {
         final HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
 
         final ResponseEntity<ProductSo> response = restTemplate.exchange(
-                getURI("/products/{id}/product-images", Map.of("id", Long.toString(id))),
+                getURI("/products/{id}/images", Map.of("id", Long.toString(id))),
                 HttpMethod.POST,
                 httpEntity,
                 ProductSo.class
@@ -293,7 +289,7 @@ class ProductControllerTest extends BaseControllerTest {
 
     public ProductSo deleteProductImage(final HttpHeaders headers, final Long id, final String fileName) {
         final ResponseEntity<ProductSo> response = restTemplate.exchange(
-                getURI("/products/{id}/product-images/{fileName}", Map.of("id", Long.toString(id), "fileName", fileName)),
+                getURI("/products/{id}/images/{fileName}", Map.of("id", Long.toString(id), "fileName", fileName)),
                 HttpMethod.DELETE,
                 new HttpEntity<>(headers),
                 ProductSo.class
@@ -305,7 +301,7 @@ class ProductControllerTest extends BaseControllerTest {
 
     public ProductSo setProductUnitPrices(final HttpHeaders headers, final Long id, final List<ProductUnitPriceSo> productUnitPrices) {
         final ResponseEntity<ProductSo> response = restTemplate.exchange(
-                getURI("/products/{id}/product-unit-prices", Map.of("id", id.toString())),
+                getURI("/products/{id}/unit-prices", Map.of("id", id.toString())),
                 HttpMethod.POST,
                 new HttpEntity<>(productUnitPrices, headers),
                 ProductSo.class
