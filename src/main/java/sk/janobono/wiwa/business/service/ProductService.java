@@ -224,8 +224,9 @@ public class ProductService {
                 .orElseThrow(() -> WiwaException.CODE_LIST_NOT_FOUND.exception("Code list with id {0} not found", codeListItemDo.getCodeListId()));
         return new ProductCategoryItemSo(
                 codeListItemDo.getId(),
+                codeListItemDo.getCode(),
                 codeListItemDo.getValue(),
-                new ProductCategorySo(codeList.getId(), codeList.getName())
+                new ProductCategorySo(codeList.getId(), codeList.getCode(), codeList.getName())
         );
     }
 

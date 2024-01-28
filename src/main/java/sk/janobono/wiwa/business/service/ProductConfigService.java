@@ -51,7 +51,7 @@ public class ProductConfigService {
                 .map(ProductCategoryDataSo::categoryId)
                 .map(codeListRepository::findById)
                 .flatMap(Optional::stream)
-                .map(codeListDo -> new ProductCategorySo(codeListDo.getId(), codeListDo.getCode() + ":" + codeListDo.getName()))
+                .map(codeListDo -> new ProductCategorySo(codeListDo.getId(), codeListDo.getCode(), codeListDo.getName()))
                 .toList();
 
         applicationPropertyService.setApplicationProperty(
@@ -157,15 +157,23 @@ public class ProductConfigService {
 
     private Optional<ProductCategoryItemSo> toProductCategoryItem(final ProductCategoryItemDataSo item) {
         final Optional<CodeListDo> codeList = codeListRepository.findById(item.itemId());
+        if (codeList.isEmpty()) {
+            return Optional.empty();
+        }
+
         final Optional<CodeListItemDo> codeListItem = Optional.ofNullable(item.itemId()).stream()
                 .map(codeListItemRepository::findById)
                 .flatMap(Optional::stream)
                 .findFirst();
+        if (codeListItem.isEmpty()) {
+            return Optional.empty();
+        }
 
-        return codeList.map(cl -> new ProductCategoryItemSo(
-                codeListItem.map(CodeListItemDo::getId).orElse(null),
-                codeListItem.map(cli -> cli.getCode() + ":" + cli.getValue()).orElse(null),
-                new ProductCategorySo(cl.getId(), cl.getCode() + ":" + cl.getName())
+        return codeListItem.map(ci -> new ProductCategoryItemSo(
+                ci.getId(),
+                ci.getCode(),
+                ci.getValue(),
+                new ProductCategorySo(codeList.get().getId(), codeList.get().getCode(), codeList.get().getName())
         ));
     }
 
