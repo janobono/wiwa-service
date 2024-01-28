@@ -156,15 +156,12 @@ public class ProductConfigService {
     }
 
     private Optional<ProductCategoryItemSo> toProductCategoryItem(final ProductCategoryItemDataSo item) {
-        final Optional<CodeListDo> codeList = codeListRepository.findById(item.itemId());
+        final Optional<CodeListDo> codeList = codeListRepository.findById(item.categoryId());
         if (codeList.isEmpty()) {
             return Optional.empty();
         }
 
-        final Optional<CodeListItemDo> codeListItem = Optional.ofNullable(item.itemId()).stream()
-                .map(codeListItemRepository::findById)
-                .flatMap(Optional::stream)
-                .findFirst();
+        final Optional<CodeListItemDo> codeListItem = codeListItemRepository.findById(item.itemId());
         if (codeListItem.isEmpty()) {
             return Optional.empty();
         }
@@ -180,13 +177,9 @@ public class ProductConfigService {
     private ProductCategoryItemSo toProductCategoryItem(final String value) {
         try {
             final ProductCategoryItemSo result = mapper.readValue(value, ProductCategoryItemSo.class);
-            if (codeListRepository.existsById(result.category().id())) {
-                if (result.id() == null) {
-                    return result;
-                }
-                if (codeListItemRepository.existsById(result.id())) {
-                    return result;
-                }
+            if (codeListRepository.existsById(result.category().id())
+                    && codeListItemRepository.existsById(result.id())) {
+                return result;
             }
         } catch (final Exception e) {
             throw new RuntimeException(e);
