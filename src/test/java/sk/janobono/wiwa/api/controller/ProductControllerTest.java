@@ -159,7 +159,7 @@ class ProductControllerTest extends BaseControllerTest {
         }
 
         List<ProductUnitPriceSo> productUnitPrices = setProductUnitPrices(headers, testProductId, List.of(
-                new ProductUnitPriceSo(LocalDate.now(), new BigDecimal("100.000"), Unit.EUR)
+                new ProductUnitPriceDataSo(LocalDate.now(), new BigDecimal("100.000"), Unit.EUR)
         )).unitPrices();
         assertThat(productUnitPrices.get(0).value()).isEqualTo(new BigDecimal("100.000"));
         assertThat(productUnitPrices.get(0).unit()).isEqualTo(Unit.EUR);
@@ -299,7 +299,7 @@ class ProductControllerTest extends BaseControllerTest {
         return response.getBody();
     }
 
-    public ProductSo setProductUnitPrices(final HttpHeaders headers, final Long id, final List<ProductUnitPriceSo> productUnitPrices) {
+    public ProductSo setProductUnitPrices(final HttpHeaders headers, final Long id, final List<ProductUnitPriceDataSo> productUnitPrices) {
         final ResponseEntity<ProductSo> response = restTemplate.exchange(
                 getURI("/products/{id}/unit-prices", Map.of("id", id.toString())),
                 HttpMethod.POST,

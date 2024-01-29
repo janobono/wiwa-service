@@ -81,7 +81,7 @@ public class ProductController {
     @PostMapping("/{id}/unit-prices")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
     public ProductSo setProductUnitPrices(@PathVariable("id") final Long id,
-                                          @Valid @RequestBody final List<ProductUnitPriceSo> productUnitPrices) {
+                                          @Valid @RequestBody final List<ProductUnitPriceDataSo> productUnitPrices) {
         return productService.setProductUnitPrices(id, productUnitPrices);
     }
 

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.business.model.product.*;
 import sk.janobono.wiwa.component.ImageUtil;
+import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.*;
@@ -15,7 +16,9 @@ import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.ApplicationImage;
 import sk.janobono.wiwa.model.ResourceEntity;
+import sk.janobono.wiwa.model.WiwaProperty;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -24,6 +27,7 @@ public class ProductService {
 
     private final CommonConfigProperties commonConfigProperties;
     private final ImageUtil imageUtil;
+    private final PriceUtil priceUtil;
     private final ScDf scDf;
     private final ProductRepository productRepository;
     private final ProductAttributeRepository productAttributeRepository;
@@ -32,13 +36,15 @@ public class ProductService {
     private final ProductUnitPriceRepository productUnitPriceRepository;
     private final CodeListRepository codeListRepository;
     private final CodeListItemRepository codeListItemRepository;
+    private final ApplicationPropertyService applicationPropertyService;
 
     public Page<ProductSo> getProducts(final ProductSearchCriteriaSo criteria, final Pageable pageable) {
-        return productRepository.findAll(criteria, pageable).map(this::toProductSo);
+        final BigDecimal vatRate = getVatRate();
+        return productRepository.findAll(criteria, pageable).map(value -> toProductSo(value, vatRate));
     }
 
     public ProductSo getProduct(final Long id) {
-        return toProductSo(getProductDo(id));
+        return toProductSo(getProductDo(id), getVatRate());
     }
 
     public ProductSo addProduct(final ProductDataSo data) {
@@ -54,7 +60,7 @@ public class ProductService {
         );
         setProductAttributes(productDo.getId(), data);
         setProductQuantities(productDo.getId(), data);
-        return toProductSo(productDo);
+        return toProductSo(productDo, getVatRate());
     }
 
     public ProductSo setProduct(final Long id, final ProductDataSo data) {
@@ -69,7 +75,7 @@ public class ProductService {
         productRepository.save(productDo);
         setProductAttributes(id, data);
         setProductQuantities(id, data);
-        return toProductSo(productDo);
+        return toProductSo(productDo, getVatRate());
     }
 
     public void deleteProduct(final Long id) {
@@ -118,7 +124,7 @@ public class ProductService {
                 commonConfigProperties.maxImageResolution()));
         productImageRepository.save(productImageDo);
 
-        return toProductSo(getProductDo(productId));
+        return toProductSo(getProductDo(productId), getVatRate());
     }
 
     public ProductSo deleteProductImage(final Long productId, final String fileName) {
@@ -127,21 +133,21 @@ public class ProductService {
         }
         productImageRepository.findByProductIdAndFileName(productId, fileName)
                 .ifPresent(productImageDo -> productImageRepository.deleteById(productImageDo.getId()));
-        return toProductSo(getProductDo(productId));
+        return toProductSo(getProductDo(productId), getVatRate());
     }
 
-    public ProductSo setProductUnitPrices(final Long productId, final List<ProductUnitPriceSo> productUnitPrices) {
+    public ProductSo setProductUnitPrices(final Long productId, final List<ProductUnitPriceDataSo> productUnitPrices) {
         if (!productRepository.existsById(productId)) {
             throw WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", productId);
         }
 
         final List<ProductUnitPriceDo> batch = new ArrayList<>();
         if (!productUnitPrices.isEmpty()) {
-            final List<ProductUnitPriceSo> orderedPrices = productUnitPrices.stream()
+            final List<ProductUnitPriceDataSo> orderedPrices = productUnitPrices.stream()
                     .sorted((o1, o2) -> o2.validFrom().compareTo(o1.validFrom())).toList();
 
-            ProductUnitPriceSo previous = null;
-            for (final ProductUnitPriceSo current : orderedPrices) {
+            ProductUnitPriceDataSo previous = null;
+            for (final ProductUnitPriceDataSo current : orderedPrices) {
                 batch.add(ProductUnitPriceDo.builder()
                         .productId(productId)
                         .unit(current.unit())
@@ -154,7 +160,7 @@ public class ProductService {
             }
         }
         productUnitPriceRepository.saveProductUnitPrices(productId, batch);
-        return toProductSo(getProductDo(productId));
+        return toProductSo(getProductDo(productId), getVatRate());
     }
 
     public ProductSo setProductCategoryItems(final Long productId, final List<ProductCategoryItemDataSo> categoryItems) {
@@ -166,7 +172,7 @@ public class ProductService {
                         .toList()
         );
 
-        return toProductSo(productDo);
+        return toProductSo(productDo, getVatRate());
     }
 
     private ProductDo getProductDo(final Long id) {
@@ -174,7 +180,7 @@ public class ProductService {
                 .orElseThrow(() -> WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", id));
     }
 
-    private ProductSo toProductSo(final ProductDo productDo) {
+    private ProductSo toProductSo(final ProductDo productDo, final BigDecimal vatRate) {
         return ProductSo.builder()
                 .id(productDo.getId())
                 .code(productDo.getCode())
@@ -184,7 +190,7 @@ public class ProductService {
                 .attributes(toAttributes(productDo.getId()))
                 .images(toImages(productDo.getId()))
                 .quantities(toQuantities(productDo.getId()))
-                .unitPrices(toUnitPrices(productDo.getId()))
+                .unitPrices(toUnitPrices(productDo.getId(), vatRate))
                 .categoryItems(toProductCategoryItems(productDo.getId()))
                 .build();
     }
@@ -207,10 +213,14 @@ public class ProductService {
                 .toList();
     }
 
-    private List<ProductUnitPriceSo> toUnitPrices(final Long productId) {
+    private List<ProductUnitPriceSo> toUnitPrices(final Long productId, final BigDecimal vatRate) {
         return productUnitPriceRepository.findAllByProductId(productId).stream()
-                .map(price -> new ProductUnitPriceSo(price.getValidFrom(), price.getValue(), price.getUnit()))
-                .toList();
+                .map(price -> new ProductUnitPriceSo(
+                        price.getValidFrom(),
+                        price.getValue(),
+                        priceUtil.countVatValue(price.getValue(), vatRate),
+                        price.getUnit())
+                ).toList();
     }
 
     private List<ProductCategoryItemSo> toProductCategoryItems(final Long productId) {
@@ -260,5 +270,9 @@ public class ProductService {
                 )
                 .toList();
         productQuantityRepository.saveProductQuantities(productId, quantities);
+    }
+
+    private BigDecimal getVatRate() {
+        return new BigDecimal(applicationPropertyService.getProperty(WiwaProperty.PRODUCT_VAT_RATE));
     }
 }
