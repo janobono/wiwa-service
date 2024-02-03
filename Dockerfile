@@ -1,10 +1,10 @@
-FROM public.ecr.aws/docker/library/maven:3-eclipse-temurin-17-alpine as builder
+FROM public.ecr.aws/docker/library/maven:3-eclipse-temurin-21-alpine as builder
 
 RUN apk add git
 
 WORKDIR /r3n
 
-RUN git clone -b 6.0.3 https://github.com/janobono/r3n-api.git .
+RUN git clone -b 6.0.4 https://github.com/janobono/r3n-api.git .
 
 RUN mvn clean install -DskipTests
 
@@ -14,7 +14,7 @@ COPY . .
 
 RUN mvn clean install -DskipTests
 
-FROM public.ecr.aws/amazoncorretto/amazoncorretto:17-al2023-headless as production
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:21-al2023-headless as production
 
 WORKDIR /app
 
