@@ -10,11 +10,10 @@
     </parent>
     <groupId>sk.janobono.wiwa</groupId>
     <artifactId>wiwa-service</artifactId>
-    <version>0.3.0</version>
+    <version>1.0.0</version>
 
     <properties>
         <java.version>21</java.version>
-
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <sk.r3n.version>6.0.4</sk.r3n.version>
     </properties>
@@ -55,10 +54,6 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.thymeleaf.extras</groupId>
-            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
         </dependency>
 
         <dependency>
@@ -196,5 +191,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
