@@ -6,58 +6,58 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sk.janobono.wiwa.business.model.auth.*;
-import sk.janobono.wiwa.business.service.AuthService;
+import sk.janobono.wiwa.api.model.auth.*;
+import sk.janobono.wiwa.api.service.AuthApiService;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final AuthService authService;
+    private final AuthApiService authApiService;
 
     @PostMapping("/confirm")
-    public AuthenticationResponseSo confirm(@Valid @RequestBody final ConfirmationSo confirmationSo) {
-        return authService.confirm(confirmationSo);
+    public AuthenticationResponseWebDto confirm(@Valid @RequestBody final ConfirmationWebDto confirmation) {
+        return authApiService.confirm(confirmation);
     }
 
     @PostMapping("/change-email")
-    public AuthenticationResponseSo changeEmail(@Valid @RequestBody final ChangeEmailSo changeEmailSo) {
-        return authService.changeEmail(changeEmailSo);
+    public AuthenticationResponseWebDto changeEmail(@Valid @RequestBody final ChangeEmailWebDto changeEmail) {
+        return authApiService.changeEmail(changeEmail);
     }
 
     @PostMapping("/change-password")
-    public AuthenticationResponseSo changePassword(@Valid @RequestBody final ChangePasswordSo changePasswordSo) {
-        return authService.changePassword(changePasswordSo);
+    public AuthenticationResponseWebDto changePassword(@Valid @RequestBody final ChangePasswordWebDto changePassword) {
+        return authApiService.changePassword(changePassword);
     }
 
     @PostMapping("/change-user-details")
-    public AuthenticationResponseSo changeUserDetails(@Valid @RequestBody final ChangeUserDetailsSo changeUserDetailsSo) {
-        return authService.changeUserDetails(changeUserDetailsSo);
+    public AuthenticationResponseWebDto changeUserDetails(@Valid @RequestBody final ChangeUserDetailsWebDto changeUserDetails) {
+        return authApiService.changeUserDetails(changeUserDetails);
     }
 
     @PostMapping("/resend-confirmation")
-    public void resendConfirmation(@Valid @RequestBody final ResendConfirmationSo resendConfirmationSo) {
-        authService.resendConfirmation(resendConfirmationSo);
+    public void resendConfirmation(@Valid @RequestBody final ResendConfirmationWebDto resendConfirmation) {
+        authApiService.resendConfirmation(resendConfirmation);
     }
 
     @PostMapping("/reset-password")
-    public void resetPassword(@Valid @RequestBody final ResetPasswordSo resetPasswordSo) {
-        authService.resetPassword(resetPasswordSo);
+    public void resetPassword(@Valid @RequestBody final ResetPasswordWebDto resetPassword) {
+        authApiService.resetPassword(resetPassword);
     }
 
     @PostMapping("/sign-in")
-    public AuthenticationResponseSo signIn(@Valid @RequestBody final SignInSo signInSo) {
-        return authService.signIn(signInSo);
+    public AuthenticationResponseWebDto signIn(@Valid @RequestBody final SignInWebDto signIn) {
+        return authApiService.signIn(signIn);
     }
 
     @PostMapping("/sign-up")
-    public AuthenticationResponseSo signUp(@Valid @RequestBody final SignUpSo signUpSo) {
-        return authService.signUp(signUpSo);
+    public AuthenticationResponseWebDto signUp(@Valid @RequestBody final SignUpWebDto signUp) {
+        return authApiService.signUp(signUp);
     }
 
     @PostMapping("/refresh")
-    public AuthenticationResponseSo refresh(@Valid @RequestBody final RefreshTokenSo refreshTokenSo) {
-        return authService.refresh(refreshTokenSo);
+    public AuthenticationResponseWebDto refresh(@Valid @RequestBody final RefreshTokenWebDto refreshToken) {
+        return authApiService.refresh(refreshToken);
     }
 }

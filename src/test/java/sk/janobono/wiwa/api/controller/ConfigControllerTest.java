@@ -4,19 +4,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.api.controller.BaseControllerTest;
-import sk.janobono.wiwa.api.model.SingleValueBody;
-import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
-import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
-import sk.janobono.wiwa.business.model.ui.UnitSo;
+import sk.janobono.wiwa.api.model.ApplicationImageInfoWebDto;
+import sk.janobono.wiwa.api.model.CompanyInfoWebDto;
+import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
+import sk.janobono.wiwa.api.model.UnitWebDto;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
-import sk.janobono.wiwa.model.ApplicationImage;
 import sk.janobono.wiwa.model.Unit;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,6 +32,63 @@ class ConfigControllerTest extends BaseControllerTest {
 
     @Autowired
     public ApplicationPropertyRepository applicationPropertyRepository;
+
+    @Test
+    void appImageTest() {
+        final String token = signIn(DEFAULT_MANAGER, PASSWORD).token();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        headers.setBearerAuth(token);
+
+        final MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
+        form.add("file", new ByteArrayResource(imageUtil.generateMessageImage(null)) {
+            @Override
+            public String getFilename() {
+                return "test.png";
+            }
+        });
+        final HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
+
+        final ResponseEntity<ApplicationImageInfoWebDto> uploadedImage = restTemplate.exchange(
+                getURI("/config/application-images"),
+                HttpMethod.POST,
+                httpEntity,
+                ApplicationImageInfoWebDto.class
+        );
+        assertThat(uploadedImage.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(uploadedImage.getBody()).isNotNull();
+        assertThat(uploadedImage.hasBody()).isTrue();
+        assertThat(uploadedImage.getBody().fileName()).isEqualTo("test.png");
+        assertThat(uploadedImage.getBody().thumbnail().startsWith("data:" + MediaType.IMAGE_PNG_VALUE)).isTrue();
+
+        final byte[] data = restTemplate.getForObject(
+                getURI("/ui/application-images/{fileName}", Collections.singletonMap("fileName", "test2.png")),
+                byte[].class
+        );
+        assertThat(data).isNotNull();
+        assertThat(data).isEqualTo(imageUtil.generateMessageImage(null));
+
+        headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+
+        final Pageable pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "fileName", "fileType");
+        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        addPageableToParams(params, pageable);
+        final ResponseEntity<JsonNode> response = restTemplate.exchange(
+                getURI("/config/application-images", params),
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                JsonNode.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        final Page<ApplicationImageInfoWebDto> page = getPage(response.getBody(), pageable, ApplicationImageInfoWebDto.class);
+        assertThat(page.getTotalElements()).isEqualTo(1);
+        assertThat(page.getContent().getFirst().fileName()).isEqualTo("test.png");
+        assertThat(page.getContent().getFirst().thumbnail().startsWith("data:" + MediaType.IMAGE_PNG_VALUE)).isTrue();
+    }
 
     @Test
     void fullTest() {
@@ -49,11 +109,11 @@ class ConfigControllerTest extends BaseControllerTest {
         });
         final HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
 
-        final ResponseEntity<ApplicationImage> uploadedImage = restTemplate.exchange(
+        final ResponseEntity<ApplicationImageInfoWebDto> uploadedImage = restTemplate.exchange(
                 getURI("/config/logo"),
                 HttpMethod.POST,
                 httpEntity,
-                ApplicationImage.class
+                ApplicationImageInfoWebDto.class
         );
         assertThat(uploadedImage.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(uploadedImage.getBody()).isNotNull();
@@ -67,7 +127,7 @@ class ConfigControllerTest extends BaseControllerTest {
                 getURI("/config/title"),
                 HttpMethod.POST,
                 new HttpEntity<>(
-                        new SingleValueBody<>("test"),
+                        new SingleValueBodyWebDto<>("test"),
                         headers
                 ),
                 JsonNode.class
@@ -80,7 +140,7 @@ class ConfigControllerTest extends BaseControllerTest {
                 getURI("/config/welcome-text"),
                 HttpMethod.POST,
                 new HttpEntity<>(
-                        new SingleValueBody<>("test"),
+                        new SingleValueBodyWebDto<>("test"),
                         headers
                 ),
                 JsonNode.class
@@ -89,25 +149,25 @@ class ConfigControllerTest extends BaseControllerTest {
         assertThat(Objects.requireNonNull(welcomeText.getBody()).get("value").asText()).isEqualTo("test");
 
         // application-info
-        final ResponseEntity<ApplicationInfoSo> applicationInfo = restTemplate.exchange(
+        final ResponseEntity<String[]> applicationInfo = restTemplate.exchange(
                 getURI("/config/application-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
-                        new ApplicationInfoSo(List.of("testTextEn")),
+                        List.of("testTextEn"),
                         headers
                 ),
-                ApplicationInfoSo.class
+                String[].class
         );
         assertThat(applicationInfo.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(applicationInfo.getBody()).isNotNull();
-        assertThat(applicationInfo.getBody().items().get(0)).isEqualTo("testTextEn");
+        assertThat(applicationInfo.getBody()[0]).isEqualTo("testTextEn");
 
         // company-info
-        final ResponseEntity<CompanyInfoSo> companyInfo = restTemplate.exchange(
+        final ResponseEntity<CompanyInfoWebDto> companyInfo = restTemplate.exchange(
                 getURI("/config/company-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
-                        new CompanyInfoSo(
+                        new CompanyInfoWebDto(
                                 "testNameEn",
                                 "testStreetEn",
                                 "testCityEn",
@@ -123,7 +183,7 @@ class ConfigControllerTest extends BaseControllerTest {
                         ),
                         headers
                 ),
-                CompanyInfoSo.class
+                CompanyInfoWebDto.class
         );
         assertThat(companyInfo.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(companyInfo.getBody()).isNotNull();
@@ -145,7 +205,7 @@ class ConfigControllerTest extends BaseControllerTest {
                 getURI("/config/business-conditions"),
                 HttpMethod.POST,
                 new HttpEntity<>(
-                        new SingleValueBody<>("test"),
+                        new SingleValueBodyWebDto<>("test"),
                         headers
                 ),
                 JsonNode.class
@@ -158,7 +218,7 @@ class ConfigControllerTest extends BaseControllerTest {
                 getURI("/config/cookies-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
-                        new SingleValueBody<>("test"),
+                        new SingleValueBodyWebDto<>("test"),
                         headers
                 ),
                 JsonNode.class
@@ -171,7 +231,7 @@ class ConfigControllerTest extends BaseControllerTest {
                 getURI("/config/gdpr-info"),
                 HttpMethod.POST,
                 new HttpEntity<>(
-                        new SingleValueBody<>("test"),
+                        new SingleValueBodyWebDto<>("test"),
                         headers
                 ),
                 JsonNode.class
@@ -184,7 +244,7 @@ class ConfigControllerTest extends BaseControllerTest {
                 getURI("/config/working-hours"),
                 HttpMethod.POST,
                 new HttpEntity<>(
-                        new SingleValueBody<>("test"),
+                        new SingleValueBodyWebDto<>("test"),
                         headers
                 ),
                 JsonNode.class
@@ -193,17 +253,16 @@ class ConfigControllerTest extends BaseControllerTest {
         assertThat(Objects.requireNonNull(workingHours.getBody()).get("value").asText()).isEqualTo("test");
 
         // units
-        final ResponseEntity<UnitSo[]> units = restTemplate.exchange(
+        final ResponseEntity<UnitWebDto[]> units = restTemplate.exchange(
                 getURI("/config/units"),
                 HttpMethod.POST,
                 new HttpEntity<>(
-                        List.of(new UnitSo(Unit.EUR, "test")),
+                        List.of(new UnitWebDto(Unit.EUR, "test")),
                         headers
                 ),
-                UnitSo[].class
+                UnitWebDto[].class
         );
         assertThat(units.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(units.getBody())[0].id()).isEqualTo(Unit.EUR);
-
     }
 }

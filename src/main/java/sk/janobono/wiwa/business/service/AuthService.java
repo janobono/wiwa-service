@@ -7,9 +7,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.model.auth.*;
-import sk.janobono.wiwa.business.model.mail.MailContentSo;
-import sk.janobono.wiwa.business.model.mail.MailLinkSo;
-import sk.janobono.wiwa.business.model.mail.MailSo;
+import sk.janobono.wiwa.business.model.mail.MailContentData;
+import sk.janobono.wiwa.business.model.mail.MailLinkData;
+import sk.janobono.wiwa.business.model.mail.MailData;
 import sk.janobono.wiwa.business.model.mail.MailTemplate;
 import sk.janobono.wiwa.business.service.util.UserUtilService;
 import sk.janobono.wiwa.component.*;
@@ -48,7 +48,7 @@ public class AuthService {
     private final ApplicationPropertyService applicationPropertyService;
     private final UserUtilService userUtilService;
 
-    public AuthenticationResponseSo confirm(final ConfirmationSo confirmation) {
+    public AuthenticationResponseData confirm(final ConfirmationData confirmation) {
         final Map<String, String> data = verificationToken.parseToken(confirmation.token());
         final UserDo userDo = switch (AuthToken.valueOf(data.get(AuthTokenKey.TYPE.name()))) {
             case SIGN_UP -> signUp(
@@ -63,7 +63,7 @@ public class AuthService {
         return createAuthenticationResponse(userDo);
     }
 
-    public AuthenticationResponseSo changeEmail(final ChangeEmailSo changeEmail) {
+    public AuthenticationResponseData changeEmail(final ChangeEmailData changeEmail) {
         captcha.checkTokenValid(changeEmail.captchaText(), changeEmail.captchaToken());
         if (userRepository.existsByEmail(scDf.toStripAndLowerCase(changeEmail.email()))) {
             throw WiwaException.USER_EMAIL_IS_USED.exception("Email is used");
@@ -76,7 +76,7 @@ public class AuthService {
         return createAuthenticationResponse(userRepository.save(userDo));
     }
 
-    public AuthenticationResponseSo changePassword(final ChangePasswordSo changePassword) {
+    public AuthenticationResponseData changePassword(final ChangePasswordData changePassword) {
         captcha.checkTokenValid(changePassword.captchaText(), changePassword.captchaToken());
         final User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final UserDo userDo = userUtilService.getUserDo(principal.id());
@@ -86,7 +86,7 @@ public class AuthService {
         return createAuthenticationResponse(userRepository.save(userDo));
     }
 
-    public AuthenticationResponseSo changeUserDetails(final ChangeUserDetailsSo changeUserDetails) {
+    public AuthenticationResponseData changeUserDetails(final ChangeUserDetailsData changeUserDetails) {
         captcha.checkTokenValid(changeUserDetails.captchaText(), changeUserDetails.captchaToken());
         final User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final UserDo userDo = userUtilService.getUserDo(principal.id());
@@ -104,7 +104,7 @@ public class AuthService {
         return createAuthenticationResponse(userRepository.save(userDo));
     }
 
-    public void resendConfirmation(final ResendConfirmationSo resendConfirmation) {
+    public void resendConfirmation(final ResendConfirmationData resendConfirmation) {
         captcha.checkTokenValid(resendConfirmation.captchaText(), resendConfirmation.captchaToken());
         final User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final UserDo userDo = userRepository.findById(principal.id()).orElseThrow(
@@ -113,7 +113,7 @@ public class AuthService {
         sendSignUpMail(userDo);
     }
 
-    public void resetPassword(final ResetPasswordSo resetPassword) {
+    public void resetPassword(final ResetPasswordData resetPassword) {
         captcha.checkTokenValid(resetPassword.captchaText(), resetPassword.captchaToken());
         final UserDo userDo = userRepository.findByEmail(scDf.toStripAndLowerCase(resetPassword.email())).orElseThrow(
                 () -> WiwaException.USER_NOT_FOUND.exception("User with email {0} not found", resetPassword.email())
@@ -122,7 +122,7 @@ public class AuthService {
         sendResetPasswordMail(userDo);
     }
 
-    public AuthenticationResponseSo signIn(final SignInSo signIn) {
+    public AuthenticationResponseData signIn(final SignInData signIn) {
         final UserDo userDo = userRepository.findByUsername(scDf.toStripAndLowerCase(signIn.username())).orElseThrow(
                 () -> WiwaException.USER_NOT_FOUND.exception("User with username {0} not found", signIn.username())
         );
@@ -131,7 +131,7 @@ public class AuthService {
         return createAuthenticationResponse(userDo);
     }
 
-    public AuthenticationResponseSo signUp(final SignUpSo signUp) {
+    public AuthenticationResponseData signUp(final SignUpData signUp) {
         captcha.checkTokenValid(signUp.captchaText(), signUp.captchaToken());
         if (userRepository.existsByUsername(scDf.toStripAndLowerCase(signUp.username()))) {
             throw WiwaException.USER_USERNAME_IS_USED.exception("Username is used");
@@ -160,7 +160,7 @@ public class AuthService {
         return createAuthenticationResponse(userDo);
     }
 
-    public AuthenticationResponseSo refresh(final RefreshTokenSo refreshToken) {
+    public AuthenticationResponseData refresh(final RefreshTokenData refreshToken) {
         final Map<String, String> data;
         try {
             data = verificationToken.parseToken(refreshToken.token());
@@ -176,7 +176,7 @@ public class AuthService {
         return createAuthenticationResponse(userDo);
     }
 
-    private AuthenticationResponseSo createAuthenticationResponse(final UserDo user) {
+    private AuthenticationResponseData createAuthenticationResponse(final UserDo user) {
         final Long issuedAt = System.currentTimeMillis();
         final Map<String, String> data = new HashMap<>();
         data.put(AuthTokenKey.TYPE.name(), AuthToken.REFRESH.name());
@@ -186,7 +186,7 @@ public class AuthService {
                 issuedAt,
                 issuedAt + TimeUnit.MINUTES.toMillis(authConfigProperties.refreshTokenExpiration())
         );
-        return new AuthenticationResponseSo(jwtToken.generateToken(userUtilService.mapToUser(user), issuedAt), token);
+        return new AuthenticationResponseData(jwtToken.generateToken(userUtilService.mapToUser(user), issuedAt), token);
     }
 
     private UserDo signUp(final Long userId) {
@@ -219,13 +219,13 @@ public class AuthService {
                 issuedAt + TimeUnit.MINUTES.toMillis(authConfigProperties.resetPasswordTokenExpiration())
         );
 
-        mailService.sendEmail(new MailSo(
+        mailService.sendEmail(new MailData(
                 appConfigProperties.mail(),
                 null,
                 List.of(user.getEmail()),
                 applicationPropertyService.getProperty(WiwaProperty.AUTH_RESET_PASSWORD_MAIL_SUBJECT),
                 MailTemplate.BASE,
-                new MailContentSo(
+                new MailContentData(
                         applicationPropertyService.getProperty(WiwaProperty.AUTH_RESET_PASSWORD_MAIL_TITLE),
                         Arrays.asList(
                                 applicationPropertyService.getProperty(
@@ -238,7 +238,7 @@ public class AuthService {
                                         data.get(AuthTokenKey.NEW_PASSWORD.name())
                                 )
                         ),
-                        new MailLinkSo(
+                        new MailLinkData(
                                 getTokenUrl(appConfigProperties.webUrl(), appConfigProperties.confirmPath(), token),
                                 applicationPropertyService.getProperty(
                                         WiwaProperty.AUTH_RESET_PASSWORD_MAIL_LINK
@@ -260,18 +260,18 @@ public class AuthService {
                 issuedAt + TimeUnit.MINUTES.toMillis(authConfigProperties.signUpTokenExpiration())
         );
 
-        mailService.sendEmail(new MailSo(
+        mailService.sendEmail(new MailData(
                 appConfigProperties.mail(),
                 null,
                 List.of(user.getEmail()),
                 applicationPropertyService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_SUBJECT),
                 MailTemplate.BASE,
-                new MailContentSo(
+                new MailContentData(
                         applicationPropertyService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_TITLE),
                         Collections.singletonList(
                                 applicationPropertyService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_MESSAGE)
                         ),
-                        new MailLinkSo(
+                        new MailLinkData(
                                 getTokenUrl(appConfigProperties.webUrl(), appConfigProperties.confirmPath(), token),
                                 applicationPropertyService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_LINK)
                         )

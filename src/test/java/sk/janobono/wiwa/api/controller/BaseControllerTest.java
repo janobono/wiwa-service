@@ -9,12 +9,8 @@ import org.springframework.http.*;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 import sk.janobono.wiwa.BaseIntegrationTest;
-import sk.janobono.wiwa.business.model.auth.AuthenticationResponseSo;
-import sk.janobono.wiwa.business.model.auth.SignInSo;
-import sk.janobono.wiwa.business.model.codelist.CodeListDataSo;
-import sk.janobono.wiwa.business.model.codelist.CodeListItemDataSo;
-import sk.janobono.wiwa.business.model.codelist.CodeListItemSo;
-import sk.janobono.wiwa.business.model.codelist.CodeListSo;
+import sk.janobono.wiwa.api.model.auth.AuthenticationResponseWebDto;
+import sk.janobono.wiwa.business.model.auth.SignInData;
 
 import java.io.IOException;
 import java.net.URI;
@@ -28,14 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class BaseControllerTest extends BaseIntegrationTest {
 
-    public AuthenticationResponseSo signIn(final String username, final String password) {
+    public AuthenticationResponseWebDto signIn(final String username, final String password) {
         return restTemplate.postForObject(
                 getURI("/auth/sign-in"),
-                new SignInSo(
+                new SignInData(
                         username,
                         password
                 ),
-                AuthenticationResponseSo.class
+                AuthenticationResponseWebDto.class
         );
     }
 
@@ -110,15 +106,11 @@ public class BaseControllerTest extends BaseIntegrationTest {
     }
 
     public void addToParams(final MultiValueMap<String, String> params, final String key, final String value) {
-        Optional.ofNullable(value).ifPresent(v -> {
-            params.add(key, v);
-        });
+        Optional.ofNullable(value).ifPresent(v -> params.add(key, v));
     }
 
     public void addToParams(final MultiValueMap<String, String> params, final String key, final List<String> value) {
-        Optional.ofNullable(value).ifPresent(v -> {
-            params.add(key, String.join(",", v));
-        });
+        Optional.ofNullable(value).ifPresent(v -> params.add(key, String.join(",", v)));
     }
 
     protected <T> T getEntity(final Class<T> clazz, final HttpHeaders headers, final String path, final Long id) {
@@ -168,13 +160,5 @@ public class BaseControllerTest extends BaseIntegrationTest {
                 Void.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    protected CodeListSo addCodeList(final HttpHeaders headers, final CodeListDataSo data) {
-        return addEntity(CodeListSo.class, headers, "/code-lists", data);
-    }
-
-    protected CodeListItemSo addCodeListItem(final HttpHeaders headers, final CodeListItemDataSo data) {
-        return addEntity(CodeListItemSo.class, headers, "/code-list-items", data);
     }
 }

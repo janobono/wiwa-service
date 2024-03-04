@@ -7,13 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import sk.janobono.wiwa.api.model.SingleValueBody;
-import sk.janobono.wiwa.business.model.user.UserDataSo;
-import sk.janobono.wiwa.business.model.user.UserProfileSo;
-import sk.janobono.wiwa.business.model.user.UserSearchCriteriaSo;
-import sk.janobono.wiwa.business.service.UserService;
+import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
+import sk.janobono.wiwa.api.model.user.UserCreateWebDto;
+import sk.janobono.wiwa.api.model.user.UserProfileWebDto;
+import sk.janobono.wiwa.api.model.user.UserWebDto;
+import sk.janobono.wiwa.api.service.UserApiService;
 import sk.janobono.wiwa.model.Authority;
-import sk.janobono.wiwa.model.User;
 
 import java.util.List;
 
@@ -22,72 +21,59 @@ import java.util.List;
 @RequestMapping(path = "/users")
 public class UserController {
 
-    private final UserService userService;
+    private final UserApiService userApiService;
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager', 'w-employee')")
-    public Page<User> getUsers(
+    public Page<UserWebDto> getUsers(
             @RequestParam(value = "searchField", required = false) final String searchField,
             @RequestParam(value = "username", required = false) final String username,
             @RequestParam(value = "email", required = false) final String email,
-            @RequestParam(value = "codeListItems", required = false) final List<String> codeListItems,
             final Pageable pageable
     ) {
-        final UserSearchCriteriaSo criteria = UserSearchCriteriaSo.builder()
-                .searchField(searchField)
-                .username(username)
-                .email(email)
-                .codeListItems(codeListItems)
-                .build();
-        return userService.getUsers(criteria, pageable);
+        return userApiService.getUsers(searchField, username, email, pageable);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager', 'w-employee')")
-    public User getUser(@PathVariable("id") final Long id) {
-        return userService.getUser(id);
+    public UserWebDto getUser(@PathVariable("id") final Long id) {
+        return userApiService.getUser(id);
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('w-admin')")
     @ResponseStatus(HttpStatus.CREATED)
-    public User addUser(@Valid @RequestBody final UserDataSo data) {
-        return userService.addUser(data);
+    public UserWebDto addUser(@Valid @RequestBody final UserCreateWebDto userCreate) {
+        return userApiService.addUser(userCreate);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('w-admin')")
-    public User setUser(@PathVariable("id") final Long id, @Valid @RequestBody final UserProfileSo userProfileSo) {
-        return userService.setUser(id, userProfileSo);
+    public UserWebDto setUser(@PathVariable("id") final Long id, @Valid @RequestBody final UserProfileWebDto userProfile) {
+        return userApiService.setUser(id, userProfile);
     }
 
     @PatchMapping("/{id}/authorities")
     @PreAuthorize("hasAuthority('w-admin')")
-    public User setAuthorities(@PathVariable("id") final Long id, @Valid @RequestBody final List<Authority> authorities) {
-        return userService.setAuthorities(id, authorities);
+    public UserWebDto setAuthorities(@PathVariable("id") final Long id, @Valid @RequestBody final List<Authority> authorities) {
+        return userApiService.setAuthorities(id, authorities);
     }
 
     @PatchMapping("/{id}/confirm")
     @PreAuthorize("hasAuthority('w-admin')")
-    public User setConfirmed(@PathVariable("id") final Long id, @Valid @RequestBody final SingleValueBody<Boolean> confirmed) {
-        return userService.setConfirmed(id, confirmed.value());
+    public UserWebDto setConfirmed(@PathVariable("id") final Long id, @Valid @RequestBody final SingleValueBodyWebDto<Boolean> confirmed) {
+        return userApiService.setConfirmed(id, confirmed.value());
     }
 
     @PatchMapping("/{id}/enable")
     @PreAuthorize("hasAuthority('w-admin')")
-    public User setEnabled(@PathVariable("id") final Long id, @Valid @RequestBody final SingleValueBody<Boolean> enabled) {
-        return userService.setEnabled(id, enabled.value());
-    }
-
-    @PatchMapping("/{id}/code-list-items")
-    @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public User setUserCodeListItems(@PathVariable("id") final Long id, @RequestBody final List<Long> itemIds) {
-        return userService.setUserCodeListItems(id, itemIds);
+    public UserWebDto setEnabled(@PathVariable("id") final Long id, @Valid @RequestBody final SingleValueBodyWebDto<Boolean> enabled) {
+        return userApiService.setEnabled(id, enabled.value());
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('w-admin')")
     public void deleteUser(@PathVariable("id") final Long id) {
-        userService.deleteUser(id);
+        userApiService.deleteUser(id);
     }
 }

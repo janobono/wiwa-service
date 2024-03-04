@@ -6,16 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import sk.janobono.wiwa.business.model.user.UserSearchCriteriaSo;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.dal.domain.UserDo;
+import sk.janobono.wiwa.dal.model.UserSearchCriteriaDo;
 import sk.janobono.wiwa.dal.r3n.dto.WiwaUserDto;
-import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaCodeListItem;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaUser;
-import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaUserCodeListItem;
 import sk.janobono.wiwa.dal.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.component.CriteriaUtil;
-import sk.janobono.wiwa.dal.repository.mapper.UserMapper;
+import sk.janobono.wiwa.dal.repository.mapper.UserDoMapper;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
@@ -36,7 +34,7 @@ public class UserRepository {
 
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
-    private final UserMapper mapper;
+    private final UserDoMapper mapper;
     private final ScDf scDf;
     private final CriteriaUtil criteriaUtil;
 
@@ -123,7 +121,7 @@ public class UserRepository {
         }
     }
 
-    public Page<UserDo> findAll(final UserSearchCriteriaSo criteria, final Pageable pageable) {
+    public Page<UserDo> findAll(final UserSearchCriteriaDo criteria, final Pageable pageable) {
         log.debug("findAll({},{})", criteria, pageable);
         try (final Connection connection = dataSource.getConnection()) {
             final Query.Select selectTotalRows = Query
@@ -243,7 +241,7 @@ public class UserRepository {
         return WiwaUserDto.toObject(criteriaUtil.concat(new Object[]{id}, values));
     }
 
-    private void mapCriteria(final UserSearchCriteriaSo criteria, final Query.Select select) {
+    private void mapCriteria(final UserSearchCriteriaDo criteria, final Query.Select select) {
         // search field
         if (Optional.ofNullable(criteria.searchField()).filter(s -> !s.isBlank()).isPresent()) {
             final String value = "%" + scDf.toScDf(criteria.searchField()) + "%";
@@ -284,24 +282,6 @@ public class UserRepository {
         // email
         if (Optional.ofNullable(criteria.email()).filter(s -> !s.isBlank()).isPresent()) {
             select.AND(MetaColumnWiwaUser.EMAIL.column(), Condition.LIKE, "%" + scDf.toStripAndLowerCase(criteria.email()) + "%");
-        }
-
-        // code list items
-        if (Optional.ofNullable(criteria.codeListItems()).filter(l -> !l.isEmpty()).isPresent()) {
-            select.DISTINCT()
-                    .LEFT_JOIN(MetaTable.WIWA_USER_CODE_LIST_ITEM.table(), MetaColumnWiwaUserCodeListItem.USER_ID.column(), MetaColumnWiwaUser.ID.column());
-            int index = 0;
-            for (final String code : criteria.codeListItems()) {
-                final String alias = "CLIT" + index++;
-                select.LEFT_JOIN(
-                                MetaTable.WIWA_CODE_LIST_ITEM.table(alias),
-                                MetaColumnWiwaCodeListItem.ID.column(alias),
-                                MetaColumnWiwaUserCodeListItem.CODE_LIST_ITEM_ID.column()
-                        ).AND_IN()
-                        .OR(MetaColumnWiwaCodeListItem.CODE.column(alias), Condition.EQUALS, code)
-                        .OR(MetaColumnWiwaCodeListItem.TREE_CODE.column(alias), Condition.LIKE, "%" + code + "::%")
-                        .OUT();
-            }
         }
     }
 

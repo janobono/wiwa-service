@@ -6,14 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.dal.domain.ApplicationImageDo;
+import sk.janobono.wiwa.dal.model.ApplicationImageInfoDo;
 import sk.janobono.wiwa.dal.r3n.dto.WiwaApplicationImageDto;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaApplicationImage;
 import sk.janobono.wiwa.dal.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.component.CriteriaUtil;
-import sk.janobono.wiwa.dal.repository.mapper.ApplicationImageMapper;
-import sk.janobono.wiwa.model.ApplicationImage;
+import sk.janobono.wiwa.dal.repository.mapper.ApplicationImageDoMapper;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
@@ -34,8 +33,7 @@ public class ApplicationImageRepository {
 
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
-    private final ApplicationImageMapper mapper;
-    private final ImageUtil imageUtil;
+    private final ApplicationImageDoMapper mapper;
     private final CriteriaUtil criteriaUtil;
 
     public void deleteById(final String id) {
@@ -50,7 +48,7 @@ public class ApplicationImageRepository {
         }
     }
 
-    public Page<ApplicationImage> findAll(final Pageable pageable) {
+    public Page<ApplicationImageInfoDo> findAll(final Pageable pageable) {
         log.debug("findAll({})", pageable);
         try (final Connection connection = dataSource.getConnection()) {
             final int totalRows = sqlBuilder.select(connection,
@@ -81,11 +79,11 @@ public class ApplicationImageRepository {
                 final List<Object[]> rows = sqlBuilder.select(connection, select);
                 return new PageImpl<>(
                         rows.stream()
-                                .map(row -> new ApplicationImage(
+                                .map(row -> new ApplicationImageInfoDo(
                                         (String) row[0],
                                         (String) row[1],
-                                        imageUtil.toThumbnail((String) row[1], (byte[]) row[2])
-                                ))
+                                        (byte[]) row[2])
+                                )
                                 .toList()
                         , pageable, totalRows);
             }

@@ -7,55 +7,49 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import sk.janobono.wiwa.business.model.codelist.CodeListDataSo;
-import sk.janobono.wiwa.business.model.codelist.CodeListSearchCriteriaSo;
-import sk.janobono.wiwa.business.model.codelist.CodeListSo;
-import sk.janobono.wiwa.business.service.CodeListService;
+import sk.janobono.wiwa.api.model.codelist.CodeListChangeWebDto;
+import sk.janobono.wiwa.api.model.codelist.CodeListWebDto;
+import sk.janobono.wiwa.api.service.CodeListApiService;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/code-lists")
 public class CodeListController {
 
-    private final CodeListService codeListService;
+    private final CodeListApiService codeListApiService;
 
     @GetMapping
-    public Page<CodeListSo> getCodeLists(
+    public Page<CodeListWebDto> getCodeLists(
             @RequestParam(value = "searchField", required = false) final String searchField,
             @RequestParam(value = "code", required = false) final String code,
             @RequestParam(value = "name", required = false) final String name,
             final Pageable pageable
     ) {
-        final CodeListSearchCriteriaSo criteria = CodeListSearchCriteriaSo.builder()
-                .searchField(searchField)
-                .code(code)
-                .name(name)
-                .build();
-        return codeListService.getCodeLists(criteria, pageable);
+        return codeListApiService.getCodeLists(searchField, code, name, pageable);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListSo getCodeList(@PathVariable("id") final Long id) {
-        return codeListService.getCodeList(id);
+    public CodeListWebDto getCodeList(@PathVariable("id") final Long id) {
+        return codeListApiService.getCodeList(id);
     }
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     @ResponseStatus(HttpStatus.CREATED)
-    public CodeListSo addCodeList(@Valid @RequestBody final CodeListDataSo data) {
-        return codeListService.addCodeList(data);
+    public CodeListWebDto addCodeList(@Valid @RequestBody final CodeListChangeWebDto codeListChange) {
+        return codeListApiService.addCodeList(codeListChange);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListSo setCodeList(@PathVariable("id") final Long id, @Valid @RequestBody final CodeListDataSo data) {
-        return codeListService.setCodeList(id, data);
+    public CodeListWebDto setCodeList(@PathVariable("id") final Long id, @Valid @RequestBody final CodeListChangeWebDto codeListChange) {
+        return codeListApiService.setCodeList(id, codeListChange);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public void deleteCodeList(@PathVariable("id") final Long id) {
-        codeListService.deleteCodeList(id);
+        codeListApiService.deleteCodeList(id);
     }
 }

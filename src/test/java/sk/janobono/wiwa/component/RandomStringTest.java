@@ -22,9 +22,7 @@ class RandomStringTest {
     void generateWrongLengthSettings() {
         Assertions.assertThrows(
                 RuntimeException.class,
-                () -> {
-                    randomString.alphaNumeric(0, 0, 0, 5, 2);
-                }
+                () -> randomString.alphaNumeric(0, 0, 0, 5, 2)
         );
     }
 
@@ -32,10 +30,8 @@ class RandomStringTest {
     void generateWrongMinimalsSettings() {
         Assertions.assertThrows(
                 RuntimeException.class,
-                () -> {
-                    randomString
-                            .alphaNumeric(2, 5, 3, 8, 8);
-                }
+                () -> randomString
+                        .alphaNumeric(2, 5, 3, 8, 8)
         );
     }
 
@@ -43,10 +39,8 @@ class RandomStringTest {
     void generateWrongMinimalsSettings01() {
         Assertions.assertThrows(
                 RuntimeException.class,
-                () -> {
-                    randomString
-                            .alphaNumeric(2, 5, 3, 5, 8);
-                }
+                () -> randomString
+                        .alphaNumeric(2, 5, 3, 5, 8)
         );
     }
 

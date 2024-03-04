@@ -6,16 +6,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import sk.janobono.wiwa.business.mapper.ApplicationImageDataMapper;
+import sk.janobono.wiwa.business.model.ApplicationImageInfoData;
 import sk.janobono.wiwa.business.model.product.*;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.*;
+import sk.janobono.wiwa.dal.model.ProductSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
-import sk.janobono.wiwa.model.ApplicationImage;
-import sk.janobono.wiwa.model.ResourceEntity;
 import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.math.BigDecimal;
@@ -26,9 +27,13 @@ import java.util.*;
 public class ProductService {
 
     private final CommonConfigProperties commonConfigProperties;
+
     private final ImageUtil imageUtil;
     private final PriceUtil priceUtil;
     private final ScDf scDf;
+
+    private final ApplicationImageDataMapper applicationImageDataMapper;
+
     private final ProductRepository productRepository;
     private final ProductAttributeRepository productAttributeRepository;
     private final ProductImageRepository productImageRepository;
@@ -36,18 +41,19 @@ public class ProductService {
     private final ProductUnitPriceRepository productUnitPriceRepository;
     private final CodeListRepository codeListRepository;
     private final CodeListItemRepository codeListItemRepository;
+
     private final ApplicationPropertyService applicationPropertyService;
 
-    public Page<ProductSo> getProducts(final ProductSearchCriteriaSo criteria, final Pageable pageable) {
+    public Page<ProductData> getProducts(final ProductSearchCriteriaData criteria, final Pageable pageable) {
         final BigDecimal vatRate = getVatRate();
-        return productRepository.findAll(criteria, pageable).map(value -> toProductSo(value, vatRate));
+        return productRepository.findAll(mapToDo(criteria), pageable).map(value -> toProductSo(value, vatRate));
     }
 
-    public ProductSo getProduct(final Long id) {
+    public ProductData getProduct(final Long id) {
         return toProductSo(getProductDo(id), getVatRate());
     }
 
-    public ProductSo addProduct(final ProductDataSo data) {
+    public ProductData addProduct(final ProductChangeData data) {
         if (isCodeUsed(null, data.code())) {
             throw WiwaException.CODE_IS_USED.exception("Product code {0} is used", data.code());
         }
@@ -63,7 +69,7 @@ public class ProductService {
         return toProductSo(productDo, getVatRate());
     }
 
-    public ProductSo setProduct(final Long id, final ProductDataSo data) {
+    public ProductData setProduct(final Long id, final ProductChangeData data) {
         final ProductDo productDo = getProductDo(id);
         if (isCodeUsed(id, data.code())) {
             throw WiwaException.CODE_IS_USED.exception("Product code {0} is used", data.code());
@@ -83,21 +89,7 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public ResourceEntity getProductImage(final Long productId, final String fileName) {
-        if (!productRepository.existsById(productId)) {
-            throw WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", productId);
-        }
-        return productImageRepository.findByProductIdAndFileName(productId, scDf.toStripAndLowerCase(fileName))
-                .map(productImageDo -> new ResourceEntity(productImageDo.getFileName(),
-                        productImageDo.getFileType(),
-                        imageUtil.getDataResource(productImageDo.getData())))
-                .orElse(new ResourceEntity(fileName,
-                        MediaType.IMAGE_PNG_VALUE,
-                        imageUtil.getDataResource(imageUtil.generateMessageImage(null)))
-                );
-    }
-
-    public ProductSo setProductImage(final Long productId, final MultipartFile multipartFile) {
+    public ProductData setProductImage(final Long productId, final MultipartFile multipartFile) {
         if (!productRepository.existsById(productId)) {
             throw WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", productId);
         }
@@ -127,7 +119,7 @@ public class ProductService {
         return toProductSo(getProductDo(productId), getVatRate());
     }
 
-    public ProductSo deleteProductImage(final Long productId, final String fileName) {
+    public ProductData deleteProductImage(final Long productId, final String fileName) {
         if (!productRepository.existsById(productId)) {
             throw WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", productId);
         }
@@ -136,18 +128,18 @@ public class ProductService {
         return toProductSo(getProductDo(productId), getVatRate());
     }
 
-    public ProductSo setProductUnitPrices(final Long productId, final List<ProductUnitPriceDataSo> productUnitPrices) {
+    public ProductData setProductUnitPrices(final Long productId, final List<ProductUnitPriceChangeData> productUnitPrices) {
         if (!productRepository.existsById(productId)) {
             throw WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", productId);
         }
 
         final List<ProductUnitPriceDo> batch = new ArrayList<>();
         if (!productUnitPrices.isEmpty()) {
-            final List<ProductUnitPriceDataSo> orderedPrices = productUnitPrices.stream()
+            final List<ProductUnitPriceChangeData> orderedPrices = productUnitPrices.stream()
                     .sorted((o1, o2) -> o2.validFrom().compareTo(o1.validFrom())).toList();
 
-            ProductUnitPriceDataSo previous = null;
-            for (final ProductUnitPriceDataSo current : orderedPrices) {
+            ProductUnitPriceChangeData previous = null;
+            for (final ProductUnitPriceChangeData current : orderedPrices) {
                 batch.add(ProductUnitPriceDo.builder()
                         .productId(productId)
                         .unit(current.unit())
@@ -163,16 +155,26 @@ public class ProductService {
         return toProductSo(getProductDo(productId), getVatRate());
     }
 
-    public ProductSo setProductCategoryItems(final Long productId, final List<ProductCategoryItemDataSo> categoryItems) {
+    public ProductData setProductCategoryItems(final Long productId, final List<ProductCategoryItemChangeData> categoryItems) {
         final ProductDo productDo = getProductDo(productId);
 
         codeListItemRepository.saveProductCodeListItems(productDo.getId(),
                 categoryItems.stream()
-                        .map(ProductCategoryItemDataSo::itemId)
+                        .map(ProductCategoryItemChangeData::itemId)
                         .toList()
         );
 
         return toProductSo(productDo, getVatRate());
+    }
+
+    private ProductSearchCriteriaDo mapToDo(final ProductSearchCriteriaData criteria) {
+        return new ProductSearchCriteriaDo(
+                criteria.searchField(),
+                criteria.code(),
+                criteria.name(),
+                criteria.stockStatus(),
+                criteria.codeListItems()
+        );
     }
 
     private ProductDo getProductDo(final Long id) {
@@ -180,8 +182,8 @@ public class ProductService {
                 .orElseThrow(() -> WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", id));
     }
 
-    private ProductSo toProductSo(final ProductDo productDo, final BigDecimal vatRate) {
-        return ProductSo.builder()
+    private ProductData toProductSo(final ProductDo productDo, final BigDecimal vatRate) {
+        return ProductData.builder()
                 .id(productDo.getId())
                 .code(productDo.getCode())
                 .name(productDo.getName())
@@ -195,27 +197,29 @@ public class ProductService {
                 .build();
     }
 
-    private List<ProductAttributeSo> toAttributes(final Long productId) {
+    private List<ProductAttributeData> toAttributes(final Long productId) {
         return productAttributeRepository.findAllByProductId(productId).stream()
-                .map(attribute -> new ProductAttributeSo(attribute.getKey(), attribute.getValue()))
+                .map(attribute -> new ProductAttributeData(attribute.getKey(), attribute.getValue()))
                 .sorted(Comparator.comparingInt(a -> a.key().ordinal()))
                 .toList();
     }
 
-    private List<ApplicationImage> toImages(final Long productId) {
-        return productImageRepository.findAllByProductId(productId);
+    private List<ApplicationImageInfoData> toImages(final Long productId) {
+        return productImageRepository.findAllByProductId(productId).stream()
+                .map(applicationImageDataMapper::mapToData)
+                .toList();
     }
 
-    private List<ProductQuantitySo> toQuantities(final Long productId) {
+    private List<ProductQuantityData> toQuantities(final Long productId) {
         return productQuantityRepository.findAllByProductId(productId).stream()
-                .map(quantity -> new ProductQuantitySo(quantity.getKey(), quantity.getValue(), quantity.getUnit()))
+                .map(quantity -> new ProductQuantityData(quantity.getKey(), quantity.getValue(), quantity.getUnit()))
                 .sorted(Comparator.comparingInt(o -> o.key().ordinal()))
                 .toList();
     }
 
-    private List<ProductUnitPriceSo> toUnitPrices(final Long productId, final BigDecimal vatRate) {
+    private List<ProductUnitPriceData> toUnitPrices(final Long productId, final BigDecimal vatRate) {
         return productUnitPriceRepository.findAllByProductId(productId).stream()
-                .map(price -> new ProductUnitPriceSo(
+                .map(price -> new ProductUnitPriceData(
                         price.getValidFrom(),
                         price.getValue(),
                         priceUtil.countVatValue(price.getValue(), vatRate),
@@ -223,20 +227,20 @@ public class ProductService {
                 ).toList();
     }
 
-    private List<ProductCategoryItemSo> toProductCategoryItems(final Long productId) {
+    private List<ProductCategoryItemData> toProductCategoryItems(final Long productId) {
         return codeListItemRepository.findByProductId(productId).stream()
                 .map(this::toProductCategoryItem)
                 .toList();
     }
 
-    private ProductCategoryItemSo toProductCategoryItem(final CodeListItemDo codeListItemDo) {
+    private ProductCategoryItemData toProductCategoryItem(final CodeListItemDo codeListItemDo) {
         final CodeListDo codeList = codeListRepository.findById(codeListItemDo.getCodeListId())
                 .orElseThrow(() -> WiwaException.CODE_LIST_NOT_FOUND.exception("Code list with id {0} not found", codeListItemDo.getCodeListId()));
-        return new ProductCategoryItemSo(
+        return new ProductCategoryItemData(
                 codeListItemDo.getId(),
                 codeListItemDo.getCode(),
                 codeListItemDo.getValue(),
-                new ProductCategorySo(codeList.getId(), codeList.getCode(), codeList.getName())
+                new ProductCategoryData(codeList.getId(), codeList.getCode(), codeList.getName())
         );
     }
 
@@ -245,7 +249,7 @@ public class ProductService {
                 .orElse(productRepository.countByCode(code) > 0);
     }
 
-    private void setProductAttributes(final Long productId, final ProductDataSo data) {
+    private void setProductAttributes(final Long productId, final ProductChangeData data) {
         final List<ProductAttributeDo> attributes = Optional.ofNullable(data.attributes()).stream()
                 .flatMap(Collection::stream)
                 .map(attribute -> ProductAttributeDo.builder()
@@ -258,7 +262,7 @@ public class ProductService {
         productAttributeRepository.saveProductAttributes(productId, attributes);
     }
 
-    private void setProductQuantities(final Long productId, final ProductDataSo data) {
+    private void setProductQuantities(final Long productId, final ProductChangeData data) {
         final List<ProductQuantityDo> quantities = Optional.ofNullable(data.quantities()).stream()
                 .flatMap(Collection::stream)
                 .map(quantity -> ProductQuantityDo.builder()

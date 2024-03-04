@@ -173,13 +173,6 @@ create table wiwa_product_code_list_item
     unique (product_id, code_list_item_id)
 );
 
-create table wiwa_user_code_list_item
-(
-    user_id           bigint not null references wiwa_user (id) on delete cascade,
-    code_list_item_id bigint not null references wiwa_code_list_item (id) on delete cascade,
-    unique (user_id, code_list_item_id)
-);
-
 -- INDEX
 create index idx_wiwa_application_property on wiwa_application_property (property_group);
 
@@ -200,6 +193,3 @@ create index idx_wiwa_user_authority2 on wiwa_user_authority (authority_id);
 
 create index idx_wiwa_product_code_list_item1 on wiwa_product_code_list_item (product_id);
 create index idx_wiwa_product_code_list_item2 on wiwa_product_code_list_item (code_list_item_id);
-
-create index idx_wiwa_user_code_list_item1 on wiwa_user_code_list_item (user_id);
-create index idx_wiwa_user_code_list_item2 on wiwa_user_code_list_item (code_list_item_id);

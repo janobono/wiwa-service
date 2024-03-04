@@ -6,16 +6,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import sk.janobono.wiwa.business.model.product.ProductSearchCriteriaSo;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.dal.domain.ProductDo;
+import sk.janobono.wiwa.dal.model.ProductSearchCriteriaDo;
 import sk.janobono.wiwa.dal.r3n.dto.WiwaProductDto;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaCodeListItem;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaProduct;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaProductCodeListItem;
 import sk.janobono.wiwa.dal.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.component.CriteriaUtil;
-import sk.janobono.wiwa.dal.repository.mapper.ProductMapper;
+import sk.janobono.wiwa.dal.repository.mapper.ProductDoMapper;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
@@ -36,7 +36,7 @@ public class ProductRepository {
 
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
-    private final ProductMapper mapper;
+    private final ProductDoMapper mapper;
     private final ScDf scDf;
     private final CriteriaUtil criteriaUtil;
 
@@ -106,7 +106,7 @@ public class ProductRepository {
         }
     }
 
-    public Page<ProductDo> findAll(final ProductSearchCriteriaSo criteria, final Pageable pageable) {
+    public Page<ProductDo> findAll(final ProductSearchCriteriaDo criteria, final Pageable pageable) {
         log.debug("findAll({},{})", criteria, pageable);
         try (final Connection connection = dataSource.getConnection()) {
             final Query.Select selectTotalRows = Query
@@ -190,7 +190,7 @@ public class ProductRepository {
         return WiwaProductDto.toObject(criteriaUtil.concat(new Object[]{id}, values));
     }
 
-    private void mapCriteria(final ProductSearchCriteriaSo criteria, final Query.Select select) {
+    private void mapCriteria(final ProductSearchCriteriaDo criteria, final Query.Select select) {
         // search field
         if (Optional.ofNullable(criteria.searchField()).filter(s -> !s.isBlank()).isPresent()) {
             final String value = "%" + scDf.toScDf(criteria.searchField()) + "%";

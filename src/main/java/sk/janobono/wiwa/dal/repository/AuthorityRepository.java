@@ -8,7 +8,7 @@ import sk.janobono.wiwa.dal.r3n.dto.WiwaAuthorityDto;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaAuthority;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaUserAuthority;
 import sk.janobono.wiwa.dal.r3n.meta.MetaTable;
-import sk.janobono.wiwa.dal.repository.mapper.AuthorityMapper;
+import sk.janobono.wiwa.dal.repository.mapper.AuthorityDoMapper;
 import sk.janobono.wiwa.model.Authority;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.jdbc.SqlUtil;
@@ -30,7 +30,7 @@ public class AuthorityRepository {
 
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
-    private final AuthorityMapper mapper;
+    private final AuthorityDoMapper mapper;
 
     public int count() {
         log.debug("count()");

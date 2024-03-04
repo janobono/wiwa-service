@@ -5,15 +5,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import sk.janobono.wiwa.business.model.user.UserDataSo;
-import sk.janobono.wiwa.business.model.user.UserProfileSo;
-import sk.janobono.wiwa.business.model.user.UserSearchCriteriaSo;
+import sk.janobono.wiwa.business.model.user.UserCreateData;
+import sk.janobono.wiwa.business.model.user.UserProfileData;
+import sk.janobono.wiwa.business.model.user.UserSearchCriteriaData;
 import sk.janobono.wiwa.business.service.util.UserUtilService;
 import sk.janobono.wiwa.component.RandomString;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.dal.domain.UserDo;
+import sk.janobono.wiwa.dal.model.UserSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.AuthorityRepository;
-import sk.janobono.wiwa.dal.repository.CodeListItemRepository;
 import sk.janobono.wiwa.dal.repository.UserRepository;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.Authority;
@@ -30,18 +30,17 @@ public class UserService {
     private final ScDf scDf;
     private final AuthorityRepository authorityRepository;
     private final UserRepository userRepository;
-    private final CodeListItemRepository codeListItemRepository;
     private final UserUtilService userUtilService;
 
-    public Page<User> getUsers(final UserSearchCriteriaSo criteria, final Pageable pageable) {
-        return userRepository.findAll(criteria, pageable).map(userUtilService::mapToUser);
+    public Page<User> getUsers(final UserSearchCriteriaData criteria, final Pageable pageable) {
+        return userRepository.findAll(mapToDo(criteria), pageable).map(userUtilService::mapToUser);
     }
 
     public User getUser(final Long id) {
         return userUtilService.mapToUser(userUtilService.getUserDo(id));
     }
 
-    public User addUser(final UserDataSo data) {
+    public User addUser(final UserCreateData data) {
         if (userRepository.existsByUsername(scDf.toStripAndLowerCase(data.username()))) {
             throw WiwaException.USER_USERNAME_IS_USED.exception("Username is used");
         }
@@ -68,7 +67,7 @@ public class UserService {
         return userUtilService.mapToUser(userDo);
     }
 
-    public User setUser(final Long id, final UserProfileSo userProfile) {
+    public User setUser(final Long id, final UserProfileData userProfile) {
         final UserDo userDo = userUtilService.getUserDo(id);
 
         userDo.setTitleBefore(userProfile.titleBefore());
@@ -104,19 +103,19 @@ public class UserService {
         return userUtilService.mapToUser(userRepository.save(userDo));
     }
 
-    public User setUserCodeListItems(final Long id, final List<Long> itemIds) {
-        final UserDo userDo = userUtilService.getUserDo(id);
-
-        codeListItemRepository.saveUserCodeListItems(userDo.getId(), itemIds);
-
-        return userUtilService.mapToUser(userDo);
-    }
-
     public void deleteUser(final Long id) {
         if (!userRepository.existsById(id)) {
             throw WiwaException.USER_NOT_FOUND.exception("User with id {0} not found", id);
         }
 
         userRepository.deleteById(id);
+    }
+
+    private UserSearchCriteriaDo mapToDo(final UserSearchCriteriaData criteria) {
+        return new UserSearchCriteriaDo(
+                criteria.searchField(),
+                criteria.username(),
+                criteria.email()
+        );
     }
 }

@@ -24,7 +24,7 @@ public class BaseIntegrationTestConfig {
                 .build();
         final MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setObjectMapper(objectMapper);
-        restTemplate.getMessageConverters().add(0, converter);
+        restTemplate.getMessageConverters().addFirst(converter);
         return restTemplate;
     }
 }

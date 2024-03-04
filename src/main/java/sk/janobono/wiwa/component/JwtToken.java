@@ -35,7 +35,6 @@ public class JwtToken {
     private static final String GDPR = "gdpr";
     private static final String CONFIRMED = "confirmed";
     private static final String ENABLED = "enabled";
-    private static final String ITEMS = "items";
 
     private final Algorithm algorithm;
     private final Long expiration;
@@ -94,10 +93,6 @@ public class JwtToken {
                             .map(Authority::toString)
                             .toArray(String[]::new)
             );
-            // items
-            jwtBuilder.withClaim(ITEMS, Optional.ofNullable(user.codeListItems()).stream()
-                    .flatMap(Collection::stream)
-                    .toList());
             return jwtBuilder.sign(algorithm);
         } catch (final Exception e) {
             throw new RuntimeException(e);
@@ -137,8 +132,6 @@ public class JwtToken {
         final Boolean enabled = jwt.getClaims().get(ENABLED).asBoolean();
         // authorities
         final List<String> authorities = jwt.getAudience();
-        // items
-        final List<Long> items = jwt.getClaims().get(ITEMS).asList(Long.class);
 
         return new User(
                 id,
@@ -152,8 +145,7 @@ public class JwtToken {
                 gdpr,
                 confirmed,
                 enabled,
-                Optional.ofNullable(authorities).stream().flatMap(Collection::stream).map(Authority::byValue).toList(),
-                items
+                Optional.ofNullable(authorities).stream().flatMap(Collection::stream).map(Authority::byValue).toList()
         );
     }
 }

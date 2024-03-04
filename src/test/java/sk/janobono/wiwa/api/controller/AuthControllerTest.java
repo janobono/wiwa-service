@@ -3,7 +3,7 @@ package sk.janobono.wiwa.api.controller;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import sk.janobono.wiwa.business.model.auth.*;
+import sk.janobono.wiwa.api.model.auth.*;
 import sk.janobono.wiwa.component.Captcha;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 import sk.janobono.wiwa.model.WiwaProperty;
@@ -32,17 +32,17 @@ class AuthControllerTest extends BaseControllerTest {
     @Test
     void fullTest() throws Exception {
         String token = signUp();
-        AuthenticationResponseSo authenticationResponseDto = confirm(token);
-        resendConfirmation(authenticationResponseDto);
-        authenticationResponseDto = signIn(USERNAME, PASSWORD);
-        authenticationResponseDto = changeEmail(authenticationResponseDto);
-        authenticationResponseDto = changePassword(authenticationResponseDto);
-        authenticationResponseDto = changeUserDetails(authenticationResponseDto);
+        AuthenticationResponseWebDto authenticationResponse = confirm(token);
+        resendConfirmation(authenticationResponse);
+        authenticationResponse = signIn(USERNAME, PASSWORD);
+        authenticationResponse = changeEmail(authenticationResponse);
+        authenticationResponse = changePassword(authenticationResponse);
+        authenticationResponse = changeUserDetails(authenticationResponse);
         final String[] data = resetPassword();
         token = data[0];
-        authenticationResponseDto = confirm(token);
-        authenticationResponseDto = signIn(USERNAME, data[1]);
-        authenticationResponseDto = refresh(authenticationResponseDto.refreshToken());
+        authenticationResponse = confirm(token);
+        authenticationResponse = signIn(USERNAME, data[1]);
+        authenticationResponse = refresh(authenticationResponse.refreshToken());
     }
 
     @Test
@@ -61,7 +61,7 @@ class AuthControllerTest extends BaseControllerTest {
 
         restTemplate.postForObject(
                 getURI("/auth/sign-up"),
-                new SignUpSo(
+                new SignUpWebDto(
                         USERNAME,
                         PASSWORD,
                         TITLE_BEFORE,
@@ -74,7 +74,7 @@ class AuthControllerTest extends BaseControllerTest {
                         captchaText,
                         captchaToken
                 ),
-                AuthenticationResponseSo.class
+                AuthenticationResponseWebDto.class
         );
 
         final TestEmail testEmail = getAllEmails()[0];
@@ -86,12 +86,12 @@ class AuthControllerTest extends BaseControllerTest {
         ).trim().replaceAll("\"", "");
     }
 
-    private void resendConfirmation(final AuthenticationResponseSo authenticationResponseSO) throws Exception {
+    private void resendConfirmation(final AuthenticationResponseWebDto authenticationResponse) throws Exception {
         deleteAllEmails();
 
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(authenticationResponseSO.token());
+        headers.setBearerAuth(authenticationResponse.token());
 
         final String captchaText = captcha.generateText();
         final String captchaToken = captcha.generateToken(captchaText);
@@ -99,11 +99,11 @@ class AuthControllerTest extends BaseControllerTest {
         restTemplate.exchange(
                 getURI("/auth/resend-confirmation"),
                 HttpMethod.POST,
-                new HttpEntity<>(new ResendConfirmationSo(
+                new HttpEntity<>(new ResendConfirmationWebDto(
                         captchaText,
                         captchaToken
                 ), headers),
-                AuthenticationResponseSo.class
+                AuthenticationResponseWebDto.class
         );
 
         final TestEmail testEmail = getAllEmails()[0];
@@ -116,30 +116,26 @@ class AuthControllerTest extends BaseControllerTest {
         assertThat(token).isNotEmpty();
     }
 
-    private AuthenticationResponseSo confirm(final String token) throws Exception {
+    private AuthenticationResponseWebDto confirm(final String token) throws Exception {
         return restTemplate.postForObject(
                 getURI("/auth/confirm"),
-                new ConfirmationSo(
-                        token
-                ),
-                AuthenticationResponseSo.class
+                new ConfirmationWebDto(token),
+                AuthenticationResponseWebDto.class
         );
     }
 
-    private AuthenticationResponseSo refresh(final String token) throws Exception {
+    private AuthenticationResponseWebDto refresh(final String token) throws Exception {
         return restTemplate.postForObject(
                 getURI("/auth/refresh"),
-                new RefreshTokenSo(
-                        token
-                ),
-                AuthenticationResponseSo.class
+                new RefreshTokenWebDto(token),
+                AuthenticationResponseWebDto.class
         );
     }
 
-    private AuthenticationResponseSo changeEmail(final AuthenticationResponseSo authenticationResponseSO) throws Exception {
+    private AuthenticationResponseWebDto changeEmail(final AuthenticationResponseWebDto authenticationResponse) throws Exception {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(authenticationResponseSO.token());
+        headers.setBearerAuth(authenticationResponse.token());
 
         final String captchaText = captcha.generateText();
         final String captchaToken = captcha.generateToken(captchaText);
@@ -147,34 +143,33 @@ class AuthControllerTest extends BaseControllerTest {
         restTemplate.exchange(
                 getURI("/auth/change-email"),
                 HttpMethod.POST,
-                new HttpEntity<>(new ChangeEmailSo(
+                new HttpEntity<>(new ChangeEmailWebDto(
                         "a" + EMAIL,
                         PASSWORD,
                         captchaText,
                         captchaToken
                 ), headers),
-                AuthenticationResponseSo.class
+                AuthenticationResponseWebDto.class
         );
 
-        final ResponseEntity<AuthenticationResponseSo> response = restTemplate.exchange(
+        final ResponseEntity<AuthenticationResponseWebDto> response = restTemplate.exchange(
                 getURI("/auth/change-email"),
                 HttpMethod.POST,
-                new HttpEntity<>(
-                        new ChangeEmailSo(
-                                EMAIL,
-                                PASSWORD,
-                                captchaText,
-                                captchaToken
-                        ), headers),
-                AuthenticationResponseSo.class
+                new HttpEntity<>(new ChangeEmailWebDto(
+                        EMAIL,
+                        PASSWORD,
+                        captchaText,
+                        captchaToken
+                ), headers),
+                AuthenticationResponseWebDto.class
         );
         return response.getBody();
     }
 
-    private AuthenticationResponseSo changePassword(final AuthenticationResponseSo authenticationResponseSO) {
+    private AuthenticationResponseWebDto changePassword(final AuthenticationResponseWebDto authenticationResponse) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(authenticationResponseSO.token());
+        headers.setBearerAuth(authenticationResponse.token());
 
         final String captchaText = captcha.generateText();
         final String captchaToken = captcha.generateToken(captchaText);
@@ -182,41 +177,41 @@ class AuthControllerTest extends BaseControllerTest {
         restTemplate.exchange(
                 getURI("/auth/change-password"),
                 HttpMethod.POST,
-                new HttpEntity<>(new ChangePasswordSo(
+                new HttpEntity<>(new ChangePasswordWebDto(
                         PASSWORD,
                         NEW_PASSWORD,
                         captchaText,
                         captchaToken
                 ), headers),
-                AuthenticationResponseSo.class
+                AuthenticationResponseWebDto.class
         );
 
-        final ResponseEntity<AuthenticationResponseSo> response = restTemplate.exchange(
+        final ResponseEntity<AuthenticationResponseWebDto> response = restTemplate.exchange(
                 getURI("/auth/change-password"),
                 HttpMethod.POST,
-                new HttpEntity<>(new ChangePasswordSo(
+                new HttpEntity<>(new ChangePasswordWebDto(
                         NEW_PASSWORD,
                         PASSWORD,
                         captchaText,
                         captchaToken
                 ), headers),
-                AuthenticationResponseSo.class
+                AuthenticationResponseWebDto.class
         );
         return response.getBody();
     }
 
-    private AuthenticationResponseSo changeUserDetails(final AuthenticationResponseSo authenticationResponseSO) {
+    private AuthenticationResponseWebDto changeUserDetails(final AuthenticationResponseWebDto authenticationResponse) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(authenticationResponseSO.token());
+        headers.setBearerAuth(authenticationResponse.token());
 
         final String captchaText = captcha.generateText();
         final String captchaToken = captcha.generateToken(captchaText);
 
-        final ResponseEntity<AuthenticationResponseSo> response = restTemplate.exchange(
+        final ResponseEntity<AuthenticationResponseWebDto> response = restTemplate.exchange(
                 getURI("/auth/change-user-details"),
                 HttpMethod.POST,
-                new HttpEntity<>(new ChangeUserDetailsSo(
+                new HttpEntity<>(new ChangeUserDetailsWebDto(
                         TITLE_BEFORE,
                         FIRST_NAME,
                         MID_NAME,
@@ -226,7 +221,7 @@ class AuthControllerTest extends BaseControllerTest {
                         captchaText,
                         captchaToken
                 ), headers),
-                AuthenticationResponseSo.class
+                AuthenticationResponseWebDto.class
         );
         return response.getBody();
     }
@@ -239,7 +234,7 @@ class AuthControllerTest extends BaseControllerTest {
 
         restTemplate.postForObject(
                 getURI("/auth/reset-password"),
-                new ResetPasswordSo(
+                new ResetPasswordWebDto(
                         EMAIL,
                         captchaText,
                         captchaToken

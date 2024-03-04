@@ -3,11 +3,14 @@ package sk.janobono.wiwa.api.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import sk.janobono.wiwa.api.controller.BaseControllerTest;
-import sk.janobono.wiwa.api.model.ApplicationPropertiesWeb;
-import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
-import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
-import sk.janobono.wiwa.business.model.ui.UnitSo;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import sk.janobono.wiwa.api.model.ApplicationPropertiesWebDto;
+import sk.janobono.wiwa.api.model.CaptchaWebDto;
+import sk.janobono.wiwa.api.model.CompanyInfoWebDto;
+import sk.janobono.wiwa.api.model.UnitWebDto;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 import sk.janobono.wiwa.model.WiwaProperty;
@@ -27,12 +30,18 @@ class UiControllerTest extends BaseControllerTest {
     @Test
     void fullTest() {
         // application-info
-        final ApplicationPropertiesWeb applicationProperties = restTemplate.getForObject(getURI("/ui/application-properties"), ApplicationPropertiesWeb.class);
+        final ApplicationPropertiesWebDto applicationProperties = restTemplate.getForObject(getURI("/ui/application-properties"), ApplicationPropertiesWebDto.class);
         assertThat(applicationProperties).isNotNull();
         assertThat(applicationProperties.defaultLocale()).isEqualTo("en_US");
         assertThat(applicationProperties.appTitle()).isEqualTo("Wiwa");
         assertThat(applicationProperties.appDescription()).isEqualTo("Woodworking Industry Web Application");
         assertThat(applicationProperties.tokenExpiresIn()).isEqualTo(15);
+
+        // captcha
+        final ResponseEntity<CaptchaWebDto> response = restTemplate.exchange(
+                getURI("/ui/captcha"), HttpMethod.GET, HttpEntity.EMPTY, CaptchaWebDto.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
 
         // logo
         final byte[] logo = restTemplate.getForObject(getURI("/ui/logo"), byte[].class);
@@ -47,28 +56,25 @@ class UiControllerTest extends BaseControllerTest {
         assertThat(welcomeText).isNotBlank();
 
         // application-info
-        final ApplicationInfoSo applicationInfo = restTemplate.getForObject(getURI("/ui/application-info"), ApplicationInfoSo.class);
+        final String[] applicationInfo = restTemplate.getForObject(getURI("/ui/application-info"), String[].class);
         assertThat(applicationInfo).isNotNull();
-        assertThat(applicationInfo.items().size()).isEqualTo(3);
-        assertThat(applicationInfo.items().get(0)).isNotBlank();
-        assertThat(applicationInfo.items().get(1)).isNotBlank();
-        assertThat(applicationInfo.items().get(2)).isNotBlank();
+        assertThat(applicationInfo.length).isEqualTo(3);
 
         // company-info
-        final CompanyInfoSo companyInfoDto = restTemplate.getForObject(getURI("/ui/company-info"), CompanyInfoSo.class);
-        assertThat(companyInfoDto).isNotNull();
-        assertThat(companyInfoDto.name()).isEqualTo("WIWA, Ltd.");
-        assertThat(companyInfoDto.street()).isEqualTo("Street 12/4567");
-        assertThat(companyInfoDto.city()).isEqualTo("Zvolen");
-        assertThat(companyInfoDto.zipCode()).isEqualTo("960 01");
-        assertThat(companyInfoDto.state()).isEqualTo("Slovakia");
-        assertThat(companyInfoDto.phone()).isEqualTo("+421 111 111 111");
-        assertThat(companyInfoDto.mail()).isEqualTo("mail@domain.sk");
-        assertThat(companyInfoDto.businessId()).isEqualTo("11 111 111");
-        assertThat(companyInfoDto.taxId()).isEqualTo("1111111111");
-        assertThat(companyInfoDto.vatRegNo()).isEqualTo("SK1111111111");
-        assertThat(companyInfoDto.commercialRegisterInfo()).isEqualTo("The company is registered in the Commercial Register of the District Court in Zvolen, section Sro, insert number 11111/P");
-        assertThat(companyInfoDto.mapUrl()).isEqualTo("https://maps.google.com/maps?q=Zvolen&t=&z=13&ie=UTF8&iwloc=&output=embed");
+        final CompanyInfoWebDto companyInfo = restTemplate.getForObject(getURI("/ui/company-info"), CompanyInfoWebDto.class);
+        assertThat(companyInfo).isNotNull();
+        assertThat(companyInfo.name()).isEqualTo("WIWA, Ltd.");
+        assertThat(companyInfo.street()).isEqualTo("Street 12/4567");
+        assertThat(companyInfo.city()).isEqualTo("Zvolen");
+        assertThat(companyInfo.zipCode()).isEqualTo("960 01");
+        assertThat(companyInfo.state()).isEqualTo("Slovakia");
+        assertThat(companyInfo.phone()).isEqualTo("+421 111 111 111");
+        assertThat(companyInfo.mail()).isEqualTo("mail@domain.sk");
+        assertThat(companyInfo.businessId()).isEqualTo("11 111 111");
+        assertThat(companyInfo.taxId()).isEqualTo("1111111111");
+        assertThat(companyInfo.vatRegNo()).isEqualTo("SK1111111111");
+        assertThat(companyInfo.commercialRegisterInfo()).isEqualTo("The company is registered in the Commercial Register of the District Court in Zvolen, section Sro, insert number 11111/P");
+        assertThat(companyInfo.mapUrl()).isEqualTo("https://maps.google.com/maps?q=Zvolen&t=&z=13&ie=UTF8&iwloc=&output=embed");
 
         // business-conditions
         final String businessConditions = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/business-conditions"), JsonNode.class)).get("value").textValue();
@@ -107,7 +113,7 @@ class UiControllerTest extends BaseControllerTest {
         );
 
         // units
-        final UnitSo[] units = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/units"), UnitSo[].class));
+        final UnitWebDto[] units = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/units"), UnitWebDto[].class));
         assertThat(units).isNotNull();
     }
 }

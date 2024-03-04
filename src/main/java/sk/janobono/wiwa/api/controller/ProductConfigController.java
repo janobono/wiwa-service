@@ -4,12 +4,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import sk.janobono.wiwa.api.model.SingleValueBody;
-import sk.janobono.wiwa.business.model.product.ProductCategoryDataSo;
-import sk.janobono.wiwa.business.model.product.ProductCategoryItemDataSo;
-import sk.janobono.wiwa.business.model.product.ProductCategoryItemSo;
-import sk.janobono.wiwa.business.model.product.ProductCategorySo;
-import sk.janobono.wiwa.business.service.ProductConfigService;
+import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
+import sk.janobono.wiwa.api.model.product.ProductCategoryChangeWebDto;
+import sk.janobono.wiwa.api.model.product.ProductCategoryItemChangeWebDto;
+import sk.janobono.wiwa.api.model.product.ProductCategoryItemWebDto;
+import sk.janobono.wiwa.api.model.product.ProductCategoryWebDto;
+import sk.janobono.wiwa.api.service.ProductConfigApiService;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,77 +19,77 @@ import java.util.List;
 @RequestMapping(path = "/product-config")
 public class ProductConfigController {
 
-    private final ProductConfigService productConfigService;
+    private final ProductConfigApiService productConfigApiService;
 
     @GetMapping(value = "/vat-rate")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public SingleValueBody<BigDecimal> getVatRate() {
-        return new SingleValueBody<>(productConfigService.getVatRate());
+    public SingleValueBodyWebDto<BigDecimal> getVatRate() {
+        return productConfigApiService.getVatRate();
     }
 
     @PostMapping(value = "/vat-rate")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public SingleValueBody<BigDecimal> setVatRate(@Valid @RequestBody final SingleValueBody<BigDecimal> data) {
-        return new SingleValueBody<>(productConfigService.setVatRate(data.value()));
+    public SingleValueBodyWebDto<BigDecimal> setVatRate(@Valid @RequestBody final SingleValueBodyWebDto<BigDecimal> singleValueBody) {
+        return productConfigApiService.setVatRate(singleValueBody);
     }
 
     @GetMapping(value = "/product-categories")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<ProductCategorySo> getProductCategories() {
-        return productConfigService.getProductCategories();
+    public List<ProductCategoryWebDto> getProductCategories() {
+        return productConfigApiService.getProductCategories();
     }
 
     @PostMapping(value = "/product-categories")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<ProductCategorySo> setProductCategories(@Valid @RequestBody final List<ProductCategoryDataSo> data) {
-        return productConfigService.setProductCategories(data);
+    public List<ProductCategoryWebDto> setProductCategories(@Valid @RequestBody final List<ProductCategoryChangeWebDto> data) {
+        return productConfigApiService.setProductCategories(data);
     }
 
     @GetMapping(value = "/board-category-item")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ProductCategoryItemSo getBoardCategoryItem() {
-        return productConfigService.getBoardCategoryItem();
+    public ProductCategoryItemWebDto getBoardCategoryItem() {
+        return productConfigApiService.getBoardCategoryItem();
     }
 
     @PostMapping(value = "/board-category-item")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ProductCategoryItemSo setBoardCategoryItem(@Valid @RequestBody final ProductCategoryItemDataSo data) {
-        return productConfigService.setBoardCategoryItem(data);
+    public ProductCategoryItemWebDto setBoardCategoryItem(@Valid @RequestBody final ProductCategoryItemChangeWebDto productCategoryItemChange) {
+        return productConfigApiService.setBoardCategoryItem(productCategoryItemChange);
     }
 
     @GetMapping(value = "/edge-category-item")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ProductCategoryItemSo getEdgeCategoryItem() {
-        return productConfigService.getEdgeCategoryItem();
+    public ProductCategoryItemWebDto getEdgeCategoryItem() {
+        return productConfigApiService.getEdgeCategoryItem();
     }
 
     @PostMapping(value = "/edge-category-item")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ProductCategoryItemSo setEdgeCategoryItem(@Valid @RequestBody final ProductCategoryItemDataSo data) {
-        return productConfigService.setEdgeCategoryItem(data);
+    public ProductCategoryItemWebDto setEdgeCategoryItem(@Valid @RequestBody final ProductCategoryItemChangeWebDto productCategoryItemChange) {
+        return productConfigApiService.setEdgeCategoryItem(productCategoryItemChange);
     }
 
     @GetMapping(value = "/service-category-item")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ProductCategoryItemSo getServiceCategoryItem() {
-        return productConfigService.getServiceCategoryItem();
+    public ProductCategoryItemWebDto getServiceCategoryItem() {
+        return productConfigApiService.getServiceCategoryItem();
     }
 
     @PostMapping(value = "/service-category-item")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ProductCategoryItemSo setServiceCategoryItem(@Valid @RequestBody final ProductCategoryItemDataSo data) {
-        return productConfigService.setServiceCategoryItem(data);
+    public ProductCategoryItemWebDto setServiceCategoryItem(@Valid @RequestBody final ProductCategoryItemChangeWebDto productCategoryItemChange) {
+        return productConfigApiService.setServiceCategoryItem(productCategoryItemChange);
     }
 
     @GetMapping(value = "/search-items")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<ProductCategoryItemSo> getSearchItems() {
-        return productConfigService.getSearchItems();
+    public List<ProductCategoryItemWebDto> getSearchItems() {
+        return productConfigApiService.getSearchItems();
     }
 
     @PostMapping(value = "/search-items")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<ProductCategoryItemSo> setSearchItems(@Valid @RequestBody final List<ProductCategoryItemDataSo> data) {
-        return productConfigService.setSearchItems(data);
+    public List<ProductCategoryItemWebDto> setSearchItems(@Valid @RequestBody final List<ProductCategoryItemChangeWebDto> data) {
+        return productConfigApiService.setSearchItems(data);
     }
 }

@@ -5,9 +5,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.dal.domain.ApplicationImageDo;
-import sk.janobono.wiwa.dal.domain.ProductImageDo;
-import sk.janobono.wiwa.model.ApplicationImage;
 
 import javax.imageio.*;
 import javax.imageio.metadata.IIOMetadata;
@@ -21,22 +18,6 @@ import java.util.Base64;
 
 @Component
 public class ImageUtil {
-
-    public ApplicationImage toApplicationImage(final ApplicationImageDo applicationImageDo) {
-        return new ApplicationImage(
-                applicationImageDo.getFileName(),
-                applicationImageDo.getFileType(),
-                toThumbnail(applicationImageDo.getFileType(), applicationImageDo.getThumbnail())
-        );
-    }
-
-    public ApplicationImage toApplicationImage(final ProductImageDo productImageDo) {
-        return new ApplicationImage(
-                productImageDo.getFileName(),
-                productImageDo.getFileType(),
-                toThumbnail(productImageDo.getFileType(), productImageDo.getThumbnail())
-        );
-    }
 
     public boolean isImageFile(final String fileType) {
         return fileType.equals(MediaType.IMAGE_GIF_VALUE)
@@ -205,15 +186,7 @@ public class ImageUtil {
                 final IIOMetadataNode root = new IIOMetadataNode("javax_imageio_jpeg_image_1.0");
                 final IIOMetadataNode jpegVariety = new IIOMetadataNode("JPEGvariety");
                 final IIOMetadataNode markerSequence = new IIOMetadataNode("markerSequence");
-                final IIOMetadataNode app0JFIF = new IIOMetadataNode("app0JFIF");
-
-                app0JFIF.setAttribute("majorVersion", "1");
-                app0JFIF.setAttribute("minorVersion", "2");
-                app0JFIF.setAttribute("thumbWidth", "0");
-                app0JFIF.setAttribute("thumbHeight", "0");
-                app0JFIF.setAttribute("resUnits", "01");
-                app0JFIF.setAttribute("Xdensity", String.valueOf(96));
-                app0JFIF.setAttribute("Ydensity", String.valueOf(96));
+                final IIOMetadataNode app0JFIF = getMetadataNode();
 
                 root.appendChild(jpegVariety);
                 root.appendChild(markerSequence);
@@ -224,6 +197,19 @@ public class ImageUtil {
             imageWriter.setOutput(ios);
             imageWriter.write(metadata, new IIOImage(bufferedImage, null, metadata), imageWriteParam);
         }
+    }
+
+    private IIOMetadataNode getMetadataNode() {
+        final IIOMetadataNode app0JFIF = new IIOMetadataNode("app0JFIF");
+
+        app0JFIF.setAttribute("majorVersion", "1");
+        app0JFIF.setAttribute("minorVersion", "2");
+        app0JFIF.setAttribute("thumbWidth", "0");
+        app0JFIF.setAttribute("thumbHeight", "0");
+        app0JFIF.setAttribute("resUnits", "01");
+        app0JFIF.setAttribute("Xdensity", String.valueOf(96));
+        app0JFIF.setAttribute("Ydensity", String.valueOf(96));
+        return app0JFIF;
     }
 
     private void processPNGOutput(final ByteArrayOutputStream byteArrayOutputStream, final BufferedImage bufferedImage, final String formatName) throws IOException {

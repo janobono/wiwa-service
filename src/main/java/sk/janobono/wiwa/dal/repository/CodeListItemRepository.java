@@ -6,16 +6,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import sk.janobono.wiwa.business.model.codelist.CodeListItemSearchCriteriaSo;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
+import sk.janobono.wiwa.dal.model.CodeListItemSearchCriteriaDo;
 import sk.janobono.wiwa.dal.r3n.dto.WiwaCodeListItemDto;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaCodeListItem;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaProductCodeListItem;
-import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaUserCodeListItem;
 import sk.janobono.wiwa.dal.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.component.CriteriaUtil;
-import sk.janobono.wiwa.dal.repository.mapper.CodeListItemMapper;
+import sk.janobono.wiwa.dal.repository.mapper.CodeListItemDoMapper;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.jdbc.SqlUtil;
 import sk.r3n.sql.Column;
@@ -37,7 +36,7 @@ public class CodeListItemRepository {
 
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
-    private final CodeListItemMapper mapper;
+    private final CodeListItemDoMapper mapper;
     private final ScDf scDf;
     private final CriteriaUtil criteriaUtil;
 
@@ -142,7 +141,7 @@ public class CodeListItemRepository {
         }
     }
 
-    public Page<CodeListItemDo> findAll(final CodeListItemSearchCriteriaSo criteria, final Pageable pageable) {
+    public Page<CodeListItemDo> findAll(final CodeListItemSearchCriteriaDo criteria, final Pageable pageable) {
         log.debug("findAll({},{})", criteria, pageable);
         try (final Connection connection = dataSource.getConnection()) {
             final Query.Select selectTotalRows = Query
@@ -217,24 +216,6 @@ public class CodeListItemRepository {
         }
     }
 
-    public List<CodeListItemDo> findByUserId(final Long userId) {
-        log.debug("findByUserId({})", userId);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaCodeListItem.columns())
-                            .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
-                            .LEFT_JOIN(MetaTable.WIWA_USER_CODE_LIST_ITEM.table(), MetaColumnWiwaUserCodeListItem.CODE_LIST_ITEM_ID.column(), MetaColumnWiwaCodeListItem.ID.column())
-                            .WHERE(MetaColumnWiwaUserCodeListItem.USER_ID.column(), Condition.EQUALS, userId)
-            );
-            return rows.stream()
-                    .map(WiwaCodeListItemDto::toObject)
-                    .map(mapper::toCodeListItemDo)
-                    .toList();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public CodeListItemDo save(final CodeListItemDo codeListItemDo) {
         log.debug("save({})", codeListItemDo);
         try (final Connection connection = dataSource.getConnection()) {
@@ -286,39 +267,11 @@ public class CodeListItemRepository {
         }
     }
 
-    public void saveUserCodeListItems(final Long userId, final List<Long> itemIds) {
-        log.debug("saveUserCodeListItems({},{})", userId, itemIds);
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-
-            deleteUserCodeListItems(connection, userId);
-            insertUserCodeListItems(connection, userId, itemIds);
-
-            connection.commit();
-        } catch (final Exception e) {
-            SqlUtil.rollback(connection);
-            throw new RuntimeException(e);
-        } finally {
-            SqlUtil.enableAutoCommit(connection);
-            SqlUtil.close(connection);
-        }
-    }
-
     private void deleteProductCodeListItems(final Connection connection, final Long productId) throws SQLException {
         sqlBuilder.delete(connection,
                 Query.DELETE()
                         .FROM(MetaTable.WIWA_PRODUCT_CODE_LIST_ITEM.table())
                         .WHERE(MetaColumnWiwaProductCodeListItem.PRODUCT_ID.column(), Condition.EQUALS, productId)
-        );
-    }
-
-    private void deleteUserCodeListItems(final Connection connection, final Long userId) throws SQLException {
-        sqlBuilder.delete(connection,
-                Query.DELETE()
-                        .FROM(MetaTable.WIWA_USER_CODE_LIST_ITEM.table())
-                        .WHERE(MetaColumnWiwaUserCodeListItem.USER_ID.column(), Condition.EQUALS, userId)
         );
     }
 
@@ -344,17 +297,7 @@ public class CodeListItemRepository {
         }
     }
 
-    private void insertUserCodeListItems(final Connection connection, final Long userId, final List<Long> itemIds) throws SQLException {
-        for (final Long itemId : itemIds) {
-            sqlBuilder.insert(connection,
-                    Query.INSERT()
-                            .INTO(MetaTable.WIWA_USER_CODE_LIST_ITEM.table(), MetaColumnWiwaUserCodeListItem.columns())
-                            .VALUES(userId, itemId)
-            );
-        }
-    }
-
-    private void mapCriteria(final CodeListItemSearchCriteriaSo criteria, final Query.Select select) {
+    private void mapCriteria(final CodeListItemSearchCriteriaDo criteria, final Query.Select select) {
         // code list id
         if (Optional.ofNullable(criteria.codeListId()).isPresent()) {
             select.AND(MetaColumnWiwaCodeListItem.CODE_LIST_ID.column(), Condition.EQUALS, criteria.codeListId());

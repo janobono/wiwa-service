@@ -8,7 +8,7 @@ import sk.janobono.wiwa.dal.r3n.dto.WiwaProductUnitPriceDto;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaProductUnitPrice;
 import sk.janobono.wiwa.dal.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.component.CriteriaUtil;
-import sk.janobono.wiwa.dal.repository.mapper.ProductUnitPriceMapper;
+import sk.janobono.wiwa.dal.repository.mapper.ProductUnitPriceDoMapper;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.jdbc.SqlUtil;
 import sk.r3n.sql.Column;
@@ -28,7 +28,7 @@ public class ProductUnitPriceRepository {
 
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
-    private final ProductUnitPriceMapper mapper;
+    private final ProductUnitPriceDoMapper mapper;
     private final CriteriaUtil criteriaUtil;
 
     public List<ProductUnitPriceDo> findAllByProductId(final Long productId) {

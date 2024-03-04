@@ -8,7 +8,7 @@ import sk.janobono.wiwa.dal.r3n.dto.WiwaApplicationPropertyDto;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaApplicationProperty;
 import sk.janobono.wiwa.dal.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.component.CriteriaUtil;
-import sk.janobono.wiwa.dal.repository.mapper.ApplicationPropertyMapper;
+import sk.janobono.wiwa.dal.repository.mapper.ApplicationPropertyDoMapper;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.jdbc.SqlUtil;
 import sk.r3n.sql.Column;
@@ -28,7 +28,7 @@ public class ApplicationPropertyRepository {
 
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
-    private final ApplicationPropertyMapper mapper;
+    private final ApplicationPropertyDoMapper mapper;
     private final CriteriaUtil criteriaUtil;
 
     public int count() {

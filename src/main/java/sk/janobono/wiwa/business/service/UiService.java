@@ -1,42 +1,119 @@
 package sk.janobono.wiwa.business.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.api.model.ApplicationPropertiesWeb;
-import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
-import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
-import sk.janobono.wiwa.business.model.ui.UnitSo;
+import sk.janobono.wiwa.business.mapper.ApplicationImageDataMapper;
+import sk.janobono.wiwa.business.model.ApplicationImageData;
+import sk.janobono.wiwa.business.model.ApplicationImageInfoData;
+import sk.janobono.wiwa.business.model.captcha.CaptchaData;
+import sk.janobono.wiwa.business.model.ui.ApplicationPropertiesData;
+import sk.janobono.wiwa.business.model.ui.CompanyInfoData;
+import sk.janobono.wiwa.business.model.ui.UnitData;
+import sk.janobono.wiwa.component.Captcha;
 import sk.janobono.wiwa.component.ImageUtil;
+import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.config.JwtConfigProperties;
 import sk.janobono.wiwa.dal.domain.ApplicationImageDo;
 import sk.janobono.wiwa.dal.repository.ApplicationImageRepository;
+import sk.janobono.wiwa.dal.repository.ProductImageRepository;
 import sk.janobono.wiwa.exception.WiwaException;
-import sk.janobono.wiwa.model.ApplicationImage;
-import sk.janobono.wiwa.model.ResourceEntity;
 import sk.janobono.wiwa.model.Unit;
 import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
 public class UiService {
+
     private final CommonConfigProperties commonConfigProperties;
     private final JwtConfigProperties jwtConfigProperties;
+
+    private final Captcha captcha;
     private final ImageUtil imageUtil;
-    private final ApplicationImageService applicationImageService;
+    private final ScDf scDf;
+
+    private final ApplicationImageDataMapper applicationImageDataMapper;
+
     private final ApplicationPropertyService applicationPropertyService;
     private final ApplicationImageRepository applicationImageRepository;
-    private final ProductService productService;
+    private final ProductImageRepository productImageRepository;
 
-    public ApplicationPropertiesWeb getApplicationProperties() {
-        return new ApplicationPropertiesWeb(
+    public CaptchaData getCaptcha() {
+        final String text = captcha.generateText();
+        final String image = "data:image/png;base64," + Base64.getEncoder().encodeToString(captcha.generateImage(text));
+        final String token = captcha.generateToken(text);
+        return new CaptchaData(token, image);
+    }
+
+    public Page<ApplicationImageInfoData> getApplicationImages(final Pageable pageable) {
+        return applicationImageRepository.findAll(pageable)
+                .map(applicationImageDataMapper::mapToData);
+    }
+
+    public ApplicationImageData getApplicationImage(final String fileName) {
+        return applicationImageRepository.findById(scDf.toStripAndLowerCase(fileName))
+                .map(applicationImageDataMapper::mapToData)
+                .orElseGet(() -> new ApplicationImageData(
+                        fileName,
+                        MediaType.IMAGE_PNG_VALUE,
+                        imageUtil.generateMessageImage(null),
+                        imageUtil.generateMessageImage(null)
+                ));
+    }
+
+    public ApplicationImageData getProductImage(final Long productId, final String fileName) {
+        return productImageRepository.findByProductIdAndFileName(productId, scDf.toStripAndLowerCase(fileName))
+                .map(applicationImageDataMapper::mapToData)
+                .orElseGet(() -> new ApplicationImageData(
+                        fileName,
+                        MediaType.IMAGE_PNG_VALUE,
+                        imageUtil.generateMessageImage(null),
+                        imageUtil.generateMessageImage(null)
+                ));
+    }
+
+    public ApplicationImageInfoData setApplicationImage(final MultipartFile multipartFile) {
+        final String fileName = scDf.toStripAndLowerCase(multipartFile.getOriginalFilename());
+        final String fileType = Optional.ofNullable(multipartFile.getContentType())
+                .orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+
+        if (!imageUtil.isImageFile(fileType)) {
+            throw WiwaException.APPLICATION_IMAGE_NOT_SUPPORTED.exception("Unsupported file type {0}", fileType);
+        }
+
+        final ApplicationImageDo applicationImageDo = ApplicationImageDo.builder()
+                .fileName(fileName)
+                .fileType(fileType)
+                .thumbnail(imageUtil.scaleImage(
+                        fileType,
+                        imageUtil.getFileData(multipartFile),
+                        commonConfigProperties.maxThumbnailResolution(),
+                        commonConfigProperties.maxThumbnailResolution()
+                ))
+                .data(imageUtil.scaleImage(
+                        fileType,
+                        imageUtil.getFileData(multipartFile),
+                        commonConfigProperties.maxThumbnailResolution(),
+                        commonConfigProperties.maxThumbnailResolution()
+                ))
+                .build();
+
+        return applicationImageDataMapper.mapToInfoData(applicationImageRepository.save(applicationImageDo));
+    }
+
+    public void deleteApplicationImage(final String fileName) {
+        applicationImageRepository.deleteById(fileName);
+    }
+
+    public ApplicationPropertiesData getApplicationProperties() {
+        return new ApplicationPropertiesData(
                 commonConfigProperties.defaultLocale(),
                 commonConfigProperties.appTitle(),
                 commonConfigProperties.appDescription(),
@@ -44,8 +121,8 @@ public class UiService {
         );
     }
 
-    public ResourceEntity getLogo() {
-        return applicationImageService.getApplicationImage("logo.png");
+    public ApplicationImageData getLogo() {
+        return getApplicationImage("logo.png");
     }
 
     public String getTitle() {
@@ -56,17 +133,17 @@ public class UiService {
         return applicationPropertyService.getProperty(WiwaProperty.APP_WELCOME_TEXT);
     }
 
-    public ApplicationInfoSo getApplicationInfo() {
-        final ApplicationInfoSo result = new ApplicationInfoSo(new ArrayList<>());
+    public List<String> getApplicationInfo() {
+        final List<String> result = new ArrayList<>();
         final int count = Integer.parseInt(applicationPropertyService.getProperty(WiwaProperty.APP_INFO_SLIDE_COUNT));
         for (int i = 0; i < count; i++) {
-            result.items().add(applicationPropertyService.getProperty(WiwaProperty.APP_INFO_SLIDE_X_TEXT, i));
+            result.add(applicationPropertyService.getProperty(WiwaProperty.APP_INFO_SLIDE_X_TEXT, i));
         }
         return result;
     }
 
-    public CompanyInfoSo getCompanyInfo() {
-        return new CompanyInfoSo(applicationPropertyService.getProperty(WiwaProperty.COMPANY_NAME),
+    public CompanyInfoData getCompanyInfo() {
+        return new CompanyInfoData(applicationPropertyService.getProperty(WiwaProperty.COMPANY_NAME),
                 applicationPropertyService.getProperty(WiwaProperty.COMPANY_STREET),
                 applicationPropertyService.getProperty(WiwaProperty.COMPANY_CITY),
                 applicationPropertyService.getProperty(WiwaProperty.COMPANY_ZIP_CODE),
@@ -96,14 +173,14 @@ public class UiService {
         return applicationPropertyService.getProperty(WiwaProperty.APP_WORKING_HOURS);
     }
 
-    public List<UnitSo> getUnits() {
+    public List<UnitData> getUnits() {
         return applicationPropertyService.getProperties(WiwaProperty.UNIT_GROUP.getGroup()).entrySet().stream()
-                .map(entry -> new UnitSo(Unit.valueOf(entry.getKey()), entry.getValue()))
+                .map(entry -> new UnitData(Unit.valueOf(entry.getKey()), entry.getValue()))
                 .sorted(Comparator.comparingInt(o -> o.id().ordinal()))
                 .toList();
     }
 
-    public ApplicationImage setLogo(final MultipartFile multipartFile) {
+    public ApplicationImageInfoData setLogo(final MultipartFile multipartFile) {
         final String fileName = "logo.png";
         final String fileType = multipartFile.getContentType() != null ? multipartFile.getContentType() : MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
@@ -132,7 +209,7 @@ public class UiService {
                         commonConfigProperties.maxImageResolution(), commonConfigProperties.maxImageResolution()))
                 .build();
 
-        return imageUtil.toApplicationImage(applicationImageRepository.save(applicationImageDo));
+        return applicationImageDataMapper.mapToInfoData(applicationImageRepository.save(applicationImageDo));
     }
 
     public String setTitle(final String title) {
@@ -143,15 +220,15 @@ public class UiService {
         return applicationPropertyService.setApplicationProperty(WiwaProperty.APP_WELCOME_TEXT.getGroup(), WiwaProperty.APP_WELCOME_TEXT.getKey(), welcomeText);
     }
 
-    public ApplicationInfoSo setApplicationInfo(final ApplicationInfoSo applicationInfo) {
-        applicationPropertyService.setApplicationProperty(WiwaProperty.APP_INFO_SLIDE_COUNT.getGroup(), WiwaProperty.APP_INFO_SLIDE_COUNT.getKey(), Integer.toString(applicationInfo.items().size()));
-        for (int i = 0; i < applicationInfo.items().size(); i++) {
-            applicationPropertyService.setApplicationProperty(WiwaProperty.APP_INFO_SLIDE_X_TEXT.getGroup(), WiwaProperty.APP_INFO_SLIDE_X_TEXT.getKey(i), applicationInfo.items().get(i));
+    public List<String> setApplicationInfo(final List<String> applicationInfo) {
+        applicationPropertyService.setApplicationProperty(WiwaProperty.APP_INFO_SLIDE_COUNT.getGroup(), WiwaProperty.APP_INFO_SLIDE_COUNT.getKey(), Integer.toString(applicationInfo.size()));
+        for (int i = 0; i < applicationInfo.size(); i++) {
+            applicationPropertyService.setApplicationProperty(WiwaProperty.APP_INFO_SLIDE_X_TEXT.getGroup(), WiwaProperty.APP_INFO_SLIDE_X_TEXT.getKey(i), applicationInfo.get(i));
         }
         return applicationInfo;
     }
 
-    public CompanyInfoSo setCompanyInfo(final CompanyInfoSo companyInfo) {
+    public CompanyInfoData setCompanyInfo(final CompanyInfoData companyInfo) {
         applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_NAME.getGroup(), WiwaProperty.COMPANY_NAME.getKey(), companyInfo.name());
         applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_STREET.getGroup(), WiwaProperty.COMPANY_STREET.getKey(), companyInfo.street());
         applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_CITY.getGroup(), WiwaProperty.COMPANY_CITY.getKey(), companyInfo.city());
@@ -183,18 +260,10 @@ public class UiService {
         return applicationPropertyService.setApplicationProperty(WiwaProperty.APP_WORKING_HOURS.getGroup(), WiwaProperty.APP_WORKING_HOURS.getKey(), workingHours);
     }
 
-    public List<UnitSo> setUnits(final List<UnitSo> data) {
-        for (final UnitSo unit : data) {
+    public List<UnitData> setUnits(final List<UnitData> data) {
+        for (final UnitData unit : data) {
             applicationPropertyService.setApplicationProperty(WiwaProperty.UNIT_GROUP.getGroup(), unit.id().name(), unit.value());
         }
         return data;
-    }
-
-    public ResourceEntity getApplicationImage(final String fileName) {
-        return applicationImageService.getApplicationImage(fileName);
-    }
-
-    public ResourceEntity getProductImage(final Long productId, final String fileName) {
-        return productService.getProductImage(productId, fileName);
     }
 }

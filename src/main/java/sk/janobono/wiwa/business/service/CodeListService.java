@@ -4,10 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import sk.janobono.wiwa.business.model.codelist.CodeListDataSo;
-import sk.janobono.wiwa.business.model.codelist.CodeListSearchCriteriaSo;
-import sk.janobono.wiwa.business.model.codelist.CodeListSo;
+import sk.janobono.wiwa.business.model.codelist.CodeListChangeData;
+import sk.janobono.wiwa.business.model.codelist.CodeListData;
+import sk.janobono.wiwa.business.model.codelist.CodeListSearchCriteriaData;
 import sk.janobono.wiwa.dal.domain.CodeListDo;
+import sk.janobono.wiwa.dal.model.CodeListSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.CodeListRepository;
 import sk.janobono.wiwa.exception.WiwaException;
 
@@ -19,15 +20,15 @@ public class CodeListService {
 
     private final CodeListRepository codeListRepository;
 
-    public Page<CodeListSo> getCodeLists(final CodeListSearchCriteriaSo criteria, final Pageable pageable) {
-        return codeListRepository.findAll(criteria, pageable).map(this::toCodeListSo);
+    public Page<CodeListData> getCodeLists(final CodeListSearchCriteriaData criteria, final Pageable pageable) {
+        return codeListRepository.findAll(mapToDo(criteria), pageable).map(this::toCodeListSo);
     }
 
-    public CodeListSo getCodeList(final Long id) {
+    public CodeListData getCodeList(final Long id) {
         return toCodeListSo(getCodeListDo(id));
     }
 
-    public CodeListSo addCodeList(final CodeListDataSo data) {
+    public CodeListData addCodeList(final CodeListChangeData data) {
         if (isCodeUsed(null, data)) {
             throw WiwaException.CODE_IS_USED.exception("Code list code {0} is used", data.code());
         }
@@ -39,7 +40,7 @@ public class CodeListService {
         );
     }
 
-    public CodeListSo setCodeList(final Long id, final CodeListDataSo data) {
+    public CodeListData setCodeList(final Long id, final CodeListChangeData data) {
         if (isCodeUsed(id, data)) {
             throw WiwaException.CODE_IS_USED.exception("Code list code {0} is used", data.code());
         }
@@ -63,13 +64,21 @@ public class CodeListService {
                 .orElseThrow(() -> WiwaException.CODE_LIST_NOT_FOUND.exception("Code list with id {0} not found", id));
     }
 
-    private boolean isCodeUsed(final Long id, final CodeListDataSo data) {
+    private boolean isCodeUsed(final Long id, final CodeListChangeData data) {
         return Optional.ofNullable(id)
                 .map(codeListId -> codeListRepository.countByIdNotAndCode(codeListId, data.code()) > 0)
                 .orElseGet(() -> codeListRepository.countByCode(data.code()) > 0);
     }
 
-    private CodeListSo toCodeListSo(final CodeListDo codeListDo) {
-        return new CodeListSo(codeListDo.getId(), codeListDo.getCode(), codeListDo.getName());
+    private CodeListData toCodeListSo(final CodeListDo codeListDo) {
+        return new CodeListData(codeListDo.getId(), codeListDo.getCode(), codeListDo.getName());
+    }
+
+    private CodeListSearchCriteriaDo mapToDo(final CodeListSearchCriteriaData criteria) {
+        return new CodeListSearchCriteriaDo(
+                criteria.searchField(),
+                criteria.code(),
+                criteria.name()
+        );
     }
 }

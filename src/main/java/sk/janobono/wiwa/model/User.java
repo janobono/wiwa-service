@@ -17,7 +17,6 @@ public record User(
         Boolean gdpr,
         Boolean confirmed,
         Boolean enabled,
-        List<Authority> authorities,
-        List<Long> codeListItems
+        List<Authority> authorities
 ) {
 }

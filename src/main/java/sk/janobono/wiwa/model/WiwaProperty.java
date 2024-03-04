@@ -1,5 +1,7 @@
 package sk.janobono.wiwa.model;
 
+import lombok.Getter;
+
 import java.text.MessageFormat;
 
 public enum WiwaProperty implements ApplicationPropertyKey {
@@ -47,16 +49,13 @@ public enum WiwaProperty implements ApplicationPropertyKey {
     PRODUCT_SERVICE_CATEGORY_ITEM("PRODUCT", "SERVICE_CATEGORY_ITEM"),
     PRODUCT_SEARCH_CATEGORIES("PRODUCT", "SEARCH_CATEGORIES");
 
+    @Getter
     private final String group;
     private final String keyPattern;
 
     WiwaProperty(final String group, final String keyPattern) {
         this.group = group;
         this.keyPattern = keyPattern;
-    }
-
-    public String getGroup() {
-        return group;
     }
 
     public String getKey(final Object... arguments) {

@@ -3,10 +3,10 @@ package sk.janobono.wiwa.business.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sk.janobono.wiwa.business.model.product.ProductCategoryDataSo;
-import sk.janobono.wiwa.business.model.product.ProductCategoryItemDataSo;
-import sk.janobono.wiwa.business.model.product.ProductCategoryItemSo;
-import sk.janobono.wiwa.business.model.product.ProductCategorySo;
+import sk.janobono.wiwa.business.model.product.ProductCategoryChangeData;
+import sk.janobono.wiwa.business.model.product.ProductCategoryItemChangeData;
+import sk.janobono.wiwa.business.model.product.ProductCategoryItemData;
+import sk.janobono.wiwa.business.model.product.ProductCategoryData;
 import sk.janobono.wiwa.dal.domain.CodeListDo;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.repository.CodeListItemRepository;
@@ -40,18 +40,18 @@ public class ProductConfigService {
         return value;
     }
 
-    public List<ProductCategorySo> getProductCategories() {
+    public List<ProductCategoryData> getProductCategories() {
         return applicationPropertyService.getPropertyValue(WiwaProperty.PRODUCT_CATEGORIES)
                 .map(this::toProductCategories)
                 .orElse(Collections.emptyList());
     }
 
-    public List<ProductCategorySo> setProductCategories(final List<ProductCategoryDataSo> data) {
-        final List<ProductCategorySo> result = data.stream()
-                .map(ProductCategoryDataSo::categoryId)
+    public List<ProductCategoryData> setProductCategories(final List<ProductCategoryChangeData> data) {
+        final List<ProductCategoryData> result = data.stream()
+                .map(ProductCategoryChangeData::categoryId)
                 .map(codeListRepository::findById)
                 .flatMap(Optional::stream)
-                .map(codeListDo -> new ProductCategorySo(codeListDo.getId(), codeListDo.getCode(), codeListDo.getName()))
+                .map(codeListDo -> new ProductCategoryData(codeListDo.getId(), codeListDo.getCode(), codeListDo.getName()))
                 .toList();
 
         applicationPropertyService.setApplicationProperty(
@@ -63,38 +63,38 @@ public class ProductConfigService {
         return result;
     }
 
-    public ProductCategoryItemSo getBoardCategoryItem() {
+    public ProductCategoryItemData getBoardCategoryItem() {
         return getProductCategoryItem(WiwaProperty.PRODUCT_BOARD_CATEGORY_ITEM);
     }
 
-    public ProductCategoryItemSo setBoardCategoryItem(final ProductCategoryItemDataSo data) {
+    public ProductCategoryItemData setBoardCategoryItem(final ProductCategoryItemChangeData data) {
         return setProductCategoryItem(WiwaProperty.PRODUCT_BOARD_CATEGORY_ITEM, data);
     }
 
-    public ProductCategoryItemSo getEdgeCategoryItem() {
+    public ProductCategoryItemData getEdgeCategoryItem() {
         return getProductCategoryItem(WiwaProperty.PRODUCT_EDGE_CATEGORY_ITEM);
     }
 
-    public ProductCategoryItemSo setEdgeCategoryItem(final ProductCategoryItemDataSo data) {
+    public ProductCategoryItemData setEdgeCategoryItem(final ProductCategoryItemChangeData data) {
         return setProductCategoryItem(WiwaProperty.PRODUCT_EDGE_CATEGORY_ITEM, data);
     }
 
-    public ProductCategoryItemSo getServiceCategoryItem() {
+    public ProductCategoryItemData getServiceCategoryItem() {
         return getProductCategoryItem(WiwaProperty.PRODUCT_SERVICE_CATEGORY_ITEM);
     }
 
-    public ProductCategoryItemSo setServiceCategoryItem(final ProductCategoryItemDataSo data) {
+    public ProductCategoryItemData setServiceCategoryItem(final ProductCategoryItemChangeData data) {
         return setProductCategoryItem(WiwaProperty.PRODUCT_SERVICE_CATEGORY_ITEM, data);
     }
 
-    public List<ProductCategoryItemSo> getSearchItems() {
+    public List<ProductCategoryItemData> getSearchItems() {
         return applicationPropertyService.getPropertyValue(WiwaProperty.PRODUCT_SEARCH_CATEGORIES)
                 .map(this::toProductCategoryItems)
                 .orElse(Collections.emptyList());
     }
 
-    public List<ProductCategoryItemSo> setSearchItems(final List<ProductCategoryItemDataSo> data) {
-        final List<ProductCategoryItemSo> result = data.stream()
+    public List<ProductCategoryItemData> setSearchItems(final List<ProductCategoryItemChangeData> data) {
+        final List<ProductCategoryItemData> result = data.stream()
                 .map(this::toProductCategoryItem)
                 .flatMap(Optional::stream)
                 .toList();
@@ -108,14 +108,14 @@ public class ProductConfigService {
         return result;
     }
 
-    private ProductCategoryItemSo getProductCategoryItem(final WiwaProperty wiwaProperty) {
+    private ProductCategoryItemData getProductCategoryItem(final WiwaProperty wiwaProperty) {
         return applicationPropertyService.getPropertyValue(wiwaProperty)
                 .map(this::toProductCategoryItem)
                 .orElse(null);
     }
 
-    public ProductCategoryItemSo setProductCategoryItem(final WiwaProperty wiwaProperty, final ProductCategoryItemDataSo data) {
-        final Optional<ProductCategoryItemSo> item = toProductCategoryItem(data);
+    public ProductCategoryItemData setProductCategoryItem(final WiwaProperty wiwaProperty, final ProductCategoryItemChangeData data) {
+        final Optional<ProductCategoryItemData> item = toProductCategoryItem(data);
 
         item.map(pc -> applicationPropertyService.setApplicationProperty(
                 wiwaProperty.getGroup(),
@@ -126,9 +126,9 @@ public class ProductConfigService {
         return item.orElse(null);
     }
 
-    private List<ProductCategorySo> toProductCategories(final String value) {
+    private List<ProductCategoryData> toProductCategories(final String value) {
         try {
-            return Arrays.stream(mapper.readValue(value, ProductCategorySo[].class))
+            return Arrays.stream(mapper.readValue(value, ProductCategoryData[].class))
                     .filter(productCategory -> codeListRepository.existsById(productCategory.id()))
                     .toList();
         } catch (final Exception e) {
@@ -136,9 +136,9 @@ public class ProductConfigService {
         }
     }
 
-    private List<ProductCategoryItemSo> toProductCategoryItems(final String value) {
+    private List<ProductCategoryItemData> toProductCategoryItems(final String value) {
         try {
-            return Arrays.stream(mapper.readValue(value, ProductCategoryItemSo[].class))
+            return Arrays.stream(mapper.readValue(value, ProductCategoryItemData[].class))
                     .filter(item -> codeListRepository.existsById(item.category().id()))
                     .filter(item -> item.id() == null || codeListItemRepository.existsById(item.id()))
                     .toList();
@@ -155,7 +155,7 @@ public class ProductConfigService {
         }
     }
 
-    private Optional<ProductCategoryItemSo> toProductCategoryItem(final ProductCategoryItemDataSo item) {
+    private Optional<ProductCategoryItemData> toProductCategoryItem(final ProductCategoryItemChangeData item) {
         final Optional<CodeListDo> codeList = codeListRepository.findById(item.categoryId());
         if (codeList.isEmpty()) {
             return Optional.empty();
@@ -166,17 +166,17 @@ public class ProductConfigService {
             return Optional.empty();
         }
 
-        return codeListItem.map(ci -> new ProductCategoryItemSo(
+        return codeListItem.map(ci -> new ProductCategoryItemData(
                 ci.getId(),
                 ci.getCode(),
                 ci.getValue(),
-                new ProductCategorySo(codeList.get().getId(), codeList.get().getCode(), codeList.get().getName())
+                new ProductCategoryData(codeList.get().getId(), codeList.get().getCode(), codeList.get().getName())
         ));
     }
 
-    private ProductCategoryItemSo toProductCategoryItem(final String value) {
+    private ProductCategoryItemData toProductCategoryItem(final String value) {
         try {
-            final ProductCategoryItemSo result = mapper.readValue(value, ProductCategoryItemSo.class);
+            final ProductCategoryItemData result = mapper.readValue(value, ProductCategoryItemData.class);
             if (codeListRepository.existsById(result.category().id())
                     && codeListItemRepository.existsById(result.id())) {
                 return result;
@@ -187,7 +187,7 @@ public class ProductConfigService {
         return null;
     }
 
-    private String toValue(final ProductCategoryItemSo item) {
+    private String toValue(final ProductCategoryItemData item) {
         try {
             return mapper.writeValueAsString(item);
         } catch (final Exception e) {

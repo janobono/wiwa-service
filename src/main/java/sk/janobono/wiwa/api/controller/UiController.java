@@ -9,13 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sk.janobono.wiwa.api.model.ApplicationPropertiesWeb;
-import sk.janobono.wiwa.api.model.SingleValueBody;
-import sk.janobono.wiwa.business.model.ui.ApplicationInfoSo;
-import sk.janobono.wiwa.business.model.ui.CompanyInfoSo;
-import sk.janobono.wiwa.business.model.ui.UnitSo;
-import sk.janobono.wiwa.business.service.UiService;
-import sk.janobono.wiwa.model.ResourceEntity;
+import sk.janobono.wiwa.api.model.*;
+import sk.janobono.wiwa.api.service.UiApiService;
 
 import java.util.List;
 
@@ -24,16 +19,21 @@ import java.util.List;
 @RequestMapping(path = "/ui")
 public class UiController {
 
-    private final UiService uiService;
+    private final UiApiService uiApiService;
 
     @GetMapping("/application-properties")
-    public ApplicationPropertiesWeb getApplicationProperties() {
-        return uiService.getApplicationProperties();
+    public ApplicationPropertiesWebDto getApplicationProperties() {
+        return uiApiService.getApplicationProperties();
+    }
+
+    @GetMapping("/captcha")
+    public CaptchaWebDto getCaptcha() {
+        return uiApiService.getCaptcha();
     }
 
     @GetMapping("/logo")
     public ResponseEntity<Resource> getLogo() {
-        final ResourceEntity resourceEntity = uiService.getLogo();
+        final ResourceEntityWebDto resourceEntity = uiApiService.getLogo();
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(resourceEntity.contentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntity.fileName() + "\"")
@@ -41,53 +41,53 @@ public class UiController {
     }
 
     @GetMapping(value = "/title")
-    public SingleValueBody<String> getTitle() {
-        return new SingleValueBody<>(uiService.getTitle());
+    public SingleValueBodyWebDto<String> getTitle() {
+        return uiApiService.getTitle();
     }
 
     @GetMapping(value = "/welcome-text")
-    public SingleValueBody<String> getWelcomeText() {
-        return new SingleValueBody<>(uiService.getWelcomeText());
+    public SingleValueBodyWebDto<String> getWelcomeText() {
+        return uiApiService.getWelcomeText();
     }
 
     @GetMapping("/application-info")
-    public ApplicationInfoSo getApplicationInfo() {
-        return uiService.getApplicationInfo();
+    public List<String> getApplicationInfo() {
+        return uiApiService.getApplicationInfo();
     }
 
     @GetMapping("/company-info")
-    public CompanyInfoSo getCompanyInfo() {
-        return uiService.getCompanyInfo();
+    public CompanyInfoWebDto getCompanyInfo() {
+        return uiApiService.getCompanyInfo();
     }
 
     @GetMapping(value = "/business-conditions")
-    public SingleValueBody<String> getBusinessConditions() {
-        return new SingleValueBody<>(uiService.getBusinessConditions());
+    public SingleValueBodyWebDto<String> getBusinessConditions() {
+        return uiApiService.getBusinessConditions();
     }
 
     @GetMapping(value = "/cookies-info")
-    public SingleValueBody<String> getCookiesInfo() {
-        return new SingleValueBody<>(uiService.getCookiesInfo());
+    public SingleValueBodyWebDto<String> getCookiesInfo() {
+        return uiApiService.getCookiesInfo();
     }
 
     @GetMapping(value = "/gdpr-info")
-    public SingleValueBody<String> getGdprInfo() {
-        return new SingleValueBody<>(uiService.getGdprInfo());
+    public SingleValueBodyWebDto<String> getGdprInfo() {
+        return uiApiService.getGdprInfo();
     }
 
     @GetMapping(value = "/working-hours")
-    public SingleValueBody<String> getWorkingHours() {
-        return new SingleValueBody<>(uiService.getWorkingHours());
+    public SingleValueBodyWebDto<String> getWorkingHours() {
+        return uiApiService.getWorkingHours();
     }
 
     @GetMapping(value = "/units")
-    public List<UnitSo> getUnits() {
-        return uiService.getUnits();
+    public List<UnitWebDto> getUnits() {
+        return uiApiService.getUnits();
     }
 
     @GetMapping("/application-images/{fileName}")
     public ResponseEntity<Resource> getApplicationImage(@PathVariable("fileName") final String fileName) {
-        final ResourceEntity resourceEntity = uiService.getApplicationImage(fileName);
+        final ResourceEntityWebDto resourceEntity = uiApiService.getApplicationImage(fileName);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(resourceEntity.contentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntity.fileName() + "\"")
@@ -96,7 +96,7 @@ public class UiController {
 
     @GetMapping("/product-images/{id}/{fileName}")
     public ResponseEntity<Resource> getProductImage(@PathVariable("id") final Long productId, @PathVariable("fileName") final String fileName) {
-        final ResourceEntity resourceEntity = uiService.getProductImage(productId, fileName);
+        final ResourceEntityWebDto resourceEntity = uiApiService.getProductImage(productId, fileName);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(resourceEntity.contentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntity.fileName() + "\"")

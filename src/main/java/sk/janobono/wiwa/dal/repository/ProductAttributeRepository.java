@@ -8,7 +8,7 @@ import sk.janobono.wiwa.dal.r3n.dto.WiwaProductAttributeDto;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaProductAttribute;
 import sk.janobono.wiwa.dal.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.component.CriteriaUtil;
-import sk.janobono.wiwa.dal.repository.mapper.ProductAttributeMapper;
+import sk.janobono.wiwa.dal.repository.mapper.ProductAttributeDoMapper;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.jdbc.SqlUtil;
 import sk.r3n.sql.Column;
@@ -28,7 +28,7 @@ public class ProductAttributeRepository {
 
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
-    private final ProductAttributeMapper mapper;
+    private final ProductAttributeDoMapper mapper;
     private final CriteriaUtil criteriaUtil;
 
     public List<ProductAttributeDo> findAllByProductId(final Long productId) {

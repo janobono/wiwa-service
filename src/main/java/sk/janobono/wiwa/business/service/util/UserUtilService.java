@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.dal.domain.AuthorityDo;
-import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.domain.UserDo;
 import sk.janobono.wiwa.dal.repository.AuthorityRepository;
-import sk.janobono.wiwa.dal.repository.CodeListItemRepository;
 import sk.janobono.wiwa.dal.repository.UserRepository;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.User;
@@ -19,7 +17,6 @@ public class UserUtilService {
     private final PasswordEncoder passwordEncoder;
     private final AuthorityRepository authorityRepository;
     private final UserRepository userRepository;
-    private final CodeListItemRepository codeListItemRepository;
 
     public void checkEnabled(final UserDo userDo) {
         if (!userDo.isEnabled()) {
@@ -52,7 +49,6 @@ public class UserUtilService {
                 .confirmed(userDo.isConfirmed())
                 .enabled(userDo.isEnabled())
                 .authorities(authorityRepository.findByUserId(userDo.getId()).stream().map(AuthorityDo::getAuthority).toList())
-                .codeListItems(codeListItemRepository.findByUserId(userDo.getId()).stream().map(CodeListItemDo::getId).toList())
                 .build();
     }
 }

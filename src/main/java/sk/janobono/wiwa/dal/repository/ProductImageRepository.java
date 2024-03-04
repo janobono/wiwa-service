@@ -3,14 +3,13 @@ package sk.janobono.wiwa.dal.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import sk.janobono.wiwa.component.ImageUtil;
+import sk.janobono.wiwa.dal.model.ApplicationImageInfoDo;
 import sk.janobono.wiwa.dal.domain.ProductImageDo;
 import sk.janobono.wiwa.dal.r3n.dto.WiwaProductImageDto;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaProductImage;
 import sk.janobono.wiwa.dal.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.component.CriteriaUtil;
-import sk.janobono.wiwa.dal.repository.mapper.ProductImageMapper;
-import sk.janobono.wiwa.model.ApplicationImage;
+import sk.janobono.wiwa.dal.repository.mapper.ProductImageDoMapper;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
@@ -30,8 +29,7 @@ public class ProductImageRepository {
 
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
-    private final ProductImageMapper mapper;
-    private final ImageUtil imageUtil;
+    private final ProductImageDoMapper mapper;
     private final CriteriaUtil criteriaUtil;
 
     public void deleteById(final Long id) {
@@ -46,7 +44,7 @@ public class ProductImageRepository {
         }
     }
 
-    public List<ApplicationImage> findAllByProductId(final Long productId) {
+    public List<ApplicationImageInfoDo> findAllByProductId(final Long productId) {
         log.debug("findAllByProductId({})", productId);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -60,11 +58,11 @@ public class ProductImageRepository {
                             .ORDER_BY(MetaColumnWiwaProductImage.FILE_NAME.column(), Order.ASC)
             );
             return rows.stream()
-                    .map(row -> new ApplicationImage(
+                    .map(row -> new ApplicationImageInfoDo(
                             (String) row[0],
                             (String) row[1],
-                            imageUtil.toThumbnail((String) row[1], (byte[]) row[2])
-                    ))
+                            (byte[]) row[2])
+                    )
                     .toList();
         } catch (final Exception e) {
             throw new RuntimeException(e);

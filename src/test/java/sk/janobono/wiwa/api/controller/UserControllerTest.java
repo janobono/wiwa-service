@@ -8,15 +8,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.api.model.SingleValueBody;
-import sk.janobono.wiwa.business.model.codelist.CodeListDataSo;
-import sk.janobono.wiwa.business.model.codelist.CodeListItemDataSo;
-import sk.janobono.wiwa.business.model.codelist.CodeListItemSo;
-import sk.janobono.wiwa.business.model.codelist.CodeListSo;
-import sk.janobono.wiwa.business.model.user.UserDataSo;
-import sk.janobono.wiwa.business.model.user.UserProfileSo;
+import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
+import sk.janobono.wiwa.api.model.user.UserCreateWebDto;
+import sk.janobono.wiwa.api.model.user.UserProfileWebDto;
+import sk.janobono.wiwa.api.model.user.UserWebDto;
 import sk.janobono.wiwa.model.Authority;
-import sk.janobono.wiwa.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,17 +30,17 @@ class UserControllerTest extends BaseControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(token);
 
-        final List<User> users = new ArrayList<>();
+        final List<UserWebDto> users = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             users.add(addUser(headers, i));
         }
 
-        for (final User user : users) {
+        for (final UserWebDto user : users) {
             assertThat(user).usingRecursiveComparison().isEqualTo(getUser(headers, user.id()));
         }
 
         Pageable pageable = PageRequest.of(0, 5, Sort.Direction.DESC, "id", "username");
-        Page<User> page = getUsers(headers, pageable);
+        Page<UserWebDto> page = getUsers(headers, pageable);
         assertThat(page.getTotalElements()).isEqualTo(14);
         assertThat(page.getTotalPages()).isEqualTo(3);
         assertThat(page.getContent().size()).isEqualTo(5);
@@ -56,52 +52,38 @@ class UserControllerTest extends BaseControllerTest {
         assertThat(page.getContent().size()).isEqualTo(5);
 
         pageable = PageRequest.of(0, 5);
-        page = getUsers(headers, "0", "user0", "mail0@domain.com", null, pageable);
+        page = getUsers(headers, "0", "user0", "mail0@domain.com", pageable);
         assertThat(page.getTotalElements()).isEqualTo(1);
         assertThat(page.getTotalPages()).isEqualTo(1);
         assertThat(page.getContent().size()).isEqualTo(1);
 
-        final CodeListSo testCodeList = addCodeList(headers, new CodeListDataSo("code", "name"));
-        final CodeListItemSo codeListItemSo = addCodeListItem(headers, new CodeListItemDataSo(testCodeList.id(), null, "code", "value"));
-
-        for (final User user : users) {
+        for (final UserWebDto user : users) {
             setUser(headers, user);
             setAuthorities(headers, user);
             setConfirmed(headers, user);
             setEnabled(headers, user);
-
-            setCodeListItems(headers, user, List.of(codeListItemSo.id()));
-
-            page = getUsers(headers, null, user.username(), null, List.of(codeListItemSo.code()), pageable);
-            assertThat(page.getTotalElements()).isEqualTo(1);
-            assertThat(page.getTotalPages()).isEqualTo(1);
-            assertThat(page.getContent().size()).isEqualTo(1);
-
-            setCodeListItems(headers, user, List.of());
-
             deleteUser(headers, user.id());
         }
     }
 
-    private User getUser(final HttpHeaders headers, final Long id) {
-        return getEntity(User.class, headers, "/users", id);
+    private UserWebDto getUser(final HttpHeaders headers, final Long id) {
+        return getEntity(UserWebDto.class, headers, "/users", id);
     }
 
-    private Page<User> getUsers(final HttpHeaders headers, final Pageable pageable) {
-        return getEntities(User.class, headers, "/users", new LinkedMultiValueMap<>(), pageable);
+    private Page<UserWebDto> getUsers(final HttpHeaders headers, final Pageable pageable) {
+        return getEntities(UserWebDto.class, headers, "/users", new LinkedMultiValueMap<>(), pageable);
     }
 
-    private Page<User> getUsers(final HttpHeaders headers, final String searchField, final String username, final String email, final List<String> codeListItems, final Pageable pageable) {
+    private Page<UserWebDto> getUsers(final HttpHeaders headers, final String searchField, final String username, final String email, final Pageable pageable) {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         addToParams(params, "searchField", searchField);
         addToParams(params, "username", username);
         addToParams(params, "email", email);
-        addToParams(params, "codeListItems", codeListItems);
-        return getEntities(User.class, headers, "/users", params, pageable);
+        return getEntities(UserWebDto.class, headers, "/users", params, pageable);
     }
 
-    private User addUser(final HttpHeaders headers, final int index) {
-        return addEntity(User.class, headers, "/users", new UserDataSo(
+    private UserWebDto addUser(final HttpHeaders headers, final int index) {
+        return addEntity(UserWebDto.class, headers, "/users", new UserCreateWebDto(
                 "user" + index,
                 "before" + index,
                 "First" + index,
@@ -116,9 +98,9 @@ class UserControllerTest extends BaseControllerTest {
         ));
     }
 
-    private User setUser(final HttpHeaders headers, final User user) {
-        return setEntity(User.class, headers, "/users", user.id(),
-                new UserProfileSo(
+    private UserWebDto setUser(final HttpHeaders headers, final UserWebDto user) {
+        return setEntity(UserWebDto.class, headers, "/users", user.id(),
+                new UserProfileWebDto(
                         user.titleBefore() + "changed",
                         user.firstName() + "changed",
                         null,
@@ -127,54 +109,42 @@ class UserControllerTest extends BaseControllerTest {
                 ));
     }
 
-    private void setAuthorities(final HttpHeaders headers, final User user) {
-        final ResponseEntity<User> response = restTemplate.exchange(
+    private void setAuthorities(final HttpHeaders headers, final UserWebDto user) {
+        final ResponseEntity<UserWebDto> response = restTemplate.exchange(
                 getURI("/users/{id}/authorities", Map.of("id", Long.toString(user.id()))),
                 HttpMethod.PATCH,
                 new HttpEntity<>(
                         new Authority[]{Authority.W_CUSTOMER, Authority.W_EMPLOYEE}
                         , headers),
-                User.class
+                UserWebDto.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().authorities().size()).isEqualTo(2);
     }
 
-    private void setConfirmed(final HttpHeaders headers, final User user) {
-        final ResponseEntity<User> response = restTemplate.exchange(
+    private void setConfirmed(final HttpHeaders headers, final UserWebDto user) {
+        final ResponseEntity<UserWebDto> response = restTemplate.exchange(
                 getURI("/users/{id}/confirm", Map.of("id", Long.toString(user.id()))),
                 HttpMethod.PATCH,
-                new HttpEntity<>(new SingleValueBody<>(Boolean.TRUE), headers),
-                User.class
+                new HttpEntity<>(new SingleValueBodyWebDto<>(Boolean.TRUE), headers),
+                UserWebDto.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().confirmed()).isTrue();
     }
 
-    private void setEnabled(final HttpHeaders headers, final User user) {
-        final ResponseEntity<User> response = restTemplate.exchange(
+    private void setEnabled(final HttpHeaders headers, final UserWebDto user) {
+        final ResponseEntity<UserWebDto> response = restTemplate.exchange(
                 getURI("/users/{id}/enable", Map.of("id", Long.toString(user.id()))),
                 HttpMethod.PATCH,
-                new HttpEntity<>(new SingleValueBody<>(Boolean.TRUE), headers),
-                User.class
+                new HttpEntity<>(new SingleValueBodyWebDto<>(Boolean.TRUE), headers),
+                UserWebDto.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().enabled()).isTrue();
-    }
-
-    private void setCodeListItems(final HttpHeaders headers, final User user, final List<Long> itemIds) {
-        final ResponseEntity<User> response = restTemplate.exchange(
-                getURI("/users/{id}/code-list-items", Map.of("id", Long.toString(user.id()))),
-                HttpMethod.PATCH,
-                new HttpEntity<>(itemIds, headers),
-                User.class
-        );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().codeListItems().size()).isEqualTo(itemIds.size());
     }
 
     private void deleteUser(final HttpHeaders headers, final Long id) {

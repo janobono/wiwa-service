@@ -6,14 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import sk.janobono.wiwa.business.model.codelist.CodeListSearchCriteriaSo;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.dal.domain.CodeListDo;
+import sk.janobono.wiwa.dal.model.CodeListSearchCriteriaDo;
 import sk.janobono.wiwa.dal.r3n.dto.WiwaCodeListDto;
 import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaCodeList;
 import sk.janobono.wiwa.dal.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.component.CriteriaUtil;
-import sk.janobono.wiwa.dal.repository.mapper.CodeListMapper;
+import sk.janobono.wiwa.dal.repository.mapper.CodeListDoMapper;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
@@ -34,7 +34,7 @@ public class CodeListRepository {
 
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
-    private final CodeListMapper mapper;
+    private final CodeListDoMapper mapper;
     private final ScDf scDf;
     private final CriteriaUtil criteriaUtil;
 
@@ -104,7 +104,7 @@ public class CodeListRepository {
         }
     }
 
-    public Page<CodeListDo> findAll(final CodeListSearchCriteriaSo criteria, final Pageable pageable) {
+    public Page<CodeListDo> findAll(final CodeListSearchCriteriaDo criteria, final Pageable pageable) {
         log.debug("findAll({},{})", criteria, pageable);
         try (final Connection connection = dataSource.getConnection()) {
             final Query.Select selectTotalRows = Query
@@ -189,7 +189,7 @@ public class CodeListRepository {
         return WiwaCodeListDto.toObject(criteriaUtil.concat(new Object[]{id}, values));
     }
 
-    private void mapCriteria(final CodeListSearchCriteriaSo criteria, final Query.Select select) {
+    private void mapCriteria(final CodeListSearchCriteriaDo criteria, final Query.Select select) {
         // search field
         if (Optional.ofNullable(criteria.searchField()).filter(s -> !s.isBlank()).isPresent()) {
             final String value = "%" + scDf.toScDf(criteria.searchField()) + "%";

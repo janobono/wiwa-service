@@ -30,13 +30,13 @@ import java.util.List;
 )
 public abstract class BaseIntegrationTest {
 
-    public static PostgreSQLContainer<?> postgresDB = new PostgreSQLContainer<>
+    public static final PostgreSQLContainer<?> postgresDB = new PostgreSQLContainer<>
             ("postgres:16-alpine")
             .withDatabaseName("app")
             .withUsername("app")
             .withPassword("app");
 
-    public static GenericContainer<?> smtpServer = new GenericContainer<>
+    public static final GenericContainer<?> smtpServer = new GenericContainer<>
             ("maildev/maildev:latest")
             .withExposedPorts(1025, 1080);
 
