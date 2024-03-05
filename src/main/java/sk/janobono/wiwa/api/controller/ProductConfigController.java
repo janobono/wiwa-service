@@ -81,6 +81,18 @@ public class ProductConfigController {
         return productConfigApiService.setServiceCategoryItem(productCategoryItemChange);
     }
 
+    @GetMapping(value = "/free-sale-category-item")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public ProductCategoryItemWebDto getFreeSaleCategoryItem() {
+        return productConfigApiService.getFreeSaleCategoryItem();
+    }
+
+    @PostMapping(value = "/free-sale-category-item")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public ProductCategoryItemWebDto setFreeSaleCategoryItem(@Valid @RequestBody final ProductCategoryItemChangeWebDto productCategoryItemChange) {
+        return productConfigApiService.setFreeSaleCategoryItem(productCategoryItemChange);
+    }
+
     @GetMapping(value = "/search-items")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public List<ProductCategoryItemWebDto> getSearchItems() {

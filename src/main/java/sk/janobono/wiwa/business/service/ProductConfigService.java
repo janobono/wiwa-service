@@ -87,6 +87,14 @@ public class ProductConfigService {
         return setProductCategoryItem(WiwaProperty.PRODUCT_SERVICE_CATEGORY_ITEM, data);
     }
 
+    public ProductCategoryItemData getFreeSaleCategoryItem() {
+        return getProductCategoryItem(WiwaProperty.PRODUCT_FREE_SALE_CATEGORY_ITEM);
+    }
+
+    public ProductCategoryItemData setFreeSaleCategoryItem(final ProductCategoryItemChangeData data) {
+        return setProductCategoryItem(WiwaProperty.PRODUCT_FREE_SALE_CATEGORY_ITEM, data);
+    }
+
     public List<ProductCategoryItemData> getSearchItems() {
         return applicationPropertyService.getPropertyValue(WiwaProperty.PRODUCT_SEARCH_CATEGORIES)
                 .map(this::toProductCategoryItems)

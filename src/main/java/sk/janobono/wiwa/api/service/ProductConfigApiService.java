@@ -61,6 +61,14 @@ public class ProductConfigApiService {
         return productWebMapper.mapToWebDto(productConfigService.setServiceCategoryItem(productWebMapper.mapToData(productCategoryItemChange)));
     }
 
+    public ProductCategoryItemWebDto getFreeSaleCategoryItem() {
+        return productWebMapper.mapToWebDto(productConfigService.getFreeSaleCategoryItem());
+    }
+
+    public ProductCategoryItemWebDto setFreeSaleCategoryItem(final ProductCategoryItemChangeWebDto productCategoryItemChange) {
+        return productWebMapper.mapToWebDto(productConfigService.setFreeSaleCategoryItem(productWebMapper.mapToData(productCategoryItemChange)));
+    }
+
     public List<ProductCategoryItemWebDto> getSearchItems() {
         return productConfigService.getSearchItems().stream()
                 .map(productWebMapper::mapToWebDto)
