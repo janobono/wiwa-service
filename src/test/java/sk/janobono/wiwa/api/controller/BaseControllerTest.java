@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class BaseControllerTest extends BaseIntegrationTest {
+abstract class BaseControllerTest extends BaseIntegrationTest {
 
     public AuthenticationResponseWebDto signIn(final String username, final String password) {
         return restTemplate.postForObject(

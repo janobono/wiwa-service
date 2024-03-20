@@ -57,6 +57,12 @@ public class ProductConfigController {
         return productConfigApiService.setBoardCategoryItem(productCategoryItemChange);
     }
 
+    @PostMapping(value = "/board-search-items")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public List<ProductCategoryItemWebDto> setBoardSearchItems(@Valid @RequestBody final List<ProductCategoryItemChangeWebDto> data) {
+        return productConfigApiService.setBoardSearchItems(data);
+    }
+
     @GetMapping(value = "/edge-category-item")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public ProductCategoryItemWebDto getEdgeCategoryItem() {
@@ -69,16 +75,10 @@ public class ProductConfigController {
         return productConfigApiService.setEdgeCategoryItem(productCategoryItemChange);
     }
 
-    @GetMapping(value = "/service-category-item")
+    @PostMapping(value = "/edge-search-items")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ProductCategoryItemWebDto getServiceCategoryItem() {
-        return productConfigApiService.getServiceCategoryItem();
-    }
-
-    @PostMapping(value = "/service-category-item")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public ProductCategoryItemWebDto setServiceCategoryItem(@Valid @RequestBody final ProductCategoryItemChangeWebDto productCategoryItemChange) {
-        return productConfigApiService.setServiceCategoryItem(productCategoryItemChange);
+    public List<ProductCategoryItemWebDto> setEdgeSearchItems(@Valid @RequestBody final List<ProductCategoryItemChangeWebDto> data) {
+        return productConfigApiService.setEdgeSearchItems(data);
     }
 
     @GetMapping(value = "/free-sale-category-item")
@@ -93,15 +93,9 @@ public class ProductConfigController {
         return productConfigApiService.setFreeSaleCategoryItem(productCategoryItemChange);
     }
 
-    @GetMapping(value = "/search-items")
+    @PostMapping(value = "/free-sale-search-items")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<ProductCategoryItemWebDto> getSearchItems() {
-        return productConfigApiService.getSearchItems();
-    }
-
-    @PostMapping(value = "/search-items")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<ProductCategoryItemWebDto> setSearchItems(@Valid @RequestBody final List<ProductCategoryItemChangeWebDto> data) {
-        return productConfigApiService.setSearchItems(data);
+    public List<ProductCategoryItemWebDto> setFreeSaleSearchItems(@Valid @RequestBody final List<ProductCategoryItemChangeWebDto> data) {
+        return productConfigApiService.setFreeSaleSearchItems(data);
     }
 }

@@ -46,11 +46,11 @@ public class ProductService {
 
     public Page<ProductData> getProducts(final ProductSearchCriteriaData criteria, final Pageable pageable) {
         final BigDecimal vatRate = getVatRate();
-        return productRepository.findAll(mapToDo(criteria), pageable).map(value -> toProductSo(value, vatRate));
+        return productRepository.findAll(mapToDo(criteria), pageable).map(value -> toProductData(value, vatRate));
     }
 
     public ProductData getProduct(final Long id) {
-        return toProductSo(getProductDo(id), getVatRate());
+        return toProductData(getProductDo(id), getVatRate());
     }
 
     public ProductData addProduct(final ProductChangeData data) {
@@ -66,7 +66,7 @@ public class ProductService {
         );
         setProductAttributes(productDo.getId(), data);
         setProductQuantities(productDo.getId(), data);
-        return toProductSo(productDo, getVatRate());
+        return toProductData(productDo, getVatRate());
     }
 
     public ProductData setProduct(final Long id, final ProductChangeData data) {
@@ -81,7 +81,7 @@ public class ProductService {
         productRepository.save(productDo);
         setProductAttributes(id, data);
         setProductQuantities(id, data);
-        return toProductSo(productDo, getVatRate());
+        return toProductData(productDo, getVatRate());
     }
 
     public void deleteProduct(final Long id) {
@@ -116,7 +116,7 @@ public class ProductService {
                 commonConfigProperties.maxImageResolution()));
         productImageRepository.save(productImageDo);
 
-        return toProductSo(getProductDo(productId), getVatRate());
+        return toProductData(getProductDo(productId), getVatRate());
     }
 
     public ProductData deleteProductImage(final Long productId, final String fileName) {
@@ -125,7 +125,7 @@ public class ProductService {
         }
         productImageRepository.findByProductIdAndFileName(productId, fileName)
                 .ifPresent(productImageDo -> productImageRepository.deleteById(productImageDo.getId()));
-        return toProductSo(getProductDo(productId), getVatRate());
+        return toProductData(getProductDo(productId), getVatRate());
     }
 
     public ProductData setProductUnitPrices(final Long productId, final List<ProductUnitPriceChangeData> productUnitPrices) {
@@ -152,7 +152,7 @@ public class ProductService {
             }
         }
         productUnitPriceRepository.saveProductUnitPrices(productId, batch);
-        return toProductSo(getProductDo(productId), getVatRate());
+        return toProductData(getProductDo(productId), getVatRate());
     }
 
     public ProductData setProductCategoryItems(final Long productId, final List<ProductCategoryItemChangeData> categoryItems) {
@@ -164,7 +164,7 @@ public class ProductService {
                         .toList()
         );
 
-        return toProductSo(productDo, getVatRate());
+        return toProductData(productDo, getVatRate());
     }
 
     private ProductSearchCriteriaDo mapToDo(final ProductSearchCriteriaData criteria) {
@@ -182,7 +182,7 @@ public class ProductService {
                 .orElseThrow(() -> WiwaException.PRODUCT_NOT_FOUND.exception("Product with id {0} not found", id));
     }
 
-    private ProductData toProductSo(final ProductDo productDo, final BigDecimal vatRate) {
+    private ProductData toProductData(final ProductDo productDo, final BigDecimal vatRate) {
         return ProductData.builder()
                 .id(productDo.getId())
                 .code(productDo.getCode())

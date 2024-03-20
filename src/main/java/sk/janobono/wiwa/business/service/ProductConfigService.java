@@ -4,13 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.model.product.ProductCategoryChangeData;
+import sk.janobono.wiwa.business.model.product.ProductCategoryData;
 import sk.janobono.wiwa.business.model.product.ProductCategoryItemChangeData;
 import sk.janobono.wiwa.business.model.product.ProductCategoryItemData;
-import sk.janobono.wiwa.business.model.product.ProductCategoryData;
 import sk.janobono.wiwa.dal.domain.CodeListDo;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.repository.CodeListItemRepository;
 import sk.janobono.wiwa.dal.repository.CodeListRepository;
+import sk.janobono.wiwa.model.ApplicationPropertyKey;
 import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.math.BigDecimal;
@@ -71,6 +72,21 @@ public class ProductConfigService {
         return setProductCategoryItem(WiwaProperty.PRODUCT_BOARD_CATEGORY_ITEM, data);
     }
 
+    public List<ProductCategoryItemData> setBoardSearchItems(final List<ProductCategoryItemChangeData> data) {
+        final List<ProductCategoryItemData> result = data.stream()
+                .map(this::toProductCategoryItem)
+                .flatMap(Optional::stream)
+                .toList();
+
+        applicationPropertyService.setApplicationProperty(
+                WiwaProperty.PRODUCT_BOARD_SEARCH_CATEGORIES.getGroup(),
+                WiwaProperty.PRODUCT_BOARD_SEARCH_CATEGORIES.getKey(),
+                toValue(result)
+        );
+
+        return result;
+    }
+
     public ProductCategoryItemData getEdgeCategoryItem() {
         return getProductCategoryItem(WiwaProperty.PRODUCT_EDGE_CATEGORY_ITEM);
     }
@@ -79,12 +95,19 @@ public class ProductConfigService {
         return setProductCategoryItem(WiwaProperty.PRODUCT_EDGE_CATEGORY_ITEM, data);
     }
 
-    public ProductCategoryItemData getServiceCategoryItem() {
-        return getProductCategoryItem(WiwaProperty.PRODUCT_SERVICE_CATEGORY_ITEM);
-    }
+    public List<ProductCategoryItemData> setEdgeSearchItems(final List<ProductCategoryItemChangeData> data) {
+        final List<ProductCategoryItemData> result = data.stream()
+                .map(this::toProductCategoryItem)
+                .flatMap(Optional::stream)
+                .toList();
 
-    public ProductCategoryItemData setServiceCategoryItem(final ProductCategoryItemChangeData data) {
-        return setProductCategoryItem(WiwaProperty.PRODUCT_SERVICE_CATEGORY_ITEM, data);
+        applicationPropertyService.setApplicationProperty(
+                WiwaProperty.PRODUCT_EDGE_SEARCH_CATEGORIES.getGroup(),
+                WiwaProperty.PRODUCT_EDGE_SEARCH_CATEGORIES.getKey(),
+                toValue(result)
+        );
+
+        return result;
     }
 
     public ProductCategoryItemData getFreeSaleCategoryItem() {
@@ -95,25 +118,25 @@ public class ProductConfigService {
         return setProductCategoryItem(WiwaProperty.PRODUCT_FREE_SALE_CATEGORY_ITEM, data);
     }
 
-    public List<ProductCategoryItemData> getSearchItems() {
-        return applicationPropertyService.getPropertyValue(WiwaProperty.PRODUCT_SEARCH_CATEGORIES)
-                .map(this::toProductCategoryItems)
-                .orElse(Collections.emptyList());
-    }
-
-    public List<ProductCategoryItemData> setSearchItems(final List<ProductCategoryItemChangeData> data) {
+    public List<ProductCategoryItemData> setFreeSaleSearchItems(final List<ProductCategoryItemChangeData> data) {
         final List<ProductCategoryItemData> result = data.stream()
                 .map(this::toProductCategoryItem)
                 .flatMap(Optional::stream)
                 .toList();
 
         applicationPropertyService.setApplicationProperty(
-                WiwaProperty.PRODUCT_SEARCH_CATEGORIES.getGroup(),
-                WiwaProperty.PRODUCT_SEARCH_CATEGORIES.getKey(),
+                WiwaProperty.PRODUCT_FREE_SALE_SEARCH_CATEGORIES.getGroup(),
+                WiwaProperty.PRODUCT_FREE_SALE_SEARCH_CATEGORIES.getKey(),
                 toValue(result)
         );
 
         return result;
+    }
+
+    public List<ProductCategoryItemData> getSearchItems(final ApplicationPropertyKey applicationPropertyKey) {
+        return applicationPropertyService.getPropertyValue(applicationPropertyKey)
+                .map(this::toProductCategoryItems)
+                .orElse(Collections.emptyList());
     }
 
     private ProductCategoryItemData getProductCategoryItem(final WiwaProperty wiwaProperty) {

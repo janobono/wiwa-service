@@ -240,7 +240,8 @@ public class ProductRepository {
                                 MetaColumnWiwaProductCodeListItem.CODE_LIST_ITEM_ID.column()
                         ).AND_IN()
                         .OR(MetaColumnWiwaCodeListItem.CODE.column(alias), Condition.EQUALS, code)
-                        .OR(MetaColumnWiwaCodeListItem.TREE_CODE.column(alias), Condition.LIKE, "%" + code + "::%")
+                        .OR(MetaColumnWiwaCodeListItem.TREE_CODE.column(alias), Condition.LIKE, "%::" + code)
+                        .OR(MetaColumnWiwaCodeListItem.TREE_CODE.column(alias), Condition.LIKE, "%::" + code + "::%")
                         .OUT();
             }
         }
@@ -287,37 +288,3 @@ public class ProductRepository {
         return wiwaProductDto;
     }
 }
-
-
-//
-//    private Predicate unitPriceFromToPredicate(final BigDecimal value, final Root<ProductDo> root, final CriteriaBuilder criteriaBuilder) {
-//        final Join<ProductDo, ProductUnitPriceDo> join = root.join("productUnitPrices");
-//        return criteriaBuilder.and(
-//                criteriaBuilder.greaterThanOrEqualTo(join.get("validFrom"), LocalDate.now()),
-//                criteriaBuilder.or(
-//                        criteriaBuilder.lessThanOrEqualTo(join.get("validTo"), LocalDate.now()),
-//                        criteriaBuilder.isNull(join.get("validTo"))
-//                ),
-//                criteriaBuilder.greaterThanOrEqualTo(join.get("price").get("value"), value)
-//        );
-//    }
-//
-//    private Predicate unitPriceToToPredicate(final BigDecimal value, final Root<ProductDo> root, final CriteriaBuilder criteriaBuilder) {
-//        final Join<ProductDo, ProductUnitPriceDo> join = root.join("productUnitPrices");
-//        return criteriaBuilder.and(
-//                criteriaBuilder.greaterThanOrEqualTo(join.get("validFrom"), LocalDate.now()),
-//                criteriaBuilder.or(
-//                        criteriaBuilder.lessThanOrEqualTo(join.get("validTo"), LocalDate.now()),
-//                        criteriaBuilder.isNull(join.get("validTo"))
-//                ),
-//                criteriaBuilder.lessThanOrEqualTo(join.get("price").get("value"), value)
-//        );
-//    }
-//
-//    private Predicate productAttributeToPredicate(final ProductAttributeKey key, final String value, final Root<ProductDo> root, final CriteriaBuilder criteriaBuilder) {
-//        final Join<ProductDo, ProductAttributeDo> join = root.join("attributes");
-//        return criteriaBuilder.and(
-//                criteriaBuilder.equal(join.get("key"), key.name()),
-//                criteriaBuilder.equal(join.get("value"), value)
-//        );
-//    }

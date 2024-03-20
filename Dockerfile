@@ -4,7 +4,7 @@ RUN apk add git
 
 WORKDIR /r3n
 
-RUN git clone -b 6.0.4 https://github.com/janobono/r3n-api.git .
+RUN git clone -b 6.1.0 https://github.com/janobono/r3n-api.git .
 
 RUN mvn clean install -DskipTests
 

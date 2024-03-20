@@ -20,7 +20,10 @@ public enum MetaTable {
     WIWA_TASK("wiwa_task", "t14"),
     WIWA_USER("wiwa_user", "t15"),
     WIWA_USER_AUTHORITY("wiwa_user_authority", "t16"),
-    WIWA_PRODUCT_CODE_LIST_ITEM("wiwa_product_code_list_item", "t17");
+    WIWA_PRODUCT_CODE_LIST_ITEM("wiwa_product_code_list_item", "t17"),
+    WIWA_BOARD_PRODUCT_VIEW("wiwa_board_product_view", "t18"),
+    WIWA_EDGE_PRODUCT_VIEW("wiwa_edge_product_view", "t19"),
+    WIWA_FREE_SALE_PRODUCT_VIEW("wiwa_free_sale_product_view", "t20");
 
     private final String tableName;
 

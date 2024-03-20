@@ -21,11 +21,11 @@ public class CodeListService {
     private final CodeListRepository codeListRepository;
 
     public Page<CodeListData> getCodeLists(final CodeListSearchCriteriaData criteria, final Pageable pageable) {
-        return codeListRepository.findAll(mapToDo(criteria), pageable).map(this::toCodeListSo);
+        return codeListRepository.findAll(mapToDo(criteria), pageable).map(this::toCodeListData);
     }
 
     public CodeListData getCodeList(final Long id) {
-        return toCodeListSo(getCodeListDo(id));
+        return toCodeListData(getCodeListDo(id));
     }
 
     public CodeListData addCodeList(final CodeListChangeData data) {
@@ -33,7 +33,7 @@ public class CodeListService {
             throw WiwaException.CODE_IS_USED.exception("Code list code {0} is used", data.code());
         }
 
-        return toCodeListSo(codeListRepository.save(CodeListDo.builder()
+        return toCodeListData(codeListRepository.save(CodeListDo.builder()
                 .code(data.code())
                 .name(data.name())
                 .build())
@@ -49,7 +49,7 @@ public class CodeListService {
         codeListDo.setCode(data.code());
         codeListDo.setName(data.name());
 
-        return toCodeListSo(codeListRepository.save(codeListDo));
+        return toCodeListData(codeListRepository.save(codeListDo));
     }
 
     public void deleteCodeList(final Long id) {
@@ -70,7 +70,7 @@ public class CodeListService {
                 .orElseGet(() -> codeListRepository.countByCode(data.code()) > 0);
     }
 
-    private CodeListData toCodeListSo(final CodeListDo codeListDo) {
+    private CodeListData toCodeListData(final CodeListDo codeListDo) {
         return new CodeListData(codeListDo.getId(), codeListDo.getCode(), codeListDo.getName());
     }
 

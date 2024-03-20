@@ -28,4 +28,10 @@ public interface ProductWebMapper {
     ProductChangeData mapToData(ProductChangeWebDto productChange);
 
     ProductUnitPriceChangeData mapToData(ProductUnitPriceChangeWebDto productUnitPriceChange);
+
+    BoardProductWebDto mapToWebDto(BoardProductData boardProduct);
+
+    EdgeProductWebDto mapToWebDto(EdgeProductData edgeProduct);
+
+    FreeSaleProductWebDto mapToWebDto(FreeSaleProductData freeSaleProduct);
 }

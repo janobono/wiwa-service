@@ -26,11 +26,11 @@ public class CodeListItemService {
     private final CodeListItemRepository codeListItemRepository;
 
     public Page<CodeListItemData> getCodeListItems(final CodeListItemSearchCriteriaData criteria, final Pageable pageable) {
-        return codeListItemRepository.findAll(mapToDo(criteria), pageable).map(this::toCodeListItemSo);
+        return codeListItemRepository.findAll(mapToDo(criteria), pageable).map(this::toCodeListItemData);
     }
 
     public CodeListItemData getCodeListItem(final Long id) {
-        return toCodeListItemSo(getCodeListItemDo(id));
+        return toCodeListItemData(getCodeListItemDo(id));
     }
 
     public CodeListItemData addCodeListItem(final CodeListItemChangeData data) {
@@ -39,7 +39,7 @@ public class CodeListItemService {
         }
 
         final Optional<CodeListItemDo> parentCodeListItem = getParentCodeListItem(data.parentId());
-        return toCodeListItemSo(codeListItemRepository.save(CodeListItemDo.builder()
+        return toCodeListItemData(codeListItemRepository.save(CodeListItemDo.builder()
                 .codeListId(data.codeListId())
                 .parentId(data.parentId())
                 .treeCode(getItemTreeCode(parentCodeListItem, data.code()))
@@ -78,7 +78,7 @@ public class CodeListItemService {
             sortItems(codeListItemDo.getCodeListId(), previousParentId);
         }
 
-        return toCodeListItemSo(codeListItemRepository.save(codeListItemDo));
+        return toCodeListItemData(codeListItemRepository.save(codeListItemDo));
     }
 
     public void deleteCodeListItem(final Long id) {
@@ -110,7 +110,7 @@ public class CodeListItemService {
             codeListItemRepository.saveAll(batch);
         }
 
-        return toCodeListItemSo(getCodeListItemDo(id));
+        return toCodeListItemData(getCodeListItemDo(id));
     }
 
     public CodeListItemData moveCodeListItemDown(final Long id) {
@@ -133,7 +133,7 @@ public class CodeListItemService {
             codeListItemRepository.saveAll(batch);
         }
 
-        return toCodeListItemSo(getCodeListItemDo(id));
+        return toCodeListItemData(getCodeListItemDo(id));
     }
 
     private CodeListItemDo getCodeListItemDo(final Long id) {
@@ -159,7 +159,7 @@ public class CodeListItemService {
         return parentCategory;
     }
 
-    private CodeListItemData toCodeListItemSo(final CodeListItemDo codeListCodeDo) {
+    private CodeListItemData toCodeListItemData(final CodeListItemDo codeListCodeDo) {
         return new CodeListItemData(
                 codeListCodeDo.getId(),
                 codeListCodeDo.getCodeListId(),

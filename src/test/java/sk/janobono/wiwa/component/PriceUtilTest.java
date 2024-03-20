@@ -22,7 +22,17 @@ class PriceUtilTest {
 
     @Test
     void countVatValue_EqualsToExpectedResult() {
+        assertThat(priceUtil.countVatValue(null, null)).isNull();
+
         assertThat(priceUtil.countVatValue(BigDecimal.valueOf(100L), BigDecimal.valueOf(20L)))
-                .isEqualTo(BigDecimal.valueOf(120L).setScale(2, RoundingMode.HALF_UP));
+                .isEqualTo(BigDecimal.valueOf(120L).setScale(3, RoundingMode.HALF_UP));
+    }
+
+    @Test
+    void countNoVatValue_EqualsToExpectedResult() {
+        assertThat(priceUtil.countNoVatValue(null, null)).isNull();
+
+        assertThat(priceUtil.countNoVatValue(BigDecimal.valueOf(120L), BigDecimal.valueOf(20L)))
+                .isEqualTo(BigDecimal.valueOf(100L).setScale(3, RoundingMode.HALF_UP));
     }
 }

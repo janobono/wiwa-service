@@ -45,6 +45,13 @@ public class ProductConfigApiService {
         return productWebMapper.mapToWebDto(productConfigService.setBoardCategoryItem(productWebMapper.mapToData(productCategoryItemChange)));
     }
 
+    public List<ProductCategoryItemWebDto> setBoardSearchItems(final List<ProductCategoryItemChangeWebDto> data) {
+        return productConfigService.setBoardSearchItems(data.stream().map(productWebMapper::mapToData).toList())
+                .stream()
+                .map(productWebMapper::mapToWebDto)
+                .toList();
+    }
+
     public ProductCategoryItemWebDto getEdgeCategoryItem() {
         return productWebMapper.mapToWebDto(productConfigService.getEdgeCategoryItem());
     }
@@ -53,12 +60,11 @@ public class ProductConfigApiService {
         return productWebMapper.mapToWebDto(productConfigService.setEdgeCategoryItem(productWebMapper.mapToData(productCategoryItemChange)));
     }
 
-    public ProductCategoryItemWebDto getServiceCategoryItem() {
-        return productWebMapper.mapToWebDto(productConfigService.getServiceCategoryItem());
-    }
-
-    public ProductCategoryItemWebDto setServiceCategoryItem(final ProductCategoryItemChangeWebDto productCategoryItemChange) {
-        return productWebMapper.mapToWebDto(productConfigService.setServiceCategoryItem(productWebMapper.mapToData(productCategoryItemChange)));
+    public List<ProductCategoryItemWebDto> setEdgeSearchItems(final List<ProductCategoryItemChangeWebDto> data) {
+        return productConfigService.setEdgeSearchItems(data.stream().map(productWebMapper::mapToData).toList())
+                .stream()
+                .map(productWebMapper::mapToWebDto)
+                .toList();
     }
 
     public ProductCategoryItemWebDto getFreeSaleCategoryItem() {
@@ -69,14 +75,8 @@ public class ProductConfigApiService {
         return productWebMapper.mapToWebDto(productConfigService.setFreeSaleCategoryItem(productWebMapper.mapToData(productCategoryItemChange)));
     }
 
-    public List<ProductCategoryItemWebDto> getSearchItems() {
-        return productConfigService.getSearchItems().stream()
-                .map(productWebMapper::mapToWebDto)
-                .toList();
-    }
-
-    public List<ProductCategoryItemWebDto> setSearchItems(final List<ProductCategoryItemChangeWebDto> data) {
-        return productConfigService.setSearchItems(data.stream().map(productWebMapper::mapToData).toList())
+    public List<ProductCategoryItemWebDto> setFreeSaleSearchItems(final List<ProductCategoryItemChangeWebDto> data) {
+        return productConfigService.setFreeSaleSearchItems(data.stream().map(productWebMapper::mapToData).toList())
                 .stream()
                 .map(productWebMapper::mapToWebDto)
                 .toList();
