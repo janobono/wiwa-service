@@ -6,42 +6,42 @@ import sk.r3n.sql.DataType;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum MetaColumnWiwaOrderItemAttribute {
+public enum MetaColumnWiwaOrderItemData {
 
     ID("id", DataType.LONG),
     ORDER_ITEM_ID("order_item_id", DataType.LONG),
     KEY("key", DataType.STRING),
-    VALUE("value", DataType.STRING);
+    DATA("data", DataType.STRING);
 
     private final String columnName;
 
     private final DataType dataType;
 
-    MetaColumnWiwaOrderItemAttribute(final String columnName, final DataType dataType) {
+    MetaColumnWiwaOrderItemData(final String columnName, final DataType dataType) {
         this.columnName = columnName;
         this.dataType = dataType;
     }
 
     public Column column() {
-        return Column.column(columnName, dataType, MetaTable.WIWA_ORDER_ITEM_ATTRIBUTE.table());
+        return Column.column(columnName, dataType, MetaTable.WIWA_ORDER_ITEM_DATA.table());
     }
 
     public Column column(final String tableAlias) {
-        return Column.column(columnName, dataType, MetaTable.WIWA_ORDER_ITEM_ATTRIBUTE.table(tableAlias));
+        return Column.column(columnName, dataType, MetaTable.WIWA_ORDER_ITEM_DATA.table(tableAlias));
     }
 
     public static Column[] columns() {
         final List<Column> columnList = new ArrayList<>();
-        for (final MetaColumnWiwaOrderItemAttribute metaColumnWiwaOrderItemAttribute : values()) {
-            columnList.add(metaColumnWiwaOrderItemAttribute.column());
+        for (final MetaColumnWiwaOrderItemData metaColumnWiwaOrderItemData : values()) {
+            columnList.add(metaColumnWiwaOrderItemData.column());
         }
         return columnList.toArray(new Column[0]);
     }
 
     public static Column[] columns(final String tableAlias) {
         final List<Column> columnList = new ArrayList<>();
-        for (final MetaColumnWiwaOrderItemAttribute metaColumnWiwaOrderItemAttribute : values()) {
-            columnList.add(metaColumnWiwaOrderItemAttribute.column(tableAlias));
+        for (final MetaColumnWiwaOrderItemData metaColumnWiwaOrderItemData : values()) {
+            columnList.add(metaColumnWiwaOrderItemData.column(tableAlias));
         }
         return columnList.toArray(new Column[0]);
     }

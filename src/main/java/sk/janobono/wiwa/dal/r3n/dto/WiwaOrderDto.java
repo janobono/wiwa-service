@@ -9,10 +9,10 @@ public record WiwaOrderDto(
         LocalDateTime created,
         String modifier,
         LocalDateTime modified,
-        String status,
-        BigDecimal total,
         String name,
-        String description
+        String status,
+        BigDecimal totalValue,
+        String totalUnit
 ) {
 
     public static Object[] toArray(final WiwaOrderDto wiwaOrderDto) {
@@ -22,10 +22,10 @@ public record WiwaOrderDto(
                 wiwaOrderDto.created,
                 wiwaOrderDto.modifier,
                 wiwaOrderDto.modified,
-                wiwaOrderDto.status,
-                wiwaOrderDto.total,
                 wiwaOrderDto.name,
-                wiwaOrderDto.description
+                wiwaOrderDto.status,
+                wiwaOrderDto.totalValue,
+                wiwaOrderDto.totalUnit
         };
     }
 
@@ -37,8 +37,8 @@ public record WiwaOrderDto(
                 (String) array[3],
                 (LocalDateTime) array[4],
                 (String) array[5],
-                (BigDecimal) array[6],
-                (String) array[7],
+                (String) array[6],
+                (BigDecimal) array[7],
                 (String) array[8]
         );
     }

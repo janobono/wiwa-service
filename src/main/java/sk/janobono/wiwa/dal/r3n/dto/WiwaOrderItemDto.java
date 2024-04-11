@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 public record WiwaOrderItemDto(
         Long id,
         Long orderId,
+        Long parentId,
         String creator,
         LocalDateTime created,
         String modifier,
@@ -15,14 +16,18 @@ public record WiwaOrderItemDto(
         String name,
         BigDecimal priceValue,
         String priceUnit,
-        BigDecimal amount,
-        BigDecimal total
+        BigDecimal amountValue,
+        String amountUnit,
+        BigDecimal totalValue,
+        String totalUnit,
+        String data
 ) {
 
     public static Object[] toArray(final WiwaOrderItemDto wiwaOrderItemDto) {
         return new Object[]{
                 wiwaOrderItemDto.id,
                 wiwaOrderItemDto.orderId,
+                wiwaOrderItemDto.parentId,
                 wiwaOrderItemDto.creator,
                 wiwaOrderItemDto.created,
                 wiwaOrderItemDto.modifier,
@@ -32,8 +37,11 @@ public record WiwaOrderItemDto(
                 wiwaOrderItemDto.name,
                 wiwaOrderItemDto.priceValue,
                 wiwaOrderItemDto.priceUnit,
-                wiwaOrderItemDto.amount,
-                wiwaOrderItemDto.total
+                wiwaOrderItemDto.amountValue,
+                wiwaOrderItemDto.amountUnit,
+                wiwaOrderItemDto.totalValue,
+                wiwaOrderItemDto.totalUnit,
+                wiwaOrderItemDto.data
         };
     }
 
@@ -41,17 +49,21 @@ public record WiwaOrderItemDto(
         return new WiwaOrderItemDto(
                 (Long) array[0],
                 (Long) array[1],
-                (String) array[2],
-                (LocalDateTime) array[3],
-                (String) array[4],
-                (LocalDateTime) array[5],
-                (String) array[6],
+                (Long) array[2],
+                (String) array[3],
+                (LocalDateTime) array[4],
+                (String) array[5],
+                (LocalDateTime) array[6],
                 (String) array[7],
                 (String) array[8],
-                (BigDecimal) array[9],
-                (String) array[10],
-                (BigDecimal) array[11],
-                (BigDecimal) array[12]
+                (String) array[9],
+                (BigDecimal) array[10],
+                (String) array[11],
+                (BigDecimal) array[12],
+                (String) array[13],
+                (BigDecimal) array[14],
+                (String) array[15],
+                (String) array[16]
         );
     }
 }

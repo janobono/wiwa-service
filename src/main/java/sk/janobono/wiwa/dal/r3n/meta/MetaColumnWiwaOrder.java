@@ -14,9 +14,10 @@ public enum MetaColumnWiwaOrder {
     MODIFIER("modifier", DataType.STRING),
     MODIFIED("modified", DataType.TIME_STAMP),
     STATUS("status", DataType.STRING),
-    TOTAL("total", DataType.BIG_DECIMAL),
+    TOTAL_VALUE("total_value", DataType.BIG_DECIMAL),
+    TOTAL_UNIT("total_unit", DataType.STRING),
     NAME("name", DataType.STRING),
-    DESCRIPTION("description", DataType.STRING);
+    DATA("data", DataType.STRING);
 
     private final String columnName;
 

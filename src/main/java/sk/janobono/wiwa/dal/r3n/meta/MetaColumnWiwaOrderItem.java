@@ -10,6 +10,7 @@ public enum MetaColumnWiwaOrderItem {
 
     ID("id", DataType.LONG),
     ORDER_ID("order_id", DataType.LONG),
+    PARENT_ID("parent_id", DataType.LONG),
     CREATOR("creator", DataType.STRING),
     CREATED("created", DataType.TIME_STAMP),
     MODIFIER("modifier", DataType.STRING),
@@ -19,8 +20,11 @@ public enum MetaColumnWiwaOrderItem {
     NAME("name", DataType.STRING),
     PRICE_VALUE("price_value", DataType.BIG_DECIMAL),
     PRICE_UNIT("price_unit", DataType.STRING),
-    AMOUNT("amount", DataType.BIG_DECIMAL),
-    TOTAL("total", DataType.BIG_DECIMAL);
+    AMOUNT_VALUE("amount_value", DataType.BIG_DECIMAL),
+    AMOUNT_UNIT("amount_unit", DataType.STRING),
+    TOTAL_VALUE("total_value", DataType.BIG_DECIMAL),
+    TOTAL_UNIT("total_unit", DataType.STRING),
+    DATA("data", DataType.STRING);
 
     private final String columnName;
 
