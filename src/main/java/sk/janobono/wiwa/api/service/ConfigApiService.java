@@ -11,14 +11,17 @@ import sk.janobono.wiwa.api.model.ApplicationImageInfoWebDto;
 import sk.janobono.wiwa.api.model.CompanyInfoWebDto;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.UnitWebDto;
+import sk.janobono.wiwa.business.service.ConfigService;
 import sk.janobono.wiwa.business.service.UiService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class ConfigApiService {
 
+    private final ConfigService configService;
     private final UiService uiService;
     private final ApplicationImageWebMapper applicationImageWebMapper;
     private final UiWebMapper uiWebMapper;
@@ -76,5 +79,13 @@ public class ConfigApiService {
         return uiService.setUnits(
                 units.stream().map(uiWebMapper::mapToData).toList()
         ).stream().map(uiWebMapper::mapToWebDto).toList();
+    }
+
+    public SingleValueBodyWebDto<BigDecimal> getVatRate() {
+        return new SingleValueBodyWebDto<>(configService.getVatRate());
+    }
+
+    public SingleValueBodyWebDto<BigDecimal> setVatRate(final SingleValueBodyWebDto<BigDecimal> singleValueBody) {
+        return new SingleValueBodyWebDto<>(configService.setVatRate(singleValueBody.value()));
     }
 }

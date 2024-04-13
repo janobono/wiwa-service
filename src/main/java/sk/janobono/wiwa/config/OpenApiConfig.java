@@ -20,7 +20,7 @@ public class OpenApiConfig {
                 ).info(new Info()
                         .title("Wiwa")
                         .description("Wiwa Service App")
-                        .version("0.3.0")
+                        .version("1.0.0")
                 ).addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
     }
 }

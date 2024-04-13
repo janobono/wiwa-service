@@ -33,8 +33,12 @@ public class UiApiService {
         return applicationImageWebMapper.mapToWebDto(uiService.getApplicationImage(fileName));
     }
 
-    public ResourceEntityWebDto getProductImage(final Long productId, final String fileName) {
-        return applicationImageWebMapper.mapToWebDto(uiService.getProductImage(productId, fileName));
+    public ResourceEntityWebDto getBoardImage(final Long boardId, final String fileName) {
+        return applicationImageWebMapper.mapToWebDto(uiService.getBoardImage(boardId, fileName));
+    }
+
+    public ResourceEntityWebDto getEdgeImage(final Long edgeId, final String fileName) {
+        return applicationImageWebMapper.mapToWebDto(uiService.getEdgeImage(edgeId, fileName));
     }
 
     public SingleValueBodyWebDto<String> getTitle() {

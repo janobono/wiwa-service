@@ -96,11 +96,9 @@ docker volume rm $(docker volume ls -q --filter dangling=true)
 | DEFAULT_LOCALE                     | en_US                                |
 | APP_TITLE                          | Wiwa                                 |
 | APP_DESCRIPTION                    | Woodworking Industry Web Application |
-| APP_CURRENCY                       | €                                    |
 | WEB_URL                            | http://localhost:8080                |
 | CONFIRM_PATH                       | /ui/confirm/                         |
 | MAIL                               | mail@wiwa.sk                         |
-| INIT_DATA_PATH                     | ./data                               |
 | MAX_IMAGE_RESOLUTION               | 1000                                 |
 | MAX_THUMBNAIL_RESOLUTION           | 130                                  |
 | CAPTCHA_LENGTH                     | 4                                    |

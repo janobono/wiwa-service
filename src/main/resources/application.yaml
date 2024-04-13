@@ -89,7 +89,6 @@ app:
     web-url: ${WEB_URL:http://localhost:5173}
     confirm-path: ${CONFIRM_PATH:/ui/confirm/}
     mail: ${MAIL:mail@wiwa.sk}
-    init-data-path: ${INIT_DATA_PATH:./data}
     max-image-resolution: ${MAX_IMAGE_RESOLUTION:1000}
     max-thumbnail-resolution: ${MAX_THUMBNAIL_RESOLUTION:130}
     captcha-length: ${CAPTCHA_LENGTH:4}
@@ -101,7 +100,7 @@ app:
     issuer: ${TOKEN_ISSUER:wiwa}
     expiration: ${TOKEN_EXPIRES_IN:15}
   security:
-    public-path-pattern-regex: ${SECURITY_PUBLIC_PATH_PATTERN_REGEX:^(/actuator/(health|info|metrics|metrics/.*)|/api-docs.*|/swagger-ui.*|/auth/(confirm|reset-password|sign-in|sign-up|refresh)|/ui/.*)$}
+    public-path-pattern-regex: ${SECURITY_PUBLIC_PATH_PATTERN_REGEX:^(/livez|/readyz|/api-docs.*|/swagger-ui.*|/auth/(confirm|reset-password|sign-in|sign-up|refresh)|/ui/.*)$}
   verification:
     issuer: ${VERIFICATION_TOKEN_ISSUER:verification}
   cors:

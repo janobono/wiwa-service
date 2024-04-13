@@ -13,6 +13,7 @@ import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.UnitWebDto;
 import sk.janobono.wiwa.api.service.ConfigApiService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class ConfigController {
 
     @PostMapping("/application-images")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public ApplicationImageInfoWebDto upload(@RequestParam("file") final MultipartFile multipartFile) {
+    public ApplicationImageInfoWebDto setApplicationImage(@RequestParam("file") final MultipartFile multipartFile) {
         return configApiService.setApplicationImage(multipartFile);
     }
 
@@ -98,5 +99,17 @@ public class ConfigController {
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public List<UnitWebDto> setUnit(@Valid @RequestBody final List<UnitWebDto> units) {
         return configApiService.setUnits(units);
+    }
+
+    @GetMapping(value = "/vat-rate")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public SingleValueBodyWebDto<BigDecimal> getVatRate() {
+        return configApiService.getVatRate();
+    }
+
+    @PostMapping(value = "/vat-rate")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public SingleValueBodyWebDto<BigDecimal> setVatRate(@Valid @RequestBody final SingleValueBodyWebDto<BigDecimal> singleValueBody) {
+        return configApiService.setVatRate(singleValueBody);
     }
 }

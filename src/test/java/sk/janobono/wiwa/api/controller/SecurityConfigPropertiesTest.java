@@ -17,10 +17,10 @@ class SecurityConfigPropertiesTest extends BaseControllerTest {
     void fullTest() {
         final RestTemplate restTemplate = restTemplateBuilder.build();
 
-        var result = restTemplate.getForEntity(getURI("/actuator/health"), Void.class);
+        var result = restTemplate.getForEntity(getURI("/livez"), Void.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        result = restTemplate.getForEntity(getURI("/actuator/info"), Void.class);
+        result = restTemplate.getForEntity(getURI("/readyz"), Void.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         result = restTemplate.getForEntity(getURI("/api-docs"), Void.class);

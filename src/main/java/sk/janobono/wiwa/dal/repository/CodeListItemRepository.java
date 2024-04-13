@@ -10,9 +10,7 @@ import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.model.CodeListItemSearchCriteriaDo;
 import sk.janobono.wiwa.dal.r3n.dto.WiwaCodeListItemDto;
-import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaCodeListItem;
-import sk.janobono.wiwa.dal.r3n.meta.MetaColumnWiwaProductCodeListItem;
-import sk.janobono.wiwa.dal.r3n.meta.MetaTable;
+import sk.janobono.wiwa.dal.r3n.meta.*;
 import sk.janobono.wiwa.dal.repository.component.CriteriaUtil;
 import sk.janobono.wiwa.dal.repository.mapper.CodeListItemDoMapper;
 import sk.r3n.jdbc.SqlBuilder;
@@ -198,24 +196,6 @@ public class CodeListItemRepository {
         }
     }
 
-    public List<CodeListItemDo> findByProductId(final Long productId) {
-        log.debug("findByProductId({})", productId);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaCodeListItem.columns())
-                            .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
-                            .LEFT_JOIN(MetaTable.WIWA_PRODUCT_CODE_LIST_ITEM.table(), MetaColumnWiwaProductCodeListItem.CODE_LIST_ITEM_ID.column(), MetaColumnWiwaCodeListItem.ID.column())
-                            .WHERE(MetaColumnWiwaProductCodeListItem.PRODUCT_ID.column(), Condition.EQUALS, productId)
-            );
-            return rows.stream()
-                    .map(WiwaCodeListItemDto::toObject)
-                    .map(mapper::toCodeListItemDo)
-                    .toList();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public CodeListItemDo save(final CodeListItemDo codeListItemDo) {
         log.debug("save({})", codeListItemDo);
         try (final Connection connection = dataSource.getConnection()) {
@@ -247,34 +227,6 @@ public class CodeListItemRepository {
         }
     }
 
-    public void saveProductCodeListItems(final Long productId, final List<Long> itemIds) {
-        log.debug("saveProductCodeListItems({},{})", productId, itemIds);
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-
-            deleteProductCodeListItems(connection, productId);
-            insertProductCodeListItems(connection, productId, itemIds);
-
-            connection.commit();
-        } catch (final Exception e) {
-            SqlUtil.rollback(connection);
-            throw new RuntimeException(e);
-        } finally {
-            SqlUtil.enableAutoCommit(connection);
-            SqlUtil.close(connection);
-        }
-    }
-
-    private void deleteProductCodeListItems(final Connection connection, final Long productId) throws SQLException {
-        sqlBuilder.delete(connection,
-                Query.DELETE()
-                        .FROM(MetaTable.WIWA_PRODUCT_CODE_LIST_ITEM.table())
-                        .WHERE(MetaColumnWiwaProductCodeListItem.PRODUCT_ID.column(), Condition.EQUALS, productId)
-        );
-    }
-
     private WiwaCodeListItemDto insert(final Connection connection, final WiwaCodeListItemDto wiwaCodeListItemDto) throws SQLException {
         final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaCodeListItem.columns(), 1);
         final Object[] values = criteriaUtil.removeFirst(WiwaCodeListItemDto.toArray(wiwaCodeListItemDto), 1);
@@ -285,16 +237,6 @@ public class CodeListItemRepository {
                         .VALUES(values).RETURNING(MetaColumnWiwaCodeListItem.ID.column()));
 
         return WiwaCodeListItemDto.toObject(criteriaUtil.concat(new Object[]{id}, values));
-    }
-
-    private void insertProductCodeListItems(final Connection connection, final Long productId, final List<Long> itemIds) throws SQLException {
-        for (final Long itemId : itemIds) {
-            sqlBuilder.insert(connection,
-                    Query.INSERT()
-                            .INTO(MetaTable.WIWA_PRODUCT_CODE_LIST_ITEM.table(), MetaColumnWiwaProductCodeListItem.columns())
-                            .VALUES(productId, itemId)
-            );
-        }
     }
 
     private void mapCriteria(final CodeListItemSearchCriteriaDo criteria, final Query.Select select) {

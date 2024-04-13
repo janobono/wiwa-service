@@ -20,7 +20,8 @@ import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.config.JwtConfigProperties;
 import sk.janobono.wiwa.dal.domain.ApplicationImageDo;
 import sk.janobono.wiwa.dal.repository.ApplicationImageRepository;
-import sk.janobono.wiwa.dal.repository.ProductImageRepository;
+import sk.janobono.wiwa.dal.repository.BoardImageRepository;
+import sk.janobono.wiwa.dal.repository.EdgeImageRepository;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.Unit;
 import sk.janobono.wiwa.model.WiwaProperty;
@@ -43,7 +44,8 @@ public class UiService {
 
     private final ApplicationPropertyService applicationPropertyService;
     private final ApplicationImageRepository applicationImageRepository;
-    private final ProductImageRepository productImageRepository;
+    private final BoardImageRepository boardImageRepository;
+    private final EdgeImageRepository edgeImageRepository;
 
     public CaptchaData getCaptcha() {
         final String text = captcha.generateText();
@@ -68,8 +70,19 @@ public class UiService {
                 ));
     }
 
-    public ApplicationImageData getProductImage(final Long productId, final String fileName) {
-        return productImageRepository.findByProductIdAndFileName(productId, scDf.toStripAndLowerCase(fileName))
+    public ApplicationImageData getBoardImage(final Long boardId, final String fileName) {
+        return boardImageRepository.findByBoardIdAndFileName(boardId, scDf.toStripAndLowerCase(fileName))
+                .map(applicationImageDataMapper::mapToData)
+                .orElseGet(() -> new ApplicationImageData(
+                        fileName,
+                        MediaType.IMAGE_PNG_VALUE,
+                        imageUtil.generateMessageImage(null),
+                        imageUtil.generateMessageImage(null)
+                ));
+    }
+
+    public ApplicationImageData getEdgeImage(final Long edgeId, final String fileName) {
+        return edgeImageRepository.findByEdgeIdAndFileName(edgeId, scDf.toStripAndLowerCase(fileName))
                 .map(applicationImageDataMapper::mapToData)
                 .orElseGet(() -> new ApplicationImageData(
                         fileName,

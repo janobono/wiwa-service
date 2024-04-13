@@ -1,0 +1,483 @@
+package sk.janobono.wiwa.api.controller;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import sk.janobono.wiwa.api.model.ApplicationImageInfoWebDto;
+import sk.janobono.wiwa.api.model.edge.EdgeCategoryItemChangeWebDto;
+import sk.janobono.wiwa.api.model.edge.EdgeCategoryItemWebDto;
+import sk.janobono.wiwa.api.model.edge.EdgeChangeWebDto;
+import sk.janobono.wiwa.api.model.edge.EdgeWebDto;
+import sk.janobono.wiwa.business.service.ApplicationPropertyService;
+import sk.janobono.wiwa.component.ImageUtil;
+import sk.janobono.wiwa.component.PriceUtil;
+import sk.janobono.wiwa.config.CommonConfigProperties;
+import sk.janobono.wiwa.dal.domain.CodeListDo;
+import sk.janobono.wiwa.dal.domain.CodeListItemDo;
+import sk.janobono.wiwa.dal.repository.CodeListItemRepository;
+import sk.janobono.wiwa.dal.repository.CodeListRepository;
+import sk.janobono.wiwa.model.Unit;
+import sk.janobono.wiwa.model.WiwaProperty;
+
+import java.math.BigDecimal;
+import java.util.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class EdgeControllerTest extends BaseControllerTest {
+
+
+    @Autowired
+    public CommonConfigProperties commonConfigProperties;
+
+    @Autowired
+    public ImageUtil imageUtil;
+
+    @Autowired
+    public PriceUtil priceUtil;
+
+    @Autowired
+    public ApplicationPropertyService applicationPropertyService;
+
+    @Autowired
+    public CodeListRepository codeListRepository;
+
+    @Autowired
+    public CodeListItemRepository codeListItemRepository;
+
+    @Test
+    void fullTest() {
+        final String token = signIn(DEFAULT_MANAGER, PASSWORD).token();
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+
+        final List<EdgeWebDto> edges = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            edges.add(addEdge(headers, new EdgeChangeWebDto(
+                    "code-edge-" + i,
+                    "name-edge-" + i,
+                    "this is edge " + i,
+                    new BigDecimal("1.000"),
+                    Unit.PIECE,
+                    new BigDecimal("120.000").add(BigDecimal.valueOf(i)),
+                    Unit.KILOGRAM,
+                    new BigDecimal("100.000").add(BigDecimal.valueOf(i)),
+                    Unit.KILOGRAM,
+                    new BigDecimal("2070.000").add(BigDecimal.valueOf(i)),
+                    Unit.MILLIMETER,
+                    new BigDecimal("18.000").add(BigDecimal.valueOf(i)),
+                    Unit.MILLIMETER,
+                    new BigDecimal("50.000").add(BigDecimal.valueOf(i)),
+                    Unit.EUR
+            )));
+        }
+
+        for (final EdgeWebDto edge : edges) {
+            assertThat(edge).usingRecursiveComparison().isEqualTo(getEdge(headers, edge.id()));
+        }
+
+        Page<EdgeWebDto> searchResult = getEdges(headers,
+                "edge-1",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                Pageable.unpaged());
+        assertThat(searchResult.getTotalElements()).isEqualTo(1);
+
+        searchResult = getEdges(headers,
+                null,
+                "code-edge-1",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                Pageable.unpaged());
+        assertThat(searchResult.getTotalElements()).isEqualTo(1);
+
+        searchResult = getEdges(headers,
+                null,
+                null,
+                "edge-1",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                Pageable.unpaged());
+        assertThat(searchResult.getTotalElements()).isEqualTo(1);
+
+        searchResult = getEdges(headers,
+                null,
+                null,
+                null,
+                new BigDecimal(2075),
+                null,
+                Unit.MILLIMETER,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                Pageable.unpaged());
+        assertThat(searchResult.getTotalElements()).isEqualTo(5);
+
+        searchResult = getEdges(headers,
+                null,
+                null,
+                null,
+                null,
+                new BigDecimal(2074),
+                Unit.MILLIMETER,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                Pageable.unpaged());
+        assertThat(searchResult.getTotalElements()).isEqualTo(5);
+
+        searchResult = getEdges(headers,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new BigDecimal(23),
+                null,
+                Unit.MILLIMETER,
+                null,
+                null,
+                null,
+                null,
+                Pageable.unpaged());
+        assertThat(searchResult.getTotalElements()).isEqualTo(5);
+
+        searchResult = getEdges(headers,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new BigDecimal(22),
+                Unit.MILLIMETER,
+                null,
+                null,
+                null,
+                null,
+                Pageable.unpaged());
+        assertThat(searchResult.getTotalElements()).isEqualTo(5);
+
+        searchResult = getEdges(headers,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                priceUtil.countVatValue(new BigDecimal(55), getVatRate()),
+                null,
+                Unit.EUR,
+                null,
+                Pageable.unpaged());
+        assertThat(searchResult.getTotalElements()).isEqualTo(5);
+
+        searchResult = getEdges(headers,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                priceUtil.countVatValue(new BigDecimal(54), getVatRate()),
+                Unit.EUR,
+                null,
+                Pageable.unpaged());
+        assertThat(searchResult.getTotalElements()).isEqualTo(5);
+
+        EdgeWebDto testEdge = edges.stream()
+                .filter(p -> p.code().equals("code-edge-0"))
+                .findFirst()
+                .orElseThrow();
+        final Long testEdgeId = testEdge.id();
+        final int edgeIndex = edges.indexOf(testEdge);
+        assertThat(edgeIndex).isNotEqualTo(-1);
+
+        testEdge = setEdge(headers, testEdge.id(), new EdgeChangeWebDto(
+                "SP01",
+                "SPBC01",
+                "This is test edge",
+                new BigDecimal("1.000"),
+                Unit.PIECE,
+                new BigDecimal("120.000"),
+                Unit.KILOGRAM,
+                new BigDecimal("100.000"),
+                Unit.KILOGRAM,
+                new BigDecimal("2070.000"),
+                Unit.MILLIMETER,
+                new BigDecimal("18.000"),
+                Unit.MILLIMETER,
+                new BigDecimal("50.000"),
+                Unit.EUR
+        ));
+        edges.set(edgeIndex, testEdge);
+
+        for (final EdgeWebDto edge : edges) {
+            assertThat(edge).usingRecursiveComparison().isEqualTo(getEdge(headers, edge.id()));
+        }
+
+        setEdgeImage(token, testEdgeId, "test01.png");
+        setEdgeImage(token, testEdgeId, "test02.png");
+        final List<ApplicationImageInfoWebDto> edgeImages = setEdgeImage(token, testEdgeId, "test03.png").images();
+        final List<ApplicationImageInfoWebDto> savedEdgeImages = getEdge(headers, testEdgeId).images();
+
+        for (final ApplicationImageInfoWebDto originalImage : edgeImages) {
+            final ApplicationImageInfoWebDto savedImage = savedEdgeImages.stream()
+                    .filter(s -> s.fileName().equals(originalImage.fileName()))
+                    .findFirst()
+                    .orElseThrow();
+            assertThat(savedImage).usingRecursiveComparison().isEqualTo(originalImage);
+            assertThat(getEdgeImage(testEdgeId, savedImage.fileName()))
+                    .isEqualTo(imageUtil.scaleImage(
+                            "png",
+                            imageUtil.generateMessageImage(savedImage.fileName()),
+                            commonConfigProperties.maxImageResolution(),
+                            commonConfigProperties.maxImageResolution()
+                    ));
+        }
+
+        final CodeListDo codeList = codeListRepository.save(CodeListDo.builder()
+                .code("code")
+                .name("test-code-list")
+                .build());
+        final CodeListItemDo codeListItem01 = codeListItemRepository.save(CodeListItemDo.builder()
+                .codeListId(codeList.getId())
+                .treeCode("code1")
+                .code("code1")
+                .value("test-item1")
+                .sortNum(1)
+                .build());
+        final CodeListItemDo codeListItem02 = codeListItemRepository.save(CodeListItemDo.builder()
+                .codeListId(codeList.getId())
+                .treeCode("code2")
+                .code("code2")
+                .value("test-item2")
+                .sortNum(2)
+                .build());
+        List<EdgeCategoryItemWebDto> categoryItems = setEdgeCodeListItems(headers, testEdgeId,
+                List.of(new EdgeCategoryItemChangeWebDto(codeList.getId(), codeListItem01.getId()))).categoryItems();
+        List<EdgeCategoryItemWebDto> savedCategoryItems = getEdge(headers, testEdgeId).categoryItems();
+        assertThat(categoryItems.size()).isEqualTo(1);
+        assertThat(categoryItems.getFirst().id()).isEqualTo(codeListItem01.getId());
+        assertThat(categoryItems.getFirst()).isEqualTo(savedCategoryItems.getFirst());
+
+        categoryItems = setEdgeCodeListItems(headers, testEdgeId,
+                List.of(new EdgeCategoryItemChangeWebDto(codeList.getId(), codeListItem02.getId()))).categoryItems();
+        savedCategoryItems = getEdge(headers, testEdgeId).categoryItems();
+        assertThat(categoryItems.size()).isEqualTo(1);
+        assertThat(categoryItems.getFirst().id()).isEqualTo(codeListItem02.getId());
+        assertThat(categoryItems.getFirst()).isEqualTo(savedCategoryItems.getFirst());
+
+        categoryItems = setEdgeCodeListItems(headers, testEdgeId,
+                List.of(new EdgeCategoryItemChangeWebDto(codeList.getId(), codeListItem01.getId()),
+                        new EdgeCategoryItemChangeWebDto(codeList.getId(), codeListItem02.getId()))).categoryItems();
+        savedCategoryItems = getEdge(headers, testEdgeId).categoryItems();
+        assertThat(categoryItems.size()).isEqualTo(2);
+        assertThat(categoryItems.get(0).id()).isEqualTo(savedCategoryItems.get(0).id());
+        assertThat(categoryItems.get(1)).isEqualTo(savedCategoryItems.get(1));
+
+        searchResult = getEdges(headers,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                List.of("code1"),
+                Pageable.unpaged());
+        assertThat(searchResult.getTotalElements()).isEqualTo(1);
+
+        searchResult = getEdges(headers,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                List.of("code2"),
+                Pageable.unpaged());
+        assertThat(searchResult.getTotalElements()).isEqualTo(1);
+
+        categoryItems = setEdgeCodeListItems(headers, testEdgeId, Collections.emptyList()).categoryItems();
+        savedCategoryItems = getEdge(headers, testEdgeId).categoryItems();
+        assertThat(categoryItems.size()).isEqualTo(0);
+        assertThat(categoryItems.size()).isEqualTo(savedCategoryItems.size());
+
+        for (final ApplicationImageInfoWebDto originalImage : edgeImages) {
+            deleteEdgeImage(headers, testEdgeId, originalImage.fileName());
+        }
+        for (final EdgeWebDto edge : edges) {
+            deleteEdge(headers, edge.id());
+        }
+    }
+
+    private EdgeWebDto getEdge(final HttpHeaders headers, final Long id) {
+        return getEntity(EdgeWebDto.class, headers, "/edges", id);
+    }
+
+    private Page<EdgeWebDto> getEdges(final HttpHeaders headers,
+                                      final String searchField,
+                                      final String code,
+                                      final String name,
+                                      final BigDecimal widthFrom,
+                                      final BigDecimal widthTo,
+                                      final Unit widthUnit,
+                                      final BigDecimal thicknessFrom,
+                                      final BigDecimal thicknessTo,
+                                      final Unit thicknessUnit,
+                                      final BigDecimal priceFrom,
+                                      final BigDecimal priceTo,
+                                      final Unit priceUnit,
+                                      final List<String> codeListItems,
+                                      final Pageable pageable) {
+        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        Optional.ofNullable(searchField).ifPresent(v -> addToParams(params, "searchField", v));
+        Optional.ofNullable(code).ifPresent(v -> addToParams(params, "code", v));
+        Optional.ofNullable(name).ifPresent(v -> addToParams(params, "name", v));
+        Optional.ofNullable(widthFrom).ifPresent(v -> addToParams(params, "widthFrom", v.toPlainString()));
+        Optional.ofNullable(widthTo).ifPresent(v -> addToParams(params, "widthTo", v.toPlainString()));
+        Optional.ofNullable(widthUnit).ifPresent(v -> addToParams(params, "widthUnit", v.name()));
+        Optional.ofNullable(thicknessFrom).ifPresent(v -> addToParams(params, "thicknessFrom", v.toPlainString()));
+        Optional.ofNullable(thicknessTo).ifPresent(v -> addToParams(params, "thicknessTo", v.toPlainString()));
+        Optional.ofNullable(thicknessUnit).ifPresent(v -> addToParams(params, "thicknessUnit", v.name()));
+        Optional.ofNullable(priceFrom).ifPresent(v -> addToParams(params, "priceFrom", v.toPlainString()));
+        Optional.ofNullable(priceTo).ifPresent(v -> addToParams(params, "priceTo", v.toPlainString()));
+        Optional.ofNullable(priceUnit).ifPresent(v -> addToParams(params, "priceUnit", v.name()));
+        Optional.ofNullable(codeListItems).ifPresent(l -> addToParams(params, "codeListItems", l));
+        return getEntities(EdgeWebDto.class, headers, "/edges", params, pageable);
+    }
+
+    private EdgeWebDto addEdge(final HttpHeaders headers, final EdgeChangeWebDto edgeChange) {
+        return addEntity(EdgeWebDto.class, headers, "/edges", edgeChange);
+    }
+
+    private EdgeWebDto setEdge(final HttpHeaders headers, final Long id, final EdgeChangeWebDto edgeChange) {
+        return setEntity(EdgeWebDto.class, headers, "/edges", id, edgeChange);
+    }
+
+    private void deleteEdge(final HttpHeaders headers, final Long id) {
+        deleteEntity(headers, "/edges", id);
+    }
+
+    private byte[] getEdgeImage(final Long id, final String fileName) {
+        return restTemplate.getForObject(
+                getURI("/ui/edge-images/{id}/{fileName}", Map.of("id", Long.toString(id), "fileName", fileName)),
+                byte[].class
+        );
+    }
+
+    private EdgeWebDto setEdgeImage(final String token, final Long id, final String fileName) {
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        headers.setBearerAuth(token);
+
+        final MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
+        form.add("file", new ByteArrayResource(imageUtil.generateMessageImage(fileName)) {
+            @Override
+            public String getFilename() {
+                return fileName;
+            }
+        });
+        final HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
+
+        final ResponseEntity<EdgeWebDto> response = restTemplate.exchange(
+                getURI("/edges/{id}/images", Map.of("id", Long.toString(id))),
+                HttpMethod.POST,
+                httpEntity,
+                EdgeWebDto.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        return response.getBody();
+    }
+
+    public EdgeWebDto deleteEdgeImage(final HttpHeaders headers, final Long id, final String fileName) {
+        final ResponseEntity<EdgeWebDto> response = restTemplate.exchange(
+                getURI("/edges/{id}/images/{fileName}", Map.of("id", Long.toString(id), "fileName", fileName)),
+                HttpMethod.DELETE,
+                new HttpEntity<>(headers),
+                EdgeWebDto.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        return response.getBody();
+    }
+
+    public EdgeWebDto setEdgeCodeListItems(final HttpHeaders headers, final Long id, final List<EdgeCategoryItemChangeWebDto> categoryItems) {
+        final ResponseEntity<EdgeWebDto> response = restTemplate.exchange(
+                getURI("/edges/{id}/category-items", Map.of("id", Long.toString(id))),
+                HttpMethod.POST,
+                new HttpEntity<>(categoryItems, headers),
+                EdgeWebDto.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        return response.getBody();
+    }
+
+    private BigDecimal getVatRate() {
+        return new BigDecimal(applicationPropertyService.getProperty(WiwaProperty.PRODUCT_VAT_RATE));
+    }
+}

@@ -1,6 +1,7 @@
 package sk.janobono.wiwa.api.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -19,6 +20,7 @@ import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 import sk.janobono.wiwa.model.Unit;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -264,5 +266,33 @@ class ConfigControllerTest extends BaseControllerTest {
         );
         assertThat(units.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(units.getBody())[0].id()).isEqualTo(Unit.EUR);
+
+        // Vat rate
+        final var newVatRate = setVatRate(headers, BigDecimal.valueOf(25L));
+        assertThat(newVatRate).isEqualTo(getVatRate(headers));
+    }
+
+    private BigDecimal getVatRate(final HttpHeaders headers) {
+        final ResponseEntity<ObjectNode> response = restTemplate.exchange(
+                getURI("/config/vat-rate"),
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                ObjectNode.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        return response.getBody().get("value").decimalValue();
+    }
+
+    private BigDecimal setVatRate(final HttpHeaders headers, final BigDecimal vatRate) {
+        final ResponseEntity<ObjectNode> response = restTemplate.exchange(
+                getURI("/config/vat-rate"),
+                HttpMethod.POST,
+                new HttpEntity<>(new SingleValueBodyWebDto<>(vatRate), headers),
+                ObjectNode.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        return response.getBody().get("value").decimalValue();
     }
 }
