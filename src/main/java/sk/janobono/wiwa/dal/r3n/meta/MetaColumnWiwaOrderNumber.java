@@ -8,7 +8,7 @@ import java.util.List;
 
 public enum MetaColumnWiwaOrderNumber {
 
-    CREATOR("creator", DataType.STRING),
+    USER_ID("user_id", DataType.LONG),
     ORDER_NUMBER("order_number", DataType.LONG);
 
     private final String columnName;

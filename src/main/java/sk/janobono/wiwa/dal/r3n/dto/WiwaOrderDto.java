@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 public record WiwaOrderDto(
         Long id,
-        String creator,
+        Long userId,
         LocalDateTime created,
         String status,
         Long orderNumber,
@@ -21,7 +21,7 @@ public record WiwaOrderDto(
     public static Object[] toArray(final WiwaOrderDto wiwaOrderDto) {
         return new Object[]{
                 wiwaOrderDto.id,
-                wiwaOrderDto.creator,
+                wiwaOrderDto.userId,
                 wiwaOrderDto.created,
                 wiwaOrderDto.status,
                 wiwaOrderDto.orderNumber,
@@ -38,7 +38,7 @@ public record WiwaOrderDto(
     public static WiwaOrderDto toObject(final Object[] array) {
         return new WiwaOrderDto(
                 (Long) array[0],
-                (String) array[1],
+                (Long) array[1],
                 (LocalDateTime) array[2],
                 (String) array[3],
                 (Long) array[4],

@@ -9,7 +9,7 @@ import java.util.List;
 public enum MetaColumnWiwaOrder {
 
     ID("id", DataType.LONG),
-    CREATOR("creator", DataType.STRING),
+    USER_ID("user_id", DataType.LONG),
     CREATED("created", DataType.TIME_STAMP),
     STATUS("status", DataType.STRING),
     ORDER_NUMBER("order_number", DataType.LONG),

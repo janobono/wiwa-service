@@ -1,14 +1,14 @@
 -- TABLE
 create table wiwa_order_number
 (
-    creator      varchar(255) primary key,
+    user_id      bigint primary key references wiwa_user (id) on delete cascade,
     order_number bigserial not null
 );
 
 create table wiwa_order
 (
     id               bigserial primary key,
-    creator          varchar(255)   not null,
+    user_id          bigint         not null references wiwa_user (id) on delete cascade,
     created          timestamp      not null,
     status           varchar(255)   not null,
     order_number     bigserial      not null,
@@ -19,7 +19,7 @@ create table wiwa_order
     net_weight_unit  varchar(255)   not null,
     total_value      numeric(19, 3) not null,
     total_unit       varchar(255)   not null,
-    unique (creator, order_number)
+    unique (user_id, order_number)
 );
 
 create table wiwa_order_attribute
@@ -32,8 +32,7 @@ create table wiwa_order_attribute
 
 create table wiwa_order_contact
 (
-    id          bigserial primary key,
-    order_id    bigint       not null references wiwa_order (id) on delete cascade,
+    order_id    bigint primary key references wiwa_order (id) on delete cascade,
     name        varchar(255) not null,
     street      varchar(255) not null,
     zip_code    varchar(255) not null,
@@ -73,9 +72,11 @@ create table wiwa_order_item_attribute
 );
 
 -- INDEX
-create index idx_wiwa_order_attribute on wiwa_order_attribute (order_id);
+create index idx_wiwa_order_number on wiwa_order_number (user_id);
 
-create index idx_wiwa_order_contact on wiwa_order_contact (order_id);
+create index idx_wiwa_order on wiwa_order (user_id);
+
+create index idx_wiwa_order_attribute on wiwa_order_attribute (order_id);
 
 create index idx_wiwa_order_item on wiwa_order_item (order_id);
 

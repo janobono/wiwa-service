@@ -1,7 +1,6 @@
 package sk.janobono.wiwa.dal.r3n.dto;
 
 public record WiwaOrderContactDto(
-        Long id,
         Long orderId,
         String name,
         String street,
@@ -16,7 +15,6 @@ public record WiwaOrderContactDto(
 
     public static Object[] toArray(final WiwaOrderContactDto wiwaOrderContactDto) {
         return new Object[]{
-                wiwaOrderContactDto.id,
                 wiwaOrderContactDto.orderId,
                 wiwaOrderContactDto.name,
                 wiwaOrderContactDto.street,
@@ -33,7 +31,7 @@ public record WiwaOrderContactDto(
     public static WiwaOrderContactDto toObject(final Object[] array) {
         return new WiwaOrderContactDto(
                 (Long) array[0],
-                (Long) array[1],
+                (String) array[1],
                 (String) array[2],
                 (String) array[3],
                 (String) array[4],
@@ -41,8 +39,7 @@ public record WiwaOrderContactDto(
                 (String) array[6],
                 (String) array[7],
                 (String) array[8],
-                (String) array[9],
-                (String) array[10]
+                (String) array[9]
         );
     }
 }

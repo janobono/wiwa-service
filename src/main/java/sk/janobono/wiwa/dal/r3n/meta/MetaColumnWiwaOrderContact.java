@@ -8,7 +8,6 @@ import java.util.List;
 
 public enum MetaColumnWiwaOrderContact {
 
-    ID("id", DataType.LONG),
     ORDER_ID("order_id", DataType.LONG),
     NAME("name", DataType.STRING),
     STREET("street", DataType.STRING),
