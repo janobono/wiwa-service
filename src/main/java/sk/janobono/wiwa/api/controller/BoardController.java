@@ -72,7 +72,6 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public BoardWebDto getBoard(@PathVariable("id") final Long id) {
         return boardApiService.getBoard(id);
     }

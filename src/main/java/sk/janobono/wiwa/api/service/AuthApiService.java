@@ -1,11 +1,13 @@
 package sk.janobono.wiwa.api.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.api.mapper.AuthWebMapper;
 import sk.janobono.wiwa.api.model.auth.*;
 import sk.janobono.wiwa.business.model.auth.AuthenticationResponseData;
 import sk.janobono.wiwa.business.service.AuthService;
+import sk.janobono.wiwa.model.User;
 
 @RequiredArgsConstructor
 @Service
@@ -19,19 +21,23 @@ public class AuthApiService {
     }
 
     public AuthenticationResponseWebDto changeEmail(final ChangeEmailWebDto changeEmail) {
-        return mapToWebDto(authService.changeEmail(authWebMapper.mapToData(changeEmail)));
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return mapToWebDto(authService.changeEmail(user, authWebMapper.mapToData(changeEmail)));
     }
 
     public AuthenticationResponseWebDto changePassword(final ChangePasswordWebDto changePassword) {
-        return mapToWebDto(authService.changePassword(authWebMapper.mapToData(changePassword)));
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return mapToWebDto(authService.changePassword(user, authWebMapper.mapToData(changePassword)));
     }
 
     public AuthenticationResponseWebDto changeUserDetails(final ChangeUserDetailsWebDto changeUserDetails) {
-        return mapToWebDto(authService.changeUserDetails(authWebMapper.mapToData(changeUserDetails)));
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return mapToWebDto(authService.changeUserDetails(user, authWebMapper.mapToData(changeUserDetails)));
     }
 
     public void resendConfirmation(final ResendConfirmationWebDto resendConfirmation) {
-        authService.resendConfirmation(authWebMapper.mapToData(resendConfirmation));
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        authService.resendConfirmation(user, authWebMapper.mapToData(resendConfirmation));
     }
 
     public void resetPassword(final ResetPasswordWebDto resetPassword) {

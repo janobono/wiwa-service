@@ -60,7 +60,6 @@ public class EdgeController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public EdgeWebDto getEdge(@PathVariable("id") final Long id) {
         return edgeApiService.getEdge(id);
     }

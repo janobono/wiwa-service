@@ -3,13 +3,12 @@ package sk.janobono.wiwa.business.service;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.model.auth.*;
 import sk.janobono.wiwa.business.model.mail.MailContentData;
-import sk.janobono.wiwa.business.model.mail.MailLinkData;
 import sk.janobono.wiwa.business.model.mail.MailData;
+import sk.janobono.wiwa.business.model.mail.MailLinkData;
 import sk.janobono.wiwa.business.model.mail.MailTemplate;
 import sk.janobono.wiwa.business.service.util.UserUtilService;
 import sk.janobono.wiwa.component.*;
@@ -63,33 +62,30 @@ public class AuthService {
         return createAuthenticationResponse(userDo);
     }
 
-    public AuthenticationResponseData changeEmail(final ChangeEmailData changeEmail) {
+    public AuthenticationResponseData changeEmail(final User user, final ChangeEmailData changeEmail) {
         captcha.checkTokenValid(changeEmail.captchaText(), changeEmail.captchaToken());
         if (userRepository.existsByEmail(scDf.toStripAndLowerCase(changeEmail.email()))) {
             throw WiwaException.USER_EMAIL_IS_USED.exception("Email is used");
         }
-        final User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        final UserDo userDo = userUtilService.getUserDo(principal.id());
+        final UserDo userDo = userUtilService.getUserDo(user.id());
         userUtilService.checkEnabled(userDo);
         userUtilService.checkPassword(userDo, changeEmail.password());
         userDo.setEmail(scDf.toStripAndLowerCase(changeEmail.email()));
         return createAuthenticationResponse(userRepository.save(userDo));
     }
 
-    public AuthenticationResponseData changePassword(final ChangePasswordData changePassword) {
+    public AuthenticationResponseData changePassword(final User user, final ChangePasswordData changePassword) {
         captcha.checkTokenValid(changePassword.captchaText(), changePassword.captchaToken());
-        final User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        final UserDo userDo = userUtilService.getUserDo(principal.id());
+        final UserDo userDo = userUtilService.getUserDo(user.id());
         userUtilService.checkEnabled(userDo);
         userUtilService.checkPassword(userDo, changePassword.oldPassword());
         userDo.setPassword(passwordEncoder.encode(changePassword.newPassword()));
         return createAuthenticationResponse(userRepository.save(userDo));
     }
 
-    public AuthenticationResponseData changeUserDetails(final ChangeUserDetailsData changeUserDetails) {
+    public AuthenticationResponseData changeUserDetails(final User user, final ChangeUserDetailsData changeUserDetails) {
         captcha.checkTokenValid(changeUserDetails.captchaText(), changeUserDetails.captchaToken());
-        final User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        final UserDo userDo = userUtilService.getUserDo(principal.id());
+        final UserDo userDo = userUtilService.getUserDo(user.id());
         userUtilService.checkEnabled(userDo);
         if (!changeUserDetails.gdpr()) {
             throw WiwaException.GDPR.exception("GDPR has to be confirmed");
@@ -104,11 +100,10 @@ public class AuthService {
         return createAuthenticationResponse(userRepository.save(userDo));
     }
 
-    public void resendConfirmation(final ResendConfirmationData resendConfirmation) {
+    public void resendConfirmation(final User user, final ResendConfirmationData resendConfirmation) {
         captcha.checkTokenValid(resendConfirmation.captchaText(), resendConfirmation.captchaToken());
-        final User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        final UserDo userDo = userRepository.findById(principal.id()).orElseThrow(
-                () -> WiwaException.USER_NOT_FOUND.exception("User with username {0} not found", principal.username())
+        final UserDo userDo = userRepository.findById(user.id()).orElseThrow(
+                () -> WiwaException.USER_NOT_FOUND.exception("User with username {0} not found", user.username())
         );
         sendSignUpMail(userDo);
     }

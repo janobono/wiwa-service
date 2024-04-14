@@ -33,7 +33,6 @@ public class CodeListItemController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public CodeListItemWebDto getCodeListItem(@PathVariable("id") final Long id) {
         return codeListItemApiService.getCodeListItem(id);
     }

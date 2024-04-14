@@ -29,7 +29,6 @@ public class CodeListController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public CodeListWebDto getCodeList(@PathVariable("id") final Long id) {
         return codeListApiService.getCodeList(id);
     }
