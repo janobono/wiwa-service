@@ -16,7 +16,13 @@ public enum MetaTable {
     WIWA_BOARD_CODE_LIST_ITEM("wiwa_board_code_list_item", "t10"),
     WIWA_EDGE("wiwa_edge", "t11"),
     WIWA_EDGE_IMAGE("wiwa_edge_image", "t12"),
-    WIWA_EDGE_CODE_LIST_ITEM("wiwa_edge_code_list_item", "t13");
+    WIWA_EDGE_CODE_LIST_ITEM("wiwa_edge_code_list_item", "t13"),
+    WIWA_ORDER_NUMBER("wiwa_order_number", "t14"),
+    WIWA_ORDER("wiwa_order", "t15"),
+    WIWA_ORDER_ATTRIBUTE("wiwa_order_attribute", "t16"),
+    WIWA_ORDER_CONTACT("wiwa_order_contact", "t17"),
+    WIWA_ORDER_ITEM("wiwa_order_item", "t18"),
+    WIWA_ORDER_ITEM_ATTRIBUTE("wiwa_order_item_attribute", "t19");
 
     private final String tableName;
 
