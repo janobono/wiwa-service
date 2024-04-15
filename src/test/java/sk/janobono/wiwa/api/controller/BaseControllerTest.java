@@ -13,7 +13,10 @@ import sk.janobono.wiwa.api.model.auth.AuthenticationResponseWebDto;
 import sk.janobono.wiwa.business.model.auth.SignInData;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URI;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -107,6 +110,25 @@ abstract class BaseControllerTest extends BaseIntegrationTest {
 
     public void addToParams(final MultiValueMap<String, String> params, final String key, final String value) {
         Optional.ofNullable(value).ifPresent(v -> params.add(key, v));
+    }
+
+    public void addToParams(final MultiValueMap<String, String> params, final String key, final Long value) {
+        addToParams(params, key, Optional.ofNullable(value).map(Object::toString).orElse(null));
+    }
+
+    public void addToParams(final MultiValueMap<String, String> params, final String key, final Boolean value) {
+        addToParams(params, key, Optional.ofNullable(value).map(Object::toString).orElse(null));
+    }
+
+    public void addToParams(final MultiValueMap<String, String> params, final String key, final BigDecimal value) {
+        addToParams(params, key, Optional.ofNullable(value).map(BigDecimal::toPlainString).orElse(null));
+    }
+
+    public void addToParams(final MultiValueMap<String, String> params, final String key, final OffsetDateTime value) {
+
+        System.out.println(Optional.ofNullable(value).map(v -> v.format(DateTimeFormatter.ISO_INSTANT)).orElse(""));
+
+        addToParams(params, key, Optional.ofNullable(value).map(v -> v.format(DateTimeFormatter.ISO_INSTANT)).orElse(null));
     }
 
     public void addToParams(final MultiValueMap<String, String> params, final String key, final List<String> value) {

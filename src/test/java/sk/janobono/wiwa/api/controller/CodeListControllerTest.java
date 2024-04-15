@@ -11,7 +11,6 @@ import sk.janobono.wiwa.api.model.codelist.CodeListWebDto;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,9 +58,9 @@ class CodeListControllerTest extends BaseControllerTest {
 
     private Page<CodeListWebDto> getCodeLists(final HttpHeaders headers, final String searchField, final String code, final String name, final Pageable pageable) {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        Optional.ofNullable(searchField).ifPresent(v -> addToParams(params, "searchField", v));
-        Optional.ofNullable(code).ifPresent(v -> addToParams(params, "code", v));
-        Optional.ofNullable(name).ifPresent(v -> addToParams(params, "name", v));
+        addToParams(params, "searchField", searchField);
+        addToParams(params, "code", code);
+        addToParams(params, "name", name);
         return getEntities(CodeListWebDto.class, headers, "/code-lists", params, pageable);
     }
 

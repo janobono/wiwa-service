@@ -393,19 +393,19 @@ class EdgeControllerTest extends BaseControllerTest {
                                       final List<String> codeListItems,
                                       final Pageable pageable) {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        Optional.ofNullable(searchField).ifPresent(v -> addToParams(params, "searchField", v));
-        Optional.ofNullable(code).ifPresent(v -> addToParams(params, "code", v));
-        Optional.ofNullable(name).ifPresent(v -> addToParams(params, "name", v));
-        Optional.ofNullable(widthFrom).ifPresent(v -> addToParams(params, "widthFrom", v.toPlainString()));
-        Optional.ofNullable(widthTo).ifPresent(v -> addToParams(params, "widthTo", v.toPlainString()));
-        Optional.ofNullable(widthUnit).ifPresent(v -> addToParams(params, "widthUnit", v.name()));
-        Optional.ofNullable(thicknessFrom).ifPresent(v -> addToParams(params, "thicknessFrom", v.toPlainString()));
-        Optional.ofNullable(thicknessTo).ifPresent(v -> addToParams(params, "thicknessTo", v.toPlainString()));
-        Optional.ofNullable(thicknessUnit).ifPresent(v -> addToParams(params, "thicknessUnit", v.name()));
-        Optional.ofNullable(priceFrom).ifPresent(v -> addToParams(params, "priceFrom", v.toPlainString()));
-        Optional.ofNullable(priceTo).ifPresent(v -> addToParams(params, "priceTo", v.toPlainString()));
-        Optional.ofNullable(priceUnit).ifPresent(v -> addToParams(params, "priceUnit", v.name()));
-        Optional.ofNullable(codeListItems).ifPresent(l -> addToParams(params, "codeListItems", l));
+        addToParams(params, "searchField", searchField);
+        addToParams(params, "code", code);
+        addToParams(params, "name", name);
+        addToParams(params, "widthFrom", widthFrom);
+        addToParams(params, "widthTo", widthTo);
+        addToParams(params, "widthUnit", Optional.ofNullable(widthUnit).map(Unit::name).orElse(null));
+        addToParams(params, "thicknessFrom", thicknessFrom);
+        addToParams(params, "thicknessTo", thicknessTo);
+        addToParams(params, "thicknessUnit", Optional.ofNullable(thicknessUnit).map(Unit::name).orElse(null));
+        addToParams(params, "priceFrom", priceFrom);
+        addToParams(params, "priceTo", priceTo);
+        addToParams(params, "priceUnit", Optional.ofNullable(priceUnit).map(Unit::name).orElse(null));
+        addToParams(params, "codeListItems", codeListItems);
         return getEntities(EdgeWebDto.class, headers, "/edges", params, pageable);
     }
 

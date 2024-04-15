@@ -17,7 +17,6 @@ import sk.janobono.wiwa.dal.repository.CodeListRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -121,13 +120,13 @@ public class CodeListItemControllerTest extends BaseControllerTest {
 
     private Page<CodeListItemWebDto> getCodeListItems(final HttpHeaders headers, final Long codeListId, final Boolean root, final Long parentId, final String searchField, final String code, final String value, final String treeCode, final Pageable pageable) {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        Optional.ofNullable(codeListId).ifPresent(v -> addToParams(params, "codeListId", v.toString()));
-        Optional.ofNullable(root).ifPresent(v -> addToParams(params, "root", v.toString()));
-        Optional.ofNullable(parentId).ifPresent(v -> addToParams(params, "parentId", v.toString()));
-        Optional.ofNullable(searchField).ifPresent(v -> addToParams(params, "searchField", v));
-        Optional.ofNullable(code).ifPresent(v -> addToParams(params, "code", v));
-        Optional.ofNullable(value).ifPresent(v -> addToParams(params, "value", v));
-        Optional.ofNullable(treeCode).ifPresent(v -> addToParams(params, "treeCode", v));
+        addToParams(params, "codeListId", codeListId);
+        addToParams(params, "root", root);
+        addToParams(params, "parentId", parentId);
+        addToParams(params, "searchField", searchField);
+        addToParams(params, "code", code);
+        addToParams(params, "value", value);
+        addToParams(params, "treeCode", treeCode);
         return getEntities(CodeListItemWebDto.class, headers, "/code-list-items", params, pageable);
     }
 
