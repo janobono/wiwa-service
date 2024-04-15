@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.business.mapper.ApplicationImageDataMapper;
 import sk.janobono.wiwa.business.model.ApplicationImageInfoData;
 import sk.janobono.wiwa.business.model.edge.*;
+import sk.janobono.wiwa.business.service.util.PropertyUtilService;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.component.ScDf;
@@ -46,7 +47,7 @@ public class EdgeService {
     private final EdgeImageRepository edgeImageRepository;
     private final EdgeCodeListItemRepository edgeCodeListItemRepository;
 
-    private final ApplicationPropertyService applicationPropertyService;
+    private final PropertyUtilService propertyUtilService;
 
     public Page<EdgeData> getEdges(final EdgeSearchCriteriaData criteria, final Pageable pageable) {
         final BigDecimal vatRate = getVatRate();
@@ -239,6 +240,6 @@ public class EdgeService {
     }
 
     private BigDecimal getVatRate() {
-        return new BigDecimal(applicationPropertyService.getProperty(WiwaProperty.PRODUCT_VAT_RATE));
+        return propertyUtilService.getProperty(BigDecimal::new, WiwaProperty.PRODUCT_VAT_RATE);
     }
 }

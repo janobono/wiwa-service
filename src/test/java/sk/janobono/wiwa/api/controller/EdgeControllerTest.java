@@ -13,7 +13,7 @@ import sk.janobono.wiwa.api.model.edge.EdgeCategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeCategoryItemWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeWebDto;
-import sk.janobono.wiwa.business.service.ApplicationPropertyService;
+import sk.janobono.wiwa.business.service.util.PropertyUtilService;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
@@ -42,7 +42,7 @@ class EdgeControllerTest extends BaseControllerTest {
     public PriceUtil priceUtil;
 
     @Autowired
-    public ApplicationPropertyService applicationPropertyService;
+    public PropertyUtilService propertyUtilService;
 
     @Autowired
     public CodeListRepository codeListRepository;
@@ -478,6 +478,6 @@ class EdgeControllerTest extends BaseControllerTest {
     }
 
     private BigDecimal getVatRate() {
-        return new BigDecimal(applicationPropertyService.getProperty(WiwaProperty.PRODUCT_VAT_RATE));
+        return propertyUtilService.getProperty(BigDecimal::new, WiwaProperty.PRODUCT_VAT_RATE);
     }
 }

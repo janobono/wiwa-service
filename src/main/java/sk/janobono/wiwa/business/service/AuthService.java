@@ -10,6 +10,7 @@ import sk.janobono.wiwa.business.model.mail.MailContentData;
 import sk.janobono.wiwa.business.model.mail.MailData;
 import sk.janobono.wiwa.business.model.mail.MailLinkData;
 import sk.janobono.wiwa.business.model.mail.MailTemplate;
+import sk.janobono.wiwa.business.service.util.PropertyUtilService;
 import sk.janobono.wiwa.business.service.util.UserUtilService;
 import sk.janobono.wiwa.component.*;
 import sk.janobono.wiwa.config.AuthConfigProperties;
@@ -44,7 +45,7 @@ public class AuthService {
     private final VerificationToken verificationToken;
     private final AuthorityRepository authorityRepository;
     private final UserRepository userRepository;
-    private final ApplicationPropertyService applicationPropertyService;
+    private final PropertyUtilService propertyUtilService;
     private final UserUtilService userUtilService;
 
     public AuthenticationResponseData confirm(final ConfirmationData confirmation) {
@@ -218,16 +219,16 @@ public class AuthService {
                 appConfigProperties.mail(),
                 null,
                 List.of(user.getEmail()),
-                applicationPropertyService.getProperty(WiwaProperty.AUTH_RESET_PASSWORD_MAIL_SUBJECT),
+                propertyUtilService.getProperty(WiwaProperty.AUTH_RESET_PASSWORD_MAIL_SUBJECT),
                 MailTemplate.BASE,
                 new MailContentData(
-                        applicationPropertyService.getProperty(WiwaProperty.AUTH_RESET_PASSWORD_MAIL_TITLE),
+                        propertyUtilService.getProperty(WiwaProperty.AUTH_RESET_PASSWORD_MAIL_TITLE),
                         Arrays.asList(
-                                applicationPropertyService.getProperty(
+                                propertyUtilService.getProperty(
                                         WiwaProperty.AUTH_RESET_PASSWORD_MAIL_MESSAGE
                                 ),
                                 MessageFormat.format(
-                                        applicationPropertyService.getProperty(
+                                        propertyUtilService.getProperty(
                                                 WiwaProperty.AUTH_RESET_PASSWORD_MAIL_PASSWORD_MESSAGE
                                         ),
                                         data.get(AuthTokenKey.NEW_PASSWORD.name())
@@ -235,7 +236,7 @@ public class AuthService {
                         ),
                         new MailLinkData(
                                 getTokenUrl(appConfigProperties.webUrl(), appConfigProperties.confirmPath(), token),
-                                applicationPropertyService.getProperty(
+                                propertyUtilService.getProperty(
                                         WiwaProperty.AUTH_RESET_PASSWORD_MAIL_LINK
                                 )
                         )
@@ -259,16 +260,16 @@ public class AuthService {
                 appConfigProperties.mail(),
                 null,
                 List.of(user.getEmail()),
-                applicationPropertyService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_SUBJECT),
+                propertyUtilService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_SUBJECT),
                 MailTemplate.BASE,
                 new MailContentData(
-                        applicationPropertyService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_TITLE),
+                        propertyUtilService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_TITLE),
                         Collections.singletonList(
-                                applicationPropertyService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_MESSAGE)
+                                propertyUtilService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_MESSAGE)
                         ),
                         new MailLinkData(
                                 getTokenUrl(appConfigProperties.webUrl(), appConfigProperties.confirmPath(), token),
-                                applicationPropertyService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_LINK)
+                                propertyUtilService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_LINK)
                         )
                 ),
                 null

@@ -13,6 +13,7 @@ import sk.janobono.wiwa.business.model.captcha.CaptchaData;
 import sk.janobono.wiwa.business.model.ui.ApplicationPropertiesData;
 import sk.janobono.wiwa.business.model.ui.CompanyInfoData;
 import sk.janobono.wiwa.business.model.ui.UnitData;
+import sk.janobono.wiwa.business.service.util.PropertyUtilService;
 import sk.janobono.wiwa.component.Captcha;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.component.ScDf;
@@ -28,6 +29,7 @@ import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -42,7 +44,8 @@ public class UiService {
 
     private final ApplicationImageDataMapper applicationImageDataMapper;
 
-    private final ApplicationPropertyService applicationPropertyService;
+    private final PropertyUtilService propertyUtilService;
+
     private final ApplicationImageRepository applicationImageRepository;
     private final BoardImageRepository boardImageRepository;
     private final EdgeImageRepository edgeImageRepository;
@@ -139,58 +142,59 @@ public class UiService {
     }
 
     public String getTitle() {
-        return applicationPropertyService.getProperty(WiwaProperty.APP_TITLE);
+        return propertyUtilService.getProperty(WiwaProperty.APP_TITLE);
     }
 
     public String getWelcomeText() {
-        return applicationPropertyService.getProperty(WiwaProperty.APP_WELCOME_TEXT);
+        return propertyUtilService.getProperty(WiwaProperty.APP_WELCOME_TEXT);
     }
 
     public List<String> getApplicationInfo() {
         final List<String> result = new ArrayList<>();
-        final int count = Integer.parseInt(applicationPropertyService.getProperty(WiwaProperty.APP_INFO_SLIDE_COUNT));
+        final int count = Integer.parseInt(propertyUtilService.getProperty(WiwaProperty.APP_INFO_SLIDE_COUNT));
         for (int i = 0; i < count; i++) {
-            result.add(applicationPropertyService.getProperty(WiwaProperty.APP_INFO_SLIDE_X_TEXT, i));
+            result.add(propertyUtilService.getProperty(WiwaProperty.APP_INFO_SLIDE_X_TEXT, i));
         }
         return result;
     }
 
     public CompanyInfoData getCompanyInfo() {
-        return new CompanyInfoData(applicationPropertyService.getProperty(WiwaProperty.COMPANY_NAME),
-                applicationPropertyService.getProperty(WiwaProperty.COMPANY_STREET),
-                applicationPropertyService.getProperty(WiwaProperty.COMPANY_CITY),
-                applicationPropertyService.getProperty(WiwaProperty.COMPANY_ZIP_CODE),
-                applicationPropertyService.getProperty(WiwaProperty.COMPANY_STATE),
-                applicationPropertyService.getProperty(WiwaProperty.COMPANY_PHONE),
-                applicationPropertyService.getProperty(WiwaProperty.COMPANY_MAIL),
-                applicationPropertyService.getProperty(WiwaProperty.COMPANY_BUSINESS_ID),
-                applicationPropertyService.getProperty(WiwaProperty.COMPANY_TAX_ID),
-                applicationPropertyService.getProperty(WiwaProperty.COMPANY_VAT_REG_NO),
-                applicationPropertyService.getProperty(WiwaProperty.COMPANY_COMMERCIAL_REGISTER_INFO),
-                applicationPropertyService.getProperty(WiwaProperty.COMPANY_MAP_URL));
+        return new CompanyInfoData(propertyUtilService.getProperty(WiwaProperty.COMPANY_NAME),
+                propertyUtilService.getProperty(WiwaProperty.COMPANY_STREET),
+                propertyUtilService.getProperty(WiwaProperty.COMPANY_CITY),
+                propertyUtilService.getProperty(WiwaProperty.COMPANY_ZIP_CODE),
+                propertyUtilService.getProperty(WiwaProperty.COMPANY_STATE),
+                propertyUtilService.getProperty(WiwaProperty.COMPANY_PHONE),
+                propertyUtilService.getProperty(WiwaProperty.COMPANY_MAIL),
+                propertyUtilService.getProperty(WiwaProperty.COMPANY_BUSINESS_ID),
+                propertyUtilService.getProperty(WiwaProperty.COMPANY_TAX_ID),
+                propertyUtilService.getProperty(WiwaProperty.COMPANY_VAT_REG_NO),
+                propertyUtilService.getProperty(WiwaProperty.COMPANY_COMMERCIAL_REGISTER_INFO),
+                propertyUtilService.getProperty(WiwaProperty.COMPANY_MAP_URL));
     }
 
     public String getBusinessConditions() {
-        return applicationPropertyService.getProperty(WiwaProperty.APP_BUSINESS_CONDITIONS);
+        return propertyUtilService.getProperty(WiwaProperty.APP_BUSINESS_CONDITIONS);
     }
 
     public String getCookiesInfo() {
-        return applicationPropertyService.getProperty(WiwaProperty.APP_COOKIES_INFO);
+        return propertyUtilService.getProperty(WiwaProperty.APP_COOKIES_INFO);
     }
 
     public String getGdprInfo() {
-        return applicationPropertyService.getProperty(WiwaProperty.APP_GDPR_INFO);
+        return propertyUtilService.getProperty(WiwaProperty.APP_GDPR_INFO);
     }
 
     public String getWorkingHours() {
-        return applicationPropertyService.getProperty(WiwaProperty.APP_WORKING_HOURS);
+        return propertyUtilService.getProperty(WiwaProperty.APP_WORKING_HOURS);
     }
 
     public List<UnitData> getUnits() {
-        return applicationPropertyService.getProperties(WiwaProperty.UNIT_GROUP.getGroup()).entrySet().stream()
-                .map(entry -> new UnitData(Unit.valueOf(entry.getKey()), entry.getValue()))
-                .sorted(Comparator.comparingInt(o -> o.id().ordinal()))
-                .toList();
+        return propertyUtilService.getProperties(data -> data.entrySet().stream().map(
+                                entry -> new UnitData(Unit.valueOf(entry.getKey()), entry.getValue()))
+                        .sorted(Comparator.comparingInt(o -> o.id().ordinal()))
+                        .toList(),
+                WiwaProperty.UNIT_GROUP.getGroup());
     }
 
     public ApplicationImageInfoData setLogo(final MultipartFile multipartFile) {
@@ -226,57 +230,72 @@ public class UiService {
     }
 
     public String setTitle(final String title) {
-        return applicationPropertyService.setApplicationProperty(WiwaProperty.APP_TITLE.getGroup(), WiwaProperty.APP_TITLE.getKey(), title);
+        propertyUtilService.setProperty(WiwaProperty.APP_TITLE.getGroup(), WiwaProperty.APP_TITLE.getKey(), title);
+        return title;
     }
 
     public String setWelcomeText(final String welcomeText) {
-        return applicationPropertyService.setApplicationProperty(WiwaProperty.APP_WELCOME_TEXT.getGroup(), WiwaProperty.APP_WELCOME_TEXT.getKey(), welcomeText);
+        propertyUtilService.setProperty(WiwaProperty.APP_WELCOME_TEXT.getGroup(), WiwaProperty.APP_WELCOME_TEXT.getKey(), welcomeText);
+        return welcomeText;
     }
 
     public List<String> setApplicationInfo(final List<String> applicationInfo) {
-        applicationPropertyService.setApplicationProperty(WiwaProperty.APP_INFO_SLIDE_COUNT.getGroup(), WiwaProperty.APP_INFO_SLIDE_COUNT.getKey(), Integer.toString(applicationInfo.size()));
-        for (int i = 0; i < applicationInfo.size(); i++) {
-            applicationPropertyService.setApplicationProperty(WiwaProperty.APP_INFO_SLIDE_X_TEXT.getGroup(), WiwaProperty.APP_INFO_SLIDE_X_TEXT.getKey(i), applicationInfo.get(i));
-        }
+        propertyUtilService.setProperties(data -> {
+            final Map<String, String> map = new HashMap<>();
+            map.put(WiwaProperty.APP_INFO_SLIDE_COUNT.getKey(), Integer.toString(data.size()));
+            for (int i = 0; i < data.size(); i++) {
+                map.put(WiwaProperty.APP_INFO_SLIDE_X_TEXT.getKey(i), data.get(i));
+            }
+            return map;
+        }, WiwaProperty.COMPANY_NAME.getGroup(), applicationInfo);
         return applicationInfo;
     }
 
     public CompanyInfoData setCompanyInfo(final CompanyInfoData companyInfo) {
-        applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_NAME.getGroup(), WiwaProperty.COMPANY_NAME.getKey(), companyInfo.name());
-        applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_STREET.getGroup(), WiwaProperty.COMPANY_STREET.getKey(), companyInfo.street());
-        applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_CITY.getGroup(), WiwaProperty.COMPANY_CITY.getKey(), companyInfo.city());
-        applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_ZIP_CODE.getGroup(), WiwaProperty.COMPANY_ZIP_CODE.getKey(), companyInfo.zipCode());
-        applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_STATE.getGroup(), WiwaProperty.COMPANY_STATE.getKey(), companyInfo.state());
-        applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_PHONE.getGroup(), WiwaProperty.COMPANY_PHONE.getKey(), companyInfo.phone());
-        applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_MAIL.getGroup(), WiwaProperty.COMPANY_MAIL.getKey(), companyInfo.mail());
-        applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_BUSINESS_ID.getGroup(), WiwaProperty.COMPANY_BUSINESS_ID.getKey(), companyInfo.businessId());
-        applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_TAX_ID.getGroup(), WiwaProperty.COMPANY_TAX_ID.getKey(), companyInfo.taxId());
-        applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_VAT_REG_NO.getGroup(), WiwaProperty.COMPANY_VAT_REG_NO.getKey(), companyInfo.vatRegNo());
-        applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_COMMERCIAL_REGISTER_INFO.getGroup(), WiwaProperty.COMPANY_COMMERCIAL_REGISTER_INFO.getKey(), companyInfo.commercialRegisterInfo());
-        applicationPropertyService.setApplicationProperty(WiwaProperty.COMPANY_MAP_URL.getGroup(), WiwaProperty.COMPANY_MAP_URL.getKey(), companyInfo.mapUrl());
+        propertyUtilService.setProperties(data -> {
+            final Map<String, String> map = new HashMap<>();
+            map.put(WiwaProperty.COMPANY_NAME.getKey(), data.name());
+            map.put(WiwaProperty.COMPANY_STREET.getKey(), data.street());
+            map.put(WiwaProperty.COMPANY_CITY.getKey(), data.city());
+            map.put(WiwaProperty.COMPANY_ZIP_CODE.getKey(), data.zipCode());
+            map.put(WiwaProperty.COMPANY_STATE.getKey(), data.state());
+            map.put(WiwaProperty.COMPANY_PHONE.getKey(), data.phone());
+            map.put(WiwaProperty.COMPANY_MAIL.getKey(), data.mail());
+            map.put(WiwaProperty.COMPANY_BUSINESS_ID.getKey(), data.businessId());
+            map.put(WiwaProperty.COMPANY_TAX_ID.getKey(), data.taxId());
+            map.put(WiwaProperty.COMPANY_VAT_REG_NO.getKey(), data.vatRegNo());
+            map.put(WiwaProperty.COMPANY_COMMERCIAL_REGISTER_INFO.getKey(), data.commercialRegisterInfo());
+            map.put(WiwaProperty.COMPANY_MAP_URL.getKey(), data.mapUrl());
+            return map;
+        }, WiwaProperty.COMPANY_NAME.getGroup(), companyInfo);
         return companyInfo;
     }
 
     public String setBusinessConditions(final String businessConditions) {
-        return applicationPropertyService.setApplicationProperty(WiwaProperty.APP_BUSINESS_CONDITIONS.getGroup(), WiwaProperty.APP_BUSINESS_CONDITIONS.getKey(), businessConditions);
+        propertyUtilService.setProperty(WiwaProperty.APP_BUSINESS_CONDITIONS.getGroup(), WiwaProperty.APP_BUSINESS_CONDITIONS.getKey(), businessConditions);
+        return businessConditions;
     }
 
     public String setCookiesInfo(final String cookiesInfo) {
-        return applicationPropertyService.setApplicationProperty(WiwaProperty.APP_COOKIES_INFO.getGroup(), WiwaProperty.APP_COOKIES_INFO.getKey(), cookiesInfo);
+        propertyUtilService.setProperty(WiwaProperty.APP_COOKIES_INFO.getGroup(), WiwaProperty.APP_COOKIES_INFO.getKey(), cookiesInfo);
+        return cookiesInfo;
     }
 
     public String setGdprInfo(final String gdprInfo) {
-        return applicationPropertyService.setApplicationProperty(WiwaProperty.APP_GDPR_INFO.getGroup(), WiwaProperty.APP_GDPR_INFO.getKey(), gdprInfo);
+        propertyUtilService.setProperty(WiwaProperty.APP_GDPR_INFO.getGroup(), WiwaProperty.APP_GDPR_INFO.getKey(), gdprInfo);
+        return gdprInfo;
     }
 
     public String setWorkingHours(final String workingHours) {
-        return applicationPropertyService.setApplicationProperty(WiwaProperty.APP_WORKING_HOURS.getGroup(), WiwaProperty.APP_WORKING_HOURS.getKey(), workingHours);
+        propertyUtilService.setProperty(WiwaProperty.APP_WORKING_HOURS.getGroup(), WiwaProperty.APP_WORKING_HOURS.getKey(), workingHours);
+        return workingHours;
     }
 
     public List<UnitData> setUnits(final List<UnitData> data) {
-        for (final UnitData unit : data) {
-            applicationPropertyService.setApplicationProperty(WiwaProperty.UNIT_GROUP.getGroup(), unit.id().name(), unit.value());
-        }
+        propertyUtilService.setProperties(d -> d.stream()
+                        .map(unit -> Map.entry(unit.id().name(), unit.value()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                , WiwaProperty.UNIT_GROUP.getGroup(), data);
         return data;
     }
 }

@@ -13,7 +13,7 @@ import sk.janobono.wiwa.api.model.board.BoardCategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardCategoryItemWebDto;
 import sk.janobono.wiwa.api.model.board.BoardChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardWebDto;
-import sk.janobono.wiwa.business.service.ApplicationPropertyService;
+import sk.janobono.wiwa.business.service.util.PropertyUtilService;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
@@ -41,7 +41,7 @@ class BoardControllerTest extends BaseControllerTest {
     public PriceUtil priceUtil;
 
     @Autowired
-    public ApplicationPropertyService applicationPropertyService;
+    public PropertyUtilService propertyUtilService;
 
     @Autowired
     public CodeListRepository codeListRepository;
@@ -680,6 +680,6 @@ class BoardControllerTest extends BaseControllerTest {
     }
 
     private BigDecimal getVatRate() {
-        return new BigDecimal(applicationPropertyService.getProperty(WiwaProperty.PRODUCT_VAT_RATE));
+        return propertyUtilService.getProperty(BigDecimal::new, WiwaProperty.PRODUCT_VAT_RATE);
     }
 }

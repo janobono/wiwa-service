@@ -8,6 +8,7 @@ import sk.janobono.wiwa.business.model.order.OrderChangeData;
 import sk.janobono.wiwa.business.model.order.OrderData;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
 import sk.janobono.wiwa.business.model.order.OrderUserData;
+import sk.janobono.wiwa.business.service.util.PropertyUtilService;
 import sk.janobono.wiwa.business.service.util.UserUtilService;
 import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.component.TimeUtil;
@@ -34,7 +35,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderNumberRepository orderNumberRepository;
 
-    private final ApplicationPropertyService applicationPropertyService;
+    private final PropertyUtilService propertyUtilService;
     private final UserUtilService userUtilService;
 
     public Page<OrderData> getOrders(final OrderSearchCriteriaData criteria, final Pageable pageable) {
@@ -66,7 +67,7 @@ public class OrderService {
     }
 
     private BigDecimal getVatRate() {
-        return new BigDecimal(applicationPropertyService.getProperty(WiwaProperty.PRODUCT_VAT_RATE));
+        return propertyUtilService.getProperty(BigDecimal::new, WiwaProperty.PRODUCT_VAT_RATE);
     }
 
     private OrderSearchCriteriaDo mapToDo(final OrderSearchCriteriaData criteria, final BigDecimal vatRate) {

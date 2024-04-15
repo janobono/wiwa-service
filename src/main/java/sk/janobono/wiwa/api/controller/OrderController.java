@@ -57,6 +57,12 @@ public class OrderController {
         return orderApiService.addOrder(orderChange);
     }
 
+    // TODO addComment
+    // TODO send
+    // TODO cancel
+    // TODO ready
+    // TODO finish
+
     @DeleteMapping("/{id}")
     public void deleteOrder(@PathVariable("id") final Long id) {
         orderApiService.deleteOrder(id);
