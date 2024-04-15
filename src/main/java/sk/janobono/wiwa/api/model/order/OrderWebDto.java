@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 
 public record OrderWebDto(
         Long id,
-        Long userId,
+        OrderUserWebDto orderUser,
         ZonedDateTime created,
         OrderStatus status,
         Long orderNumber,

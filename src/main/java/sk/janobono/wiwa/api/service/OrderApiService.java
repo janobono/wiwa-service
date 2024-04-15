@@ -59,7 +59,7 @@ public class OrderApiService {
     public OrderWebDto getOrder(final Long id) {
         final OrderWebDto result = orderWebMapper.mapToWebDto(orderService.getOrder(id));
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!result.userId().equals(user.id()) && !authUtil.hasAnyAuthority(user, Authority.W_ADMIN, Authority.W_MANAGER, Authority.W_EMPLOYEE)) {
+        if (!result.orderUser().id().equals(user.id()) && !authUtil.hasAnyAuthority(user, Authority.W_ADMIN, Authority.W_MANAGER, Authority.W_EMPLOYEE)) {
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
         return result;

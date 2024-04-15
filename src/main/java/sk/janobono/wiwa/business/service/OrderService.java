@@ -7,9 +7,12 @@ import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.model.order.OrderChangeData;
 import sk.janobono.wiwa.business.model.order.OrderData;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
+import sk.janobono.wiwa.business.model.order.OrderUserData;
+import sk.janobono.wiwa.business.service.util.UserUtilService;
 import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.component.TimeUtil;
 import sk.janobono.wiwa.dal.domain.OrderDo;
+import sk.janobono.wiwa.dal.domain.UserDo;
 import sk.janobono.wiwa.dal.model.OrderSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.OrderNumberRepository;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
@@ -32,6 +35,7 @@ public class OrderService {
     private final OrderNumberRepository orderNumberRepository;
 
     private final ApplicationPropertyService applicationPropertyService;
+    private final UserUtilService userUtilService;
 
     public Page<OrderData> getOrders(final OrderSearchCriteriaData criteria, final Pageable pageable) {
         final BigDecimal vatRate = getVatRate();
@@ -80,7 +84,7 @@ public class OrderService {
     private OrderData toOrderData(final OrderDo orderDo, final BigDecimal vatRate) {
         return OrderData.builder()
                 .id(orderDo.getId())
-                .userId(orderDo.getUserId())
+                .orderUser(toOrderUser(orderDo.getUserId()))
                 .created(timeUtil.toZonedDateTime(orderDo.getCreated()))
                 .status(orderDo.getStatus())
                 .orderNumber(orderDo.getOrderNumber())
@@ -92,6 +96,19 @@ public class OrderService {
                 .totalValue(orderDo.getTotalValue())
                 .vatTotalValue(priceUtil.countVatValue(orderDo.getTotalValue(), vatRate))
                 .totalUnit(orderDo.getTotalUnit())
+                .build();
+    }
+
+    private OrderUserData toOrderUser(final Long userId) {
+        final UserDo userDo = userUtilService.getUserDo(userId);
+        return OrderUserData.builder()
+                .id(userDo.getId())
+                .titleBefore(userDo.getTitleBefore())
+                .firstName(userDo.getFirstName())
+                .midName(userDo.getMidName())
+                .lastName(userDo.getLastName())
+                .titleAfter(userDo.getTitleAfter())
+                .email(userDo.getEmail())
                 .build();
     }
 

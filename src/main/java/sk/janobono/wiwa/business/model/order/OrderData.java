@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 @Builder
 public record OrderData(
         Long id,
-        Long userId,
+        OrderUserData orderUser,
         ZonedDateTime created,
         OrderStatus status,
         Long orderNumber,
