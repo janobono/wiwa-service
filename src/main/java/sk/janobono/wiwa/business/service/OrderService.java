@@ -116,4 +116,8 @@ public class OrderService {
         return orderRepository.findById(id)
                 .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
     }
+
+    public void deleteOrder(final Long id) {
+        orderRepository.deleteById(id);
+    }
 }

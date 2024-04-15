@@ -69,6 +69,38 @@ class OrderControllerTest extends BaseControllerTest {
         checkStatus(employeeHeaders, order, HttpStatus.OK);
         checkStatus(managerHeaders, order, HttpStatus.OK);
         checkStatus(adminHeaders, order, HttpStatus.OK);
+
+        ResponseEntity<JsonNode> response = restTemplate.exchange(
+                order,
+                HttpMethod.DELETE,
+                new HttpEntity<>(customerHeaders),
+                JsonNode.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+
+        response = restTemplate.exchange(
+                order,
+                HttpMethod.DELETE,
+                new HttpEntity<>(employeeHeaders),
+                JsonNode.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+
+        response = restTemplate.exchange(
+                order,
+                HttpMethod.DELETE,
+                new HttpEntity<>(managerHeaders),
+                JsonNode.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        response = restTemplate.exchange(
+                order,
+                HttpMethod.DELETE,
+                new HttpEntity<>(adminHeaders),
+                JsonNode.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     private MultiValueMap<String, String> prepareParams(

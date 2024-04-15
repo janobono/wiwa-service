@@ -82,4 +82,19 @@ public class OrderApiService {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return orderWebMapper.mapToWebDto(orderService.addOrder(user.id(), orderWebMapper.mapToData(orderChange)));
     }
+
+    public void deleteOrder(final Long id) {
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final OrderWebDto orderWebDto = orderWebMapper.mapToWebDto(orderService.getOrder(id));
+
+        if (authUtil.hasAnyAuthority(user, Authority.W_ADMIN, Authority.W_MANAGER)) {
+            orderService.deleteOrder(id);
+            return;
+        }
+
+        if (!orderWebDto.orderUser().id().equals(user.id()) || orderWebDto.status() != OrderStatus.NEW) {
+            throw new AccessDeniedException("You do not have permission to access this resource");
+        }
+        orderService.deleteOrder(id);
+    }
 }

@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import sk.janobono.wiwa.api.model.edge.EdgeChangeWebDto;
-import sk.janobono.wiwa.api.model.edge.EdgeWebDto;
 import sk.janobono.wiwa.api.model.order.OrderChangeWebDto;
 import sk.janobono.wiwa.api.model.order.OrderWebDto;
 import sk.janobono.wiwa.api.service.OrderApiService;
@@ -60,4 +57,8 @@ public class OrderController {
         return orderApiService.addOrder(orderChange);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteOrder(@PathVariable("id") final Long id) {
+        orderApiService.deleteOrder(id);
+    }
 }
