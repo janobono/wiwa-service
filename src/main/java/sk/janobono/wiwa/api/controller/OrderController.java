@@ -1,12 +1,15 @@
 package sk.janobono.wiwa.api.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import sk.janobono.wiwa.api.model.edge.EdgeChangeWebDto;
+import sk.janobono.wiwa.api.model.edge.EdgeWebDto;
+import sk.janobono.wiwa.api.model.order.OrderChangeWebDto;
 import sk.janobono.wiwa.api.model.order.OrderWebDto;
 import sk.janobono.wiwa.api.service.OrderApiService;
 import sk.janobono.wiwa.model.OrderStatus;
@@ -45,4 +48,16 @@ public class OrderController {
                 pageable
         );
     }
+
+    @GetMapping("/{id}")
+    public OrderWebDto getOrder(@PathVariable("id") final Long id) {
+        return orderApiService.getOrder(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public OrderWebDto addOrder(@Valid @RequestBody final OrderChangeWebDto orderChange) {
+        return orderApiService.addOrder(orderChange);
+    }
+
 }

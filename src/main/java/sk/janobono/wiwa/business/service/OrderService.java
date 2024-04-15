@@ -4,17 +4,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import sk.janobono.wiwa.business.model.order.OrderChangeData;
 import sk.janobono.wiwa.business.model.order.OrderData;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
 import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.component.TimeUtil;
 import sk.janobono.wiwa.dal.domain.OrderDo;
 import sk.janobono.wiwa.dal.model.OrderSearchCriteriaDo;
+import sk.janobono.wiwa.dal.repository.OrderNumberRepository;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.janobono.wiwa.exception.WiwaException;
+import sk.janobono.wiwa.model.OrderStatus;
+import sk.janobono.wiwa.model.Unit;
 import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Service
@@ -24,6 +29,7 @@ public class OrderService {
     private final TimeUtil timeUtil;
 
     private final OrderRepository orderRepository;
+    private final OrderNumberRepository orderNumberRepository;
 
     private final ApplicationPropertyService applicationPropertyService;
 
@@ -34,6 +40,25 @@ public class OrderService {
 
     public OrderData getOrder(final Long id) {
         return toOrderData(getOrderDo(id), getVatRate());
+    }
+
+    public OrderData addOrder(final Long userId, final OrderChangeData orderChangeData) {
+        final BigDecimal vatRate = getVatRate();
+        return toOrderData(orderRepository.save(
+                OrderDo.builder()
+                        .userId(userId)
+                        .created(LocalDateTime.now())
+                        .status(OrderStatus.NEW)
+                        .orderNumber(orderNumberRepository.getNextOrderNumber(userId))
+                        .description(orderChangeData.description())
+                        .weightValue(BigDecimal.ZERO)
+                        .weightUnit(Unit.KILOGRAM)
+                        .netWeightValue(BigDecimal.ZERO)
+                        .netWeightUnit(Unit.KILOGRAM)
+                        .totalValue(BigDecimal.ZERO)
+                        .totalUnit(Unit.EUR)
+                        .build()
+        ), vatRate);
     }
 
     private BigDecimal getVatRate() {

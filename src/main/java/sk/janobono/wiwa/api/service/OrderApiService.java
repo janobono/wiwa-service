@@ -7,6 +7,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.api.mapper.OrderWebMapper;
+import sk.janobono.wiwa.api.model.order.OrderChangeWebDto;
 import sk.janobono.wiwa.api.model.order.OrderWebDto;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
 import sk.janobono.wiwa.business.service.OrderService;
@@ -55,6 +56,15 @@ public class OrderApiService {
         return orderService.getOrders(criteria, pageable).map(orderWebMapper::mapToWebDto);
     }
 
+    public OrderWebDto getOrder(final Long id) {
+        final OrderWebDto result = orderWebMapper.mapToWebDto(orderService.getOrder(id));
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!result.userId().equals(user.id()) && !authUtil.hasAnyAuthority(user, Authority.W_ADMIN, Authority.W_MANAGER, Authority.W_EMPLOYEE)) {
+            throw new AccessDeniedException("You do not have permission to access this resource");
+        }
+        return result;
+    }
+
     private List<Long> checkUserIds(final User user, final List<Long> userIds) {
         if (authUtil.hasAnyAuthority(user, Authority.W_ADMIN, Authority.W_MANAGER, Authority.W_EMPLOYEE)) {
             return userIds;
@@ -66,5 +76,10 @@ public class OrderApiService {
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
         return userIds;
+    }
+
+    public OrderWebDto addOrder(final OrderChangeWebDto orderChange) {
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return orderWebMapper.mapToWebDto(orderService.addOrder(user.id(), orderWebMapper.mapToData(orderChange)));
     }
 }

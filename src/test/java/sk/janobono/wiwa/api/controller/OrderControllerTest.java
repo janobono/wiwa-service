@@ -2,23 +2,30 @@ package sk.janobono.wiwa.api.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Page;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import sk.janobono.wiwa.api.model.order.OrderWebDto;
+import sk.janobono.wiwa.business.model.order.OrderChangeData;
+import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.janobono.wiwa.model.OrderStatus;
 import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class OrderControllerTest extends BaseControllerTest {
+
+    @Autowired
+    public OrderRepository orderRepository;
 
     @Test
     void securityTest() {
@@ -39,20 +46,29 @@ class OrderControllerTest extends BaseControllerTest {
         final HttpHeaders adminHeaders = new HttpHeaders();
         adminHeaders.setBearerAuth(adminToken);
 
-        final var params = prepareParams(
+        final URI orders = getURI("/orders", prepareParams(
                 List.of(100L, 110L, 120L),
                 OffsetDateTime.now(),
                 null,
                 null,
                 null,
                 null,
-                null
-        );
+                null,
+                Pageable.unpaged()
+        ));
 
-        checkStatus(customerHeaders, "/orders", params, Pageable.unpaged(), HttpStatus.FORBIDDEN);
-        checkStatus(employeeHeaders, "/orders", params, Pageable.unpaged(), HttpStatus.OK);
-        checkStatus(managerHeaders, "/orders", params, Pageable.unpaged(), HttpStatus.OK);
-        checkStatus(adminHeaders, "/orders", params, Pageable.unpaged(), HttpStatus.OK);
+        checkStatus(customerHeaders, orders, HttpStatus.FORBIDDEN);
+        checkStatus(employeeHeaders, orders, HttpStatus.OK);
+        checkStatus(managerHeaders, orders, HttpStatus.OK);
+        checkStatus(adminHeaders, orders, HttpStatus.OK);
+
+        final OrderWebDto orderWebDto = addEntity(OrderWebDto.class, adminHeaders, "/orders", new OrderChangeData(null));
+
+        final URI order = getURI("/orders/{id}", Map.of("id", orderWebDto.id().toString()));
+        checkStatus(customerHeaders, order, HttpStatus.FORBIDDEN);
+        checkStatus(employeeHeaders, order, HttpStatus.OK);
+        checkStatus(managerHeaders, order, HttpStatus.OK);
+        checkStatus(adminHeaders, order, HttpStatus.OK);
     }
 
     private MultiValueMap<String, String> prepareParams(
@@ -62,7 +78,8 @@ class OrderControllerTest extends BaseControllerTest {
             final List<OrderStatus> statuses,
             final BigDecimal totalFrom,
             final BigDecimal totalTo,
-            final Unit totalUnit
+            final Unit totalUnit,
+            final Pageable pageable
     ) {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         addToParams(params, "userIds", Optional.ofNullable(userIds).map(v -> v.stream().map(id -> Long.toString(id)).toList()).orElse(null));
@@ -72,33 +89,13 @@ class OrderControllerTest extends BaseControllerTest {
         addToParams(params, "totalFrom", totalFrom);
         addToParams(params, "totalTo", totalTo);
         addToParams(params, "totalUnit", Optional.ofNullable(totalUnit).map(Unit::name).orElse(null));
+        addPageableToParams(params, pageable);
         return params;
     }
 
-    private Page<OrderWebDto> getOrders(final HttpHeaders headers,
-                                        final List<Long> userIds,
-                                        final OffsetDateTime createdFrom,
-                                        final OffsetDateTime createdTo,
-                                        final List<OrderStatus> statuses,
-                                        final BigDecimal totalFrom,
-                                        final BigDecimal totalTo,
-                                        final Unit totalUnit,
-                                        final Pageable pageable) {
-        return getEntities(OrderWebDto.class, headers, "/orders", prepareParams(
-                userIds,
-                createdFrom,
-                createdTo,
-                statuses,
-                totalFrom,
-                totalTo,
-                totalUnit
-        ), pageable);
-    }
-
-    private JsonNode checkStatus(final HttpHeaders headers, final String path, final MultiValueMap<String, String> params, final Pageable pageable, final HttpStatus expectedStatus) {
-        addPageableToParams(params, pageable);
+    private JsonNode checkStatus(final HttpHeaders headers, final URI uri, final HttpStatus expectedStatus) {
         final ResponseEntity<JsonNode> response = restTemplate.exchange(
-                getURI(path, params),
+                uri,
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
                 JsonNode.class
