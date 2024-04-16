@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.api.mapper.ApplicationImageWebMapper;
 import sk.janobono.wiwa.api.mapper.UiWebMapper;
 import sk.janobono.wiwa.api.model.*;
-import sk.janobono.wiwa.business.service.UiService;
+import sk.janobono.wiwa.business.service.ApplicationImageService;
+import sk.janobono.wiwa.business.service.ApplicationPropertyService;
+import sk.janobono.wiwa.business.service.CaptchaService;
 
 import java.util.List;
 
@@ -13,67 +15,69 @@ import java.util.List;
 @Service
 public class UiApiService {
 
-    private final UiService uiService;
+    private final ApplicationImageService applicationImageService;
+    private final ApplicationPropertyService applicationPropertyService;
+    private final CaptchaService captchaService;
     private final ApplicationImageWebMapper applicationImageWebMapper;
     private final UiWebMapper uiWebMapper;
 
     public ApplicationPropertiesWebDto getApplicationProperties() {
-        return uiWebMapper.mapToWebDto(uiService.getApplicationProperties());
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getApplicationProperties());
     }
 
     public CaptchaWebDto getCaptcha() {
-        return uiWebMapper.mapToWebDto(uiService.getCaptcha());
+        return uiWebMapper.mapToWebDto(captchaService.getCaptcha());
     }
 
     public ResourceEntityWebDto getLogo() {
-        return applicationImageWebMapper.mapToWebDto(uiService.getLogo());
+        return applicationImageWebMapper.mapToWebDto(applicationImageService.getLogo());
     }
 
     public ResourceEntityWebDto getApplicationImage(final String fileName) {
-        return applicationImageWebMapper.mapToWebDto(uiService.getApplicationImage(fileName));
+        return applicationImageWebMapper.mapToWebDto(applicationImageService.getApplicationImage(fileName));
     }
 
     public ResourceEntityWebDto getBoardImage(final Long boardId, final String fileName) {
-        return applicationImageWebMapper.mapToWebDto(uiService.getBoardImage(boardId, fileName));
+        return applicationImageWebMapper.mapToWebDto(applicationImageService.getBoardImage(boardId, fileName));
     }
 
     public ResourceEntityWebDto getEdgeImage(final Long edgeId, final String fileName) {
-        return applicationImageWebMapper.mapToWebDto(uiService.getEdgeImage(edgeId, fileName));
+        return applicationImageWebMapper.mapToWebDto(applicationImageService.getEdgeImage(edgeId, fileName));
     }
 
     public SingleValueBodyWebDto<String> getTitle() {
-        return new SingleValueBodyWebDto<>(uiService.getTitle());
+        return new SingleValueBodyWebDto<>(applicationPropertyService.getTitle());
     }
 
     public SingleValueBodyWebDto<String> getWelcomeText() {
-        return new SingleValueBodyWebDto<>(uiService.getWelcomeText());
+        return new SingleValueBodyWebDto<>(applicationPropertyService.getWelcomeText());
     }
 
     public List<String> getApplicationInfo() {
-        return uiService.getApplicationInfo();
+        return applicationPropertyService.getApplicationInfo();
     }
 
     public CompanyInfoWebDto getCompanyInfo() {
-        return uiWebMapper.mapToWebDto(uiService.getCompanyInfo());
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getCompanyInfo());
     }
 
     public SingleValueBodyWebDto<String> getBusinessConditions() {
-        return new SingleValueBodyWebDto<>(uiService.getBusinessConditions());
+        return new SingleValueBodyWebDto<>(applicationPropertyService.getBusinessConditions());
     }
 
     public SingleValueBodyWebDto<String> getCookiesInfo() {
-        return new SingleValueBodyWebDto<>(uiService.getCookiesInfo());
+        return new SingleValueBodyWebDto<>(applicationPropertyService.getCookiesInfo());
     }
 
     public SingleValueBodyWebDto<String> getGdprInfo() {
-        return new SingleValueBodyWebDto<>(uiService.getGdprInfo());
+        return new SingleValueBodyWebDto<>(applicationPropertyService.getGdprInfo());
     }
 
     public SingleValueBodyWebDto<String> getWorkingHours() {
-        return new SingleValueBodyWebDto<>(uiService.getWorkingHours());
+        return new SingleValueBodyWebDto<>(applicationPropertyService.getWorkingHours());
     }
 
     public List<UnitWebDto> getUnits() {
-        return uiService.getUnits().stream().map(uiWebMapper::mapToWebDto).toList();
+        return applicationPropertyService.getUnits().stream().map(uiWebMapper::mapToWebDto).toList();
     }
 }

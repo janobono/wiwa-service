@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.business.service;
+package sk.janobono.wiwa.business.service.util;
 
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class MailService {
+public class MailUtilService {
 
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;

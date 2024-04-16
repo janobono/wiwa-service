@@ -11,8 +11,8 @@ import sk.janobono.wiwa.api.model.ApplicationImageInfoWebDto;
 import sk.janobono.wiwa.api.model.CompanyInfoWebDto;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.UnitWebDto;
-import sk.janobono.wiwa.business.service.ConfigService;
-import sk.janobono.wiwa.business.service.UiService;
+import sk.janobono.wiwa.business.service.ApplicationImageService;
+import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,71 +21,71 @@ import java.util.List;
 @Service
 public class ConfigApiService {
 
-    private final ConfigService configService;
-    private final UiService uiService;
+    private final ApplicationImageService applicationImageService;
+    private final ApplicationPropertyService applicationPropertyService;
     private final ApplicationImageWebMapper applicationImageWebMapper;
     private final UiWebMapper uiWebMapper;
 
     public Page<ApplicationImageInfoWebDto> getApplicationImages(final Pageable pageable) {
-        return uiService.getApplicationImages(pageable)
+        return applicationImageService.getApplicationImages(pageable)
                 .map(applicationImageWebMapper::mapToWebDto);
     }
 
     public ApplicationImageInfoWebDto setApplicationImage(final MultipartFile multipartFile) {
-        return applicationImageWebMapper.mapToWebDto(uiService.setApplicationImage(multipartFile));
+        return applicationImageWebMapper.mapToWebDto(applicationImageService.setApplicationImage(multipartFile));
     }
 
     public void deleteApplicationImage(final String fileName) {
-        uiService.deleteApplicationImage(fileName);
+        applicationImageService.deleteApplicationImage(fileName);
     }
 
     public ApplicationImageInfoWebDto setLogo(final MultipartFile multipartFile) {
-        return applicationImageWebMapper.mapToWebDto(uiService.setLogo(multipartFile));
+        return applicationImageWebMapper.mapToWebDto(applicationImageService.setLogo(multipartFile));
     }
 
     public SingleValueBodyWebDto<String> setTitle(final SingleValueBodyWebDto<String> singleValueBody) {
-        return new SingleValueBodyWebDto<>(uiService.setTitle(singleValueBody.value()));
+        return new SingleValueBodyWebDto<>(applicationPropertyService.setTitle(singleValueBody.value()));
     }
 
     public SingleValueBodyWebDto<String> setWelcomeText(final SingleValueBodyWebDto<String> singleValueBody) {
-        return new SingleValueBodyWebDto<>(uiService.setWelcomeText(singleValueBody.value()));
+        return new SingleValueBodyWebDto<>(applicationPropertyService.setWelcomeText(singleValueBody.value()));
     }
 
     public List<String> setApplicationInfo(final List<String> data) {
-        return uiService.setApplicationInfo(data);
+        return applicationPropertyService.setApplicationInfo(data);
     }
 
     public CompanyInfoWebDto setCompanyInfo(final CompanyInfoWebDto companyInfo) {
-        return uiWebMapper.mapToWebDto(uiService.setCompanyInfo(uiWebMapper.mapToData(companyInfo)));
+        return uiWebMapper.mapToWebDto(applicationPropertyService.setCompanyInfo(uiWebMapper.mapToData(companyInfo)));
     }
 
     public SingleValueBodyWebDto<String> setBusinessConditions(final SingleValueBodyWebDto<String> singleValueBody) {
-        return new SingleValueBodyWebDto<>(uiService.setBusinessConditions(singleValueBody.value()));
+        return new SingleValueBodyWebDto<>(applicationPropertyService.setBusinessConditions(singleValueBody.value()));
     }
 
     public SingleValueBodyWebDto<String> setCookiesInfo(final SingleValueBodyWebDto<String> singleValueBody) {
-        return new SingleValueBodyWebDto<>(uiService.setCookiesInfo(singleValueBody.value()));
+        return new SingleValueBodyWebDto<>(applicationPropertyService.setCookiesInfo(singleValueBody.value()));
     }
 
     public SingleValueBodyWebDto<String> setGdprInfo(final SingleValueBodyWebDto<String> singleValueBody) {
-        return new SingleValueBodyWebDto<>(uiService.setGdprInfo(singleValueBody.value()));
+        return new SingleValueBodyWebDto<>(applicationPropertyService.setGdprInfo(singleValueBody.value()));
     }
 
     public SingleValueBodyWebDto<String> setWorkingHours(final SingleValueBodyWebDto<String> singleValueBody) {
-        return new SingleValueBodyWebDto<>(uiService.setWorkingHours(singleValueBody.value()));
+        return new SingleValueBodyWebDto<>(applicationPropertyService.setWorkingHours(singleValueBody.value()));
     }
 
     public List<UnitWebDto> setUnits(final List<UnitWebDto> units) {
-        return uiService.setUnits(
+        return applicationPropertyService.setUnits(
                 units.stream().map(uiWebMapper::mapToData).toList()
         ).stream().map(uiWebMapper::mapToWebDto).toList();
     }
 
     public SingleValueBodyWebDto<BigDecimal> getVatRate() {
-        return new SingleValueBodyWebDto<>(configService.getVatRate());
+        return new SingleValueBodyWebDto<>(applicationPropertyService.getVatRate());
     }
 
     public SingleValueBodyWebDto<BigDecimal> setVatRate(final SingleValueBodyWebDto<BigDecimal> singleValueBody) {
-        return new SingleValueBodyWebDto<>(configService.setVatRate(singleValueBody.value()));
+        return new SingleValueBodyWebDto<>(applicationPropertyService.setVatRate(singleValueBody.value()));
     }
 }

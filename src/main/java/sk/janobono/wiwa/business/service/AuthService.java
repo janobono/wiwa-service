@@ -10,6 +10,7 @@ import sk.janobono.wiwa.business.model.mail.MailContentData;
 import sk.janobono.wiwa.business.model.mail.MailData;
 import sk.janobono.wiwa.business.model.mail.MailLinkData;
 import sk.janobono.wiwa.business.model.mail.MailTemplate;
+import sk.janobono.wiwa.business.service.util.MailUtilService;
 import sk.janobono.wiwa.business.service.util.PropertyUtilService;
 import sk.janobono.wiwa.business.service.util.UserUtilService;
 import sk.janobono.wiwa.component.*;
@@ -41,7 +42,7 @@ public class AuthService {
     private final JwtToken jwtToken;
     private final RandomString randomString;
     private final ScDf scDf;
-    private final MailService mailService;
+    private final MailUtilService mailUtilService;
     private final VerificationToken verificationToken;
     private final AuthorityRepository authorityRepository;
     private final UserRepository userRepository;
@@ -215,7 +216,7 @@ public class AuthService {
                 issuedAt + TimeUnit.MINUTES.toMillis(authConfigProperties.resetPasswordTokenExpiration())
         );
 
-        mailService.sendEmail(new MailData(
+        mailUtilService.sendEmail(new MailData(
                 appConfigProperties.mail(),
                 null,
                 List.of(user.getEmail()),
@@ -256,7 +257,7 @@ public class AuthService {
                 issuedAt + TimeUnit.MINUTES.toMillis(authConfigProperties.signUpTokenExpiration())
         );
 
-        mailService.sendEmail(new MailData(
+        mailUtilService.sendEmail(new MailData(
                 appConfigProperties.mail(),
                 null,
                 List.of(user.getEmail()),

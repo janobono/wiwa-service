@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.business.mapper.ApplicationImageDataMapper;
 import sk.janobono.wiwa.business.model.ApplicationImageInfoData;
 import sk.janobono.wiwa.business.model.board.*;
-import sk.janobono.wiwa.business.service.util.PropertyUtilService;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.component.ScDf;
@@ -24,7 +23,6 @@ import sk.janobono.wiwa.dal.repository.BoardImageRepository;
 import sk.janobono.wiwa.dal.repository.BoardRepository;
 import sk.janobono.wiwa.dal.repository.CodeListRepository;
 import sk.janobono.wiwa.exception.WiwaException;
-import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -47,15 +45,15 @@ public class BoardService {
     private final BoardImageRepository boardImageRepository;
     private final BoardCodeListItemRepository boardCodeListItemRepository;
 
-    private final PropertyUtilService propertyUtilService;
+    private final ApplicationPropertyService applicationPropertyService;
 
     public Page<BoardData> getBoards(final BoardSearchCriteriaData criteria, final Pageable pageable) {
-        final BigDecimal vatRate = getVatRate();
+        final BigDecimal vatRate = applicationPropertyService.getVatRate();
         return boardRepository.findAll(mapToDo(criteria, vatRate), pageable).map(value -> toBoardData(value, vatRate));
     }
 
     public BoardData getBoard(final Long id) {
-        return toBoardData(getBoardDo(id), getVatRate());
+        return toBoardData(getBoardDo(id), applicationPropertyService.getVatRate());
     }
 
     public BoardData addBoard(final BoardChangeData data) {
@@ -85,7 +83,7 @@ public class BoardService {
                 .priceUnit(data.priceUnit())
                 .build()
         );
-        return toBoardData(boardDo, getVatRate());
+        return toBoardData(boardDo, applicationPropertyService.getVatRate());
     }
 
     public BoardData setBoard(final Long id, final BoardChangeData data) {
@@ -115,7 +113,7 @@ public class BoardService {
         boardDo.setPriceValue(data.priceValue());
         boardDo.setPriceUnit(data.priceUnit());
 
-        return toBoardData(boardRepository.save(boardDo), getVatRate());
+        return toBoardData(boardRepository.save(boardDo), applicationPropertyService.getVatRate());
     }
 
     public void deleteBoard(final Long id) {
@@ -150,7 +148,7 @@ public class BoardService {
                 commonConfigProperties.maxImageResolution()));
         boardImageRepository.save(boardImageDo);
 
-        return toBoardData(getBoardDo(boardId), getVatRate());
+        return toBoardData(getBoardDo(boardId), applicationPropertyService.getVatRate());
     }
 
     public BoardData deleteBoardImage(final Long boardId, final String fileName) {
@@ -159,7 +157,7 @@ public class BoardService {
         }
         boardImageRepository.findByBoardIdAndFileName(boardId, fileName)
                 .ifPresent(boardImageDo -> boardImageRepository.deleteById(boardImageDo.getId()));
-        return toBoardData(getBoardDo(boardId), getVatRate());
+        return toBoardData(getBoardDo(boardId), applicationPropertyService.getVatRate());
     }
 
     public BoardData setBoardCategoryItems(final Long boardId, final List<BoardCategoryItemChangeData> categoryItems) {
@@ -171,7 +169,7 @@ public class BoardService {
                         .toList()
         );
 
-        return toBoardData(boardDo, getVatRate());
+        return toBoardData(boardDo, applicationPropertyService.getVatRate());
     }
 
     private BoardSearchCriteriaDo mapToDo(final BoardSearchCriteriaData criteria, final BigDecimal vatRate) {
@@ -258,9 +256,5 @@ public class BoardService {
     private boolean isCodeUsed(final Long id, final String code) {
         return Optional.ofNullable(id).map(boardId -> boardRepository.countByIdNotAndCode(boardId, code) > 0)
                 .orElse(boardRepository.countByCode(code) > 0);
-    }
-
-    private BigDecimal getVatRate() {
-        return propertyUtilService.getProperty(BigDecimal::new, WiwaProperty.PRODUCT_VAT_RATE);
     }
 }
