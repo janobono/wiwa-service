@@ -5,13 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import sk.janobono.wiwa.business.model.ResetPasswordMailData;
+import sk.janobono.wiwa.business.model.SignUpMailData;
 import sk.janobono.wiwa.business.model.auth.*;
 import sk.janobono.wiwa.business.model.mail.MailContentData;
 import sk.janobono.wiwa.business.model.mail.MailData;
 import sk.janobono.wiwa.business.model.mail.MailLinkData;
 import sk.janobono.wiwa.business.model.mail.MailTemplate;
 import sk.janobono.wiwa.business.service.util.MailUtilService;
-import sk.janobono.wiwa.business.service.util.PropertyUtilService;
 import sk.janobono.wiwa.business.service.util.UserUtilService;
 import sk.janobono.wiwa.component.*;
 import sk.janobono.wiwa.config.AuthConfigProperties;
@@ -23,7 +24,6 @@ import sk.janobono.wiwa.dal.repository.UserRepository;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.Authority;
 import sk.janobono.wiwa.model.User;
-import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -37,17 +37,21 @@ public class AuthService {
 
     private final CommonConfigProperties appConfigProperties;
     private final AuthConfigProperties authConfigProperties;
+
     private final PasswordEncoder passwordEncoder;
     private final Captcha captcha;
     private final JwtToken jwtToken;
     private final RandomString randomString;
     private final ScDf scDf;
-    private final MailUtilService mailUtilService;
     private final VerificationToken verificationToken;
+
     private final AuthorityRepository authorityRepository;
     private final UserRepository userRepository;
-    private final PropertyUtilService propertyUtilService;
+
+    private final MailUtilService mailUtilService;
     private final UserUtilService userUtilService;
+
+    private final ApplicationPropertyService applicationPropertyService;
 
     public AuthenticationResponseData confirm(final ConfirmationData confirmation) {
         final Map<String, String> data = verificationToken.parseToken(confirmation.token());
@@ -205,6 +209,7 @@ public class AuthService {
     }
 
     private void sendResetPasswordMail(final UserDo user) {
+        final ResetPasswordMailData resetPasswordMail = applicationPropertyService.getResetPasswordMail();
         final Map<String, String> data = new HashMap<>();
         data.put(AuthTokenKey.TYPE.name(), AuthToken.RESET_PASSWORD.name());
         data.put(AuthTokenKey.USER_ID.name(), user.getId().toString());
@@ -220,26 +225,20 @@ public class AuthService {
                 appConfigProperties.mail(),
                 null,
                 List.of(user.getEmail()),
-                propertyUtilService.getProperty(WiwaProperty.AUTH_RESET_PASSWORD_MAIL_SUBJECT),
+                resetPasswordMail.subject(),
                 MailTemplate.BASE,
                 new MailContentData(
-                        propertyUtilService.getProperty(WiwaProperty.AUTH_RESET_PASSWORD_MAIL_TITLE),
+                        resetPasswordMail.title(),
                         Arrays.asList(
-                                propertyUtilService.getProperty(
-                                        WiwaProperty.AUTH_RESET_PASSWORD_MAIL_MESSAGE
-                                ),
+                                resetPasswordMail.message(),
                                 MessageFormat.format(
-                                        propertyUtilService.getProperty(
-                                                WiwaProperty.AUTH_RESET_PASSWORD_MAIL_PASSWORD_MESSAGE
-                                        ),
+                                        resetPasswordMail.passwordMessage(),
                                         data.get(AuthTokenKey.NEW_PASSWORD.name())
                                 )
                         ),
                         new MailLinkData(
                                 getTokenUrl(appConfigProperties.webUrl(), appConfigProperties.confirmPath(), token),
-                                propertyUtilService.getProperty(
-                                        WiwaProperty.AUTH_RESET_PASSWORD_MAIL_LINK
-                                )
+                                resetPasswordMail.link()
                         )
                 ),
                 null
@@ -247,6 +246,7 @@ public class AuthService {
     }
 
     private void sendSignUpMail(final UserDo user) {
+        final SignUpMailData signUpMail = applicationPropertyService.getSignUpMail();
         final Map<String, String> data = new HashMap<>();
         data.put(AuthTokenKey.TYPE.name(), AuthToken.SIGN_UP.name());
         data.put(AuthTokenKey.USER_ID.name(), user.getId().toString());
@@ -261,16 +261,16 @@ public class AuthService {
                 appConfigProperties.mail(),
                 null,
                 List.of(user.getEmail()),
-                propertyUtilService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_SUBJECT),
+                signUpMail.subject(),
                 MailTemplate.BASE,
                 new MailContentData(
-                        propertyUtilService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_TITLE),
+                        signUpMail.title(),
                         Collections.singletonList(
-                                propertyUtilService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_MESSAGE)
+                                signUpMail.message()
                         ),
                         new MailLinkData(
                                 getTokenUrl(appConfigProperties.webUrl(), appConfigProperties.confirmPath(), token),
-                                propertyUtilService.getProperty(WiwaProperty.AUTH_SIGN_UP_MAIL_LINK)
+                                signUpMail.link()
                         )
                 ),
                 null

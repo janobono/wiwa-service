@@ -8,7 +8,6 @@ import sk.janobono.wiwa.business.model.order.OrderChangeData;
 import sk.janobono.wiwa.business.model.order.OrderData;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
 import sk.janobono.wiwa.business.model.order.OrderUserData;
-import sk.janobono.wiwa.business.service.util.PropertyUtilService;
 import sk.janobono.wiwa.business.service.util.UserUtilService;
 import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.component.TimeUtil;
@@ -20,7 +19,6 @@ import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.OrderStatus;
 import sk.janobono.wiwa.model.Unit;
-import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -35,20 +33,21 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderNumberRepository orderNumberRepository;
 
-    private final PropertyUtilService propertyUtilService;
     private final UserUtilService userUtilService;
 
+    private final ApplicationPropertyService applicationPropertyService;
+
     public Page<OrderData> getOrders(final OrderSearchCriteriaData criteria, final Pageable pageable) {
-        final BigDecimal vatRate = getVatRate();
+        final BigDecimal vatRate = applicationPropertyService.getVatRate();
         return orderRepository.findAll(mapToDo(criteria, vatRate), pageable).map(value -> toOrderData(value, vatRate));
     }
 
     public OrderData getOrder(final Long id) {
-        return toOrderData(getOrderDo(id), getVatRate());
+        return toOrderData(getOrderDo(id), applicationPropertyService.getVatRate());
     }
 
     public OrderData addOrder(final Long userId, final OrderChangeData orderChangeData) {
-        final BigDecimal vatRate = getVatRate();
+        final BigDecimal vatRate = applicationPropertyService.getVatRate();
         return toOrderData(orderRepository.save(
                 OrderDo.builder()
                         .userId(userId)
@@ -64,10 +63,6 @@ public class OrderService {
                         .totalUnit(Unit.EUR)
                         .build()
         ), vatRate);
-    }
-
-    private BigDecimal getVatRate() {
-        return propertyUtilService.getProperty(BigDecimal::new, WiwaProperty.PRODUCT_VAT_RATE);
     }
 
     private OrderSearchCriteriaDo mapToDo(final OrderSearchCriteriaData criteria, final BigDecimal vatRate) {

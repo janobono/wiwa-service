@@ -6,7 +6,6 @@ import lombok.Data;
 @Builder
 @Data
 public class ApplicationPropertyDo {
-    private String group;
     private String key;
     private String value;
 }

@@ -8,7 +8,6 @@ import java.util.List;
 
 public enum MetaColumnWiwaApplicationProperty {
 
-    PROPERTY_GROUP("property_group", DataType.STRING),
     PROPERTY_KEY("property_key", DataType.STRING),
     PROPERTY_VALUE("property_value", DataType.STRING);
 

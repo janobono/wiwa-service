@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.business.model.ui;
+package sk.janobono.wiwa.business.model;
 
 public record CompanyInfoData(
         String name,

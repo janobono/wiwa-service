@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.business.mapper.ApplicationImageDataMapper;
 import sk.janobono.wiwa.business.model.ApplicationImageInfoData;
 import sk.janobono.wiwa.business.model.edge.*;
-import sk.janobono.wiwa.business.service.util.PropertyUtilService;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.component.ScDf;
@@ -24,7 +23,6 @@ import sk.janobono.wiwa.dal.repository.EdgeCodeListItemRepository;
 import sk.janobono.wiwa.dal.repository.EdgeImageRepository;
 import sk.janobono.wiwa.dal.repository.EdgeRepository;
 import sk.janobono.wiwa.exception.WiwaException;
-import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -47,15 +45,15 @@ public class EdgeService {
     private final EdgeImageRepository edgeImageRepository;
     private final EdgeCodeListItemRepository edgeCodeListItemRepository;
 
-    private final PropertyUtilService propertyUtilService;
+    private final ApplicationPropertyService applicationPropertyService;
 
     public Page<EdgeData> getEdges(final EdgeSearchCriteriaData criteria, final Pageable pageable) {
-        final BigDecimal vatRate = getVatRate();
+        final BigDecimal vatRate = applicationPropertyService.getVatRate();
         return edgeRepository.findAll(mapToDo(criteria, vatRate), pageable).map(value -> toEdgeData(value, vatRate));
     }
 
     public EdgeData getEdge(final Long id) {
-        return toEdgeData(getEdgeDo(id), getVatRate());
+        return toEdgeData(getEdgeDo(id), applicationPropertyService.getVatRate());
     }
 
     public EdgeData addEdge(final EdgeChangeData data) {
@@ -80,7 +78,7 @@ public class EdgeService {
                 .priceUnit(data.priceUnit())
                 .build()
         );
-        return toEdgeData(edgeDo, getVatRate());
+        return toEdgeData(edgeDo, applicationPropertyService.getVatRate());
     }
 
     public EdgeData setEdge(final Long id, final EdgeChangeData data) {
@@ -105,7 +103,7 @@ public class EdgeService {
         edgeDo.setPriceValue(data.priceValue());
         edgeDo.setPriceUnit(data.priceUnit());
 
-        return toEdgeData(edgeRepository.save(edgeDo), getVatRate());
+        return toEdgeData(edgeRepository.save(edgeDo), applicationPropertyService.getVatRate());
     }
 
     public void deleteEdge(final Long id) {
@@ -140,7 +138,7 @@ public class EdgeService {
                 commonConfigProperties.maxImageResolution()));
         edgeImageRepository.save(edgeImageDo);
 
-        return toEdgeData(getEdgeDo(edgeId), getVatRate());
+        return toEdgeData(getEdgeDo(edgeId), applicationPropertyService.getVatRate());
     }
 
     public EdgeData deleteEdgeImage(final Long edgeId, final String fileName) {
@@ -149,7 +147,7 @@ public class EdgeService {
         }
         edgeImageRepository.findByEdgeIdAndFileName(edgeId, fileName)
                 .ifPresent(edgeImageDo -> edgeImageRepository.deleteById(edgeImageDo.getId()));
-        return toEdgeData(getEdgeDo(edgeId), getVatRate());
+        return toEdgeData(getEdgeDo(edgeId), applicationPropertyService.getVatRate());
     }
 
     public EdgeData setEdgeCategoryItems(final Long edgeId, final List<EdgeCategoryItemChangeData> categoryItems) {
@@ -161,7 +159,7 @@ public class EdgeService {
                         .toList()
         );
 
-        return toEdgeData(edgeDo, getVatRate());
+        return toEdgeData(edgeDo, applicationPropertyService.getVatRate());
     }
 
     private EdgeSearchCriteriaDo mapToDo(final EdgeSearchCriteriaData criteria, final BigDecimal vatRate) {
@@ -237,9 +235,5 @@ public class EdgeService {
     private boolean isCodeUsed(final Long id, final String code) {
         return Optional.ofNullable(id).map(edgeId -> edgeRepository.countByIdNotAndCode(edgeId, code) > 0)
                 .orElse(edgeRepository.countByCode(code) > 0);
-    }
-
-    private BigDecimal getVatRate() {
-        return propertyUtilService.getProperty(BigDecimal::new, WiwaProperty.PRODUCT_VAT_RATE);
     }
 }

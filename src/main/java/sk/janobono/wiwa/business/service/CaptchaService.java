@@ -2,7 +2,7 @@ package sk.janobono.wiwa.business.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sk.janobono.wiwa.business.model.captcha.CaptchaData;
+import sk.janobono.wiwa.business.model.CaptchaData;
 import sk.janobono.wiwa.component.Captcha;
 
 import java.util.Base64;

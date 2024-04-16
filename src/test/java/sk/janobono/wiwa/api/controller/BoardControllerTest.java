@@ -13,7 +13,7 @@ import sk.janobono.wiwa.api.model.board.BoardCategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardCategoryItemWebDto;
 import sk.janobono.wiwa.api.model.board.BoardChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardWebDto;
-import sk.janobono.wiwa.business.service.util.PropertyUtilService;
+import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
@@ -22,7 +22,6 @@ import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.repository.CodeListItemRepository;
 import sk.janobono.wiwa.dal.repository.CodeListRepository;
 import sk.janobono.wiwa.model.Unit;
-import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -41,7 +40,7 @@ class BoardControllerTest extends BaseControllerTest {
     public PriceUtil priceUtil;
 
     @Autowired
-    public PropertyUtilService propertyUtilService;
+    public ApplicationPropertyService applicationPropertyService;
 
     @Autowired
     public CodeListRepository codeListRepository;
@@ -378,7 +377,7 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 null,
-                priceUtil.countVatValue(new BigDecimal(55), getVatRate()),
+                priceUtil.countVatValue(new BigDecimal(55), applicationPropertyService.getVatRate()),
                 null,
                 Unit.EUR,
                 null,
@@ -402,7 +401,7 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 null,
-                priceUtil.countVatValue(new BigDecimal(54), getVatRate()),
+                priceUtil.countVatValue(new BigDecimal(54), applicationPropertyService.getVatRate()),
                 Unit.EUR,
                 null,
                 Pageable.unpaged());
@@ -677,9 +676,5 @@ class BoardControllerTest extends BaseControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         return response.getBody();
-    }
-
-    private BigDecimal getVatRate() {
-        return propertyUtilService.getProperty(BigDecimal::new, WiwaProperty.PRODUCT_VAT_RATE);
     }
 }

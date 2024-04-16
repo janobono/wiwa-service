@@ -9,11 +9,7 @@ create table wiwa_application_image
 
 create table wiwa_application_property
 (
-    property_group varchar(255) not null,
     property_key   varchar(255) not null,
     property_value text         not null,
-    primary key (property_group, property_key)
+    primary key (property_key)
 );
-
--- INDEX
-create index idx_wiwa_application_property on wiwa_application_property (property_group);

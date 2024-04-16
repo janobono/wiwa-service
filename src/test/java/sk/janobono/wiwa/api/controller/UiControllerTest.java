@@ -11,9 +11,8 @@ import sk.janobono.wiwa.api.model.ApplicationPropertiesWebDto;
 import sk.janobono.wiwa.api.model.CaptchaWebDto;
 import sk.janobono.wiwa.api.model.CompanyInfoWebDto;
 import sk.janobono.wiwa.api.model.UnitWebDto;
+import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.component.ImageUtil;
-import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
-import sk.janobono.wiwa.model.WiwaProperty;
 
 import java.util.Objects;
 
@@ -25,7 +24,7 @@ class UiControllerTest extends BaseControllerTest {
     public ImageUtil imageUtil;
 
     @Autowired
-    public ApplicationPropertyRepository applicationPropertyRepository;
+    public ApplicationPropertyService applicationPropertyService;
 
     @Test
     void fullTest() {
@@ -78,39 +77,19 @@ class UiControllerTest extends BaseControllerTest {
 
         // business-conditions
         final String businessConditions = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/business-conditions"), JsonNode.class)).get("value").textValue();
-        assertThat(businessConditions).isEqualTo(
-                applicationPropertyRepository.findByGroupAndKey(
-                        WiwaProperty.APP_BUSINESS_CONDITIONS.getGroup(),
-                        WiwaProperty.APP_BUSINESS_CONDITIONS.getKey()
-                ).orElseThrow().getValue()
-        );
+        assertThat(businessConditions).isEqualTo(applicationPropertyService.getBusinessConditions());
 
         // cookies-info
         final String cookiesInfo = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/cookies-info"), JsonNode.class)).get("value").textValue();
-        assertThat(cookiesInfo).isEqualTo(
-                applicationPropertyRepository.findByGroupAndKey(
-                        WiwaProperty.APP_COOKIES_INFO.getGroup(),
-                        WiwaProperty.APP_COOKIES_INFO.getKey()
-                ).orElseThrow().getValue()
-        );
+        assertThat(cookiesInfo).isEqualTo(applicationPropertyService.getCookiesInfo());
 
         // gdpr-info
         final String gdprInfo = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/gdpr-info"), JsonNode.class)).get("value").textValue();
-        assertThat(gdprInfo).isEqualTo(
-                applicationPropertyRepository.findByGroupAndKey(
-                        WiwaProperty.APP_GDPR_INFO.getGroup(),
-                        WiwaProperty.APP_GDPR_INFO.getKey()
-                ).orElseThrow().getValue()
-        );
+        assertThat(gdprInfo).isEqualTo(applicationPropertyService.getGdprInfo());
 
         // working-hours
         final String workingHours = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/working-hours"), JsonNode.class)).get("value").textValue();
-        assertThat(workingHours).isEqualTo(
-                applicationPropertyRepository.findByGroupAndKey(
-                        WiwaProperty.APP_WORKING_HOURS.getGroup(),
-                        WiwaProperty.APP_WORKING_HOURS.getKey()
-                ).orElseThrow().getValue()
-        );
+        assertThat(workingHours).isEqualTo(applicationPropertyService.getWorkingHours());
 
         // units
         final UnitWebDto[] units = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/units"), UnitWebDto[].class));

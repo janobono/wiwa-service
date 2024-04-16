@@ -10,8 +10,6 @@ class HealthControllerTest extends BaseControllerTest {
 
     @Test
     void fullTest() {
-        final String token = signIn(DEFAULT_MANAGER, PASSWORD).token();
-
         final var livez = restTemplate.getForEntity(getURI("/livez"), HealthStatusWebDto.class);
         assertThat(livez.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(livez.getBody()).isEqualTo(new HealthStatusWebDto("OK"));
