@@ -18,10 +18,8 @@ FROM public.ecr.aws/amazoncorretto/amazoncorretto:21-al2023-headless as producti
 
 WORKDIR /app
 
-COPY data ./data
-
-COPY --from=builder app/target/wiwa-service-*.jar ./wiwa-service.jar
+COPY --from=builder app/wiwa-service-app/target/wiwa-service-app-*.jar ./wiwa-service-app.jar
 
 EXPOSE 8080
 
-CMD java -jar wiwa-service.jar
+CMD java -jar wiwa-service-app.jar

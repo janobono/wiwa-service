@@ -1,4 +1,5 @@
 **/target
+.do
 .idea
 .git
 .gitignore
@@ -7,3 +8,4 @@ docker-compose.yml
 docker-compose-local-dev.yaml
 Dockerfile
 LICENSE
+README.md
