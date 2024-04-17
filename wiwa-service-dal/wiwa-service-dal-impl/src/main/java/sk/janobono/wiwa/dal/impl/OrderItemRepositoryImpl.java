@@ -11,6 +11,7 @@ import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrderItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.OrderItemRepository;
 import sk.r3n.jdbc.SqlBuilder;
+import sk.r3n.jdbc.SqlUtil;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
 import sk.r3n.sql.Query;
@@ -104,15 +105,31 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     public OrderItemDo save(final OrderItemDo orderItemDo) {
         log.debug("save({})", orderItemDo);
         try (final Connection connection = dataSource.getConnection()) {
-            final WiwaOrderItemDto wiwaOrderItemDto;
-            if (orderItemDo.getId() == null) {
-                wiwaOrderItemDto = insert(connection, mapper.toWiwaOrderItemDto(orderItemDo));
-            } else {
-                wiwaOrderItemDto = update(connection, mapper.toWiwaOrderItemDto(orderItemDo));
-            }
-            return mapper.toOrderItemDo(wiwaOrderItemDto);
+            return mapper.toOrderItemDo(save(connection, mapper.toWiwaOrderItemDto(orderItemDo)));
         } catch (final Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void saveAll(List<OrderItemDo> batch) {
+        log.debug("saveAll({})", batch);
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
+            connection.setAutoCommit(false);
+
+            for (final OrderItemDo orderItemDo : batch) {
+                save(connection, mapper.toWiwaOrderItemDto(orderItemDo));
+            }
+
+            connection.commit();
+        } catch (final Exception e) {
+            SqlUtil.rollback(connection);
+            throw new RuntimeException(e);
+        } finally {
+            SqlUtil.enableAutoCommit(connection);
+            SqlUtil.close(connection);
         }
     }
 
@@ -126,6 +143,14 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
                         .VALUES(values).RETURNING(MetaColumnWiwaOrderItem.ID.column()));
 
         return WiwaOrderItemDto.toObject(criteriaUtil.concat(new Object[]{id}, values));
+    }
+
+    private WiwaOrderItemDto save(final Connection connection, final WiwaOrderItemDto wiwaOrderItemDto) throws SQLException {
+        if (wiwaOrderItemDto.id() == null) {
+            return insert(connection, wiwaOrderItemDto);
+        } else {
+            return update(connection, wiwaOrderItemDto);
+        }
     }
 
     private WiwaOrderItemDto update(final Connection connection, final WiwaOrderItemDto wiwaOrderItemDto) throws SQLException {

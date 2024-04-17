@@ -16,4 +16,6 @@ public interface OrderItemRepository {
     Optional<OrderItemDo> findById(final Long id);
 
     OrderItemDo save(final OrderItemDo orderItemDo);
+
+    void saveAll(final List<OrderItemDo> batch);
 }
