@@ -7,10 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.api.model.ApplicationImageInfoWebDto;
-import sk.janobono.wiwa.api.model.CompanyInfoWebDto;
-import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
-import sk.janobono.wiwa.api.model.UnitWebDto;
+import sk.janobono.wiwa.api.model.*;
 import sk.janobono.wiwa.api.service.ConfigApiService;
 
 import java.math.BigDecimal;
@@ -111,5 +108,29 @@ public class ConfigController {
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public SingleValueBodyWebDto<BigDecimal> setVatRate(@Valid @RequestBody final SingleValueBodyWebDto<BigDecimal> singleValueBody) {
         return configApiService.setVatRate(singleValueBody);
+    }
+
+    @GetMapping(value = "/reset-password-mail")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public ResetPasswordMailWebDto getResetPasswordMail() {
+        return configApiService.getResetPasswordMail();
+    }
+
+    @PostMapping(value = "/reset-password-mail")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public ResetPasswordMailWebDto setResetPasswordMail(@Valid @RequestBody final ResetPasswordMailWebDto resetPasswordMail) {
+        return configApiService.setResetPasswordMail(resetPasswordMail);
+    }
+
+    @GetMapping(value = "/sign-up-mail")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public SignUpMailWebDto getSignUpMail() {
+        return configApiService.getSignUpMail();
+    }
+
+    @PostMapping(value = "/sign-up-mail")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public SignUpMailWebDto setSignUpMail(@Valid @RequestBody final SignUpMailWebDto signUpMail) {
+        return configApiService.setSignUpMail(signUpMail);
     }
 }

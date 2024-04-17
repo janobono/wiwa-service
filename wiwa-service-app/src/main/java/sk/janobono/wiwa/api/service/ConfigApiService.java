@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.api.mapper.ApplicationImageWebMapper;
 import sk.janobono.wiwa.api.mapper.UiWebMapper;
-import sk.janobono.wiwa.api.model.ApplicationImageInfoWebDto;
-import sk.janobono.wiwa.api.model.CompanyInfoWebDto;
-import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
-import sk.janobono.wiwa.api.model.UnitWebDto;
+import sk.janobono.wiwa.api.model.*;
 import sk.janobono.wiwa.business.service.ApplicationImageService;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 
@@ -87,5 +84,21 @@ public class ConfigApiService {
 
     public SingleValueBodyWebDto<BigDecimal> setVatRate(final SingleValueBodyWebDto<BigDecimal> singleValueBody) {
         return new SingleValueBodyWebDto<>(applicationPropertyService.setVatRate(singleValueBody.value()));
+    }
+
+    public ResetPasswordMailWebDto getResetPasswordMail() {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getResetPasswordMail());
+    }
+
+    public ResetPasswordMailWebDto setResetPasswordMail(final ResetPasswordMailWebDto resetPasswordMail) {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.setResetPasswordMail(uiWebMapper.mapToData(resetPasswordMail)));
+    }
+
+    public SignUpMailWebDto getSignUpMail() {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getSignUpMail());
+    }
+
+    public SignUpMailWebDto setSignUpMail(final SignUpMailWebDto signUpMail) {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.setSignUpMail(uiWebMapper.mapToData(signUpMail)));
     }
 }
