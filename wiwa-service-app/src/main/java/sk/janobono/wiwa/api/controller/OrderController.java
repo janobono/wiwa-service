@@ -63,6 +63,11 @@ public class OrderController {
         return orderApiService.addOrder(orderChange);
     }
 
+//    @PostMapping("/{id}/send")
+//    public OrderDetailWebDto sendOrder(@Valid @RequestBody final SendOrderWebDto sendOrder) {
+//
+//    }
+
     // TODO addComment
     // TODO send
     // TODO cancel
