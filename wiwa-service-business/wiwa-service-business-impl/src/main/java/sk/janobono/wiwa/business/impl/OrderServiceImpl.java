@@ -5,10 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
-import sk.janobono.wiwa.business.model.order.OrderChangeData;
-import sk.janobono.wiwa.business.model.order.OrderData;
-import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
-import sk.janobono.wiwa.business.model.order.OrderUserData;
+import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.component.PriceUtil;
@@ -16,6 +13,7 @@ import sk.janobono.wiwa.component.TimeUtil;
 import sk.janobono.wiwa.dal.domain.OrderDo;
 import sk.janobono.wiwa.dal.domain.UserDo;
 import sk.janobono.wiwa.dal.model.OrderSearchCriteriaDo;
+import sk.janobono.wiwa.dal.repository.OrderContactRepository;
 import sk.janobono.wiwa.dal.repository.OrderNumberRepository;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.janobono.wiwa.exception.WiwaException;
@@ -33,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
     private final TimeUtil timeUtil;
 
     private final OrderRepository orderRepository;
+    private final OrderContactRepository orderContactRepository;
     private final OrderNumberRepository orderNumberRepository;
 
     private final UserUtilService userUtilService;
@@ -43,6 +42,21 @@ public class OrderServiceImpl implements OrderService {
     public Page<OrderData> getOrders(final OrderSearchCriteriaData criteria, final Pageable pageable) {
         final BigDecimal vatRate = applicationPropertyService.getVatRate();
         return orderRepository.findAll(mapToDo(criteria, vatRate), pageable).map(value -> toOrderData(value, vatRate));
+    }
+
+    @Override
+    public Page<OrderContactData> getOrderContacts(Long userId, Pageable pageable) {
+        return orderContactRepository.findByUserId(userId, pageable).map(value -> OrderContactData.builder()
+                .name(value.name())
+                .street(value.street())
+                .zipCode(value.zipCode())
+                .city(value.city())
+                .state(value.state())
+                .phone(value.phone())
+                .email(value.email())
+                .businessId(value.businessId())
+                .taxId(value.taxId())
+                .build());
     }
 
     @Override

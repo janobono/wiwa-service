@@ -138,6 +138,7 @@ public class CodeListRepositoryImpl implements CodeListRepository {
                 }
 
                 mapCriteria(criteria, select);
+
                 final List<Object[]> rows = sqlBuilder.select(connection, select);
                 final List<CodeListDo> content = rows.stream()
                         .map(WiwaCodeListDto::toObject)

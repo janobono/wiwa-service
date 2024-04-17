@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.api.mapper.OrderWebMapper;
 import sk.janobono.wiwa.api.model.order.OrderChangeWebDto;
+import sk.janobono.wiwa.api.model.order.OrderContactWebDto;
 import sk.janobono.wiwa.api.model.order.OrderWebDto;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
 import sk.janobono.wiwa.business.service.OrderService;
@@ -54,6 +55,11 @@ public class OrderApiService {
                 .totalUnit(totalUnit)
                 .build();
         return orderService.getOrders(criteria, pageable).map(orderWebMapper::mapToWebDto);
+    }
+
+    public Page<OrderContactWebDto> getOrderContacts(final Pageable pageable) {
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return orderService.getOrderContacts(user.id(), pageable).map(orderWebMapper::mapToWebDto);
     }
 
     public OrderWebDto getOrder(final Long id) {

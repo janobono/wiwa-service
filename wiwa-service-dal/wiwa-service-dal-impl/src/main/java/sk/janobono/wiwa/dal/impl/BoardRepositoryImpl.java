@@ -125,21 +125,22 @@ public class BoardRepositoryImpl implements BoardRepository {
                     .map(row -> (Integer) row[0])
                     .orElse(0);
             if (totalRows > 0) {
-                final List<Object[]> rows;
+                final Query.Select select = Query.SELECT(MetaColumnWiwaBoard.columns())
+                        .FROM(MetaTable.WIWA_BOARD.table());
+
                 if (pageable.isPaged()) {
-                    final Query.Select select = Query
-                            .SELECT(MetaColumnWiwaBoard.columns()).page(pageable.getPageNumber(), pageable.getPageSize())
-                            .FROM(MetaTable.WIWA_BOARD.table());
-                    mapCriteria(criteria, select);
-                    mapOrderBy(pageable, select);
-                    rows = sqlBuilder.select(connection, select);
-                } else {
-                    final Query.Select select = Query.SELECT(MetaColumnWiwaBoard.columns())
-                            .FROM(MetaTable.WIWA_BOARD.table())
-                            .ORDER_BY(MetaColumnWiwaBoard.NAME.column(), Order.ASC);
-                    mapCriteria(criteria, select);
-                    rows = sqlBuilder.select(connection, select);
+                    select.page(pageable.getPageNumber(), pageable.getPageSize());
                 }
+
+                if (pageable.getSort().isSorted()) {
+                    mapOrderBy(pageable, select);
+                } else {
+                    select.ORDER_BY(MetaColumnWiwaBoard.NAME.column(), Order.ASC);
+                }
+
+                mapCriteria(criteria, select);
+
+                final List<Object[]> rows = sqlBuilder.select(connection, select);
                 final List<BoardDo> content = rows.stream()
                         .map(WiwaBoardDto::toObject)
                         .map(mapper::toBoardDo)

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import sk.janobono.wiwa.api.model.order.OrderChangeWebDto;
+import sk.janobono.wiwa.api.model.order.OrderContactWebDto;
 import sk.janobono.wiwa.api.model.order.OrderWebDto;
 import sk.janobono.wiwa.api.service.OrderApiService;
 import sk.janobono.wiwa.model.OrderStatus;
@@ -44,6 +45,11 @@ public class OrderController {
                 totalUnit,
                 pageable
         );
+    }
+
+    @GetMapping("/contacts")
+    public Page<OrderContactWebDto> getOrderContacts(final Pageable pageable) {
+        return orderApiService.getOrderContacts(pageable);
     }
 
     @GetMapping("/{id}")

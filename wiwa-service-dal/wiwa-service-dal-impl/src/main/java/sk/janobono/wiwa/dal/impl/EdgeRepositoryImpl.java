@@ -125,21 +125,22 @@ public class EdgeRepositoryImpl implements EdgeRepository {
                     .map(row -> (Integer) row[0])
                     .orElse(0);
             if (totalRows > 0) {
-                final List<Object[]> rows;
+                final Query.Select select = Query.SELECT(MetaColumnWiwaEdge.columns())
+                        .FROM(MetaTable.WIWA_EDGE.table());
+
                 if (pageable.isPaged()) {
-                    final Query.Select select = Query
-                            .SELECT(MetaColumnWiwaEdge.columns()).page(pageable.getPageNumber(), pageable.getPageSize())
-                            .FROM(MetaTable.WIWA_EDGE.table());
-                    mapCriteria(criteria, select);
-                    mapOrderBy(pageable, select);
-                    rows = sqlBuilder.select(connection, select);
-                } else {
-                    final Query.Select select = Query.SELECT(MetaColumnWiwaEdge.columns())
-                            .FROM(MetaTable.WIWA_EDGE.table())
-                            .ORDER_BY(MetaColumnWiwaEdge.NAME.column(), Order.ASC);
-                    mapCriteria(criteria, select);
-                    rows = sqlBuilder.select(connection, select);
+                    select.page(pageable.getPageNumber(), pageable.getPageSize());
                 }
+
+                if (pageable.getSort().isSorted()) {
+                    mapOrderBy(pageable, select);
+                } else {
+                    select.ORDER_BY(MetaColumnWiwaEdge.NAME.column(), Order.ASC);
+                }
+
+                mapCriteria(criteria, select);
+
+                final List<Object[]> rows = sqlBuilder.select(connection, select);
                 final List<EdgeDo> content = rows.stream()
                         .map(WiwaEdgeDto::toObject)
                         .map(mapper::toEdgeDo)
