@@ -11,9 +11,9 @@ public interface AuthorityRepository {
 
     List<AuthorityDo> findAll();
 
-    List<AuthorityDo> findByUserId(final Long userId);
+    List<AuthorityDo> findByUserId(Long userId);
 
-    AuthorityDo save(final AuthorityDo authorityDo);
+    AuthorityDo save(AuthorityDo authorityDo);
 
-    void saveUserAuthorities(final Long userId, final List<Authority> authorities);
+    void saveUserAuthorities(Long userId, List<Authority> authorities);
 }

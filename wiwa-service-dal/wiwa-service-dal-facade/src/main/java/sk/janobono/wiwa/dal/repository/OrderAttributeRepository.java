@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface OrderAttributeRepository {
 
-    List<OrderAttributeDo> findAllByOrderId(final Long orderId);
+    List<OrderAttributeDo> findAllByOrderId(Long orderId);
 
-    OrderAttributeDo save(final OrderAttributeDo orderAttributeDo);
+    OrderAttributeDo save(OrderAttributeDo orderAttributeDo);
 }

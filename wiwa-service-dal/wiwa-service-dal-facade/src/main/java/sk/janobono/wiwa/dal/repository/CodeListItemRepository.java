@@ -10,23 +10,23 @@ import java.util.Optional;
 
 public interface CodeListItemRepository {
 
-    int countByCode(final String code);
+    int countByCode(String code);
 
-    int countByCodeListIdAndParentIdNull(final Long codeListId);
+    int countByCodeListIdAndParentIdNull(Long codeListId);
 
-    int countByIdNotAndCode(final Long id, final String code);
+    int countByIdNotAndCode(Long id, String code);
 
-    int countByParentId(final Long parentId);
+    int countByParentId(Long parentId);
 
-    boolean existsById(final Long id);
+    boolean existsById(Long id);
 
-    void deleteById(final Long id);
+    void deleteById(Long id);
 
-    Page<CodeListItemDo> findAll(final CodeListItemSearchCriteriaDo criteria, final Pageable pageable);
+    Page<CodeListItemDo> findAll(CodeListItemSearchCriteriaDo criteria, Pageable pageable);
 
-    Optional<CodeListItemDo> findById(final Long id);
+    Optional<CodeListItemDo> findById(Long id);
 
-    CodeListItemDo save(final CodeListItemDo codeListItemDo);
+    CodeListItemDo save(CodeListItemDo codeListItemDo);
 
-    void saveAll(final List<CodeListItemDo> batch);
+    void saveAll(List<CodeListItemDo> batch);
 }

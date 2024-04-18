@@ -64,12 +64,12 @@ public class OrderController {
 
     @PostMapping("/{id}/send")
     public OrderWebDto sendOrder(@PathVariable("id") final Long id, @Valid @RequestBody final SendOrderWebDto sendOrder) {
-        return orderApiService.sendOrder(sendOrder);
+        return orderApiService.sendOrder(id, sendOrder);
     }
 
     @PostMapping("/{id}/status")
     public OrderWebDto setOrderStatus(@PathVariable("id") final Long id, @Valid @RequestBody final OrderStatusChangeWebDto orderStatusChange) {
-        return orderApiService.setOrderStatus(orderStatusChange);
+        return orderApiService.setOrderStatus(id, orderStatusChange);
     }
 
     @GetMapping("/{id}/comments")

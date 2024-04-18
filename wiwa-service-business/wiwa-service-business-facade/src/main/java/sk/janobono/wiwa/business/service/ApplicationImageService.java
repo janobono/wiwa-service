@@ -8,19 +8,19 @@ import sk.janobono.wiwa.business.model.ApplicationImageInfoData;
 
 public interface ApplicationImageService {
 
-    Page<ApplicationImageInfoData> getApplicationImages(final Pageable pageable);
+    Page<ApplicationImageInfoData> getApplicationImages(Pageable pageable);
 
-    ApplicationImageData getApplicationImage(final String fileName);
+    ApplicationImageData getApplicationImage(String fileName);
 
-    ApplicationImageData getBoardImage(final Long boardId, final String fileName);
+    ApplicationImageData getBoardImage(Long boardId, String fileName);
 
-    ApplicationImageData getEdgeImage(final Long edgeId, final String fileName);
+    ApplicationImageData getEdgeImage(Long edgeId, String fileName);
 
-    ApplicationImageInfoData setApplicationImage(final MultipartFile multipartFile);
+    ApplicationImageInfoData setApplicationImage(MultipartFile multipartFile);
 
-    void deleteApplicationImage(final String fileName);
+    void deleteApplicationImage(String fileName);
 
     ApplicationImageData getLogo();
 
-    ApplicationImageInfoData setLogo(final MultipartFile multipartFile);
+    ApplicationImageInfoData setLogo(MultipartFile multipartFile);
 }

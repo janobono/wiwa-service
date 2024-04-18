@@ -9,17 +9,17 @@ import java.util.Optional;
 
 public interface BoardRepository {
 
-    int countByCode(final String code);
+    int countByCode(String code);
 
-    int countByIdNotAndCode(final Long id, final String code);
+    int countByIdNotAndCode(Long id, String code);
 
-    void deleteById(final Long id);
+    void deleteById(Long id);
 
-    boolean existsById(final Long id);
+    boolean existsById(Long id);
 
-    Page<BoardDo> findAll(final BoardSearchCriteriaDo criteria, final Pageable pageable);
+    Page<BoardDo> findAll(BoardSearchCriteriaDo criteria, Pageable pageable);
 
-    Optional<BoardDo> findById(final Long id);
+    Optional<BoardDo> findById(Long id);
 
-    BoardDo save(final BoardDo boardDo);
+    BoardDo save(BoardDo boardDo);
 }

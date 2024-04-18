@@ -8,17 +8,17 @@ import sk.janobono.wiwa.business.model.codelist.CodeListItemSearchCriteriaData;
 
 public interface CodeListItemService {
 
-    Page<CodeListItemData> getCodeListItems(final CodeListItemSearchCriteriaData criteria, final Pageable pageable);
+    Page<CodeListItemData> getCodeListItems(CodeListItemSearchCriteriaData criteria, Pageable pageable);
 
-    CodeListItemData getCodeListItem(final Long id);
+    CodeListItemData getCodeListItem(Long id);
 
-    CodeListItemData addCodeListItem(final CodeListItemChangeData data);
+    CodeListItemData addCodeListItem(CodeListItemChangeData data);
 
-    CodeListItemData setCodeListItem(final Long id, final CodeListItemChangeData data);
+    CodeListItemData setCodeListItem(Long id, CodeListItemChangeData data);
 
-    void deleteCodeListItem(final Long id);
+    void deleteCodeListItem(Long id);
 
-    CodeListItemData moveCodeListItemUp(final Long id);
+    CodeListItemData moveCodeListItemUp(Long id);
 
-    CodeListItemData moveCodeListItemDown(final Long id);
+    CodeListItemData moveCodeListItemDown(Long id);
 }

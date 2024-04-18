@@ -11,49 +11,49 @@ public interface ApplicationPropertyService {
 
     String getTitle();
 
-    String setTitle(final String title);
+    String setTitle(String title);
 
     String getWelcomeText();
 
-    String setWelcomeText(final String welcomeText);
+    String setWelcomeText(String welcomeText);
 
     List<String> getApplicationInfo();
 
-    List<String> setApplicationInfo(final List<String> applicationInfo);
+    List<String> setApplicationInfo(List<String> applicationInfo);
 
     CompanyInfoData getCompanyInfo();
 
-    CompanyInfoData setCompanyInfo(final CompanyInfoData companyInfo);
+    CompanyInfoData setCompanyInfo(CompanyInfoData companyInfo);
 
     List<UnitData> getUnits();
 
-    List<UnitData> setUnits(final List<UnitData> units);
+    List<UnitData> setUnits(List<UnitData> units);
 
     BigDecimal getVatRate();
 
-    BigDecimal setVatRate(final BigDecimal value);
+    BigDecimal setVatRate(BigDecimal value);
 
     String getBusinessConditions();
 
-    String setBusinessConditions(final String businessConditions);
+    String setBusinessConditions(String businessConditions);
 
     String getCookiesInfo();
 
-    String setCookiesInfo(final String cookiesInfo);
+    String setCookiesInfo(String cookiesInfo);
 
     String getGdprInfo();
 
-    String setGdprInfo(final String gdprInfo);
+    String setGdprInfo(String gdprInfo);
 
     String getWorkingHours();
 
-    String setWorkingHours(final String workingHours);
+    String setWorkingHours(String workingHours);
 
     SignUpMailData getSignUpMail();
 
-    SignUpMailData setSignUpMail(final SignUpMailData signUpMail);
+    SignUpMailData setSignUpMail(SignUpMailData signUpMail);
 
     ResetPasswordMailData getResetPasswordMail();
 
-    ResetPasswordMailData setResetPasswordMail(final ResetPasswordMailData resetPasswordMail);
+    ResetPasswordMailData setResetPasswordMail(ResetPasswordMailData resetPasswordMail);
 }

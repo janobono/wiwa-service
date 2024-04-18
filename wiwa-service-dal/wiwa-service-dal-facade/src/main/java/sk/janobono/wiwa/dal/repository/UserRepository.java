@@ -11,21 +11,21 @@ public interface UserRepository {
 
     int count();
 
-    void deleteById(final Long id);
+    void deleteById(Long id);
 
-    boolean existsByEmail(final String email);
+    boolean existsByEmail(String email);
 
-    boolean existsById(final Long id);
+    boolean existsById(Long id);
 
-    boolean existsByUsername(final String username);
+    boolean existsByUsername(String username);
 
-    Page<UserDo> findAll(final UserSearchCriteriaDo criteria, final Pageable pageable);
+    Page<UserDo> findAll(UserSearchCriteriaDo criteria, Pageable pageable);
 
-    Optional<UserDo> findByEmail(final String email);
+    Optional<UserDo> findByEmail(String email);
 
-    Optional<UserDo> findById(final Long id);
+    Optional<UserDo> findById(Long id);
 
-    Optional<UserDo> findByUsername(final String username);
+    Optional<UserDo> findByUsername(String username);
 
-    UserDo save(final UserDo userDo);
+    UserDo save(UserDo userDo);
 }

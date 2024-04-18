@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface BoardCodeListItemRepository {
 
-    List<CodeListItemDo> findByBoardId(final Long boardId);
+    List<CodeListItemDo> findByBoardId(Long boardId);
 
-    void saveAll(final Long boardId, final List<Long> itemIds);
+    void saveAll(Long boardId, List<Long> itemIds);
 }

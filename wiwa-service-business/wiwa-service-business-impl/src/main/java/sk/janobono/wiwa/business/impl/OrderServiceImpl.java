@@ -21,6 +21,7 @@ import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -87,6 +88,56 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrder(final Long id) {
         orderRepository.deleteById(id);
+    }
+
+    @Override
+    public Long getOrderCreatorId(Long id) {
+        return 0L;
+    }
+
+    @Override
+    public OrderData sendOrder(Long id, SendOrderData sendOrder) {
+        return null;
+    }
+
+    @Override
+    public OrderData setOrderStatus(Long id, OrderStatusChangeData orderStatusChange) {
+        return null;
+    }
+
+    @Override
+    public List<OrderCommentData> getComments(Long id) {
+        return List.of();
+    }
+
+    @Override
+    public List<OrderCommentData> addComment(Long id, Long creatorId, OrderCommentChangeData orderCommentChange) {
+        return List.of();
+    }
+
+    @Override
+    public OrderItemDetailData addItem(Long id, Long creatorId, OrderItemData orderItem) {
+        return null;
+    }
+
+    @Override
+    public OrderItemDetailData setItem(Long id, Long itemId, Long modifierId, OrderItemData orderItem) {
+        return null;
+    }
+
+    @Override
+    public void moveUpItem(Long id, Long itemId, Long modifierId) {
+
+    }
+
+    @Override
+    public void moveDownItem(Long id, Long itemId, Long modifierId) {
+
+    }
+
+    @Override
+    public void deleteItem(Long id, Long itemId, Long modifierId) {
+
     }
 
     private OrderSearchCriteriaDo mapToDo(final OrderSearchCriteriaData criteria, final BigDecimal vatRate) {

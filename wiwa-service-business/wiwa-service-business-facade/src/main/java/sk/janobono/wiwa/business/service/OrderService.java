@@ -2,20 +2,39 @@ package sk.janobono.wiwa.business.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import sk.janobono.wiwa.business.model.order.OrderCommentChangeData;
-import sk.janobono.wiwa.business.model.order.OrderContactData;
-import sk.janobono.wiwa.business.model.order.OrderData;
-import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
+import sk.janobono.wiwa.business.model.order.*;
+
+import java.util.List;
 
 public interface OrderService {
 
-    Page<OrderData> getOrders(final OrderSearchCriteriaData criteria, final Pageable pageable);
+    Page<OrderData> getOrders(OrderSearchCriteriaData criteria, Pageable pageable);
 
-    Page<OrderContactData> getOrderContacts(final Long userId, final Pageable pageable);
+    Page<OrderContactData> getOrderContacts(Long userId, Pageable pageable);
 
-    OrderData getOrder(final Long id);
+    OrderData getOrder(Long id);
 
-    OrderData addOrder(final Long userId, final OrderCommentChangeData orderCommentChange);
+    OrderData addOrder(Long userId, OrderCommentChangeData orderCommentChange);
 
-    void deleteOrder(final Long id);
+    void deleteOrder(Long id);
+
+    Long getOrderCreatorId(Long id);
+
+    OrderData sendOrder(Long id, SendOrderData sendOrder);
+
+    OrderData setOrderStatus(Long id, OrderStatusChangeData orderStatusChange);
+
+    List<OrderCommentData> getComments(Long id);
+
+    List<OrderCommentData> addComment(Long id, Long creatorId, OrderCommentChangeData orderCommentChange);
+
+    OrderItemDetailData addItem(Long id, Long creatorId, OrderItemData orderItem);
+
+    OrderItemDetailData setItem(Long id, Long itemId, Long modifierId, OrderItemData orderItem);
+
+    void moveUpItem(Long id, Long itemId, Long modifierId);
+
+    void moveDownItem(Long id, Long itemId, Long modifierId);
+
+    void deleteItem(Long id, Long itemId, Long modifierId);
 }

@@ -9,11 +9,11 @@ import java.util.Optional;
 
 public interface ApplicationImageRepository {
 
-    void deleteById(final String id);
+    void deleteById(String id);
 
-    Page<ApplicationImageInfoDo> findAll(final Pageable pageable);
+    Page<ApplicationImageInfoDo> findAll(Pageable pageable);
 
-    Optional<ApplicationImageDo> findById(final String id);
+    Optional<ApplicationImageDo> findById(String id);
 
-    ApplicationImageDo save(final ApplicationImageDo applicationImageDo);
+    ApplicationImageDo save(ApplicationImageDo applicationImageDo);
 }

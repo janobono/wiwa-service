@@ -12,6 +12,7 @@ import sk.janobono.wiwa.dal.model.ApplicationImageInfoDo;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface ApplicationImageDataMapper {
+
     ApplicationImageInfoData mapToData(ApplicationImageInfoDo applicationImageInfo);
 
     ApplicationImageInfoData mapToInfoData(ApplicationImageDo applicationImage);

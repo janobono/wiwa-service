@@ -12,19 +12,19 @@ import java.util.List;
 
 public interface EdgeService {
 
-    Page<EdgeData> getEdges(final EdgeSearchCriteriaData criteria, final Pageable pageable);
+    Page<EdgeData> getEdges(EdgeSearchCriteriaData criteria, Pageable pageable);
 
-    EdgeData getEdge(final Long id);
+    EdgeData getEdge(Long id);
 
-    EdgeData addEdge(final EdgeChangeData data);
+    EdgeData addEdge(EdgeChangeData data);
 
-    EdgeData setEdge(final Long id, final EdgeChangeData data);
+    EdgeData setEdge(Long id, EdgeChangeData data);
 
-    void deleteEdge(final Long id);
+    void deleteEdge(Long id);
 
-    EdgeData setEdgeImage(final Long edgeId, final MultipartFile multipartFile);
+    EdgeData setEdgeImage(Long edgeId, MultipartFile multipartFile);
 
-    EdgeData deleteEdgeImage(final Long edgeId, final String fileName);
+    EdgeData deleteEdgeImage(Long edgeId, String fileName);
 
-    EdgeData setEdgeCategoryItems(final Long edgeId, final List<EdgeCategoryItemChangeData> categoryItems);
+    EdgeData setEdgeCategoryItems(Long edgeId, List<EdgeCategoryItemChangeData> categoryItems);
 }

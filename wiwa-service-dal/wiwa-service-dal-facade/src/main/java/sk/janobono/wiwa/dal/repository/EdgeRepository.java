@@ -9,17 +9,17 @@ import java.util.Optional;
 
 public interface EdgeRepository {
 
-    int countByCode(final String code);
+    int countByCode(String code);
 
-    int countByIdNotAndCode(final Long id, final String code);
+    int countByIdNotAndCode(Long id, String code);
 
-    void deleteById(final Long id);
+    void deleteById(Long id);
 
-    boolean existsById(final Long id);
+    boolean existsById(Long id);
 
-    Page<EdgeDo> findAll(final EdgeSearchCriteriaDo criteria, final Pageable pageable);
+    Page<EdgeDo> findAll(EdgeSearchCriteriaDo criteria, Pageable pageable);
 
-    Optional<EdgeDo> findById(final Long id);
+    Optional<EdgeDo> findById(Long id);
 
-    EdgeDo save(final EdgeDo edgeDo);
+    EdgeDo save(EdgeDo edgeDo);
 }

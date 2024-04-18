@@ -9,17 +9,17 @@ import java.util.Optional;
 
 public interface CodeListRepository {
 
-    int countByCode(final String code);
+    int countByCode(String code);
 
-    int countByIdNotAndCode(final Long id, final String code);
+    int countByIdNotAndCode(Long id, String code);
 
-    void deleteById(final Long id);
+    void deleteById(Long id);
 
-    boolean existsById(final Long id);
+    boolean existsById(Long id);
 
-    Page<CodeListDo> findAll(final CodeListSearchCriteriaDo criteria, final Pageable pageable);
+    Page<CodeListDo> findAll(CodeListSearchCriteriaDo criteria, Pageable pageable);
 
-    Optional<CodeListDo> findById(final Long id);
+    Optional<CodeListDo> findById(Long id);
 
-    CodeListDo save(final CodeListDo codeListDo);
+    CodeListDo save(CodeListDo codeListDo);
 }

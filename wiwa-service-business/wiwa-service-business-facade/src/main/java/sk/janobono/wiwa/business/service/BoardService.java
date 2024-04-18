@@ -12,19 +12,19 @@ import java.util.List;
 
 public interface BoardService {
 
-    Page<BoardData> getBoards(final BoardSearchCriteriaData criteria, final Pageable pageable);
+    Page<BoardData> getBoards(BoardSearchCriteriaData criteria, Pageable pageable);
 
-    BoardData getBoard(final Long id);
+    BoardData getBoard(Long id);
 
-    BoardData addBoard(final BoardChangeData data);
+    BoardData addBoard(BoardChangeData data);
 
-    BoardData setBoard(final Long id, final BoardChangeData data);
+    BoardData setBoard(Long id, BoardChangeData data);
 
-    void deleteBoard(final Long id);
+    void deleteBoard(Long id);
 
-    BoardData setBoardImage(final Long boardId, final MultipartFile multipartFile);
+    BoardData setBoardImage(Long boardId, MultipartFile multipartFile);
 
-    BoardData deleteBoardImage(final Long boardId, final String fileName);
+    BoardData deleteBoardImage(Long boardId, String fileName);
 
-    BoardData setBoardCategoryItems(final Long boardId, final List<BoardCategoryItemChangeData> categoryItems);
+    BoardData setBoardCategoryItems(Long boardId, List<BoardCategoryItemChangeData> categoryItems);
 }

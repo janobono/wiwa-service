@@ -9,13 +9,13 @@ import java.util.Optional;
 
 public interface OrderRepository {
 
-    void deleteById(final Long id);
+    void deleteById(Long id);
 
-    boolean existsById(final Long id);
+    boolean existsById(Long id);
 
-    Page<OrderDo> findAll(final OrderSearchCriteriaDo criteria, final Pageable pageable);
+    Page<OrderDo> findAll(OrderSearchCriteriaDo criteria, Pageable pageable);
 
-    Optional<OrderDo> findById(final Long id);
+    Optional<OrderDo> findById(Long id);
 
-    OrderDo save(final OrderDo orderDo);
+    OrderDo save(OrderDo orderDo);
 }

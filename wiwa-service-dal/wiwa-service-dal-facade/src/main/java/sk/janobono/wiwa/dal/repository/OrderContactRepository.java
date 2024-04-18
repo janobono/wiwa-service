@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface OrderContactRepository {
 
-    Optional<OrderContactDo> findByOrderId(final Long orderId);
+    Optional<OrderContactDo> findByOrderId(Long orderId);
 
-    Page<BaseOrderContactDo> findByUserId(final Long userId, final Pageable pageable);
+    Page<BaseOrderContactDo> findByUserId(Long userId, Pageable pageable);
 
-    OrderContactDo save(final OrderContactDo orderContactDo);
+    OrderContactDo save(OrderContactDo orderContactDo);
 }

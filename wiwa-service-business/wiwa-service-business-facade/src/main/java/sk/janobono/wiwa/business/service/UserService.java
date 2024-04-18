@@ -12,19 +12,19 @@ import java.util.List;
 
 public interface UserService {
 
-    Page<User> getUsers(final UserSearchCriteriaData criteria, final Pageable pageable);
+    Page<User> getUsers(UserSearchCriteriaData criteria, Pageable pageable);
 
-    User getUser(final Long id);
+    User getUser(Long id);
 
-    User addUser(final UserCreateData data);
+    User addUser(UserCreateData data);
 
-    User setUser(final Long id, final UserProfileData userProfile);
+    User setUser(Long id, UserProfileData userProfile);
 
-    User setAuthorities(final Long id, final List<Authority> authorities);
+    User setAuthorities(Long id, List<Authority> authorities);
 
-    User setConfirmed(final Long id, final Boolean confirmed);
+    User setConfirmed(Long id, Boolean confirmed);
 
-    User setEnabled(final Long id, final Boolean enabled);
+    User setEnabled(Long id, Boolean enabled);
 
-    void deleteUser(final Long id);
+    void deleteUser(Long id);
 }

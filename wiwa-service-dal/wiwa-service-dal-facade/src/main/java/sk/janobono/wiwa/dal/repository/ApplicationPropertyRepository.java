@@ -6,9 +6,9 @@ import java.util.Optional;
 
 public interface ApplicationPropertyRepository {
 
-    void deleteByKey(final String key);
+    void deleteByKey(String key);
 
-    Optional<ApplicationPropertyDo> findByKey(final String key);
+    Optional<ApplicationPropertyDo> findByKey(String key);
 
-    ApplicationPropertyDo save(final ApplicationPropertyDo applicationPropertyDo);
+    ApplicationPropertyDo save(ApplicationPropertyDo applicationPropertyDo);
 }

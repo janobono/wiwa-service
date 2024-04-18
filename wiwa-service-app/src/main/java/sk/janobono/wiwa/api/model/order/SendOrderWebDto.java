@@ -10,6 +10,6 @@ public record SendOrderWebDto(
         boolean gdprAgreement,
         boolean businessConditionsAgreement,
         String comment,
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate deliveryDate
 ) {
 }

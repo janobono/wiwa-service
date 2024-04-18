@@ -5,21 +5,21 @@ import sk.janobono.wiwa.model.User;
 
 public interface AuthService {
 
-    AuthenticationResponseData confirm(final ConfirmationData confirmation);
+    AuthenticationResponseData confirm(ConfirmationData confirmation);
 
-    AuthenticationResponseData changeEmail(final User user, final ChangeEmailData changeEmail);
+    AuthenticationResponseData changeEmail(User user, ChangeEmailData changeEmail);
 
-    AuthenticationResponseData changePassword(final User user, final ChangePasswordData changePassword);
+    AuthenticationResponseData changePassword(User user, ChangePasswordData changePassword);
 
-    AuthenticationResponseData changeUserDetails(final User user, final ChangeUserDetailsData changeUserDetails);
+    AuthenticationResponseData changeUserDetails(User user, ChangeUserDetailsData changeUserDetails);
 
-    void resendConfirmation(final User user, final ResendConfirmationData resendConfirmation);
+    void resendConfirmation(User user, ResendConfirmationData resendConfirmation);
 
-    void resetPassword(final ResetPasswordData resetPassword);
+    void resetPassword(ResetPasswordData resetPassword);
 
-    AuthenticationResponseData signIn(final SignInData signIn);
+    AuthenticationResponseData signIn(SignInData signIn);
 
-    AuthenticationResponseData signUp(final SignUpData signUp);
+    AuthenticationResponseData signUp(SignUpData signUp);
 
-    AuthenticationResponseData refresh(final RefreshTokenData refreshToken);
+    AuthenticationResponseData refresh(RefreshTokenData refreshToken);
 }
