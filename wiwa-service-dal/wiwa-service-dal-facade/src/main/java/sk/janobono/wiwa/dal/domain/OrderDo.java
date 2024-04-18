@@ -16,7 +16,6 @@ public class OrderDo {
     private LocalDateTime created;
     private OrderStatus status;
     private Long orderNumber;
-    private String description;
     private BigDecimal weightValue;
     private Unit weightUnit;
     private BigDecimal netWeightValue;

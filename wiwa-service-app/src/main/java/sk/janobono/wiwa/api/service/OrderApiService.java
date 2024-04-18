@@ -7,9 +7,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.api.mapper.OrderWebMapper;
-import sk.janobono.wiwa.api.model.order.OrderChangeWebDto;
-import sk.janobono.wiwa.api.model.order.OrderContactWebDto;
-import sk.janobono.wiwa.api.model.order.OrderWebDto;
+import sk.janobono.wiwa.api.mapper.OrderWebMapperImpl;
+import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.component.AuthUtil;
@@ -19,7 +18,7 @@ import sk.janobono.wiwa.model.Unit;
 import sk.janobono.wiwa.model.User;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -36,8 +35,8 @@ public class OrderApiService {
 
     public Page<OrderWebDto> getOrders(
             final List<Long> userIds,
-            final ZonedDateTime createdFrom,
-            final ZonedDateTime createdTo,
+            final LocalDateTime createdFrom,
+            final LocalDateTime createdTo,
             final List<OrderStatus> statuses,
             final BigDecimal totalFrom,
             final BigDecimal totalTo,
@@ -65,10 +64,72 @@ public class OrderApiService {
     public OrderWebDto getOrder(final Long id) {
         final OrderWebDto result = orderWebMapper.mapToWebDto(orderService.getOrder(id));
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!result.orderUser().id().equals(user.id()) && !authUtil.hasAnyAuthority(user, Authority.W_ADMIN, Authority.W_MANAGER, Authority.W_EMPLOYEE)) {
+        if (!result.creator().id().equals(user.id()) && !authUtil.hasAnyAuthority(user, Authority.W_ADMIN, Authority.W_MANAGER, Authority.W_EMPLOYEE)) {
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
         return result;
+    }
+
+    public OrderWebDto addOrder(final OrderCommentChangeWebDto orderCommentChange) {
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return orderWebMapper.mapToWebDto(orderService.addOrder(user.id(), orderWebMapper.mapToData(orderCommentChange)));
+    }
+
+    public OrderWebDto sendOrder(SendOrderWebDto sendOrder) {
+        // TODO
+        return null;
+    }
+
+    public OrderWebDto setOrderStatus(OrderStatusChangeWebDto orderStatusChange) {
+        // TODO
+        return null;
+    }
+
+    public List<OrderCommentWebDto> getComments(Long id) {
+        // TODO
+        return null;
+    }
+
+    public List<OrderCommentWebDto> addComment(Long id, OrderCommentChangeWebDto commentChange) {
+        // TODO
+        return null;
+    }
+
+    public OrderItemDetailWebDto addItem(Long id, OrderItemWebDto orderItem) {
+        // TODO
+        return null;
+    }
+
+    public OrderItemDetailWebDto setItem(Long id, Long itemId, OrderItemWebDto orderItem) {
+        // TODO
+        return null;
+    }
+
+    public void moveUpItem(Long id, Long itemId) {
+        // TODO
+    }
+
+    public void moveDownItem(Long id, Long itemId) {
+        // TODO
+    }
+
+    public void deleteItem(Long id, Long itemId) {
+        // TODO
+    }
+
+    public void deleteOrder(final Long id) {
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final OrderWebDto orderWebDto = orderWebMapper.mapToWebDto(orderService.getOrder(id));
+
+        if (authUtil.hasAnyAuthority(user, Authority.W_ADMIN, Authority.W_MANAGER)) {
+            orderService.deleteOrder(id);
+            return;
+        }
+
+        if (!orderWebDto.creator().id().equals(user.id()) || orderWebDto.status() != OrderStatus.NEW) {
+            throw new AccessDeniedException("You do not have permission to access this resource");
+        }
+        orderService.deleteOrder(id);
     }
 
     private List<Long> checkUserIds(final User user, final List<Long> userIds) {
@@ -82,25 +143,5 @@ public class OrderApiService {
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
         return userIds;
-    }
-
-    public OrderWebDto addOrder(final OrderChangeWebDto orderChange) {
-        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return orderWebMapper.mapToWebDto(orderService.addOrder(user.id(), orderWebMapper.mapToData(orderChange)));
-    }
-
-    public void deleteOrder(final Long id) {
-        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        final OrderWebDto orderWebDto = orderWebMapper.mapToWebDto(orderService.getOrder(id));
-
-        if (authUtil.hasAnyAuthority(user, Authority.W_ADMIN, Authority.W_MANAGER)) {
-            orderService.deleteOrder(id);
-            return;
-        }
-
-        if (!orderWebDto.orderUser().id().equals(user.id()) || orderWebDto.status() != OrderStatus.NEW) {
-            throw new AccessDeniedException("You do not have permission to access this resource");
-        }
-        orderService.deleteOrder(id);
     }
 }

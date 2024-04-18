@@ -5,16 +5,15 @@ import sk.janobono.wiwa.model.OrderStatus;
 import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 @Builder
 public record OrderData(
         Long id,
-        OrderUserData orderUser,
-        ZonedDateTime created,
+        OrderUserData creator,
+        LocalDateTime created,
         OrderStatus status,
         Long orderNumber,
-        String description,
         BigDecimal weightValue,
         Unit weightUnit,
         BigDecimal netWeightValue,

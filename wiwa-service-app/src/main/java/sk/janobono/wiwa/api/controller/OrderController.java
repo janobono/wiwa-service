@@ -4,17 +4,16 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import sk.janobono.wiwa.api.model.order.OrderChangeWebDto;
-import sk.janobono.wiwa.api.model.order.OrderContactWebDto;
-import sk.janobono.wiwa.api.model.order.OrderWebDto;
+import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.api.service.OrderApiService;
 import sk.janobono.wiwa.model.OrderStatus;
 import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -27,8 +26,8 @@ public class OrderController {
     @GetMapping
     public Page<OrderWebDto> getOrders(
             @RequestParam(value = "userIds", required = false) final List<Long> userIds,
-            @RequestParam(value = "createdFrom", required = false) final ZonedDateTime createdFrom,
-            @RequestParam(value = "createdTo", required = false) final ZonedDateTime createdTo,
+            @RequestParam(value = "createdFrom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime createdFrom,
+            @RequestParam(value = "createdTo", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime createdTo,
             @RequestParam(value = "statuses", required = false) final List<OrderStatus> statuses,
             @RequestParam(value = "totalFrom", required = false) final BigDecimal totalFrom,
             @RequestParam(value = "totalTo", required = false) final BigDecimal totalTo,
@@ -59,20 +58,54 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderWebDto addOrder(@Valid @RequestBody final OrderChangeWebDto orderChange) {
-        return orderApiService.addOrder(orderChange);
+    public OrderWebDto addOrder(@Valid @RequestBody final OrderCommentChangeWebDto orderCommentChange) {
+        return orderApiService.addOrder(orderCommentChange);
     }
 
-//    @PostMapping("/{id}/send")
-//    public OrderDetailWebDto sendOrder(@Valid @RequestBody final SendOrderWebDto sendOrder) {
-//
-//    }
+    @PostMapping("/{id}/send")
+    public OrderWebDto sendOrder(@PathVariable("id") final Long id, @Valid @RequestBody final SendOrderWebDto sendOrder) {
+        return orderApiService.sendOrder(sendOrder);
+    }
 
-    // TODO addComment
-    // TODO send
-    // TODO cancel
-    // TODO ready
-    // TODO finish
+    @PostMapping("/{id}/status")
+    public OrderWebDto setOrderStatus(@PathVariable("id") final Long id, @Valid @RequestBody final OrderStatusChangeWebDto orderStatusChange) {
+        return orderApiService.setOrderStatus(orderStatusChange);
+    }
+
+    @GetMapping("/{id}/comments")
+    public List<OrderCommentWebDto> getComments(@PathVariable("id") final Long id) {
+        return orderApiService.getComments(id);
+    }
+
+    @PostMapping("/{id}/comments")
+    public List<OrderCommentWebDto> addComment(@PathVariable("id") final Long id, @Valid @RequestBody final OrderCommentChangeWebDto commentChange) {
+        return orderApiService.addComment(id, commentChange);
+    }
+
+    @PostMapping("/{id}/item")
+    public OrderItemDetailWebDto addItem(@PathVariable("id") final Long id, @Valid @RequestBody final OrderItemWebDto orderItem) {
+        return orderApiService.addItem(id, orderItem);
+    }
+
+    @PutMapping("/{id}/item/{itemId}")
+    public OrderItemDetailWebDto setItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId, @Valid @RequestBody final OrderItemWebDto orderItem) {
+        return orderApiService.setItem(id, itemId, orderItem);
+    }
+
+    @PutMapping("/{id}/item/{itemId}/move-up")
+    public void moveUpItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId) {
+        orderApiService.moveUpItem(id, itemId);
+    }
+
+    @PutMapping("/{id}/item/{itemId}/move-down")
+    public void moveDownItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId) {
+        orderApiService.moveDownItem(id, itemId);
+    }
+
+    @DeleteMapping("/{id}/item/{itemId}")
+    public void deleteItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId) {
+        orderApiService.deleteItem(id, itemId);
+    }
 
     @DeleteMapping("/{id}")
     public void deleteOrder(@PathVariable("id") final Long id) {

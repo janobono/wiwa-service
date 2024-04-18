@@ -9,7 +9,6 @@ import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.component.PriceUtil;
-import sk.janobono.wiwa.component.TimeUtil;
 import sk.janobono.wiwa.dal.domain.OrderDo;
 import sk.janobono.wiwa.dal.domain.UserDo;
 import sk.janobono.wiwa.dal.model.OrderSearchCriteriaDo;
@@ -28,7 +27,6 @@ import java.time.LocalDateTime;
 public class OrderServiceImpl implements OrderService {
 
     private final PriceUtil priceUtil;
-    private final TimeUtil timeUtil;
 
     private final OrderRepository orderRepository;
     private final OrderContactRepository orderContactRepository;
@@ -65,15 +63,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderData addOrder(final Long userId, final OrderChangeData orderChangeData) {
+    public OrderData addOrder(final Long userId, final OrderCommentChangeData orderCommentChange) {
         final BigDecimal vatRate = applicationPropertyService.getVatRate();
+
+        // TODO
+
         return toOrderData(orderRepository.save(
                 OrderDo.builder()
                         .userId(userId)
                         .created(LocalDateTime.now())
                         .status(OrderStatus.NEW)
                         .orderNumber(orderNumberRepository.getNextOrderNumber(userId))
-                        .description(orderChangeData.description())
                         .weightValue(BigDecimal.ZERO)
                         .weightUnit(Unit.KILOGRAM)
                         .netWeightValue(BigDecimal.ZERO)
@@ -92,8 +92,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderSearchCriteriaDo mapToDo(final OrderSearchCriteriaData criteria, final BigDecimal vatRate) {
         return new OrderSearchCriteriaDo(
                 criteria.userIds(),
-                timeUtil.toLocalDateTime(criteria.createdFrom()),
-                timeUtil.toLocalDateTime(criteria.createdTo()),
+                criteria.createdFrom(),
+                criteria.createdTo(),
                 criteria.statuses(),
                 priceUtil.countNoVatValue(criteria.totalFrom(), vatRate),
                 priceUtil.countNoVatValue(criteria.totalTo(), vatRate),
@@ -104,11 +104,10 @@ public class OrderServiceImpl implements OrderService {
     private OrderData toOrderData(final OrderDo orderDo, final BigDecimal vatRate) {
         return OrderData.builder()
                 .id(orderDo.getId())
-                .orderUser(toOrderUser(orderDo.getUserId()))
-                .created(timeUtil.toZonedDateTime(orderDo.getCreated()))
+                .creator(toOrderUser(orderDo.getUserId()))
+                .created(orderDo.getCreated())
                 .status(orderDo.getStatus())
                 .orderNumber(orderDo.getOrderNumber())
-                .description(orderDo.getDescription())
                 .weightValue(orderDo.getWeightValue())
                 .weightUnit(orderDo.getWeightUnit())
                 .netWeightValue(orderDo.getNetWeightValue())

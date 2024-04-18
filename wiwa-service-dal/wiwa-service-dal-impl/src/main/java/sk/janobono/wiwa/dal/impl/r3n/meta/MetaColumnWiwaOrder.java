@@ -13,7 +13,6 @@ public enum MetaColumnWiwaOrder {
     CREATED("created", DataType.TIME_STAMP),
     STATUS("status", DataType.STRING),
     ORDER_NUMBER("order_number", DataType.LONG),
-    DESCRIPTION("description", DataType.STRING),
     WEIGHT_VALUE("weight_value", DataType.BIG_DECIMAL),
     WEIGHT_UNIT("weight_unit", DataType.STRING),
     NET_WEIGHT_VALUE("net_weight_value", DataType.BIG_DECIMAL),

@@ -20,9 +20,7 @@ public enum MetaTable {
     WIWA_ORDER_NUMBER("wiwa_order_number", "t14"),
     WIWA_ORDER("wiwa_order", "t15"),
     WIWA_ORDER_ATTRIBUTE("wiwa_order_attribute", "t16"),
-    WIWA_ORDER_CONTACT("wiwa_order_contact", "t17"),
-    WIWA_ORDER_ITEM("wiwa_order_item", "t18"),
-    WIWA_ORDER_ITEM_ATTRIBUTE("wiwa_order_item_attribute", "t19");
+    WIWA_ORDER_CONTACT("wiwa_order_contact", "t17");
 
     private final String tableName;
 

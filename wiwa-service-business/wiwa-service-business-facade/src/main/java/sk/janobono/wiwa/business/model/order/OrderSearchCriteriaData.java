@@ -5,14 +5,14 @@ import sk.janobono.wiwa.model.OrderStatus;
 import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
 public record OrderSearchCriteriaData(
         List<Long> userIds,
-        ZonedDateTime createdFrom,
-        ZonedDateTime createdTo,
+        LocalDateTime createdFrom,
+        LocalDateTime createdTo,
         List<OrderStatus> statuses,
         BigDecimal totalFrom,
         BigDecimal totalTo,

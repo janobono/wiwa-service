@@ -12,7 +12,6 @@ create table wiwa_order
     created          timestamp      not null,
     status           varchar(255)   not null,
     order_number     bigserial      not null,
-    description      text,
     weight_value     numeric(19, 3) not null,
     weight_unit      varchar(255)   not null,
     net_weight_value numeric(19, 3) not null,

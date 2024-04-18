@@ -2,7 +2,7 @@ package sk.janobono.wiwa.business.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import sk.janobono.wiwa.business.model.order.OrderChangeData;
+import sk.janobono.wiwa.business.model.order.OrderCommentChangeData;
 import sk.janobono.wiwa.business.model.order.OrderContactData;
 import sk.janobono.wiwa.business.model.order.OrderData;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
@@ -15,7 +15,7 @@ public interface OrderService {
 
     OrderData getOrder(final Long id);
 
-    OrderData addOrder(final Long userId, final OrderChangeData orderChangeData);
+    OrderData addOrder(final Long userId, final OrderCommentChangeData orderCommentChange);
 
     void deleteOrder(final Long id);
 }

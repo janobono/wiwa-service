@@ -7,8 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import sk.janobono.wiwa.api.model.order.OrderCommentChangeWebDto;
 import sk.janobono.wiwa.api.model.order.OrderWebDto;
-import sk.janobono.wiwa.business.model.order.OrderChangeData;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.janobono.wiwa.model.OrderStatus;
 import sk.janobono.wiwa.model.Unit;
@@ -62,7 +62,7 @@ class OrderControllerTest extends BaseControllerTest {
         checkStatus(managerHeaders, orders, HttpStatus.OK);
         checkStatus(adminHeaders, orders, HttpStatus.OK);
 
-        final OrderWebDto orderWebDto = addEntity(OrderWebDto.class, adminHeaders, "/orders", new OrderChangeData(null));
+        final OrderWebDto orderWebDto = addEntity(OrderWebDto.class, adminHeaders, "/orders", new OrderCommentChangeWebDto(null, null));
 
         final URI order = getURI("/orders/{id}", Map.of("id", orderWebDto.id().toString()));
         checkStatus(customerHeaders, order, HttpStatus.FORBIDDEN);

@@ -4,15 +4,14 @@ import sk.janobono.wiwa.model.OrderStatus;
 import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 public record OrderWebDto(
         Long id,
-        OrderUserWebDto orderUser,
-        ZonedDateTime created,
+        OrderUserWebDto creator,
+        LocalDateTime created,
         OrderStatus status,
         Long orderNumber,
-        String description,
         BigDecimal weightValue,
         Unit weightUnit,
         BigDecimal netWeightValue,

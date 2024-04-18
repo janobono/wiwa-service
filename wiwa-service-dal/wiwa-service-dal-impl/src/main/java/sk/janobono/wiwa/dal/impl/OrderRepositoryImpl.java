@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.dal.domain.OrderDo;
 import sk.janobono.wiwa.dal.impl.component.CriteriaUtil;
 import sk.janobono.wiwa.dal.impl.mapper.OrderDoMapper;
@@ -37,7 +36,6 @@ public class OrderRepositoryImpl implements OrderRepository {
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
     private final OrderDoMapper mapper;
-    private final ScDf scDf;
     private final CriteriaUtil criteriaUtil;
 
     @Override
@@ -217,10 +215,6 @@ public class OrderRepositoryImpl implements OrderRepository {
                         );
                         case "status" -> select.ORDER_BY(
                                 MetaColumnWiwaOrder.STATUS.column(),
-                                criteriaUtil.mapDirection(order)
-                        );
-                        case "description" -> select.ORDER_BY(
-                                MetaColumnWiwaOrder.DESCRIPTION.column(),
                                 criteriaUtil.mapDirection(order)
                         );
                         case "weightValue" -> select.ORDER_BY(
