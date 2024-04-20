@@ -107,6 +107,11 @@ public class OrderController {
         orderApiService.deleteItem(id, itemId);
     }
 
+    @GetMapping("/{id}/summary")
+    public OrderSummaryWebDto getOrderSummary(@PathVariable("id") final Long id) {
+        return orderApiService.getOrderSummary(id);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteOrder(@PathVariable("id") final Long id) {
         orderApiService.deleteOrder(id);

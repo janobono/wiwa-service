@@ -126,6 +126,11 @@ public class OrderApiService {
         orderService.deleteItem(id, itemId, user.id());
     }
 
+    public OrderSummaryWebDto getOrderSummary(final Long id) {
+        checkAccess(id);
+        return orderWebMapper.mapToWebDto(orderService.getOrderSummary(id));
+    }
+
     public void deleteOrder(final Long id) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final OrderWebDto order = orderWebMapper.mapToWebDto(orderService.getOrder(id));

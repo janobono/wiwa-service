@@ -98,6 +98,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public OrderSummaryData getOrderSummary(Long id) {
+        // TODO
+        return null;
+    }
+
+    @Override
     public OrderData sendOrder(Long id, SendOrderData sendOrder) {
         return null;
     }

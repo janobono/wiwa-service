@@ -15,6 +15,8 @@ public interface OrderWebMapper {
 
     OrderContactWebDto mapToWebDto(OrderContactData orderContact);
 
+    OrderSummaryWebDto mapToWebDto(OrderSummaryData orderSummary);
+
     OrderUserWebDto mapToWebDto(OrderUserData orderUser);
 
     OrderItemDetailWebDto mapToWebDto(OrderItemDetailData orderItemDetail);

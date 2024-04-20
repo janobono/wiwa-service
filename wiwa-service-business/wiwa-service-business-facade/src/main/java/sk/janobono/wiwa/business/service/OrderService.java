@@ -20,6 +20,8 @@ public interface OrderService {
 
     Long getOrderCreatorId(Long id);
 
+    OrderSummaryData getOrderSummary(Long id);
+
     OrderData sendOrder(Long id, SendOrderData sendOrder);
 
     OrderData setOrderStatus(Long id, OrderStatusChangeData orderStatusChange);
