@@ -101,24 +101,29 @@ public class OrderApiService {
         return orderService.addComment(id, user.id(), orderWebMapper.mapToData(commentChange)).stream().map(orderWebMapper::mapToWebDto).toList();
     }
 
-    public OrderItemDetailWebDto addItem(final Long id, final OrderItemWebDto orderItem) {
-        final User user = checkAccess(id);
-        return orderWebMapper.mapToWebDto(orderService.addItem(id, user.id(), orderWebMapper.mapToData(orderItem)));
+    public List<OrderItemWebDto> getItems(final Long id) {
+        checkAccess(id);
+        return orderService.getOrderItems(id).stream().map(orderWebMapper::mapToWebDto).toList();
     }
 
-    public OrderItemDetailWebDto setItem(final Long id, final Long itemId, final OrderItemWebDto orderItem) {
+    public OrderItemWebDto addItem(final Long id, final OrderItemChangeWebDto orderItemChange) {
         final User user = checkAccess(id);
-        return orderWebMapper.mapToWebDto(orderService.setItem(id, itemId, user.id(), orderWebMapper.mapToData(orderItem)));
+        return orderWebMapper.mapToWebDto(orderService.addItem(id, user.id(), orderWebMapper.mapToData(orderItemChange)));
     }
 
-    public void moveUpItem(final Long id, final Long itemId) {
+    public OrderItemWebDto setItem(final Long id, final Long itemId, final OrderItemChangeWebDto orderItemChange) {
         final User user = checkAccess(id);
-        orderService.moveUpItem(id, itemId, user.id());
+        return orderWebMapper.mapToWebDto(orderService.setItem(id, itemId, user.id(), orderWebMapper.mapToData(orderItemChange)));
     }
 
-    public void moveDownItem(final Long id, final Long itemId) {
+    public OrderItemWebDto moveUpItem(final Long id, final Long itemId) {
         final User user = checkAccess(id);
-        orderService.moveDownItem(id, itemId, user.id());
+        return orderWebMapper.mapToWebDto(orderService.moveUpItem(id, itemId, user.id()));
+    }
+
+    public OrderItemWebDto moveDownItem(final Long id, final Long itemId) {
+        final User user = checkAccess(id);
+        return orderWebMapper.mapToWebDto(orderService.moveDownItem(id, itemId, user.id()));
     }
 
     public void deleteItem(final Long id, final Long itemId) {

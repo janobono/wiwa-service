@@ -19,7 +19,7 @@ public interface OrderWebMapper {
 
     OrderUserWebDto mapToWebDto(OrderUserData orderUser);
 
-    OrderItemDetailWebDto mapToWebDto(OrderItemDetailData orderItemDetail);
+    OrderItemWebDto mapToWebDto(OrderItemData orderItem);
 
     OrderCommentChangeData mapToData(OrderCommentChangeWebDto orderCommentChange);
 
@@ -27,5 +27,5 @@ public interface OrderWebMapper {
 
     SendOrderData mapToData(SendOrderWebDto sendOrder);
 
-    OrderItemData mapToData(OrderItemWebDto orderItem);
+    OrderItemChangeData mapToData(OrderItemChangeWebDto orderItemChange);
 }

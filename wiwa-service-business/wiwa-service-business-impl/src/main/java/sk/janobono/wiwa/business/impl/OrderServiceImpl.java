@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import sk.janobono.wiwa.business.impl.util.OrderCommentUtilService;
+import sk.janobono.wiwa.business.impl.component.OrderAttributeUtil;
+import sk.janobono.wiwa.business.impl.component.OrderCommentUtil;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
@@ -13,15 +14,19 @@ import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.dal.domain.OrderDo;
 import sk.janobono.wiwa.dal.domain.UserDo;
 import sk.janobono.wiwa.dal.model.OrderSearchCriteriaDo;
+import sk.janobono.wiwa.dal.repository.OrderAttributeRepository;
 import sk.janobono.wiwa.dal.repository.OrderContactRepository;
 import sk.janobono.wiwa.dal.repository.OrderNumberRepository;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.janobono.wiwa.exception.WiwaException;
+import sk.janobono.wiwa.model.OrderAttributeKey;
 import sk.janobono.wiwa.model.OrderStatus;
 import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -29,12 +34,14 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
 
     private final PriceUtil priceUtil;
+    private final OrderAttributeUtil orderAttributeUtil;
+    private final OrderCommentUtil orderCommentUtil;
 
     private final OrderRepository orderRepository;
+    private final OrderAttributeRepository orderAttributeRepository;
     private final OrderContactRepository orderContactRepository;
     private final OrderNumberRepository orderNumberRepository;
 
-    private final OrderCommentUtilService orderCommentUtilService;
     private final UserUtilService userUtilService;
 
     private final ApplicationPropertyService applicationPropertyService;
@@ -98,9 +105,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderSummaryData getOrderSummary(Long id) {
-        // TODO
-        return null;
+    public OrderSummaryData getOrderSummary(final Long id) {
+        return orderAttributeRepository.findByOrderIdAndAttributeKey(id, OrderAttributeKey.SUMMARY)
+                .map(orderAttributeDo -> orderAttributeUtil.parseValue(orderAttributeDo, OrderSummaryData.class))
+                .orElse(OrderSummaryData.builder()
+                        // TODO
+                        .build());
     }
 
     @Override
@@ -115,33 +125,47 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderCommentData> getComments(final Long id) {
-        return orderCommentUtilService.getOrderComments(id);
+        return orderAttributeRepository.findByOrderIdAndAttributeKey(id, OrderAttributeKey.COMMENTS)
+                .map(orderAttributeDo -> Arrays.asList(orderAttributeUtil.parseValue(orderAttributeDo, OrderCommentData[].class)))
+                .orElse(Collections.emptyList());
     }
 
     @Override
     public List<OrderCommentData> addComment(final Long id, final Long creatorId, final OrderCommentChangeData orderCommentChange) {
         final UserDo userDo = userUtilService.getUserDo(creatorId);
-        return orderCommentUtilService.addOrderComment(id, toOrderUser(userDo), orderCommentChange.parentId(), orderCommentChange.comment());
+
+        final List<OrderCommentData> orderComments = orderCommentUtil.addComment(
+                getComments(id), toOrderUser(userDo), orderCommentChange.parentId(), orderCommentChange.comment()
+        );
+
+        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.COMMENTS, orderComments));
+
+        return orderComments;
     }
 
     @Override
-    public OrderItemDetailData addItem(Long id, Long creatorId, OrderItemData orderItem) {
+    public List<OrderItemData> getOrderItems(Long id) {
+        return List.of();
+    }
+
+    @Override
+    public OrderItemData addItem(Long id, Long creatorId, OrderItemChangeData orderItem) {
         return null;
     }
 
     @Override
-    public OrderItemDetailData setItem(Long id, Long itemId, Long modifierId, OrderItemData orderItem) {
+    public OrderItemData setItem(Long id, Long itemId, Long modifierId, OrderItemChangeData orderItem) {
         return null;
     }
 
     @Override
-    public void moveUpItem(Long id, Long itemId, Long modifierId) {
-
+    public OrderItemData moveUpItem(Long id, Long itemId, Long modifierId) {
+        return null;
     }
 
     @Override
-    public void moveDownItem(Long id, Long itemId, Long modifierId) {
-
+    public OrderItemData moveDownItem(Long id, Long itemId, Long modifierId) {
+        return null;
     }
 
     @Override

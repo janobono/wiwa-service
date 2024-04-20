@@ -82,24 +82,29 @@ public class OrderController {
         return orderApiService.addComment(id, commentChange);
     }
 
+    @GetMapping("/{id}/item")
+    public List<OrderItemWebDto> getItems(@PathVariable("id") final Long id) {
+        return orderApiService.getItems(id);
+    }
+
     @PostMapping("/{id}/item")
-    public OrderItemDetailWebDto addItem(@PathVariable("id") final Long id, @Valid @RequestBody final OrderItemWebDto orderItem) {
-        return orderApiService.addItem(id, orderItem);
+    public OrderItemWebDto addItem(@PathVariable("id") final Long id, @Valid @RequestBody final OrderItemChangeWebDto orderItemChange) {
+        return orderApiService.addItem(id, orderItemChange);
     }
 
     @PutMapping("/{id}/item/{itemId}")
-    public OrderItemDetailWebDto setItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId, @Valid @RequestBody final OrderItemWebDto orderItem) {
-        return orderApiService.setItem(id, itemId, orderItem);
+    public OrderItemWebDto setItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId, @Valid @RequestBody final OrderItemChangeWebDto orderItemChange) {
+        return orderApiService.setItem(id, itemId, orderItemChange);
     }
 
     @PatchMapping("/{id}/item/{itemId}/move-up")
-    public void moveUpItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId) {
-        orderApiService.moveUpItem(id, itemId);
+    public OrderItemWebDto moveUpItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId) {
+        return orderApiService.moveUpItem(id, itemId);
     }
 
     @PatchMapping("/{id}/item/{itemId}/move-down")
-    public void moveDownItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId) {
-        orderApiService.moveDownItem(id, itemId);
+    public OrderItemWebDto moveDownItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId) {
+        return orderApiService.moveDownItem(id, itemId);
     }
 
     @DeleteMapping("/{id}/item/{itemId}")

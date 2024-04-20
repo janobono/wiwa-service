@@ -30,13 +30,15 @@ public interface OrderService {
 
     List<OrderCommentData> addComment(Long id, Long creatorId, OrderCommentChangeData orderCommentChange);
 
-    OrderItemDetailData addItem(Long id, Long creatorId, OrderItemData orderItem);
+    List<OrderItemData> getOrderItems(Long id);
 
-    OrderItemDetailData setItem(Long id, Long itemId, Long modifierId, OrderItemData orderItem);
+    OrderItemData addItem(Long id, Long creatorId, OrderItemChangeData orderItemChangeData);
 
-    void moveUpItem(Long id, Long itemId, Long modifierId);
+    OrderItemData setItem(Long id, Long itemId, Long modifierId, OrderItemChangeData orderItemChangeData);
 
-    void moveDownItem(Long id, Long itemId, Long modifierId);
+    OrderItemData moveUpItem(Long id, Long itemId, Long modifierId);
+
+    OrderItemData moveDownItem(Long id, Long itemId, Long modifierId);
 
     void deleteItem(Long id, Long itemId, Long modifierId);
 }

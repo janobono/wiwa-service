@@ -1,4 +1,4 @@
 package sk.janobono.wiwa.business.model.order;
 
-public record OrderItemDetailData() {
+public record OrderItemChangeData() {
 }
