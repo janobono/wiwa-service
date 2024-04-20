@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import sk.janobono.wiwa.business.impl.util.OrderCommentUtilService;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
@@ -33,6 +34,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderContactRepository orderContactRepository;
     private final OrderNumberRepository orderNumberRepository;
 
+    private final OrderCommentUtilService orderCommentUtilService;
     private final UserUtilService userUtilService;
 
     private final ApplicationPropertyService applicationPropertyService;
@@ -44,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderContactData> getOrderContacts(Long userId, Pageable pageable) {
+    public Page<OrderContactData> getOrderContacts(final Long userId, final Pageable pageable) {
         return orderContactRepository.findByUserId(userId, pageable).map(value -> OrderContactData.builder()
                 .name(value.name())
                 .street(value.street())
@@ -64,12 +66,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderData addOrder(final Long userId, final OrderCommentChangeData orderCommentChange) {
+    public OrderData addOrder(final Long userId) {
         final BigDecimal vatRate = applicationPropertyService.getVatRate();
 
-        // TODO
-
-        return toOrderData(orderRepository.save(
+        final OrderDo orderDo = orderRepository.save(
                 OrderDo.builder()
                         .userId(userId)
                         .created(LocalDateTime.now())
@@ -81,8 +81,9 @@ public class OrderServiceImpl implements OrderService {
                         .netWeightUnit(Unit.KILOGRAM)
                         .totalValue(BigDecimal.ZERO)
                         .totalUnit(Unit.EUR)
-                        .build()
-        ), vatRate);
+                        .build());
+
+        return toOrderData(orderDo, vatRate);
     }
 
     @Override
@@ -91,8 +92,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Long getOrderCreatorId(Long id) {
-        return 0L;
+    public Long getOrderCreatorId(final Long id) {
+        return orderRepository.getOrderUserId(id)
+                .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
     }
 
     @Override
@@ -106,13 +108,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderCommentData> getComments(Long id) {
-        return List.of();
+    public List<OrderCommentData> getComments(final Long id) {
+        return orderCommentUtilService.getOrderComments(id);
     }
 
     @Override
-    public List<OrderCommentData> addComment(Long id, Long creatorId, OrderCommentChangeData orderCommentChange) {
-        return List.of();
+    public List<OrderCommentData> addComment(final Long id, final Long creatorId, final OrderCommentChangeData orderCommentChange) {
+        final UserDo userDo = userUtilService.getUserDo(creatorId);
+        return orderCommentUtilService.addOrderComment(id, toOrderUser(userDo), orderCommentChange.parentId(), orderCommentChange.comment());
     }
 
     @Override
@@ -155,7 +158,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderData toOrderData(final OrderDo orderDo, final BigDecimal vatRate) {
         return OrderData.builder()
                 .id(orderDo.getId())
-                .creator(toOrderUser(orderDo.getUserId()))
+                .creator(toOrderUser(userUtilService.getUserDo(orderDo.getUserId())))
                 .created(orderDo.getCreated())
                 .status(orderDo.getStatus())
                 .orderNumber(orderDo.getOrderNumber())
@@ -169,8 +172,7 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    private OrderUserData toOrderUser(final Long userId) {
-        final UserDo userDo = userUtilService.getUserDo(userId);
+    private OrderUserData toOrderUser(final UserDo userDo) {
         return OrderUserData.builder()
                 .id(userDo.getId())
                 .titleBefore(userDo.getTitleBefore())

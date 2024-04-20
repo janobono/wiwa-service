@@ -15,6 +15,8 @@ public interface OrderRepository {
 
     Page<OrderDo> findAll(OrderSearchCriteriaDo criteria, Pageable pageable);
 
+    Optional<Long> getOrderUserId(Long id);
+
     Optional<OrderDo> findById(Long id);
 
     OrderDo save(OrderDo orderDo);

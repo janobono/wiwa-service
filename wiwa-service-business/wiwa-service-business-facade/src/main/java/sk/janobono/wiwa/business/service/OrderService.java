@@ -14,7 +14,7 @@ public interface OrderService {
 
     OrderData getOrder(Long id);
 
-    OrderData addOrder(Long userId, OrderCommentChangeData orderCommentChange);
+    OrderData addOrder(Long userId);
 
     void deleteOrder(Long id);
 

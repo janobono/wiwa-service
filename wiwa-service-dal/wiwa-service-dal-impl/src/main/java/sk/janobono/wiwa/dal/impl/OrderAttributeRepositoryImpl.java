@@ -9,6 +9,7 @@ import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaOrderAttributeDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrderAttribute;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.OrderAttributeRepository;
+import sk.janobono.wiwa.model.OrderAttributeKey;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Condition;
 import sk.r3n.sql.Order;
@@ -18,6 +19,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -42,6 +44,25 @@ public class OrderAttributeRepositoryImpl implements OrderAttributeRepository {
                     .map(WiwaOrderAttributeDto::toObject)
                     .map(mapper::toOrderAttributeDo)
                     .toList();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Optional<OrderAttributeDo> findByOrderIdAndAttributeKey(final Long orderId, final OrderAttributeKey orderAttributeKey) {
+        log.debug("findByOrderIdAndAttributeKey({},{})", orderId, orderAttributeKey);
+        try (final Connection connection = dataSource.getConnection()) {
+            final List<Object[]> rows = sqlBuilder.select(connection,
+                    Query.SELECT(MetaColumnWiwaOrderAttribute.columns())
+                            .FROM(MetaTable.WIWA_ORDER_ATTRIBUTE.table())
+                            .WHERE(MetaColumnWiwaOrderAttribute.ORDER_ID.column(), Condition.EQUALS, orderId)
+                            .AND(MetaColumnWiwaOrderAttribute.ATTRIBUTE_KEY.column(), Condition.EQUALS, orderAttributeKey.name())
+            );
+            return rows.stream()
+                    .map(WiwaOrderAttributeDto::toObject)
+                    .map(mapper::toOrderAttributeDo)
+                    .findFirst();
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

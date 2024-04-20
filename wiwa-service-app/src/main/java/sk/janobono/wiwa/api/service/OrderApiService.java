@@ -69,9 +69,9 @@ public class OrderApiService {
         return order;
     }
 
-    public OrderWebDto addOrder(final OrderCommentChangeWebDto orderCommentChange) {
+    public OrderWebDto addOrder() {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return orderWebMapper.mapToWebDto(orderService.addOrder(user.id(), orderWebMapper.mapToData(orderCommentChange)));
+        return orderWebMapper.mapToWebDto(orderService.addOrder(user.id()));
     }
 
     public OrderWebDto sendOrder(final Long id, final SendOrderWebDto sendOrder) {

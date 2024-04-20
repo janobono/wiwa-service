@@ -58,8 +58,8 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderWebDto addOrder(@Valid @RequestBody final OrderCommentChangeWebDto orderCommentChange) {
-        return orderApiService.addOrder(orderCommentChange);
+    public OrderWebDto addOrder() {
+        return orderApiService.addOrder();
     }
 
     @PostMapping("/{id}/send")
@@ -67,7 +67,7 @@ public class OrderController {
         return orderApiService.sendOrder(id, sendOrder);
     }
 
-    @PostMapping("/{id}/status")
+    @PutMapping("/{id}/status")
     public OrderWebDto setOrderStatus(@PathVariable("id") final Long id, @Valid @RequestBody final OrderStatusChangeWebDto orderStatusChange) {
         return orderApiService.setOrderStatus(id, orderStatusChange);
     }
@@ -92,12 +92,12 @@ public class OrderController {
         return orderApiService.setItem(id, itemId, orderItem);
     }
 
-    @PutMapping("/{id}/item/{itemId}/move-up")
+    @PatchMapping("/{id}/item/{itemId}/move-up")
     public void moveUpItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId) {
         orderApiService.moveUpItem(id, itemId);
     }
 
-    @PutMapping("/{id}/item/{itemId}/move-down")
+    @PatchMapping("/{id}/item/{itemId}/move-down")
     public void moveDownItem(@PathVariable("id") final Long id, @PathVariable("itemId") final Long itemId) {
         orderApiService.moveDownItem(id, itemId);
     }

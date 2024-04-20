@@ -114,6 +114,23 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public Optional<Long> getOrderUserId(final Long id) {
+        log.debug("getOrderCreatorId({})", id);
+        try (final Connection connection = dataSource.getConnection()) {
+            final List<Object[]> rows = sqlBuilder.select(connection,
+                    Query.SELECT(MetaColumnWiwaOrder.USER_ID.column())
+                            .FROM(MetaTable.WIWA_ORDER.table())
+                            .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, id)
+            );
+            return rows.stream()
+                    .findFirst()
+                    .map(row -> (Long) row[0]);
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public Optional<OrderDo> findById(final Long id) {
         log.debug("findById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
