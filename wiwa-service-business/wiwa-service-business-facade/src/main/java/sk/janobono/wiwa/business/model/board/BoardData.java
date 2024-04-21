@@ -1,7 +1,7 @@
 package sk.janobono.wiwa.business.model.board;
 
 import lombok.Builder;
-import sk.janobono.wiwa.business.model.ApplicationImageInfoData;
+import sk.janobono.wiwa.business.model.application.ApplicationImageInfoData;
 import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;

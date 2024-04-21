@@ -127,8 +127,8 @@ public class OrderApiService {
     }
 
     public void deleteItem(final Long id, final Long itemId) {
-        final User user = checkAccess(id);
-        orderService.deleteItem(id, itemId, user.id());
+        checkAccess(id);
+        orderService.deleteItem(id, itemId);
     }
 
     public OrderSummaryWebDto getOrderSummary(final Long id) {

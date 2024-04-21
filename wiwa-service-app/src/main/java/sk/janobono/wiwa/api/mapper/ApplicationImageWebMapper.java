@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import sk.janobono.wiwa.api.model.ApplicationImageInfoWebDto;
 import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
-import sk.janobono.wiwa.business.model.ApplicationImageData;
-import sk.janobono.wiwa.business.model.ApplicationImageInfoData;
+import sk.janobono.wiwa.business.model.application.ApplicationImageData;
+import sk.janobono.wiwa.business.model.application.ApplicationImageInfoData;
 import sk.janobono.wiwa.component.ImageUtil;
 
 @RequiredArgsConstructor

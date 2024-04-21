@@ -78,8 +78,8 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/comments")
-    public List<OrderCommentWebDto> addComment(@PathVariable("id") final Long id, @Valid @RequestBody final OrderCommentChangeWebDto commentChange) {
-        return orderApiService.addComment(id, commentChange);
+    public List<OrderCommentWebDto> addComment(@PathVariable("id") final Long id, @Valid @RequestBody final OrderCommentChangeWebDto orderCommentChange) {
+        return orderApiService.addComment(id, orderCommentChange);
     }
 
     @GetMapping("/{id}/item")

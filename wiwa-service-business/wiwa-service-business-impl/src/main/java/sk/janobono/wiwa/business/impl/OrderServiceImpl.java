@@ -1,11 +1,13 @@
 package sk.janobono.wiwa.business.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.impl.component.OrderAttributeUtil;
 import sk.janobono.wiwa.business.impl.component.OrderCommentUtil;
+import sk.janobono.wiwa.business.impl.component.OrderItemUtil;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
@@ -32,6 +34,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class OrderServiceImpl implements OrderService {
+
+    private final ApplicationContext applicationContext;
 
     private final PriceUtil priceUtil;
     private final OrderAttributeUtil orderAttributeUtil;
@@ -74,8 +78,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderData addOrder(final Long userId) {
-        final BigDecimal vatRate = applicationPropertyService.getVatRate();
-
         final OrderDo orderDo = orderRepository.save(
                 OrderDo.builder()
                         .userId(userId)
@@ -90,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
                         .totalUnit(Unit.EUR)
                         .build());
 
-        return toOrderData(orderDo, vatRate);
+        return toOrderData(orderDo, applicationPropertyService.getVatRate());
     }
 
     @Override
@@ -108,19 +110,38 @@ public class OrderServiceImpl implements OrderService {
     public OrderSummaryData getOrderSummary(final Long id) {
         return orderAttributeRepository.findByOrderIdAndAttributeKey(id, OrderAttributeKey.SUMMARY)
                 .map(orderAttributeDo -> orderAttributeUtil.parseValue(orderAttributeDo, OrderSummaryData.class))
-                .orElse(OrderSummaryData.builder()
-                        // TODO
-                        .build());
+                .orElse(OrderSummaryData.builder().build());
     }
 
     @Override
-    public OrderData sendOrder(Long id, SendOrderData sendOrder) {
+    public OrderData sendOrder(final Long id, final SendOrderData sendOrder) {
+        final OrderDo order = getOrderDo(id);
+
+        if (order.getStatus() != OrderStatus.NEW) {
+            throw WiwaException.ORDER_STATUS_INVALID.exception("Order with id {0} invalid status {}", order.getId(), order.getStatus());
+        }
+
+        // TODO
+
         return null;
     }
 
     @Override
-    public OrderData setOrderStatus(Long id, OrderStatusChangeData orderStatusChange) {
-        return null;
+    public OrderData setOrderStatus(final Long id, final OrderStatusChangeData orderStatusChange) {
+        final OrderDo order = getOrderDo(id);
+
+        if (order.getStatus() == OrderStatus.NEW) {
+            throw WiwaException.ORDER_STATUS_INVALID.exception("Order with id {0} invalid status {}", order.getId(), order.getStatus());
+        }
+
+        if (orderStatusChange.newStatus() == OrderStatus.NEW) {
+            throw WiwaException.ORDER_STATUS_INVALID.exception("Status can't be changed to {}", orderStatusChange.newStatus());
+        }
+
+
+        // TODO
+        order.setStatus(OrderStatus.IN_PRODUCTION);
+        return toOrderData(orderRepository.save(order), applicationPropertyService.getVatRate());
     }
 
     @Override
@@ -132,10 +153,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderCommentData> addComment(final Long id, final Long creatorId, final OrderCommentChangeData orderCommentChange) {
-        final UserDo userDo = userUtilService.getUserDo(creatorId);
+        final UserDo creator = userUtilService.getUserDo(creatorId);
 
         final List<OrderCommentData> orderComments = orderCommentUtil.addComment(
-                getComments(id), toOrderUser(userDo), orderCommentChange.parentId(), orderCommentChange.comment()
+                getComments(id), toOrderUser(creator), orderCommentChange.parentId(), orderCommentChange.comment()
         );
 
         orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.COMMENTS, orderComments));
@@ -144,33 +165,110 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderItemData> getOrderItems(Long id) {
-        return List.of();
+    public List<OrderItemData> getOrderItems(final Long id) {
+        return orderAttributeRepository.findByOrderIdAndAttributeKey(id, OrderAttributeKey.ITEMS)
+                .map(orderAttributeDo -> Arrays.asList(orderAttributeUtil.parseValue(orderAttributeDo, OrderItemData[].class)))
+                .orElse(Collections.emptyList());
     }
 
     @Override
-    public OrderItemData addItem(Long id, Long creatorId, OrderItemChangeData orderItem) {
-        return null;
+    public OrderItemData addItem(final Long id, final Long creatorId, final OrderItemChangeData orderItemChange) {
+        final OrderDo order = getOrderDo(id);
+        final UserDo creator = userUtilService.getUserDo(creatorId);
+
+        checkOrderStatus(order);
+
+        final OrderItemUtil orderItemUtil = applicationContext.getBean(OrderItemUtil.class);
+        orderItemUtil.setOrderItems(getOrderItems(id));
+        // TODO init util
+        // TODO saw prices
+        // TODO edge prices
+        // TODO glue second dim prices
+
+        final OrderItemData orderItemData = orderItemUtil.addItem(toOrderUser(creator), orderItemChange);
+
+        setOrderSummary(order, orderItemUtil);
+        orderRepository.save(order);
+
+        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.ITEMS, orderItemUtil.getOrderItems()));
+        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.SUMMARY, orderItemUtil.getOrderSummary()));
+
+        return orderItemData;
     }
 
     @Override
-    public OrderItemData setItem(Long id, Long itemId, Long modifierId, OrderItemChangeData orderItem) {
-        return null;
+    public OrderItemData setItem(final Long id, final Long itemId, final Long modifierId, final OrderItemChangeData orderItemChange) {
+        final OrderDo order = getOrderDo(id);
+        final UserDo modifier = userUtilService.getUserDo(modifierId);
+
+        checkOrderStatus(order);
+
+        final OrderItemUtil orderItemUtil = applicationContext.getBean(OrderItemUtil.class);
+        orderItemUtil.setOrderItems(getOrderItems(id));
+        // TODO init util
+
+        final OrderItemData orderItemData = orderItemUtil.setItem(itemId, toOrderUser(modifier), orderItemChange);
+
+        setOrderSummary(order, orderItemUtil);
+        orderRepository.save(order);
+
+        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.ITEMS, orderItemUtil.getOrderItems()));
+        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.SUMMARY, orderItemUtil.getOrderSummary()));
+
+        return orderItemData;
     }
 
     @Override
-    public OrderItemData moveUpItem(Long id, Long itemId, Long modifierId) {
-        return null;
+    public OrderItemData moveUpItem(final Long id, final Long itemId, final Long modifierId) {
+        final OrderDo order = getOrderDo(id);
+        final UserDo modifier = userUtilService.getUserDo(modifierId);
+
+        checkOrderStatus(order);
+
+        final OrderItemUtil orderItemUtil = applicationContext.getBean(OrderItemUtil.class);
+        orderItemUtil.setOrderItems(getOrderItems(id));
+
+        final OrderItemData orderItemData = orderItemUtil.moveUpItem(itemId, toOrderUser(modifier));
+
+        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.ITEMS, orderItemUtil.getOrderItems()));
+
+        return orderItemData;
     }
 
     @Override
-    public OrderItemData moveDownItem(Long id, Long itemId, Long modifierId) {
-        return null;
+    public OrderItemData moveDownItem(final Long id, final Long itemId, final Long modifierId) {
+        final OrderDo order = getOrderDo(id);
+        final UserDo modifier = userUtilService.getUserDo(modifierId);
+
+        checkOrderStatus(order);
+
+        final OrderItemUtil orderItemUtil = applicationContext.getBean(OrderItemUtil.class);
+        orderItemUtil.setOrderItems(getOrderItems(id));
+
+        final OrderItemData orderItemData = orderItemUtil.moveDownItem(itemId, toOrderUser(modifier));
+
+        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.ITEMS, orderItemUtil.getOrderItems()));
+
+        return orderItemData;
     }
 
     @Override
-    public void deleteItem(Long id, Long itemId, Long modifierId) {
+    public void deleteItem(final Long id, final Long itemId) {
+        final OrderDo order = getOrderDo(id);
 
+        checkOrderStatus(order);
+
+        final OrderItemUtil orderItemUtil = applicationContext.getBean(OrderItemUtil.class);
+        orderItemUtil.setOrderItems(getOrderItems(id));
+        // TODO init util
+
+        orderItemUtil.deleteItem(itemId);
+
+        setOrderSummary(order, orderItemUtil);
+        orderRepository.save(order);
+
+        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.ITEMS, orderItemUtil.getOrderItems()));
+        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.SUMMARY, orderItemUtil.getOrderSummary()));
     }
 
     private OrderSearchCriteriaDo mapToDo(final OrderSearchCriteriaData criteria, final BigDecimal vatRate) {
@@ -217,5 +315,24 @@ public class OrderServiceImpl implements OrderService {
     private OrderDo getOrderDo(final Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
+    }
+
+    private void checkOrderStatus(final OrderDo order) {
+        switch (order.getStatus()) {
+            case IN_PRODUCTION:
+            case READY:
+            case CANCELLED:
+            case FINISHED:
+                throw WiwaException.ORDER_IS_IMMUTABLE.exception("Order with id {0} has status {1} is immutable", order.getId(), order.getStatus());
+        }
+    }
+
+    private void setOrderSummary(final OrderDo orderDo, final OrderItemUtil orderItemUtil) {
+        orderDo.setNetWeightValue(orderItemUtil.getNetWeightValue());
+        orderDo.setNetWeightUnit(orderItemUtil.getNetWeightUnit());
+        orderDo.setWeightValue(orderItemUtil.getWeightValue());
+        orderDo.setWeightUnit(orderItemUtil.getWeightUnit());
+        orderDo.setTotalValue(orderItemUtil.getTotalValue());
+        orderDo.setTotalUnit(orderItemUtil.getTotalUnit());
     }
 }

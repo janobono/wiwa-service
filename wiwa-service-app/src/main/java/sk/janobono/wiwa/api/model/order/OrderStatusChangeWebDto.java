@@ -1,6 +1,10 @@
 package sk.janobono.wiwa.api.model.order;
 
-public record OrderStatusChangeWebDto(
+import jakarta.validation.constraints.NotNull;
+import sk.janobono.wiwa.model.OrderStatus;
 
+public record OrderStatusChangeWebDto(
+        @NotNull Boolean notifyUser,
+        @NotNull OrderStatus newStatus
 ) {
 }

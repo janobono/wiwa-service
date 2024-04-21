@@ -62,7 +62,7 @@ class OrderControllerTest extends BaseControllerTest {
         checkStatus(managerHeaders, orders, HttpStatus.OK);
         checkStatus(adminHeaders, orders, HttpStatus.OK);
 
-        final OrderWebDto orderWebDto = addEntity(OrderWebDto.class, adminHeaders, "/orders", new OrderCommentChangeWebDto(null, null));
+        final OrderWebDto orderWebDto = addEntity(OrderWebDto.class, adminHeaders, "/orders", new OrderCommentChangeWebDto(true, null, null));
 
         final URI order = getURI("/orders/{id}", Map.of("id", orderWebDto.id().toString()));
         checkStatus(customerHeaders, order, HttpStatus.FORBIDDEN);

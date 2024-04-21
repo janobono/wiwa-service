@@ -22,7 +22,9 @@ public enum WiwaException {
     CODE_LIST_ITEM_NOT_FOUND,
     CODE_LIST_ITEM_NOT_EMPTY,
     QUANTITY_UNIT_NOT_FOUND,
-    ORDER_NOT_FOUND;
+    ORDER_NOT_FOUND,
+    ORDER_IS_IMMUTABLE,
+    ORDER_STATUS_INVALID;
 
     public ApplicationException exception(final String pattern, final Object... arguments) {
         return exception(null, pattern, arguments);

@@ -1,6 +1,9 @@
 package sk.janobono.wiwa.business.model.order;
 
-public record OrderStatusChangeData(
+import sk.janobono.wiwa.model.OrderStatus;
 
+public record OrderStatusChangeData(
+        Boolean notifyUser,
+        OrderStatus newStatus
 ) {
 }

@@ -1,6 +1,6 @@
 package sk.janobono.wiwa.business.service;
 
-import sk.janobono.wiwa.business.model.*;
+import sk.janobono.wiwa.business.model.application.*;
 
 import java.math.BigDecimal;
 import java.util.List;

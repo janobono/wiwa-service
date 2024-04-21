@@ -1,4 +1,7 @@
 package sk.janobono.wiwa.api.model.order;
 
-public record OrderCommentChangeWebDto(Long parentId, String comment) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record OrderCommentChangeWebDto(@NotNull Boolean notifyUser, Long parentId, @NotBlank String comment) {
 }

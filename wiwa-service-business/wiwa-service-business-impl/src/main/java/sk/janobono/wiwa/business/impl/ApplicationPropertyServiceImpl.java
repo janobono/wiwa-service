@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.impl.util.PropertyUtilService;
-import sk.janobono.wiwa.business.model.*;
+import sk.janobono.wiwa.business.model.application.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.config.JwtConfigProperties;

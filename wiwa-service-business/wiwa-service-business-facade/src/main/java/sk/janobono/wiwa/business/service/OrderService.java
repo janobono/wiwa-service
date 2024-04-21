@@ -32,13 +32,13 @@ public interface OrderService {
 
     List<OrderItemData> getOrderItems(Long id);
 
-    OrderItemData addItem(Long id, Long creatorId, OrderItemChangeData orderItemChangeData);
+    OrderItemData addItem(Long id, Long creatorId, OrderItemChangeData orderItemChange);
 
-    OrderItemData setItem(Long id, Long itemId, Long modifierId, OrderItemChangeData orderItemChangeData);
+    OrderItemData setItem(Long id, Long itemId, Long modifierId, OrderItemChangeData orderItemChange);
 
     OrderItemData moveUpItem(Long id, Long itemId, Long modifierId);
 
     OrderItemData moveDownItem(Long id, Long itemId, Long modifierId);
 
-    void deleteItem(Long id, Long itemId, Long modifierId);
+    void deleteItem(Long id, Long itemId);
 }
