@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.api.mapper.ApplicationImageWebMapper;
 import sk.janobono.wiwa.api.mapper.UiWebMapper;
-import sk.janobono.wiwa.api.model.*;
+import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
+import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.ApplicationPropertiesWebDto;
 import sk.janobono.wiwa.api.model.application.CompanyInfoWebDto;
+import sk.janobono.wiwa.api.model.application.ManufacturePropertiesWebDto;
 import sk.janobono.wiwa.api.model.application.UnitWebDto;
 import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
 import sk.janobono.wiwa.business.service.ApplicationImageService;
@@ -83,5 +85,9 @@ public class UiApiService {
 
     public List<UnitWebDto> getUnits() {
         return applicationPropertyService.getUnits().stream().map(uiWebMapper::mapToWebDto).toList();
+    }
+
+    public ManufacturePropertiesWebDto getManufactureProperties() {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getManufactureProperties());
     }
 }

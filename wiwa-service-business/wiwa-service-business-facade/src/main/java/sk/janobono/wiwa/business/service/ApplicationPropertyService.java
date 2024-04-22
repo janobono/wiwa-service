@@ -56,4 +56,20 @@ public interface ApplicationPropertyService {
     ResetPasswordMailData getResetPasswordMail();
 
     ResetPasswordMailData setResetPasswordMail(ResetPasswordMailData resetPasswordMail);
+
+    ManufacturePropertiesData getManufactureProperties();
+
+    ManufacturePropertiesData setManufactureProperties(ManufacturePropertiesData manufactureProperties);
+
+    PriceForGluingLayerData getPriceForGluingLayer();
+
+    PriceForGluingLayerData setPriceForGluingLayer(PriceForGluingLayerData priceForGluingLayer);
+
+    List<PriceForGluingEdgeData> getPricesForGluingEdge();
+
+    List<PriceForGluingEdgeData> setPricesForGluingEdge(List<PriceForGluingEdgeData> pricesForGluingEdge);
+
+    List<PriceForCuttingData> getPricesForCutting();
+
+    List<PriceForCuttingData> setPricesForCutting(List<PriceForCuttingData> pricesForCutting);
 }

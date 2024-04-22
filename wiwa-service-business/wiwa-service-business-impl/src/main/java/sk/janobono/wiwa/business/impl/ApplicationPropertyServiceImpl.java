@@ -30,6 +30,10 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     private static final String WORKING_HOURS = "WORKING_HOURS";
     private static final String SIGN_UP_MAIL = "SIGN_UP_MAIL";
     private static final String RESET_PASSWORD_MAIL = "RESET_PASSWORD_MAIL";
+    private static final String MANUFACTURE_PROPERTIES = "MANUFACTURE_PROPERTIES";
+    private static final String PRICE_FOR_GLUING_LAYER = "PRICE_FOR_GLUING_LAYER";
+    private static final String PRICES_FOR_GLUING_EDGE = "PRICES_FOR_GLUING_EDGE";
+    private static final String PRICES_FOR_CUTTING = "PRICES_FOR_CUTTING";
 
     private final ObjectMapper objectMapper;
 
@@ -238,5 +242,97 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
             }
         }, RESET_PASSWORD_MAIL, resetPasswordMail);
         return resetPasswordMail;
+    }
+
+    @Override
+    public ManufacturePropertiesData getManufactureProperties() {
+        return propertyUtilService.getProperty(v -> {
+            try {
+                return objectMapper.readValue(v, ManufacturePropertiesData.class);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, MANUFACTURE_PROPERTIES);
+    }
+
+    @Override
+    public ManufacturePropertiesData setManufactureProperties(final ManufacturePropertiesData manufactureProperties) {
+        propertyUtilService.setProperty(data -> {
+            try {
+                return objectMapper.writeValueAsString(data);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, MANUFACTURE_PROPERTIES, manufactureProperties);
+        return manufactureProperties;
+    }
+
+    @Override
+    public PriceForGluingLayerData getPriceForGluingLayer() {
+        return propertyUtilService.getProperty(v -> {
+            try {
+                return objectMapper.readValue(v, PriceForGluingLayerData.class);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, PRICE_FOR_GLUING_LAYER);
+    }
+
+    @Override
+    public PriceForGluingLayerData setPriceForGluingLayer(final PriceForGluingLayerData priceForGluingLayer) {
+        propertyUtilService.setProperty(data -> {
+            try {
+                return objectMapper.writeValueAsString(data);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, PRICE_FOR_GLUING_LAYER, priceForGluingLayer);
+        return priceForGluingLayer;
+    }
+
+    @Override
+    public List<PriceForGluingEdgeData> getPricesForGluingEdge() {
+        return propertyUtilService.getProperty(v -> {
+            try {
+                return Arrays.asList(objectMapper.readValue(v, PriceForGluingEdgeData[].class));
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, PRICES_FOR_GLUING_EDGE);
+    }
+
+    @Override
+    public List<PriceForGluingEdgeData> setPricesForGluingEdge(final List<PriceForGluingEdgeData> pricesForGluingEdge) {
+        propertyUtilService.setProperty(data -> {
+            try {
+                return objectMapper.writeValueAsString(data);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, PRICES_FOR_GLUING_EDGE, pricesForGluingEdge);
+        return pricesForGluingEdge;
+    }
+
+    @Override
+    public List<PriceForCuttingData> getPricesForCutting() {
+        return propertyUtilService.getProperty(v -> {
+            try {
+                return Arrays.asList(objectMapper.readValue(v, PriceForCuttingData[].class));
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, PRICES_FOR_CUTTING);
+    }
+
+    @Override
+    public List<PriceForCuttingData> setPricesForCutting(final List<PriceForCuttingData> pricesForCutting) {
+        propertyUtilService.setProperty(data -> {
+            try {
+                return objectMapper.writeValueAsString(data);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, PRICES_FOR_CUTTING, pricesForCutting);
+        return pricesForCutting;
     }
 }

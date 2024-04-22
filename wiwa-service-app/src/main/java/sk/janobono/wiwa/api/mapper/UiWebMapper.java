@@ -24,9 +24,25 @@ public interface UiWebMapper {
 
     ResetPasswordMailWebDto mapToWebDto(ResetPasswordMailData resetPasswordMail);
 
-    ResetPasswordMailData mapToData(ResetPasswordMailWebDto resetPasswordMail);
-
     SignUpMailWebDto mapToWebDto(SignUpMailData signUpMail);
 
+    ManufacturePropertiesWebDto mapToWebDto(ManufacturePropertiesData manufactureProperties);
+
+    PriceForCuttingWebDto mapToWebDto(PriceForCuttingData priceForCutting);
+
+    PriceForGluingEdgeWebDto mapToWebDto(PriceForGluingEdgeData priceForGluingEdge);
+
+    PriceForGluingLayerWebDto mapToWebDto(PriceForGluingLayerData priceForGluingLayer);
+
+    ResetPasswordMailData mapToData(ResetPasswordMailWebDto resetPasswordMail);
+
     SignUpMailData mapToData(SignUpMailWebDto signUpMail);
+
+    ManufacturePropertiesData mapToData(ManufacturePropertiesWebDto manufactureProperties);
+
+    PriceForCuttingData mapToData(PriceForCuttingWebDto priceForCutting);
+
+    PriceForGluingEdgeData mapToData(PriceForGluingEdgeWebDto priceForGluingEdge);
+
+    PriceForGluingLayerData mapToData(PriceForGluingLayerWebDto priceForGluingLayer);
 }

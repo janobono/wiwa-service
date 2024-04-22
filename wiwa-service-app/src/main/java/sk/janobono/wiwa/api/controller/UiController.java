@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sk.janobono.wiwa.api.model.*;
+import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
+import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.ApplicationPropertiesWebDto;
 import sk.janobono.wiwa.api.model.application.CompanyInfoWebDto;
+import sk.janobono.wiwa.api.model.application.ManufacturePropertiesWebDto;
 import sk.janobono.wiwa.api.model.application.UnitWebDto;
 import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
 import sk.janobono.wiwa.api.service.UiApiService;
@@ -114,5 +116,10 @@ public class UiController {
                 .contentType(MediaType.parseMediaType(resourceEntity.contentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntity.fileName() + "\"")
                 .body(resourceEntity.resource());
+    }
+
+    @GetMapping(value = "/manufacture-properties")
+    public ManufacturePropertiesWebDto getManufactureProperties() {
+        return uiApiService.getManufactureProperties();
     }
 }

@@ -12,12 +12,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.api.model.application.ApplicationImageInfoWebDto;
-import sk.janobono.wiwa.api.model.application.CompanyInfoWebDto;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
-import sk.janobono.wiwa.api.model.application.UnitWebDto;
+import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
+import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.Quantity;
 import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
@@ -270,6 +270,104 @@ class ConfigControllerTest extends BaseControllerTest {
         // Vat rate
         final var newVatRate = setVatRate(headers, BigDecimal.valueOf(25L));
         assertThat(newVatRate).isEqualTo(getVatRate(headers));
+
+        // manufacture-properties
+        final ResponseEntity<ManufacturePropertiesWebDto> manufactureProperties = restTemplate.exchange(
+                getURI("/config/manufacture-properties"),
+                HttpMethod.POST,
+                new HttpEntity<>(
+                        new ManufacturePropertiesWebDto(
+                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
+                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
+                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
+                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
+                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
+                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER)
+                        ),
+                        headers
+                ),
+                ManufacturePropertiesWebDto.class
+        );
+        assertThat(manufactureProperties.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(Objects.requireNonNull(manufactureProperties.getBody()).minimalBoardDimension().quantity()).isEqualTo(new BigDecimal("1000.0000"));
+
+        // price-for-gluing-layer
+        ResponseEntity<PriceForGluingLayerWebDto> priceForGluingLayer = restTemplate.exchange(
+                getURI("/config/price-for-gluing-layer"),
+                HttpMethod.POST,
+                new HttpEntity<>(
+                        new PriceForGluingLayerWebDto(
+                                new Quantity(BigDecimal.ONE, Unit.SQUARE_METER),
+                                new Money(new BigDecimal("123.123"), Unit.EUR)
+                        ),
+                        headers
+                ),
+                PriceForGluingLayerWebDto.class
+        );
+        assertThat(priceForGluingLayer.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(Objects.requireNonNull(priceForGluingLayer.getBody()).price().amount()).isEqualTo(new BigDecimal("123.123"));
+
+        priceForGluingLayer = restTemplate.exchange(
+                getURI("/config/price-for-gluing-layer"),
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                PriceForGluingLayerWebDto.class
+        );
+        assertThat(priceForGluingLayer.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(Objects.requireNonNull(priceForGluingLayer.getBody()).price().amount()).isEqualTo(new BigDecimal("123.123"));
+
+        // prices-for-cutting
+        ResponseEntity<PriceForCuttingWebDto[]> pricesForCutting = restTemplate.exchange(
+                getURI("/config/prices-for-cutting"),
+                HttpMethod.POST,
+                new HttpEntity<>(
+                        List.of(new PriceForCuttingWebDto(
+                                new Quantity(BigDecimal.ONE, Unit.MILLIMETER),
+                                new Quantity(BigDecimal.ONE, Unit.MILLIMETER),
+                                new Money(BigDecimal.ZERO, Unit.EUR)
+                        )),
+                        headers
+                ),
+                PriceForCuttingWebDto[].class
+        );
+        assertThat(pricesForCutting.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(Objects.requireNonNull(pricesForCutting.getBody())[0].price().amount()).isEqualTo(BigDecimal.ZERO);
+
+        pricesForCutting = restTemplate.exchange(
+                getURI("/config/prices-for-cutting"),
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                PriceForCuttingWebDto[].class
+        );
+        assertThat(pricesForCutting.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(Objects.requireNonNull(pricesForCutting.getBody())[0].price().amount()).isEqualTo(BigDecimal.ZERO);
+
+        // prices-for-gluing-edge
+        ResponseEntity<PriceForGluingEdgeWebDto[]> pricesForGluingEdge = restTemplate.exchange(
+                getURI("/config/prices-for-gluing-edge"),
+                HttpMethod.POST,
+                new HttpEntity<>(
+                        List.of(new PriceForGluingEdgeWebDto(
+                                new Quantity(BigDecimal.ONE, Unit.MILLIMETER),
+                                new Quantity(BigDecimal.ONE, Unit.MILLIMETER),
+                                new Money(BigDecimal.ZERO, Unit.EUR)
+                        )),
+                        headers
+                ),
+                PriceForGluingEdgeWebDto[].class
+        );
+        assertThat(pricesForGluingEdge.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(Objects.requireNonNull(pricesForGluingEdge.getBody())[0].price().amount()).isEqualTo(BigDecimal.ZERO);
+
+        pricesForGluingEdge = restTemplate.exchange(
+                getURI("/config/prices-for-gluing-edge"),
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                PriceForGluingEdgeWebDto[].class
+        );
+        assertThat(pricesForGluingEdge.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(Objects.requireNonNull(pricesForGluingEdge.getBody())[0].price().amount()).isEqualTo(BigDecimal.ZERO);
+
     }
 
     private BigDecimal getVatRate(final HttpHeaders headers) {

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.api.mapper.ApplicationImageWebMapper;
 import sk.janobono.wiwa.api.mapper.UiWebMapper;
-import sk.janobono.wiwa.api.model.*;
+import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.business.service.ApplicationImageService;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
@@ -101,5 +101,37 @@ public class ConfigApiService {
 
     public SignUpMailWebDto setSignUpMail(final SignUpMailWebDto signUpMail) {
         return uiWebMapper.mapToWebDto(applicationPropertyService.setSignUpMail(uiWebMapper.mapToData(signUpMail)));
+    }
+
+    public ManufacturePropertiesWebDto setManufactureProperties(final ManufacturePropertiesWebDto manufactureProperties) {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.setManufactureProperties(uiWebMapper.mapToData(manufactureProperties)));
+    }
+
+    public List<PriceForCuttingWebDto> getPricesForCutting() {
+        return applicationPropertyService.getPricesForCutting().stream().map(uiWebMapper::mapToWebDto).toList();
+    }
+
+    public List<PriceForCuttingWebDto> setPricesForCutting(final List<PriceForCuttingWebDto> pricesForCutting) {
+        return applicationPropertyService.setPricesForCutting(
+                pricesForCutting.stream().map(uiWebMapper::mapToData).toList()
+        ).stream().map(uiWebMapper::mapToWebDto).toList();
+    }
+
+    public List<PriceForGluingEdgeWebDto> getPricesForGluingEdge() {
+        return applicationPropertyService.getPricesForGluingEdge().stream().map(uiWebMapper::mapToWebDto).toList();
+    }
+
+    public List<PriceForGluingEdgeWebDto> setPricesForGluingEdge(final List<PriceForGluingEdgeWebDto> pricesForGluingEdge) {
+        return applicationPropertyService.setPricesForGluingEdge(
+                pricesForGluingEdge.stream().map(uiWebMapper::mapToData).toList()
+        ).stream().map(uiWebMapper::mapToWebDto).toList();
+    }
+
+    public PriceForGluingLayerWebDto getPriceForGluingLayer() {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getPriceForGluingLayer());
+    }
+
+    public PriceForGluingLayerWebDto setPriceForGluingLayer(final PriceForGluingLayerWebDto priceForGluingLayer) {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.setPriceForGluingLayer(uiWebMapper.mapToData(priceForGluingLayer)));
     }
 }

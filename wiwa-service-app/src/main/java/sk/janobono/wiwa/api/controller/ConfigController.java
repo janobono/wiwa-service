@@ -95,7 +95,7 @@ public class ConfigController {
 
     @PostMapping(value = "/units")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<UnitWebDto> setUnit(@Valid @RequestBody final List<UnitWebDto> units) {
+    public List<UnitWebDto> setUnits(@Valid @RequestBody final List<UnitWebDto> units) {
         return configApiService.setUnits(units);
     }
 
@@ -133,5 +133,47 @@ public class ConfigController {
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public SignUpMailWebDto setSignUpMail(@Valid @RequestBody final SignUpMailWebDto signUpMail) {
         return configApiService.setSignUpMail(signUpMail);
+    }
+
+    @PostMapping(value = "/manufacture-properties")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public ManufacturePropertiesWebDto setManufactureProperties(@Valid @RequestBody final ManufacturePropertiesWebDto manufactureProperties) {
+        return configApiService.setManufactureProperties(manufactureProperties);
+    }
+
+    @GetMapping(value = "/prices-for-cutting")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public List<PriceForCuttingWebDto> getPricesForCutting() {
+        return configApiService.getPricesForCutting();
+    }
+
+    @PostMapping(value = "/prices-for-cutting")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public List<PriceForCuttingWebDto> setPricesForCutting(@Valid @RequestBody final List<PriceForCuttingWebDto> pricesForCutting) {
+        return configApiService.setPricesForCutting(pricesForCutting);
+    }
+
+    @GetMapping(value = "/prices-for-gluing-edge")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public List<PriceForGluingEdgeWebDto> getPricesForGluingEdge() {
+        return configApiService.getPricesForGluingEdge();
+    }
+
+    @PostMapping(value = "/prices-for-gluing-edge")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public List<PriceForGluingEdgeWebDto> setPricesForGluingEdge(@Valid @RequestBody final List<PriceForGluingEdgeWebDto> pricesForGluingEdge) {
+        return configApiService.setPricesForGluingEdge(pricesForGluingEdge);
+    }
+
+    @GetMapping(value = "/price-for-gluing-layer")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public PriceForGluingLayerWebDto getPriceForGluingLayer() {
+        return configApiService.getPriceForGluingLayer();
+    }
+
+    @PostMapping(value = "/price-for-gluing-layer")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public PriceForGluingLayerWebDto setPriceForGluingLayer(@Valid @RequestBody final PriceForGluingLayerWebDto priceForGluingLayer) {
+        return configApiService.setPriceForGluingLayer(priceForGluingLayer);
     }
 }

@@ -8,9 +8,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import sk.janobono.wiwa.api.model.application.ApplicationPropertiesWebDto;
-import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
 import sk.janobono.wiwa.api.model.application.CompanyInfoWebDto;
+import sk.janobono.wiwa.api.model.application.ManufacturePropertiesWebDto;
 import sk.janobono.wiwa.api.model.application.UnitWebDto;
+import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.component.ImageUtil;
 
@@ -94,5 +95,9 @@ class UiControllerTest extends BaseControllerTest {
         // units
         final UnitWebDto[] units = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/units"), UnitWebDto[].class));
         assertThat(units).isNotNull();
+
+        // manufacture-properties
+        final ManufacturePropertiesWebDto manufactureProperties = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/manufacture-properties"), ManufacturePropertiesWebDto.class));
+        assertThat(manufactureProperties).isNotNull();
     }
 }

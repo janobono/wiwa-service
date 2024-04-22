@@ -215,3 +215,58 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('RE
 "passwordMessage":"New password: {0}",
 "link":"Click to activate the password."
 }');
+
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('MANUFACTURE_PROPERTIES', e'{
+"minimalBoardDimension":{"quantity":30, "unit":"MILLIMETER"},
+"minimalEdgedBoardDimension":{"quantity":60, "unit":"MILLIMETER"},
+"minimalLayeredBoardDimension":{"quantity":80, "unit":"MILLIMETER"},
+"edgeWidthAppendDimension":{"quantity":8, "unit":"MILLIMETER"},
+"edgeLengthAppendDimension":{"quantity":40, "unit":"MILLIMETER"},
+"layeredBoardAppendDimension":{"quantity":10, "unit":"MILLIMETER"}
+}');
+
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PRICE_FOR_GLUING_LAYER', e'{
+"sale":{"quantity":1, "unit":"SQUARE_METER"},
+"price":{"amount":10, "currency":"EUR"}
+}');
+
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PRICES_FOR_GLUING_EDGE', e'[
+{
+"width":{"quantity":23.00, "unit":"MILLIMETER"},
+"sale":{"quantity":1, "unit":"METER"},
+"price":{"amount":0.700, "currency":"EUR"}
+},
+{
+"width":{"quantity":33.00, "unit":"MILLIMETER"},
+"sale":{"quantity":1, "unit":"METER"},
+"price":{"amount":0.850, "currency":"EUR"}
+},
+{
+"width":{"quantity":45.00, "unit":"MILLIMETER"},
+"sale":{"quantity":1, "unit":"METER"},
+"price":{"amount":0.980, "currency":"EUR"}
+},
+{
+"width":{"quantity":65.00, "unit":"MILLIMETER"},
+"sale":{"quantity":1, "unit":"METER"},
+"price":{"amount":1.680, "currency":"EUR"}
+}
+]');
+
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PRICES_FOR_CUTTING', e'[
+{
+"thickness":{"quantity":19.00, "unit":"MILLIMETER"},
+"sale":{"quantity":1, "unit":"METER"},
+"price":{"amount":0.630, "currency":"EUR"}
+},
+{
+"thickness":{"quantity":45.00, "unit":"MILLIMETER"},
+"sale":{"quantity":1, "unit":"METER"},
+"price":{"amount":0.720, "currency":"EUR"}
+},
+{
+"thickness":{"quantity":65.00, "unit":"MILLIMETER"},
+"sale":{"quantity":1, "unit":"METER"},
+"price":{"amount":2.000, "currency":"EUR"}
+}
+]');
