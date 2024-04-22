@@ -25,7 +25,8 @@ public enum WiwaException {
     ORDER_NOT_FOUND,
     ORDER_IS_IMMUTABLE,
     ORDER_STATUS_INVALID,
-    ORDER_AGREEMENTS_INVALID;
+    ORDER_AGREEMENTS_INVALID,
+    ORDER_DELIVERY_DATE_INVALID;
 
     public ApplicationException exception(final String pattern, final Object... arguments) {
         return exception(null, pattern, arguments);

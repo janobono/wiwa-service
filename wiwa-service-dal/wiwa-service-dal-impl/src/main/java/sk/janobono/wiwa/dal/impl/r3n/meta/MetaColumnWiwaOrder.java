@@ -16,7 +16,10 @@ public enum MetaColumnWiwaOrder {
     NET_WEIGHT_VALUE("net_weight_value", DataType.BIG_DECIMAL),
     NET_WEIGHT_UNIT("net_weight_unit", DataType.STRING),
     TOTAL_VALUE("total_value", DataType.BIG_DECIMAL),
-    TOTAL_UNIT("total_unit", DataType.STRING);
+    TOTAL_UNIT("total_unit", DataType.STRING),
+    DELIVERY("delivery", DataType.DATE),
+    READY("ready", DataType.TIME_STAMP),
+    FINISHED("finished", DataType.TIME_STAMP);
 
     private final String columnName;
 

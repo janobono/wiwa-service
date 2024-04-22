@@ -40,5 +40,5 @@ public interface OrderService {
 
     OrderItemData moveDownItem(long id, long itemId, long modifierId, boolean manager);
 
-    void deleteItem(long id, long itemId, boolean manager);
+    void deleteItem(long id, long itemId, long modifierId, boolean manager);
 }

@@ -262,6 +262,9 @@ public class OrderRepositoryImpl implements OrderRepository {
                 .orderNumber(wiwaOrderDto.orderNumber())
                 .netWeight(new Quantity(wiwaOrderDto.netWeightValue(), Unit.valueOf(wiwaOrderDto.netWeightUnit())))
                 .total(new Money(wiwaOrderDto.totalValue(), Unit.valueOf(wiwaOrderDto.totalUnit())))
+                .deliveryDate(wiwaOrderDto.delivery())
+                .ready(wiwaOrderDto.ready())
+                .finished(wiwaOrderDto.finished())
                 .build();
     }
 
@@ -275,7 +278,10 @@ public class OrderRepositoryImpl implements OrderRepository {
                 orderDo.getNetWeight().quantity(),
                 orderDo.getNetWeight().unit().name(),
                 orderDo.getTotal().amount(),
-                orderDo.getTotal().currency().name()
+                orderDo.getTotal().currency().name(),
+                orderDo.getDeliveryDate(),
+                orderDo.getReady(),
+                orderDo.getFinished()
         );
     }
 

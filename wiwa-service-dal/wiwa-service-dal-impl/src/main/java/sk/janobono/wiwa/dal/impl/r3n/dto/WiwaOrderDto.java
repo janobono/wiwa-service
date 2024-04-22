@@ -1,6 +1,7 @@
 package sk.janobono.wiwa.dal.impl.r3n.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record WiwaOrderDto(
@@ -12,7 +13,10 @@ public record WiwaOrderDto(
         BigDecimal netWeightValue,
         String netWeightUnit,
         BigDecimal totalValue,
-        String totalUnit
+        String totalUnit,
+        LocalDate delivery,
+        LocalDateTime ready,
+        LocalDateTime finished
 ) {
 
     public static Object[] toArray(final WiwaOrderDto wiwaOrderDto) {
@@ -25,7 +29,10 @@ public record WiwaOrderDto(
                 wiwaOrderDto.netWeightValue,
                 wiwaOrderDto.netWeightUnit,
                 wiwaOrderDto.totalValue,
-                wiwaOrderDto.totalUnit
+                wiwaOrderDto.totalUnit,
+                wiwaOrderDto.delivery,
+                wiwaOrderDto.ready,
+                wiwaOrderDto.finished
         };
     }
 
@@ -39,7 +46,10 @@ public record WiwaOrderDto(
                 (BigDecimal) array[5],
                 (String) array[6],
                 (BigDecimal) array[7],
-                (String) array[8]
+                (String) array[8],
+                (LocalDate) array[9],
+                (LocalDateTime) array[10],
+                (LocalDateTime) array[11]
         );
     }
 }

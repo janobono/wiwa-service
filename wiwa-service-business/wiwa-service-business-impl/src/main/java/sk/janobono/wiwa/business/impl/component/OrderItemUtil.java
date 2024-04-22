@@ -3,6 +3,10 @@ package sk.janobono.wiwa.business.impl.component;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import sk.janobono.wiwa.business.model.application.ManufacturePropertiesData;
+import sk.janobono.wiwa.business.model.application.PriceForCuttingData;
+import sk.janobono.wiwa.business.model.application.PriceForGluingEdgeData;
+import sk.janobono.wiwa.business.model.application.PriceForGluingLayerData;
 import sk.janobono.wiwa.business.model.order.OrderItemChangeData;
 import sk.janobono.wiwa.business.model.order.OrderItemData;
 import sk.janobono.wiwa.business.model.order.OrderSummaryData;
@@ -21,6 +25,22 @@ public class OrderItemUtil {
     private Quantity weight = new Quantity(BigDecimal.ZERO, Unit.KILOGRAM);
     private Quantity netWeight = new Quantity(BigDecimal.ZERO, Unit.KILOGRAM);
     private Money total = new Money(BigDecimal.ZERO, Unit.EUR);
+
+    public void setVatRate(BigDecimal vatRate) {
+    }
+
+    public void setManufactureProperties(ManufacturePropertiesData manufactureProperties) {
+    }
+
+    public void setPriceForGluingLayer(PriceForGluingLayerData priceForGluingLayer) {
+    }
+
+    public void setPricesForCutting(List<PriceForCuttingData> pricesForCutting) {
+    }
+
+    public void setPricesForGluingEdge(List<PriceForGluingEdgeData> pricesForGluingEdge) {
+
+    }
 
     public void setOrderItems(final List<OrderItemData> orderItems) {
 // TODO
@@ -52,6 +72,7 @@ public class OrderItemUtil {
     }
 
     public void deleteItem(Long itemId) {
+
     }
 
     public Quantity getWeight() {
@@ -65,4 +86,6 @@ public class OrderItemUtil {
     public Money getTotal() {
         return total;
     }
+
+
 }

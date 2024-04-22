@@ -1,5 +1,7 @@
 package sk.janobono.wiwa.business.impl.component;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import sk.janobono.wiwa.business.model.order.*;
 
@@ -10,7 +12,14 @@ import java.nio.file.Path;
 import java.util.List;
 
 @Component
+@Scope(value = BeanDefinition.SCOPE_PROTOTYPE)
 public class OrderPdfUtil {
+
+    public void init() {
+    }
+
+    public void cleanUp() {
+    }
 
     public Path createDirectory() {
         final Path path;
@@ -28,12 +37,12 @@ public class OrderPdfUtil {
         }
     }
 
-    public Path createPdf(Path file,
-                          OrderData orderData,
-                          List<OrderCommentData> orderComments,
-                          List<OrderItemData> orderItems,
-                          OrderSummaryData orderSummary,
-                          SendOrderData sendOrder) {
+    public Path createPdf(
+            OrderData orderData,
+            List<OrderCommentData> orderComments,
+            List<OrderItemData> orderItems,
+            OrderSummaryData orderSummary,
+            SendOrderData sendOrder) {
         // TODO
         return null;
     }

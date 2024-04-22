@@ -220,6 +220,7 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('MA
 "minimalBoardDimension":{"quantity":30, "unit":"MILLIMETER"},
 "minimalEdgedBoardDimension":{"quantity":60, "unit":"MILLIMETER"},
 "minimalLayeredBoardDimension":{"quantity":80, "unit":"MILLIMETER"},
+"minimalFrameBoardDimension":{"quantity":70, "unit":"MILLIMETER"},
 "edgeWidthAppendDimension":{"quantity":8, "unit":"MILLIMETER"},
 "edgeLengthAppendDimension":{"quantity":40, "unit":"MILLIMETER"},
 "layeredBoardAppendDimension":{"quantity":10, "unit":"MILLIMETER"}

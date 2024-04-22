@@ -14,8 +14,7 @@ public enum MetaSequence {
     WIWA_EDGE_IMAGE_ID_SEQ("wiwa_edge_image_id_seq"),
     WIWA_ORDER_NUMBER_ORDER_NUMBER_SEQ("wiwa_order_number_order_number_seq"),
     WIWA_ORDER_ID_SEQ("wiwa_order_id_seq"),
-    WIWA_ORDER_ORDER_NUMBER_SEQ("wiwa_order_order_number_seq"),
-    WIWA_ORDER_CONTACT_ID_SEQ("wiwa_order_contact_id_seq");
+    WIWA_ORDER_ORDER_NUMBER_SEQ("wiwa_order_order_number_seq");
 
     private final String sequenceName;
 

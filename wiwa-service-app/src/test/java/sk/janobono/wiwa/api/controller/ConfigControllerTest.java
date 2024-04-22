@@ -282,6 +282,7 @@ class ConfigControllerTest extends BaseControllerTest {
                                 new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
                                 new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
                                 new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
+                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
                                 new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER)
                         ),
                         headers

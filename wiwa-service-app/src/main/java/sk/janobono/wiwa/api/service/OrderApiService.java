@@ -123,7 +123,7 @@ public class OrderApiService {
 
     public void deleteItem(final Long id, final Long itemId) {
         final User user = checkAccess(id);
-        orderService.deleteItem(id, itemId, isManager(user));
+        orderService.deleteItem(id, itemId, user.id(), isManager(user));
     }
 
     public OrderSummaryWebDto getOrderSummary(final Long id) {

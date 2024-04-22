@@ -16,6 +16,9 @@ create table wiwa_order
     net_weight_unit  varchar(255)   not null,
     total_value      numeric(19, 3) not null,
     total_unit       varchar(255)   not null,
+    delivery         date,
+    ready            timestamp,
+    finished         timestamp,
     unique (user_id, order_number)
 );
 
