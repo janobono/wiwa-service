@@ -368,6 +368,19 @@ class ConfigControllerTest extends BaseControllerTest {
         assertThat(pricesForGluingEdge.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(pricesForGluingEdge.getBody())[0].price().amount()).isEqualTo(BigDecimal.ZERO);
 
+        // free-days
+        final ResponseEntity<FreeDayWebDto[]> freeDays = restTemplate.exchange(
+                getURI("/config/free-days"),
+                HttpMethod.POST,
+                new HttpEntity<>(
+                        List.of(new FreeDayWebDto("test", 1, 1)),
+                        headers
+                ),
+                FreeDayWebDto[].class
+        );
+        assertThat(freeDays.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(Objects.requireNonNull(freeDays.getBody())[0].name()).isEqualTo("test");
+
     }
 
     private BigDecimal getVatRate(final HttpHeaders headers) {
