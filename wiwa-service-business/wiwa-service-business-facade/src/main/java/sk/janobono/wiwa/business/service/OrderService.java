@@ -22,6 +22,12 @@ public interface OrderService {
 
     OrderSummaryData getOrderSummary(long id);
 
+    OrderData recountOrder(long id, Long modifierId);
+
+    byte[] getPdf(long id);
+
+    byte[] getCsv(long id);
+
     OrderData sendOrder(long id, long modifierId, SendOrderData sendOrder);
 
     OrderData setOrderStatus(long id, long modifierId, OrderStatusChangeData orderStatusChange);

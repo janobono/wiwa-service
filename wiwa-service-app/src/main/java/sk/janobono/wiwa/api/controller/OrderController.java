@@ -2,11 +2,17 @@ package sk.janobono.wiwa.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
 import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.api.service.OrderApiService;
 import sk.janobono.wiwa.model.OrderStatus;
@@ -57,6 +63,30 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public OrderWebDto addOrder() {
         return orderApiService.addOrder();
+    }
+
+    @PostMapping("/{id}/recount")
+    public OrderWebDto recountOrder(@PathVariable("id") final long id) {
+        return orderApiService.recountOrder(id);
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<Resource> getPdf(@PathVariable("id") final long id) {
+        final ResourceEntityWebDto resourceEntity = orderApiService.getPdf(id);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(resourceEntity.contentType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntity.fileName() + "\"")
+                .body(resourceEntity.resource());
+    }
+
+    @GetMapping("/{id}/csv")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public ResponseEntity<Resource> getCsv(@PathVariable("id") final long id) {
+        final ResourceEntityWebDto resourceEntity = orderApiService.getCsv(id);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(resourceEntity.contentType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntity.fileName() + "\"")
+                .body(resourceEntity.resource());
     }
 
     @PostMapping("/{id}/send")

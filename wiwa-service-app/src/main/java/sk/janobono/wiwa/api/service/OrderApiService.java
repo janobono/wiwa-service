@@ -1,12 +1,14 @@
 package sk.janobono.wiwa.api.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.api.mapper.OrderWebMapper;
+import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
 import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
 import sk.janobono.wiwa.business.service.OrderService;
@@ -67,6 +69,28 @@ public class OrderApiService {
     public OrderWebDto addOrder() {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return orderWebMapper.mapToWebDto(orderService.addOrder(user.id()));
+    }
+
+    public OrderWebDto recountOrder(final long id) {
+        final User user = checkAccess(id);
+        return orderWebMapper.mapToWebDto(orderService.recountOrder(id, user.id()));
+    }
+
+    public ResourceEntityWebDto getPdf(final long id) {
+        checkAccess(id);
+        return new ResourceEntityWebDto(
+                "order[%d].pdf".formatted(id),
+                "application/pdf",
+                new ByteArrayResource(orderService.getPdf(id))
+        );
+    }
+
+    public ResourceEntityWebDto getCsv(final long id) {
+        return new ResourceEntityWebDto(
+                "order[%d].csv".formatted(id),
+                "text/csv",
+                new ByteArrayResource(orderService.getCsv(id))
+        );
     }
 
     public OrderWebDto sendOrder(final Long id, final SendOrderWebDto sendOrder) {

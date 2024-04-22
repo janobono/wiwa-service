@@ -107,6 +107,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public OrderData recountOrder(long id, Long modifierId) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public byte[] getPdf(long id) {
+        // TODO
+        return new byte[0];
+    }
+
+    @Override
+    public byte[] getCsv(long id) {
+        // TODO
+        return new byte[0];
+    }
+
+    @Override
     public OrderData sendOrder(final long id, final long modifierId, final SendOrderData sendOrder) {
         final OrderDo order = getOrderDo(id);
 
@@ -175,6 +193,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // TODO
+
 
         order.setStatus(orderStatusChange.newStatus());
         return toOrderData(orderRepository.save(order), applicationPropertyService.getVatRate());
