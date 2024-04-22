@@ -57,7 +57,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(final long id) {
         log.debug("deleteById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
@@ -90,7 +90,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean existsById(final Long id) {
+    public boolean existsById(final long id) {
         log.debug("existsById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -189,7 +189,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<UserDo> findById(final Long id) {
+    public Optional<UserDo> findById(final long id) {
         log.debug("findById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,

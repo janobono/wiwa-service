@@ -8,11 +8,11 @@ import java.util.Optional;
 
 public interface EdgeImageRepository {
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
-    List<ApplicationImageInfoDo> findAllByEdgeId(Long edgeId);
+    List<ApplicationImageInfoDo> findAllByEdgeId(long edgeId);
 
-    Optional<EdgeImageDo> findByEdgeIdAndFileName(Long edgeId, String fileName);
+    Optional<EdgeImageDo> findByEdgeIdAndFileName(long edgeId, String fileName);
 
     EdgeImageDo save(EdgeImageDo edgeImageDo);
 }

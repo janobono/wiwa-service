@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.api.model.*;
+import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.api.service.ConfigApiService;
 
@@ -175,5 +175,11 @@ public class ConfigController {
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public PriceForGluingLayerWebDto setPriceForGluingLayer(@Valid @RequestBody final PriceForGluingLayerWebDto priceForGluingLayer) {
         return configApiService.setPriceForGluingLayer(priceForGluingLayer);
+    }
+
+    @PostMapping(value = "/free-days")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public List<FreeDayWebDto> setFreeDays(@Valid @RequestBody final List<FreeDayWebDto> freeDays) {
+        return configApiService.setFreeDays(freeDays);
     }
 }

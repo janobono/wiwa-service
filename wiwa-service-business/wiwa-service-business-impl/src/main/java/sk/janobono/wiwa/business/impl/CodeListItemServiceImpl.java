@@ -32,7 +32,7 @@ public class CodeListItemServiceImpl implements CodeListItemService {
     }
 
     @Override
-    public CodeListItemData getCodeListItem(final Long id) {
+    public CodeListItemData getCodeListItem(final long id) {
         return toCodeListItemData(getCodeListItemDo(id));
     }
 
@@ -55,7 +55,7 @@ public class CodeListItemServiceImpl implements CodeListItemService {
     }
 
     @Override
-    public CodeListItemData setCodeListItem(final Long id, final CodeListItemChangeData data) {
+    public CodeListItemData setCodeListItem(final long id, final CodeListItemChangeData data) {
         if (isCodeUsed(id, data)) {
             throw WiwaException.CODE_IS_USED.exception("Code list item code {0} is used", data.code());
         }
@@ -87,7 +87,7 @@ public class CodeListItemServiceImpl implements CodeListItemService {
     }
 
     @Override
-    public void deleteCodeListItem(final Long id) {
+    public void deleteCodeListItem(final long id) {
         final CodeListItemDo codeListItemDo = getCodeListItemDo(id);
         if (!isLeafItem(id)) {
             throw WiwaException.CODE_LIST_ITEM_NOT_EMPTY.exception("Code list item with id {0} not empty", id);
@@ -97,7 +97,7 @@ public class CodeListItemServiceImpl implements CodeListItemService {
     }
 
     @Override
-    public CodeListItemData moveCodeListItemUp(final Long id) {
+    public CodeListItemData moveCodeListItemUp(final long id) {
         final CodeListItemDo codeListItemDo = getCodeListItemDo(id);
         sortItems(codeListItemDo.getCodeListId(), codeListItemDo.getParentId());
 
@@ -121,7 +121,7 @@ public class CodeListItemServiceImpl implements CodeListItemService {
     }
 
     @Override
-    public CodeListItemData moveCodeListItemDown(final Long id) {
+    public CodeListItemData moveCodeListItemDown(final long id) {
         final CodeListItemDo codeListItemDo = getCodeListItemDo(id);
         sortItems(codeListItemDo.getCodeListId(), codeListItemDo.getParentId());
 
@@ -144,7 +144,7 @@ public class CodeListItemServiceImpl implements CodeListItemService {
         return toCodeListItemData(getCodeListItemDo(id));
     }
 
-    private CodeListItemDo getCodeListItemDo(final Long id) {
+    private CodeListItemDo getCodeListItemDo(final long id) {
         return codeListItemRepository.findById(id)
                 .orElseThrow(() -> WiwaException.CODE_LIST_ITEM_NOT_FOUND.exception("Code list item with id {0} not found", id));
     }

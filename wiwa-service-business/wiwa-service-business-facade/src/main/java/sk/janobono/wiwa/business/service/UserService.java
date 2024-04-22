@@ -14,17 +14,17 @@ public interface UserService {
 
     Page<User> getUsers(UserSearchCriteriaData criteria, Pageable pageable);
 
-    User getUser(Long id);
+    User getUser(long id);
 
     User addUser(UserCreateData data);
 
-    User setUser(Long id, UserProfileData userProfile);
+    User setUser(long id, UserProfileData userProfile);
 
-    User setAuthorities(Long id, List<Authority> authorities);
+    User setAuthorities(long id, List<Authority> authorities);
 
-    User setConfirmed(Long id, Boolean confirmed);
+    User setConfirmed(long id, boolean confirmed);
 
-    User setEnabled(Long id, Boolean enabled);
+    User setEnabled(long id, boolean enabled);
 
-    void deleteUser(Long id);
+    void deleteUser(long id);
 }

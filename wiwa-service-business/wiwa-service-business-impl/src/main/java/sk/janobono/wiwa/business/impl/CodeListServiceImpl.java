@@ -27,7 +27,7 @@ public class CodeListServiceImpl implements CodeListService {
     }
 
     @Override
-    public CodeListData getCodeList(final Long id) {
+    public CodeListData getCodeList(final long id) {
         return toCodeListData(getCodeListDo(id));
     }
 
@@ -45,7 +45,7 @@ public class CodeListServiceImpl implements CodeListService {
     }
 
     @Override
-    public CodeListData setCodeList(final Long id, final CodeListChangeData data) {
+    public CodeListData setCodeList(final long id, final CodeListChangeData data) {
         if (isCodeUsed(id, data)) {
             throw WiwaException.CODE_IS_USED.exception("Code list code {0} is used", data.code());
         }
@@ -58,14 +58,14 @@ public class CodeListServiceImpl implements CodeListService {
     }
 
     @Override
-    public void deleteCodeList(final Long id) {
+    public void deleteCodeList(final long id) {
         if (!codeListRepository.existsById(id)) {
             throw WiwaException.CODE_LIST_NOT_FOUND.exception("Code list with id {0} not found", id);
         }
         codeListRepository.deleteById(id);
     }
 
-    private CodeListDo getCodeListDo(final Long id) {
+    private CodeListDo getCodeListDo(final long id) {
         return codeListRepository.findById(id)
                 .orElseThrow(() -> WiwaException.CODE_LIST_NOT_FOUND.exception("Code list with id {0} not found", id));
     }

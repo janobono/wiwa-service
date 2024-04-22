@@ -72,4 +72,8 @@ public interface ApplicationPropertyService {
     List<PriceForCuttingData> getPricesForCutting();
 
     List<PriceForCuttingData> setPricesForCutting(List<PriceForCuttingData> pricesForCutting);
+
+    List<FreeDayData> getFreeDays();
+
+    List<FreeDayData> setFreeDays(List<FreeDayData> freeDays);
 }

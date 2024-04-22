@@ -11,15 +11,15 @@ public interface CodeListRepository {
 
     int countByCode(String code);
 
-    int countByIdNotAndCode(Long id, String code);
+    int countByIdNotAndCode(long id, String code);
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
-    boolean existsById(Long id);
+    boolean existsById(long id);
 
     Page<CodeListDo> findAll(CodeListSearchCriteriaDo criteria, Pageable pageable);
 
-    Optional<CodeListDo> findById(Long id);
+    Optional<CodeListDo> findById(long id);
 
     CodeListDo save(CodeListDo codeListDo);
 }

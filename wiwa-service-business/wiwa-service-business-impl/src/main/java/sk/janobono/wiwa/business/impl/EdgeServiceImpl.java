@@ -56,7 +56,7 @@ public class EdgeServiceImpl implements EdgeService {
     }
 
     @Override
-    public EdgeData getEdge(final Long id) {
+    public EdgeData getEdge(final long id) {
         return toEdgeData(getEdgeDo(id), applicationPropertyService.getVatRate());
     }
 
@@ -70,7 +70,6 @@ public class EdgeServiceImpl implements EdgeService {
                 .name(data.name())
                 .description(data.description())
                 .sale(data.sale())
-                .weight(data.weight())
                 .netWeight(data.netWeight())
                 .width(data.width())
                 .thickness(data.thickness())
@@ -81,7 +80,7 @@ public class EdgeServiceImpl implements EdgeService {
     }
 
     @Override
-    public EdgeData setEdge(final Long id, final EdgeChangeData data) {
+    public EdgeData setEdge(final long id, final EdgeChangeData data) {
         final EdgeDo edgeDo = getEdgeDo(id);
         if (isCodeUsed(id, data.code())) {
             throw WiwaException.CODE_IS_USED.exception("Edge code {0} is used", data.code());
@@ -91,7 +90,6 @@ public class EdgeServiceImpl implements EdgeService {
         edgeDo.setName(data.name());
         edgeDo.setDescription(data.description());
         edgeDo.setSale(data.sale());
-        edgeDo.setWeight(data.weight());
         edgeDo.setNetWeight(data.netWeight());
         edgeDo.setWidth(data.width());
         edgeDo.setThickness(data.thickness());
@@ -101,13 +99,13 @@ public class EdgeServiceImpl implements EdgeService {
     }
 
     @Override
-    public void deleteEdge(final Long id) {
+    public void deleteEdge(final long id) {
         getEdgeDo(id);
         edgeRepository.deleteById(id);
     }
 
     @Override
-    public EdgeData setEdgeImage(final Long edgeId, final MultipartFile multipartFile) {
+    public EdgeData setEdgeImage(final long edgeId, final MultipartFile multipartFile) {
         if (!edgeRepository.existsById(edgeId)) {
             throw WiwaException.BOARD_NOT_FOUND.exception("Edge with id {0} not found", edgeId);
         }
@@ -138,7 +136,7 @@ public class EdgeServiceImpl implements EdgeService {
     }
 
     @Override
-    public EdgeData deleteEdgeImage(final Long edgeId, final String fileName) {
+    public EdgeData deleteEdgeImage(final long edgeId, final String fileName) {
         if (!edgeRepository.existsById(edgeId)) {
             throw WiwaException.BOARD_NOT_FOUND.exception("Edge with id {0} not found", edgeId);
         }
@@ -148,7 +146,7 @@ public class EdgeServiceImpl implements EdgeService {
     }
 
     @Override
-    public EdgeData setEdgeCategoryItems(final Long edgeId, final List<EdgeCategoryItemChangeData> categoryItems) {
+    public EdgeData setEdgeCategoryItems(final long edgeId, final List<EdgeCategoryItemChangeData> categoryItems) {
         final EdgeDo edgeDo = getEdgeDo(edgeId);
 
         edgeCodeListItemRepository.saveAll(edgeDo.getId(),
@@ -187,7 +185,6 @@ public class EdgeServiceImpl implements EdgeService {
                 .name(edgeDo.getName())
                 .description(edgeDo.getDescription())
                 .sale(edgeDo.getSale())
-                .weight(edgeDo.getWeight())
                 .netWeight(edgeDo.getNetWeight())
                 .width(edgeDo.getWidth())
                 .thickness(edgeDo.getThickness())
@@ -198,13 +195,13 @@ public class EdgeServiceImpl implements EdgeService {
                 .build();
     }
 
-    private List<ApplicationImageInfoData> toImages(final Long edgeId) {
+    private List<ApplicationImageInfoData> toImages(final long edgeId) {
         return edgeImageRepository.findAllByEdgeId(edgeId).stream()
                 .map(applicationImageDataMapper::mapToData)
                 .toList();
     }
 
-    private List<EdgeCategoryItemData> toEdgeCategoryItems(final Long edgeId) {
+    private List<EdgeCategoryItemData> toEdgeCategoryItems(final long edgeId) {
         return edgeCodeListItemRepository.findByEdgeId(edgeId).stream()
                 .map(this::toEdgeCategoryItem)
                 .toList();

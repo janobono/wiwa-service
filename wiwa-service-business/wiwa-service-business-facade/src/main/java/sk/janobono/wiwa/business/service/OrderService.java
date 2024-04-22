@@ -10,35 +10,35 @@ public interface OrderService {
 
     Page<OrderData> getOrders(OrderSearchCriteriaData criteria, Pageable pageable);
 
-    Page<OrderContactData> getOrderContacts(Long userId, Pageable pageable);
+    Page<OrderContactData> getOrderContacts(long userId, Pageable pageable);
 
-    OrderData getOrder(Long id);
+    OrderData getOrder(long id);
 
-    OrderData addOrder(Long userId);
+    OrderData addOrder(long userId);
 
-    void deleteOrder(Long id);
+    void deleteOrder(long id);
 
-    Long getOrderCreatorId(Long id);
+    Long getOrderCreatorId(long id);
 
-    OrderSummaryData getOrderSummary(Long id);
+    OrderSummaryData getOrderSummary(long id);
 
-    OrderData sendOrder(Long id, SendOrderData sendOrder);
+    OrderData sendOrder(long id, long modifierId, SendOrderData sendOrder);
 
-    OrderData setOrderStatus(Long id, OrderStatusChangeData orderStatusChange);
+    OrderData setOrderStatus(long id, long modifierId, OrderStatusChangeData orderStatusChange);
 
-    List<OrderCommentData> getComments(Long id);
+    List<OrderCommentData> getComments(long id);
 
-    List<OrderCommentData> addComment(Long id, Long creatorId, OrderCommentChangeData orderCommentChange);
+    List<OrderCommentData> addComment(long id, long creatorId, OrderCommentChangeData orderCommentChange);
 
-    List<OrderItemData> getOrderItems(Long id);
+    List<OrderItemData> getOrderItems(long id);
 
-    OrderItemData addItem(Long id, Long creatorId, OrderItemChangeData orderItemChange);
+    OrderItemData addItem(long id, long creatorId, OrderItemChangeData orderItemChange, boolean manager);
 
-    OrderItemData setItem(Long id, Long itemId, Long modifierId, OrderItemChangeData orderItemChange);
+    OrderItemData setItem(long id, long itemId, long modifierId, OrderItemChangeData orderItemChange, boolean manager);
 
-    OrderItemData moveUpItem(Long id, Long itemId, Long modifierId);
+    OrderItemData moveUpItem(long id, long itemId, long modifierId, boolean manager);
 
-    OrderItemData moveDownItem(Long id, Long itemId, Long modifierId);
+    OrderItemData moveDownItem(long id, long itemId, long modifierId, boolean manager);
 
-    void deleteItem(Long id, Long itemId);
+    void deleteItem(long id, long itemId, boolean manager);
 }

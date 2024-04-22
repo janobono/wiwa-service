@@ -12,9 +12,9 @@ public interface ApplicationImageService {
 
     ApplicationImageData getApplicationImage(String fileName);
 
-    ApplicationImageData getBoardImage(Long boardId, String fileName);
+    ApplicationImageData getBoardImage(long boardId, String fileName);
 
-    ApplicationImageData getEdgeImage(Long edgeId, String fileName);
+    ApplicationImageData getEdgeImage(long edgeId, String fileName);
 
     ApplicationImageInfoData setApplicationImage(MultipartFile multipartFile);
 

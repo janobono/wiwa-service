@@ -17,8 +17,6 @@ public enum MetaColumnWiwaBoard {
     ORIENTATION("orientation", DataType.BOOLEAN),
     SALE_VALUE("sale_value", DataType.BIG_DECIMAL),
     SALE_UNIT("sale_unit", DataType.STRING),
-    WEIGHT_VALUE("weight_value", DataType.BIG_DECIMAL),
-    WEIGHT_UNIT("weight_unit", DataType.STRING),
     NET_WEIGHT_VALUE("net_weight_value", DataType.BIG_DECIMAL),
     NET_WEIGHT_UNIT("net_weight_unit", DataType.STRING),
     LENGTH_VALUE("length_value", DataType.BIG_DECIMAL),

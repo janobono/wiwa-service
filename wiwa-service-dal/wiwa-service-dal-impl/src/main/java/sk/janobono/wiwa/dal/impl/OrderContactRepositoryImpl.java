@@ -39,7 +39,7 @@ public class OrderContactRepositoryImpl implements OrderContactRepository {
     private final CriteriaUtil criteriaUtil;
 
     @Override
-    public Optional<OrderContactDo> findByOrderId(final Long orderId) {
+    public Optional<OrderContactDo> findByOrderId(final long orderId) {
         log.debug("findByOrderId({})", orderId);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -57,7 +57,7 @@ public class OrderContactRepositoryImpl implements OrderContactRepository {
     }
 
     @Override
-    public Page<BaseOrderContactDo> findByUserId(Long userId, Pageable pageable) {
+    public Page<BaseOrderContactDo> findByUserId(final long userId, final Pageable pageable) {
         log.debug("findByUserId({})", userId);
         final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaOrderContact.columns(), 1);
         try (final Connection connection = dataSource.getConnection()) {
@@ -126,7 +126,7 @@ public class OrderContactRepositoryImpl implements OrderContactRepository {
         }
     }
 
-    private int countByOrderId(final Connection connection, final Long orderId) throws SQLException {
+    private int countByOrderId(final Connection connection, final long orderId) throws SQLException {
         final List<Object[]> rows = sqlBuilder.select(connection,
                 Query.SELECT(MetaColumnWiwaOrderContact.ORDER_ID.column()).COUNT()
                         .FROM(MetaTable.WIWA_ORDER_CONTACT.table())

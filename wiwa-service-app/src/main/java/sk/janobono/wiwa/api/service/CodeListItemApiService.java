@@ -34,7 +34,7 @@ public class CodeListItemApiService {
                 .map(codeListItemWebMapper::mapToWebDto);
     }
 
-    public CodeListItemWebDto getCodeListItem(final Long id) {
+    public CodeListItemWebDto getCodeListItem(final long id) {
         return codeListItemWebMapper.mapToWebDto(codeListItemService.getCodeListItem(id));
     }
 
@@ -42,19 +42,19 @@ public class CodeListItemApiService {
         return codeListItemWebMapper.mapToWebDto(codeListItemService.addCodeListItem(codeListItemWebMapper.mapToData(codeListItemChange)));
     }
 
-    public CodeListItemWebDto setCodeListItem(final Long id, final CodeListItemChangeWebDto codeListItemChange) {
+    public CodeListItemWebDto setCodeListItem(final long id, final CodeListItemChangeWebDto codeListItemChange) {
         return codeListItemWebMapper.mapToWebDto(codeListItemService.setCodeListItem(id, codeListItemWebMapper.mapToData(codeListItemChange)));
     }
 
-    public void deleteCodeListItem(final Long id) {
+    public void deleteCodeListItem(final long id) {
         codeListItemService.deleteCodeListItem(id);
     }
 
-    public CodeListItemWebDto moveCodeListItemUp(final Long id) {
+    public CodeListItemWebDto moveCodeListItemUp(final long id) {
         return codeListItemWebMapper.mapToWebDto(codeListItemService.moveCodeListItemUp(id));
     }
 
-    public CodeListItemWebDto moveCodeListItemDown(final Long id) {
+    public CodeListItemWebDto moveCodeListItemDown(final long id) {
         return codeListItemWebMapper.mapToWebDto(codeListItemService.moveCodeListItemDown(id));
     }
 }

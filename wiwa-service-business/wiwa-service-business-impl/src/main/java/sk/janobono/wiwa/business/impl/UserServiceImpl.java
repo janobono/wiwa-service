@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUser(final Long id) {
+    public User getUser(final long id) {
         return userUtilService.mapToUser(userUtilService.getUserDo(id));
     }
 
@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User setUser(final Long id, final UserProfileData userProfile) {
+    public User setUser(final long id, final UserProfileData userProfile) {
         final UserDo userDo = userUtilService.getUserDo(id);
 
         userDo.setTitleBefore(userProfile.titleBefore());
@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User setAuthorities(final Long id, final List<Authority> authorities) {
+    public User setAuthorities(final long id, final List<Authority> authorities) {
         final UserDo userDo = userUtilService.getUserDo(id);
 
         authorityRepository.saveUserAuthorities(userDo.getId(), authorities);
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User setConfirmed(final Long id, final Boolean confirmed) {
+    public User setConfirmed(final long id, final boolean confirmed) {
         final UserDo userDo = userUtilService.getUserDo(id);
 
         userDo.setConfirmed(confirmed);
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User setEnabled(final Long id, final Boolean enabled) {
+    public User setEnabled(final long id, final boolean enabled) {
         final UserDo userDo = userUtilService.getUserDo(id);
 
         userDo.setEnabled(enabled);
@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(final Long id) {
+    public void deleteUser(final long id) {
         if (!userRepository.existsById(id)) {
             throw WiwaException.USER_NOT_FOUND.exception("User with id {0} not found", id);
         }

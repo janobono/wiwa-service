@@ -11,15 +11,15 @@ public interface BoardRepository {
 
     int countByCode(String code);
 
-    int countByIdNotAndCode(Long id, String code);
+    int countByIdNotAndCode(long id, String code);
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
-    boolean existsById(Long id);
+    boolean existsById(long id);
 
     Page<BoardDo> findAll(BoardSearchCriteriaDo criteria, Pageable pageable);
 
-    Optional<BoardDo> findById(Long id);
+    Optional<BoardDo> findById(long id);
 
     BoardDo save(BoardDo boardDo);
 }

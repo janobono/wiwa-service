@@ -36,7 +36,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager', 'w-employee')")
-    public UserWebDto getUser(@PathVariable("id") final Long id) {
+    public UserWebDto getUser(@PathVariable("id") final long id) {
         return userApiService.getUser(id);
     }
 
@@ -49,31 +49,31 @@ public class UserController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('w-admin')")
-    public UserWebDto setUser(@PathVariable("id") final Long id, @Valid @RequestBody final UserProfileWebDto userProfile) {
+    public UserWebDto setUser(@PathVariable("id") final long id, @Valid @RequestBody final UserProfileWebDto userProfile) {
         return userApiService.setUser(id, userProfile);
     }
 
     @PatchMapping("/{id}/authorities")
     @PreAuthorize("hasAuthority('w-admin')")
-    public UserWebDto setAuthorities(@PathVariable("id") final Long id, @Valid @RequestBody final List<Authority> authorities) {
+    public UserWebDto setAuthorities(@PathVariable("id") final long id, @Valid @RequestBody final List<Authority> authorities) {
         return userApiService.setAuthorities(id, authorities);
     }
 
     @PatchMapping("/{id}/confirm")
     @PreAuthorize("hasAuthority('w-admin')")
-    public UserWebDto setConfirmed(@PathVariable("id") final Long id, @Valid @RequestBody final SingleValueBodyWebDto<Boolean> confirmed) {
+    public UserWebDto setConfirmed(@PathVariable("id") final long id, @Valid @RequestBody final SingleValueBodyWebDto<Boolean> confirmed) {
         return userApiService.setConfirmed(id, confirmed.value());
     }
 
     @PatchMapping("/{id}/enable")
     @PreAuthorize("hasAuthority('w-admin')")
-    public UserWebDto setEnabled(@PathVariable("id") final Long id, @Valid @RequestBody final SingleValueBodyWebDto<Boolean> enabled) {
+    public UserWebDto setEnabled(@PathVariable("id") final long id, @Valid @RequestBody final SingleValueBodyWebDto<Boolean> enabled) {
         return userApiService.setEnabled(id, enabled.value());
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('w-admin')")
-    public void deleteUser(@PathVariable("id") final Long id) {
+    public void deleteUser(@PathVariable("id") final long id) {
         userApiService.deleteUser(id);
     }
 }

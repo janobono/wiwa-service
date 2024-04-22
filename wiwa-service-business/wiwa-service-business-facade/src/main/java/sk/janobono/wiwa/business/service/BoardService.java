@@ -14,17 +14,17 @@ public interface BoardService {
 
     Page<BoardData> getBoards(BoardSearchCriteriaData criteria, Pageable pageable);
 
-    BoardData getBoard(Long id);
+    BoardData getBoard(long id);
 
     BoardData addBoard(BoardChangeData data);
 
-    BoardData setBoard(Long id, BoardChangeData data);
+    BoardData setBoard(long id, BoardChangeData data);
 
-    void deleteBoard(Long id);
+    void deleteBoard(long id);
 
-    BoardData setBoardImage(Long boardId, MultipartFile multipartFile);
+    BoardData setBoardImage(long boardId, MultipartFile multipartFile);
 
-    BoardData deleteBoardImage(Long boardId, String fileName);
+    BoardData deleteBoardImage(long boardId, String fileName);
 
-    BoardData setBoardCategoryItems(Long boardId, List<BoardCategoryItemChangeData> categoryItems);
+    BoardData setBoardCategoryItems(long boardId, List<BoardCategoryItemChangeData> categoryItems);
 }

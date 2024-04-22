@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface EdgeCodeListItemRepository {
 
-    List<CodeListItemDo> findByEdgeId(Long edgeId);
+    List<CodeListItemDo> findByEdgeId(long edgeId);
 
-    void saveAll(Long edgeId, List<Long> itemIds);
+    void saveAll(long edgeId, List<Long> itemIds);
 }

@@ -30,7 +30,7 @@ public class UserApiService {
         return userService.getUsers(criteria, pageable).map(userWebMapper::mapToWebDto);
     }
 
-    public UserWebDto getUser(final Long id) {
+    public UserWebDto getUser(final long id) {
         return userWebMapper.mapToWebDto(userService.getUser(id));
     }
 
@@ -38,23 +38,23 @@ public class UserApiService {
         return userWebMapper.mapToWebDto(userService.addUser(userWebMapper.mapToData(userCreate)));
     }
 
-    public UserWebDto setUser(final Long id, final UserProfileWebDto userProfile) {
+    public UserWebDto setUser(final long id, final UserProfileWebDto userProfile) {
         return userWebMapper.mapToWebDto(userService.setUser(id, userWebMapper.mapToData(userProfile)));
     }
 
-    public UserWebDto setAuthorities(final Long id, final List<Authority> authorities) {
+    public UserWebDto setAuthorities(final long id, final List<Authority> authorities) {
         return userWebMapper.mapToWebDto(userService.setAuthorities(id, authorities));
     }
 
-    public UserWebDto setConfirmed(final Long id, final Boolean value) {
+    public UserWebDto setConfirmed(final long id, final boolean value) {
         return userWebMapper.mapToWebDto(userService.setConfirmed(id, value));
     }
 
-    public UserWebDto setEnabled(final Long id, final Boolean value) {
+    public UserWebDto setEnabled(final long id, final boolean value) {
         return userWebMapper.mapToWebDto(userService.setEnabled(id, value));
     }
 
-    public void deleteUser(final Long id) {
+    public void deleteUser(final long id) {
         userService.deleteUser(id);
     }
 }

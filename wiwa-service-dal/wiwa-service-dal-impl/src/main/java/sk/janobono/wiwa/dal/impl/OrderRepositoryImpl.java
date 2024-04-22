@@ -40,7 +40,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     private final CriteriaUtil criteriaUtil;
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(final long id) {
         log.debug("deleteById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
@@ -54,7 +54,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public boolean existsById(final Long id) {
+    public boolean existsById(final long id) {
         log.debug("existsById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -115,7 +115,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public Optional<Long> getOrderUserId(final Long id) {
+    public Optional<Long> getOrderUserId(final long id) {
         log.debug("getOrderCreatorId({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -132,7 +132,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public Optional<OrderDo> findById(final Long id) {
+    public Optional<OrderDo> findById(final long id) {
         log.debug("findById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -232,14 +232,6 @@ public class OrderRepositoryImpl implements OrderRepository {
                                 MetaColumnWiwaOrder.STATUS.column(),
                                 criteriaUtil.mapDirection(order)
                         );
-                        case "weightValue" -> select.ORDER_BY(
-                                MetaColumnWiwaOrder.WEIGHT_VALUE.column(),
-                                criteriaUtil.mapDirection(order)
-                        );
-                        case "weightUnit" -> select.ORDER_BY(
-                                MetaColumnWiwaOrder.WEIGHT_UNIT.column(),
-                                criteriaUtil.mapDirection(order)
-                        );
                         case "netWeightValue" -> select.ORDER_BY(
                                 MetaColumnWiwaOrder.NET_WEIGHT_VALUE.column(),
                                 criteriaUtil.mapDirection(order)
@@ -268,7 +260,6 @@ public class OrderRepositoryImpl implements OrderRepository {
                 .created(wiwaOrderDto.created())
                 .status(OrderStatus.valueOf(wiwaOrderDto.status()))
                 .orderNumber(wiwaOrderDto.orderNumber())
-                .weight(new Quantity(wiwaOrderDto.weightValue(), Unit.valueOf(wiwaOrderDto.weightUnit())))
                 .netWeight(new Quantity(wiwaOrderDto.netWeightValue(), Unit.valueOf(wiwaOrderDto.netWeightUnit())))
                 .total(new Money(wiwaOrderDto.totalValue(), Unit.valueOf(wiwaOrderDto.totalUnit())))
                 .build();
@@ -281,8 +272,6 @@ public class OrderRepositoryImpl implements OrderRepository {
                 orderDo.getCreated(),
                 orderDo.getStatus().name(),
                 orderDo.getOrderNumber(),
-                orderDo.getWeight().quantity(),
-                orderDo.getWeight().unit().name(),
                 orderDo.getNetWeight().quantity(),
                 orderDo.getNetWeight().unit().name(),
                 orderDo.getTotal().amount(),

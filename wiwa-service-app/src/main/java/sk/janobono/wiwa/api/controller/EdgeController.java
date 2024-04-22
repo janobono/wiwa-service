@@ -12,7 +12,6 @@ import sk.janobono.wiwa.api.model.edge.EdgeCategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeWebDto;
 import sk.janobono.wiwa.api.service.EdgeApiService;
-import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -54,7 +53,7 @@ public class EdgeController {
     }
 
     @GetMapping("/{id}")
-    public EdgeWebDto getEdge(@PathVariable("id") final Long id) {
+    public EdgeWebDto getEdge(@PathVariable("id") final long id) {
         return edgeApiService.getEdge(id);
     }
 
@@ -67,31 +66,31 @@ public class EdgeController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public EdgeWebDto setEdge(@PathVariable("id") final Long id, @Valid @RequestBody final EdgeChangeWebDto edgeChange) {
+    public EdgeWebDto setEdge(@PathVariable("id") final long id, @Valid @RequestBody final EdgeChangeWebDto edgeChange) {
         return edgeApiService.setEdge(id, edgeChange);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public void deleteEdge(@PathVariable("id") final Long id) {
+    public void deleteEdge(@PathVariable("id") final long id) {
         edgeApiService.deleteEdge(id);
     }
 
     @PostMapping("/{id}/images")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public EdgeWebDto setEdgeImage(@PathVariable("id") final Long id, @RequestParam("file") final MultipartFile multipartFile) {
+    public EdgeWebDto setEdgeImage(@PathVariable("id") final long id, @RequestParam("file") final MultipartFile multipartFile) {
         return edgeApiService.setEdgeImage(id, multipartFile);
     }
 
     @DeleteMapping("/{id}/images/{fileName}")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public EdgeWebDto deleteEdgeImage(@PathVariable("id") final Long id, @PathVariable("fileName") final String fileName) {
+    public EdgeWebDto deleteEdgeImage(@PathVariable("id") final long id, @PathVariable("fileName") final String fileName) {
         return edgeApiService.deleteEdgeImage(id, fileName);
     }
 
     @PostMapping("/{id}/category-items")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public EdgeWebDto setEdgeCategoryItems(@PathVariable("id") final Long id, @RequestBody final List<EdgeCategoryItemChangeWebDto> categoryItems) {
+    public EdgeWebDto setEdgeCategoryItems(@PathVariable("id") final long id, @RequestBody final List<EdgeCategoryItemChangeWebDto> categoryItems) {
         return edgeApiService.setEdgeCategoryItems(id, categoryItems);
     }
 }

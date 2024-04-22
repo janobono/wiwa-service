@@ -59,7 +59,7 @@ public class CodeListItemRepositoryImpl implements CodeListItemRepository {
     }
 
     @Override
-    public int countByCodeListIdAndParentIdNull(final Long codeListId) {
+    public int countByCodeListIdAndParentIdNull(final long codeListId) {
         log.debug("countByCodeListIdAndParentIdNull({})", codeListId);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -78,7 +78,7 @@ public class CodeListItemRepositoryImpl implements CodeListItemRepository {
     }
 
     @Override
-    public int countByIdNotAndCode(final Long id, final String code) {
+    public int countByIdNotAndCode(final long id, final String code) {
         log.debug("countByIdNotAndCode({},{})", id, code);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -97,7 +97,7 @@ public class CodeListItemRepositoryImpl implements CodeListItemRepository {
     }
 
     @Override
-    public int countByParentId(final Long parentId) {
+    public int countByParentId(final long parentId) {
         log.debug("countByParentId({})", parentId);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -115,7 +115,7 @@ public class CodeListItemRepositoryImpl implements CodeListItemRepository {
     }
 
     @Override
-    public boolean existsById(final Long id) {
+    public boolean existsById(final long id) {
         log.debug("existsById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -134,7 +134,7 @@ public class CodeListItemRepositoryImpl implements CodeListItemRepository {
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(final long id) {
         log.debug("deleteById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
@@ -190,7 +190,7 @@ public class CodeListItemRepositoryImpl implements CodeListItemRepository {
     }
 
     @Override
-    public Optional<CodeListItemDo> findById(final Long id) {
+    public Optional<CodeListItemDo> findById(final long id) {
         log.debug("findById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,

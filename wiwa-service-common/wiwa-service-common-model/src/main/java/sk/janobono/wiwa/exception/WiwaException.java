@@ -24,7 +24,8 @@ public enum WiwaException {
     QUANTITY_UNIT_NOT_FOUND,
     ORDER_NOT_FOUND,
     ORDER_IS_IMMUTABLE,
-    ORDER_STATUS_INVALID;
+    ORDER_STATUS_INVALID,
+    ORDER_AGREEMENTS_INVALID;
 
     public ApplicationException exception(final String pattern, final Object... arguments) {
         return exception(null, pattern, arguments);

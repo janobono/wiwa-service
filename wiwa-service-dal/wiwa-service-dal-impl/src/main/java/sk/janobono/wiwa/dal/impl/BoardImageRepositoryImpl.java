@@ -34,7 +34,7 @@ public class BoardImageRepositoryImpl implements BoardImageRepository {
     private final CriteriaUtil criteriaUtil;
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(final long id) {
         log.debug("deleteById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
@@ -47,7 +47,7 @@ public class BoardImageRepositoryImpl implements BoardImageRepository {
     }
 
     @Override
-    public List<ApplicationImageInfoDo> findAllByBoardId(final Long boardId) {
+    public List<ApplicationImageInfoDo> findAllByBoardId(final long boardId) {
         log.debug("findAllByBoardId({})", boardId);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -73,7 +73,7 @@ public class BoardImageRepositoryImpl implements BoardImageRepository {
     }
 
     @Override
-    public Optional<BoardImageDo> findByBoardIdAndFileName(final Long boardId, final String fileName) {
+    public Optional<BoardImageDo> findByBoardIdAndFileName(final long boardId, final String fileName) {
         log.debug("findByBoardIdAndFileName({},{})", boardId, fileName);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,

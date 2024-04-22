@@ -13,7 +13,6 @@ public class EdgeDo {
     private String name;
     private String description;
     private Quantity sale;
-    private Quantity weight;
     private Quantity netWeight;
     private Quantity width;
     private Quantity thickness;

@@ -6,10 +6,7 @@ import sk.janobono.wiwa.api.mapper.ApplicationImageWebMapper;
 import sk.janobono.wiwa.api.mapper.UiWebMapper;
 import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
-import sk.janobono.wiwa.api.model.application.ApplicationPropertiesWebDto;
-import sk.janobono.wiwa.api.model.application.CompanyInfoWebDto;
-import sk.janobono.wiwa.api.model.application.ManufacturePropertiesWebDto;
-import sk.janobono.wiwa.api.model.application.UnitWebDto;
+import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
 import sk.janobono.wiwa.business.service.ApplicationImageService;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
@@ -89,5 +86,9 @@ public class UiApiService {
 
     public ManufacturePropertiesWebDto getManufactureProperties() {
         return uiWebMapper.mapToWebDto(applicationPropertyService.getManufactureProperties());
+    }
+
+    public List<FreeDayWebDto> getFreeDays() {
+        return applicationPropertyService.getFreeDays().stream().map(uiWebMapper::mapToWebDto).toList();
     }
 }

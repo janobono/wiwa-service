@@ -10,11 +10,11 @@ public interface CodeListService {
 
     Page<CodeListData> getCodeLists(CodeListSearchCriteriaData criteria, Pageable pageable);
 
-    CodeListData getCodeList(Long id);
+    CodeListData getCodeList(long id);
 
     CodeListData addCodeList(CodeListChangeData data);
 
-    CodeListData setCodeList(Long id, CodeListChangeData data);
+    CodeListData setCodeList(long id, CodeListChangeData data);
 
-    void deleteCodeList(Long id);
+    void deleteCodeList(long id);
 }

@@ -56,7 +56,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardData getBoard(final Long id) {
+    public BoardData getBoard(final long id) {
         return toBoardData(getBoardDo(id), applicationPropertyService.getVatRate());
     }
 
@@ -73,7 +73,6 @@ public class BoardServiceImpl implements BoardService {
                 .structureCode(data.structureCode())
                 .orientation(data.orientation())
                 .sale(data.sale())
-                .weight(data.weight())
                 .netWeight(data.netWeight())
                 .length(data.length())
                 .width(data.width())
@@ -85,7 +84,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardData setBoard(final Long id, final BoardChangeData data) {
+    public BoardData setBoard(final long id, final BoardChangeData data) {
         final BoardDo boardDo = getBoardDo(id);
         if (isCodeUsed(id, data.code())) {
             throw WiwaException.CODE_IS_USED.exception("Board code {0} is used", data.code());
@@ -98,7 +97,6 @@ public class BoardServiceImpl implements BoardService {
         boardDo.setStructureCode(data.structureCode());
         boardDo.setOrientation(data.orientation());
         boardDo.setSale(data.sale());
-        boardDo.setWeight(data.weight());
         boardDo.setNetWeight(data.netWeight());
         boardDo.setLength(data.length());
         boardDo.setWidth(data.width());
@@ -109,13 +107,13 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void deleteBoard(final Long id) {
+    public void deleteBoard(final long id) {
         getBoardDo(id);
         boardRepository.deleteById(id);
     }
 
     @Override
-    public BoardData setBoardImage(final Long boardId, final MultipartFile multipartFile) {
+    public BoardData setBoardImage(final long boardId, final MultipartFile multipartFile) {
         if (!boardRepository.existsById(boardId)) {
             throw WiwaException.BOARD_NOT_FOUND.exception("Board with id {0} not found", boardId);
         }
@@ -146,7 +144,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardData deleteBoardImage(final Long boardId, final String fileName) {
+    public BoardData deleteBoardImage(final long boardId, final String fileName) {
         if (!boardRepository.existsById(boardId)) {
             throw WiwaException.BOARD_NOT_FOUND.exception("Board with id {0} not found", boardId);
         }
@@ -156,7 +154,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardData setBoardCategoryItems(final Long boardId, final List<BoardCategoryItemChangeData> categoryItems) {
+    public BoardData setBoardCategoryItems(final long boardId, final List<BoardCategoryItemChangeData> categoryItems) {
         final BoardDo boardDo = getBoardDo(boardId);
 
         boardCodeListItemRepository.saveAll(boardDo.getId(),
@@ -203,7 +201,6 @@ public class BoardServiceImpl implements BoardService {
                 .structureCode(boardDo.getStructureCode())
                 .orientation(boardDo.getOrientation())
                 .sale(boardDo.getSale())
-                .weight(boardDo.getWeight())
                 .netWeight(boardDo.getNetWeight())
                 .length(boardDo.getLength())
                 .width(boardDo.getWidth())

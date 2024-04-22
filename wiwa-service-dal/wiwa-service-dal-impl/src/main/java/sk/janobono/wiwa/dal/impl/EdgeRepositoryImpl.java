@@ -61,7 +61,7 @@ public class EdgeRepositoryImpl implements EdgeRepository {
     }
 
     @Override
-    public int countByIdNotAndCode(final Long id, final String code) {
+    public int countByIdNotAndCode(final long id, final String code) {
         log.debug("countByIdNotAndCode({},{})", id, code);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -80,7 +80,7 @@ public class EdgeRepositoryImpl implements EdgeRepository {
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(final long id) {
         log.debug("deleteById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
@@ -94,7 +94,7 @@ public class EdgeRepositoryImpl implements EdgeRepository {
     }
 
     @Override
-    public boolean existsById(final Long id) {
+    public boolean existsById(final long id) {
         log.debug("existsById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -155,7 +155,7 @@ public class EdgeRepositoryImpl implements EdgeRepository {
     }
 
     @Override
-    public Optional<EdgeDo> findById(final Long id) {
+    public Optional<EdgeDo> findById(final long id) {
         log.debug("findById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -315,14 +315,6 @@ public class EdgeRepositoryImpl implements EdgeRepository {
                                 MetaColumnWiwaEdge.SALE_UNIT.column(),
                                 criteriaUtil.mapDirection(order)
                         );
-                        case "weightValue" -> select.ORDER_BY(
-                                MetaColumnWiwaEdge.WEIGHT_VALUE.column(),
-                                criteriaUtil.mapDirection(order)
-                        );
-                        case "weightUnit" -> select.ORDER_BY(
-                                MetaColumnWiwaEdge.WEIGHT_UNIT.column(),
-                                criteriaUtil.mapDirection(order)
-                        );
                         case "netWeightValue" -> select.ORDER_BY(
                                 MetaColumnWiwaEdge.NET_WEIGHT_VALUE.column(),
                                 criteriaUtil.mapDirection(order)
@@ -368,9 +360,6 @@ public class EdgeRepositoryImpl implements EdgeRepository {
                 .description(wiwaEdgeDto.description())
                 .sale(new Quantity(wiwaEdgeDto.saleValue(), Unit.valueOf(wiwaEdgeDto.saleUnit())))
 
-                .weight(Optional.ofNullable(wiwaEdgeDto.weightValue())
-                        .map(v -> new Quantity(v, Optional.ofNullable(wiwaEdgeDto.weightUnit()).map(Unit::valueOf).orElse(Unit.KILOGRAM)))
-                        .orElse(null))
                 .netWeight(Optional.ofNullable(wiwaEdgeDto.netWeightValue())
                         .map(v -> new Quantity(v, Optional.ofNullable(wiwaEdgeDto.netWeightUnit()).map(Unit::valueOf).orElse(Unit.KILOGRAM)))
                         .orElse(null))
@@ -389,8 +378,6 @@ public class EdgeRepositoryImpl implements EdgeRepository {
                 edgeDo.getDescription(),
                 edgeDo.getSale().quantity(),
                 edgeDo.getSale().unit().name(),
-                Optional.ofNullable(edgeDo.getWeight()).map(Quantity::quantity).orElse(null),
-                Optional.ofNullable(edgeDo.getWeight()).map(Quantity::unit).map(Unit::name).orElse(null),
                 Optional.ofNullable(edgeDo.getNetWeight()).map(Quantity::quantity).orElse(null),
                 Optional.ofNullable(edgeDo.getNetWeight()).map(Quantity::unit).map(Unit::name).orElse(null),
                 edgeDo.getWidth().quantity(),

@@ -26,7 +26,7 @@ public class OrderNumberRepositoryImpl implements OrderNumberRepository {
     private final SqlBuilder sqlBuilder;
 
     @Override
-    public Long getNextOrderNumber(final Long userId) {
+    public long getNextOrderNumber(final long userId) {
         log.debug("getNextOrderNumber({})", userId);
         try (final Connection connection = dataSource.getConnection()) {
             final var saved = findByUserId(connection, userId);

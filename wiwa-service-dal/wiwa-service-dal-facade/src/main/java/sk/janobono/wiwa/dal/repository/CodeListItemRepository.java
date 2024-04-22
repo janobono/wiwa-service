@@ -12,19 +12,19 @@ public interface CodeListItemRepository {
 
     int countByCode(String code);
 
-    int countByCodeListIdAndParentIdNull(Long codeListId);
+    int countByCodeListIdAndParentIdNull(long codeListId);
 
-    int countByIdNotAndCode(Long id, String code);
+    int countByIdNotAndCode(long id, String code);
 
-    int countByParentId(Long parentId);
+    int countByParentId(long parentId);
 
-    boolean existsById(Long id);
+    boolean existsById(long id);
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
     Page<CodeListItemDo> findAll(CodeListItemSearchCriteriaDo criteria, Pageable pageable);
 
-    Optional<CodeListItemDo> findById(Long id);
+    Optional<CodeListItemDo> findById(long id);
 
     CodeListItemDo save(CodeListItemDo codeListItemDo);
 

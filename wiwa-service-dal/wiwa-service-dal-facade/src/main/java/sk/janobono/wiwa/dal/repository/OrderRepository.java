@@ -9,15 +9,15 @@ import java.util.Optional;
 
 public interface OrderRepository {
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
-    boolean existsById(Long id);
+    boolean existsById(long id);
 
     Page<OrderDo> findAll(OrderSearchCriteriaDo criteria, Pageable pageable);
 
-    Optional<Long> getOrderUserId(Long id);
+    Optional<Long> getOrderUserId(long id);
 
-    Optional<OrderDo> findById(Long id);
+    Optional<OrderDo> findById(long id);
 
     OrderDo save(OrderDo orderDo);
 }

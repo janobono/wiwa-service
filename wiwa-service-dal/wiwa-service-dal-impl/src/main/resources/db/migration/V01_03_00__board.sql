@@ -10,8 +10,6 @@ create table wiwa_board
     orientation      boolean                            not null,
     sale_value       numeric(19, 3)                     not null,
     sale_unit        varchar(255)                       not null,
-    weight_value     numeric(19, 3),
-    weight_unit      varchar(255),
     net_weight_value numeric(19, 3),
     net_weight_unit  varchar(255),
     length_value     numeric(19, 3)                     not null,

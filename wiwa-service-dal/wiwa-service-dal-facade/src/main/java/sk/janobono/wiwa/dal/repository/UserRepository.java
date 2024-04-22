@@ -11,11 +11,11 @@ public interface UserRepository {
 
     int count();
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
     boolean existsByEmail(String email);
 
-    boolean existsById(Long id);
+    boolean existsById(long id);
 
     boolean existsByUsername(String username);
 
@@ -23,7 +23,7 @@ public interface UserRepository {
 
     Optional<UserDo> findByEmail(String email);
 
-    Optional<UserDo> findById(Long id);
+    Optional<UserDo> findById(long id);
 
     Optional<UserDo> findByUsername(String username);
 

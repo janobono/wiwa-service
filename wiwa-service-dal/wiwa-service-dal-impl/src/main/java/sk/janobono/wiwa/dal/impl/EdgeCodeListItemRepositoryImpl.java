@@ -30,7 +30,7 @@ public class EdgeCodeListItemRepositoryImpl implements EdgeCodeListItemRepositor
     private final CodeListItemDoMapper mapper;
 
     @Override
-    public List<CodeListItemDo> findByEdgeId(final Long edgeId) {
+    public List<CodeListItemDo> findByEdgeId(final long edgeId) {
         log.debug("findByEdgeId({})", edgeId);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -49,7 +49,7 @@ public class EdgeCodeListItemRepositoryImpl implements EdgeCodeListItemRepositor
     }
 
     @Override
-    public void saveAll(final Long edgeId, final List<Long> itemIds) {
+    public void saveAll(final long edgeId, final List<Long> itemIds) {
         log.debug("saveEdgeCodeListItems({},{})", edgeId, itemIds);
         Connection connection = null;
         try {
@@ -69,7 +69,7 @@ public class EdgeCodeListItemRepositoryImpl implements EdgeCodeListItemRepositor
         }
     }
 
-    private void delete(final Connection connection, final Long edgeId) throws SQLException {
+    private void delete(final Connection connection, final long edgeId) throws SQLException {
         sqlBuilder.delete(connection,
                 Query.DELETE()
                         .FROM(MetaTable.WIWA_EDGE_CODE_LIST_ITEM.table())
@@ -77,7 +77,7 @@ public class EdgeCodeListItemRepositoryImpl implements EdgeCodeListItemRepositor
         );
     }
 
-    private void insert(final Connection connection, final Long edgeId, final List<Long> itemIds) throws SQLException {
+    private void insert(final Connection connection, final long edgeId, final List<Long> itemIds) throws SQLException {
         for (final Long itemId : itemIds) {
             sqlBuilder.insert(connection,
                     Query.INSERT()

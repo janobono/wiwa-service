@@ -54,7 +54,7 @@ public class EdgeApiService {
         return edgeService.getEdges(criteria, pageable).map(edgeWebMapper::mapToWebDto);
     }
 
-    public EdgeWebDto getEdge(final Long id) {
+    public EdgeWebDto getEdge(final long id) {
         return edgeWebMapper.mapToWebDto(edgeService.getEdge(id));
     }
 
@@ -62,23 +62,23 @@ public class EdgeApiService {
         return edgeWebMapper.mapToWebDto(edgeService.addEdge(edgeWebMapper.mapToData(edgeChange)));
     }
 
-    public EdgeWebDto setEdge(final Long id, final EdgeChangeWebDto edgeChange) {
+    public EdgeWebDto setEdge(final long id, final EdgeChangeWebDto edgeChange) {
         return edgeWebMapper.mapToWebDto(edgeService.setEdge(id, edgeWebMapper.mapToData(edgeChange)));
     }
 
-    public void deleteEdge(final Long id) {
+    public void deleteEdge(final long id) {
         edgeService.deleteEdge(id);
     }
 
-    public EdgeWebDto setEdgeImage(final Long id, final MultipartFile multipartFile) {
+    public EdgeWebDto setEdgeImage(final long id, final MultipartFile multipartFile) {
         return edgeWebMapper.mapToWebDto(edgeService.setEdgeImage(id, multipartFile));
     }
 
-    public EdgeWebDto deleteEdgeImage(final Long id, final String fileName) {
+    public EdgeWebDto deleteEdgeImage(final long id, final String fileName) {
         return edgeWebMapper.mapToWebDto(edgeService.deleteEdgeImage(id, fileName));
     }
 
-    public EdgeWebDto setEdgeCategoryItems(final Long id, final List<EdgeCategoryItemChangeWebDto> categoryItems) {
+    public EdgeWebDto setEdgeCategoryItems(final long id, final List<EdgeCategoryItemChangeWebDto> categoryItems) {
         return edgeWebMapper.mapToWebDto(
                 edgeService.setEdgeCategoryItems(id, categoryItems.stream().map(edgeWebMapper::mapToData).toList())
         );

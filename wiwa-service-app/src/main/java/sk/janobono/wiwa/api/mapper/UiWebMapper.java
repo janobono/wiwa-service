@@ -34,6 +34,8 @@ public interface UiWebMapper {
 
     PriceForGluingLayerWebDto mapToWebDto(PriceForGluingLayerData priceForGluingLayer);
 
+    FreeDayWebDto mapToWebDto(FreeDayData freeDayData);
+
     ResetPasswordMailData mapToData(ResetPasswordMailWebDto resetPasswordMail);
 
     SignUpMailData mapToData(SignUpMailWebDto signUpMail);
@@ -45,4 +47,6 @@ public interface UiWebMapper {
     PriceForGluingEdgeData mapToData(PriceForGluingEdgeWebDto priceForGluingEdge);
 
     PriceForGluingLayerData mapToData(PriceForGluingLayerWebDto priceForGluingLayer);
+
+    FreeDayData mapToData(FreeDayWebDto freeDay);
 }

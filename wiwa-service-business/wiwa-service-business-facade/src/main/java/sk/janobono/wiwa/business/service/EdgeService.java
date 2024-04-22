@@ -14,17 +14,17 @@ public interface EdgeService {
 
     Page<EdgeData> getEdges(EdgeSearchCriteriaData criteria, Pageable pageable);
 
-    EdgeData getEdge(Long id);
+    EdgeData getEdge(long id);
 
     EdgeData addEdge(EdgeChangeData data);
 
-    EdgeData setEdge(Long id, EdgeChangeData data);
+    EdgeData setEdge(long id, EdgeChangeData data);
 
-    void deleteEdge(Long id);
+    void deleteEdge(long id);
 
-    EdgeData setEdgeImage(Long edgeId, MultipartFile multipartFile);
+    EdgeData setEdgeImage(long edgeId, MultipartFile multipartFile);
 
-    EdgeData deleteEdgeImage(Long edgeId, String fileName);
+    EdgeData deleteEdgeImage(long edgeId, String fileName);
 
-    EdgeData setEdgeCategoryItems(Long edgeId, List<EdgeCategoryItemChangeData> categoryItems);
+    EdgeData setEdgeCategoryItems(long edgeId, List<EdgeCategoryItemChangeData> categoryItems);
 }

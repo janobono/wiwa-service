@@ -34,7 +34,7 @@ public class EdgeImageRepositoryImpl implements EdgeImageRepository {
     private final CriteriaUtil criteriaUtil;
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(final long id) {
         log.debug("deleteById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
@@ -47,7 +47,7 @@ public class EdgeImageRepositoryImpl implements EdgeImageRepository {
     }
 
     @Override
-    public List<ApplicationImageInfoDo> findAllByEdgeId(final Long edgeId) {
+    public List<ApplicationImageInfoDo> findAllByEdgeId(final long edgeId) {
         log.debug("findAllByEdgeId({})", edgeId);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -73,7 +73,7 @@ public class EdgeImageRepositoryImpl implements EdgeImageRepository {
     }
 
     @Override
-    public Optional<EdgeImageDo> findByEdgeIdAndFileName(final Long edgeId, final String fileName) {
+    public Optional<EdgeImageDo> findByEdgeIdAndFileName(final long edgeId, final String fileName) {
         log.debug("findByEdgeIdAndFileName({},{})", edgeId, fileName);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,

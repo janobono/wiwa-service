@@ -56,7 +56,7 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
     }
 
     @Override
-    public ApplicationImageData getBoardImage(final Long boardId, final String fileName) {
+    public ApplicationImageData getBoardImage(final long boardId, final String fileName) {
         return boardImageRepository.findByBoardIdAndFileName(boardId, scDf.toStripAndLowerCase(fileName))
                 .map(applicationImageDataMapper::mapToData)
                 .orElseGet(() -> new ApplicationImageData(
@@ -68,7 +68,7 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
     }
 
     @Override
-    public ApplicationImageData getEdgeImage(final Long edgeId, final String fileName) {
+    public ApplicationImageData getEdgeImage(final long edgeId, final String fileName) {
         return edgeImageRepository.findByEdgeIdAndFileName(edgeId, scDf.toStripAndLowerCase(fileName))
                 .map(applicationImageDataMapper::mapToData)
                 .orElseGet(() -> new ApplicationImageData(

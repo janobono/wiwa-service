@@ -34,6 +34,7 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     private static final String PRICE_FOR_GLUING_LAYER = "PRICE_FOR_GLUING_LAYER";
     private static final String PRICES_FOR_GLUING_EDGE = "PRICES_FOR_GLUING_EDGE";
     private static final String PRICES_FOR_CUTTING = "PRICES_FOR_CUTTING";
+    private static final String FREE_DAYS = "FREE_DAYS";
 
     private final ObjectMapper objectMapper;
 
@@ -334,5 +335,28 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
             }
         }, PRICES_FOR_CUTTING, pricesForCutting);
         return pricesForCutting;
+    }
+
+    @Override
+    public List<FreeDayData> getFreeDays() {
+        return propertyUtilService.getProperty(v -> {
+            try {
+                return Arrays.asList(objectMapper.readValue(v, FreeDayData[].class));
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, FREE_DAYS);
+    }
+
+    @Override
+    public List<FreeDayData> setFreeDays(final List<FreeDayData> freeDays) {
+        propertyUtilService.setProperty(data -> {
+            try {
+                return objectMapper.writeValueAsString(data);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, FREE_DAYS, freeDays);
+        return freeDays;
     }
 }

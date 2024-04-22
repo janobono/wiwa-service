@@ -30,7 +30,7 @@ public class BoardCodeListItemRepositoryImpl implements BoardCodeListItemReposit
     private final CodeListItemDoMapper mapper;
 
     @Override
-    public List<CodeListItemDo> findByBoardId(final Long boardId) {
+    public List<CodeListItemDo> findByBoardId(final long boardId) {
         log.debug("findByBoardId({})", boardId);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -49,7 +49,7 @@ public class BoardCodeListItemRepositoryImpl implements BoardCodeListItemReposit
     }
 
     @Override
-    public void saveAll(final Long boardId, final List<Long> itemIds) {
+    public void saveAll(final long boardId, final List<Long> itemIds) {
         log.debug("saveBoardCodeListItems({},{})", boardId, itemIds);
         Connection connection = null;
         try {
@@ -69,7 +69,7 @@ public class BoardCodeListItemRepositoryImpl implements BoardCodeListItemReposit
         }
     }
 
-    private void delete(final Connection connection, final Long boardId) throws SQLException {
+    private void delete(final Connection connection, final long boardId) throws SQLException {
         sqlBuilder.delete(connection,
                 Query.DELETE()
                         .FROM(MetaTable.WIWA_BOARD_CODE_LIST_ITEM.table())
@@ -77,7 +77,7 @@ public class BoardCodeListItemRepositoryImpl implements BoardCodeListItemReposit
         );
     }
 
-    private void insert(final Connection connection, final Long boardId, final List<Long> itemIds) throws SQLException {
+    private void insert(final Connection connection, final long boardId, final List<Long> itemIds) throws SQLException {
         for (final Long itemId : itemIds) {
             sqlBuilder.insert(connection,
                     Query.INSERT()

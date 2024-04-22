@@ -11,10 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
-import sk.janobono.wiwa.api.model.application.ApplicationPropertiesWebDto;
-import sk.janobono.wiwa.api.model.application.CompanyInfoWebDto;
-import sk.janobono.wiwa.api.model.application.ManufacturePropertiesWebDto;
-import sk.janobono.wiwa.api.model.application.UnitWebDto;
+import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
 import sk.janobono.wiwa.api.service.UiApiService;
 
@@ -121,5 +118,10 @@ public class UiController {
     @GetMapping(value = "/manufacture-properties")
     public ManufacturePropertiesWebDto getManufactureProperties() {
         return uiApiService.getManufactureProperties();
+    }
+
+    @GetMapping(value = "/free-days")
+    public List<FreeDayWebDto> getFreeDays() {
+        return uiApiService.getFreeDays();
     }
 }

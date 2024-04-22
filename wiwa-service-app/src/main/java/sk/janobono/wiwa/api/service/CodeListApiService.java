@@ -28,7 +28,7 @@ public class CodeListApiService {
                 .map(codeListWebMapper::mapToWebDto);
     }
 
-    public CodeListWebDto getCodeList(final Long id) {
+    public CodeListWebDto getCodeList(final long id) {
         return codeListWebMapper.mapToWebDto(codeListService.getCodeList(id));
     }
 
@@ -36,11 +36,11 @@ public class CodeListApiService {
         return codeListWebMapper.mapToWebDto(codeListService.addCodeList(codeListWebMapper.mapToData(data)));
     }
 
-    public CodeListWebDto setCodeList(final Long id, final CodeListChangeWebDto codeListChange) {
+    public CodeListWebDto setCodeList(final long id, final CodeListChangeWebDto codeListChange) {
         return codeListWebMapper.mapToWebDto(codeListService.setCodeList(id, codeListWebMapper.mapToData(codeListChange)));
     }
 
-    public void deleteCodeList(final Long id) {
+    public void deleteCodeList(final long id) {
         codeListService.deleteCodeList(id);
     }
 }

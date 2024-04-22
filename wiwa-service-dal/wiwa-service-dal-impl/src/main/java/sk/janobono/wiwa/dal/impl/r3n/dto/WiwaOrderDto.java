@@ -9,8 +9,6 @@ public record WiwaOrderDto(
         LocalDateTime created,
         String status,
         Long orderNumber,
-        BigDecimal weightValue,
-        String weightUnit,
         BigDecimal netWeightValue,
         String netWeightUnit,
         BigDecimal totalValue,
@@ -24,8 +22,6 @@ public record WiwaOrderDto(
                 wiwaOrderDto.created,
                 wiwaOrderDto.status,
                 wiwaOrderDto.orderNumber,
-                wiwaOrderDto.weightValue,
-                wiwaOrderDto.weightUnit,
                 wiwaOrderDto.netWeightValue,
                 wiwaOrderDto.netWeightUnit,
                 wiwaOrderDto.totalValue,
@@ -43,9 +39,7 @@ public record WiwaOrderDto(
                 (BigDecimal) array[5],
                 (String) array[6],
                 (BigDecimal) array[7],
-                (String) array[8],
-                (BigDecimal) array[9],
-                (String) array[10]
+                (String) array[8]
         );
     }
 }

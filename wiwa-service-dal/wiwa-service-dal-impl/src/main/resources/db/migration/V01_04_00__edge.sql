@@ -7,8 +7,6 @@ create table wiwa_edge
     description      text,
     sale_value       numeric(19, 3)                     not null,
     sale_unit        varchar(255)                       not null,
-    weight_value     numeric(19, 3),
-    weight_unit      varchar(255),
     net_weight_value numeric(19, 3),
     net_weight_unit  varchar(255),
     width_value      numeric(19, 3)                     not null,

@@ -14,7 +14,6 @@ public record EdgeData(
         String name,
         String description,
         Quantity sale,
-        Quantity weight,
         Quantity netWeight,
         Quantity width,
         Quantity thickness,

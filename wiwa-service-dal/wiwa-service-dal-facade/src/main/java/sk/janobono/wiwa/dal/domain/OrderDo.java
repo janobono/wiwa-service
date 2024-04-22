@@ -16,7 +16,6 @@ public class OrderDo {
     private LocalDateTime created;
     private OrderStatus status;
     private Long orderNumber;
-    private Quantity weight;
     private Quantity netWeight;
     private Money total;
 }

@@ -12,7 +12,6 @@ import sk.janobono.wiwa.dal.repository.OrderAttributeRepository;
 import sk.janobono.wiwa.model.OrderAttributeKey;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Condition;
-import sk.r3n.sql.Order;
 import sk.r3n.sql.Query;
 
 import javax.sql.DataSource;
@@ -31,26 +30,7 @@ public class OrderAttributeRepositoryImpl implements OrderAttributeRepository {
     private final OrderAttributeDoMapper mapper;
 
     @Override
-    public List<OrderAttributeDo> findAllByOrderId(final Long orderId) {
-        log.debug("findAllByOrderId({})", orderId);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaOrderAttribute.columns())
-                            .FROM(MetaTable.WIWA_ORDER_ATTRIBUTE.table())
-                            .WHERE(MetaColumnWiwaOrderAttribute.ORDER_ID.column(), Condition.EQUALS, orderId)
-                            .ORDER_BY(MetaColumnWiwaOrderAttribute.ATTRIBUTE_KEY.column(), Order.ASC)
-            );
-            return rows.stream()
-                    .map(WiwaOrderAttributeDto::toObject)
-                    .map(mapper::toOrderAttributeDo)
-                    .toList();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public Optional<OrderAttributeDo> findByOrderIdAndAttributeKey(final Long orderId, final OrderAttributeKey orderAttributeKey) {
+    public Optional<OrderAttributeDo> findByOrderIdAndAttributeKey(final long orderId, final OrderAttributeKey orderAttributeKey) {
         log.debug("findByOrderIdAndAttributeKey({},{})", orderId, orderAttributeKey);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -84,7 +64,7 @@ public class OrderAttributeRepositoryImpl implements OrderAttributeRepository {
         }
     }
 
-    private int countByOrderIdAndAttributeKey(final Connection connection, final Long orderId, final String attributeKey) throws SQLException {
+    private int countByOrderIdAndAttributeKey(final Connection connection, final long orderId, final String attributeKey) throws SQLException {
         final List<Object[]> rows = sqlBuilder.select(connection,
                 Query.SELECT(MetaColumnWiwaOrderAttribute.ORDER_ID.column()).COUNT()
                         .FROM(MetaTable.WIWA_CODE_LIST.table())

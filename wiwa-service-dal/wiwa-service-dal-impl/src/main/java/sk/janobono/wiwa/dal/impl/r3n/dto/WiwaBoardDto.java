@@ -12,8 +12,6 @@ public record WiwaBoardDto(
         Boolean orientation,
         BigDecimal saleValue,
         String saleUnit,
-        BigDecimal weightValue,
-        String weightUnit,
         BigDecimal netWeightValue,
         String netWeightUnit,
         BigDecimal lengthValue,
@@ -37,8 +35,6 @@ public record WiwaBoardDto(
                 wiwaBoardDto.orientation,
                 wiwaBoardDto.saleValue,
                 wiwaBoardDto.saleUnit,
-                wiwaBoardDto.weightValue,
-                wiwaBoardDto.weightUnit,
                 wiwaBoardDto.netWeightValue,
                 wiwaBoardDto.netWeightUnit,
                 wiwaBoardDto.lengthValue,
@@ -72,9 +68,7 @@ public record WiwaBoardDto(
                 (BigDecimal) array[15],
                 (String) array[16],
                 (BigDecimal) array[17],
-                (String) array[18],
-                (BigDecimal) array[19],
-                (String) array[20]
+                (String) array[18]
         );
     }
 }

@@ -11,7 +11,6 @@ public record EdgeChangeWebDto(
         @NotBlank @Size(max = 255) String name,
         String description,
         @NotNull Quantity sale,
-        Quantity weight,
         Quantity netWeight,
         @NotNull Quantity width,
         @NotNull Quantity thickness,

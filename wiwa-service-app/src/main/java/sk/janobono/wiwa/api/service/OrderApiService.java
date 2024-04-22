@@ -75,7 +75,7 @@ public class OrderApiService {
         if (isNotCreator(creatorId, user)) {
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
-        return orderWebMapper.mapToWebDto(orderService.sendOrder(id, orderWebMapper.mapToData(sendOrder)));
+        return orderWebMapper.mapToWebDto(orderService.sendOrder(id, user.id(), orderWebMapper.mapToData(sendOrder)));
     }
 
     public OrderWebDto setOrderStatus(final Long id, final OrderStatusChangeWebDto orderStatusChange) {
@@ -83,7 +83,7 @@ public class OrderApiService {
         if (!isManager(user)) {
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
-        return orderWebMapper.mapToWebDto(orderService.setOrderStatus(id, orderWebMapper.mapToData(orderStatusChange)));
+        return orderWebMapper.mapToWebDto(orderService.setOrderStatus(id, user.id(), orderWebMapper.mapToData(orderStatusChange)));
     }
 
     public List<OrderCommentWebDto> getComments(final Long id) {
@@ -103,27 +103,27 @@ public class OrderApiService {
 
     public OrderItemWebDto addItem(final Long id, final OrderItemChangeWebDto orderItemChange) {
         final User user = checkAccess(id);
-        return orderWebMapper.mapToWebDto(orderService.addItem(id, user.id(), orderWebMapper.mapToData(orderItemChange)));
+        return orderWebMapper.mapToWebDto(orderService.addItem(id, user.id(), orderWebMapper.mapToData(orderItemChange), isManager(user)));
     }
 
     public OrderItemWebDto setItem(final Long id, final Long itemId, final OrderItemChangeWebDto orderItemChange) {
         final User user = checkAccess(id);
-        return orderWebMapper.mapToWebDto(orderService.setItem(id, itemId, user.id(), orderWebMapper.mapToData(orderItemChange)));
+        return orderWebMapper.mapToWebDto(orderService.setItem(id, itemId, user.id(), orderWebMapper.mapToData(orderItemChange), isManager(user)));
     }
 
     public OrderItemWebDto moveUpItem(final Long id, final Long itemId) {
         final User user = checkAccess(id);
-        return orderWebMapper.mapToWebDto(orderService.moveUpItem(id, itemId, user.id()));
+        return orderWebMapper.mapToWebDto(orderService.moveUpItem(id, itemId, user.id(), isManager(user)));
     }
 
     public OrderItemWebDto moveDownItem(final Long id, final Long itemId) {
         final User user = checkAccess(id);
-        return orderWebMapper.mapToWebDto(orderService.moveDownItem(id, itemId, user.id()));
+        return orderWebMapper.mapToWebDto(orderService.moveDownItem(id, itemId, user.id(), isManager(user)));
     }
 
     public void deleteItem(final Long id, final Long itemId) {
-        checkAccess(id);
-        orderService.deleteItem(id, itemId);
+        final User user = checkAccess(id);
+        orderService.deleteItem(id, itemId, isManager(user));
     }
 
     public OrderSummaryWebDto getOrderSummary(final Long id) {

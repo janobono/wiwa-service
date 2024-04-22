@@ -64,7 +64,7 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    public BoardWebDto getBoard(@PathVariable("id") final Long id) {
+    public BoardWebDto getBoard(@PathVariable("id") final long id) {
         return boardApiService.getBoard(id);
     }
 
@@ -77,31 +77,31 @@ public class BoardController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public BoardWebDto setBoard(@PathVariable("id") final Long id, @Valid @RequestBody final BoardChangeWebDto boardChange) {
+    public BoardWebDto setBoard(@PathVariable("id") final long id, @Valid @RequestBody final BoardChangeWebDto boardChange) {
         return boardApiService.setBoard(id, boardChange);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public void deleteBoard(@PathVariable("id") final Long id) {
+    public void deleteBoard(@PathVariable("id") final long id) {
         boardApiService.deleteBoard(id);
     }
 
     @PostMapping("/{id}/images")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public BoardWebDto setBoardImage(@PathVariable("id") final Long id, @RequestParam("file") final MultipartFile multipartFile) {
+    public BoardWebDto setBoardImage(@PathVariable("id") final long id, @RequestParam("file") final MultipartFile multipartFile) {
         return boardApiService.setBoardImage(id, multipartFile);
     }
 
     @DeleteMapping("/{id}/images/{fileName}")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public BoardWebDto deleteBoardImage(@PathVariable("id") final Long id, @PathVariable("fileName") final String fileName) {
+    public BoardWebDto deleteBoardImage(@PathVariable("id") final long id, @PathVariable("fileName") final String fileName) {
         return boardApiService.deleteBoardImage(id, fileName);
     }
 
     @PostMapping("/{id}/category-items")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public BoardWebDto setBoardCategoryItems(@PathVariable("id") final Long id, @RequestBody final List<BoardCategoryItemChangeWebDto> categoryItems) {
+    public BoardWebDto setBoardCategoryItems(@PathVariable("id") final long id, @RequestBody final List<BoardCategoryItemChangeWebDto> categoryItems) {
         return boardApiService.setBoardCategoryItems(id, categoryItems);
     }
 }

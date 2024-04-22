@@ -270,3 +270,81 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PR
 "price":{"amount":2.000, "currency":"EUR"}
 }
 ]');
+
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('FREE_DAYS', e'[
+{
+"name":"Day of the Establishment of the Slovak Republic",
+"day":1,
+"month":1
+},
+{
+"name":"Epiphany",
+"day":6,
+"month":1
+},
+{
+"name":"Good Friday",
+"day":29,
+"month":3
+},
+{
+"name":"Easter Monday",
+"day":1,
+"month":4
+},
+{
+"name":"International Workers Day",
+"day":1,
+"month":5
+},
+{
+"name":"Day of victory over fascism",
+"day":8,
+"month":5
+},
+{
+"name":"St. Cyril and Methodius Day",
+"day":5,
+"month":6
+},
+{
+"name":"Slovak National Uprising Anniversary",
+"day":29,
+"month":8
+},
+{
+"name":"Day of the Constitution of the Slovak Republic",
+"day":1,
+"month":9
+},
+{
+"name":"Day of Our Lady of the Seven Sorrows, patron saint of Slovakia",
+"day":15,
+"month":9
+},
+{
+"name":"All Saints Day",
+"day":1,
+"month":11
+},
+{
+"name":"Struggle for Freedom and Democracy Day",
+"day":17,
+"month":11
+},
+{
+"name":"Christmas Eve",
+"day":24,
+"month":12
+},
+{
+"name":"Christmas Day",
+"day":25,
+"month":12
+},
+{
+"name":"St. Stephens Day",
+"day":26,
+"month":12
+}
+]');

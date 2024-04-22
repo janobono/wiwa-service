@@ -64,7 +64,7 @@ public class BoardApiService {
         return boardService.getBoards(criteria, pageable).map(boardWebMapper::mapToWebDto);
     }
 
-    public BoardWebDto getBoard(final Long id) {
+    public BoardWebDto getBoard(final long id) {
         return boardWebMapper.mapToWebDto(boardService.getBoard(id));
     }
 
@@ -72,23 +72,23 @@ public class BoardApiService {
         return boardWebMapper.mapToWebDto(boardService.addBoard(boardWebMapper.mapToData(boardChange)));
     }
 
-    public BoardWebDto setBoard(final Long id, final BoardChangeWebDto boardChange) {
+    public BoardWebDto setBoard(final long id, final BoardChangeWebDto boardChange) {
         return boardWebMapper.mapToWebDto(boardService.setBoard(id, boardWebMapper.mapToData(boardChange)));
     }
 
-    public void deleteBoard(final Long id) {
+    public void deleteBoard(final long id) {
         boardService.deleteBoard(id);
     }
 
-    public BoardWebDto setBoardImage(final Long id, final MultipartFile multipartFile) {
+    public BoardWebDto setBoardImage(final long id, final MultipartFile multipartFile) {
         return boardWebMapper.mapToWebDto(boardService.setBoardImage(id, multipartFile));
     }
 
-    public BoardWebDto deleteBoardImage(final Long id, final String fileName) {
+    public BoardWebDto deleteBoardImage(final long id, final String fileName) {
         return boardWebMapper.mapToWebDto(boardService.deleteBoardImage(id, fileName));
     }
 
-    public BoardWebDto setBoardCategoryItems(final Long id, final List<BoardCategoryItemChangeWebDto> categoryItems) {
+    public BoardWebDto setBoardCategoryItems(final long id, final List<BoardCategoryItemChangeWebDto> categoryItems) {
         return boardWebMapper.mapToWebDto(
                 boardService.setBoardCategoryItems(id, categoryItems.stream().map(boardWebMapper::mapToData).toList())
         );

@@ -11,15 +11,15 @@ public interface EdgeRepository {
 
     int countByCode(String code);
 
-    int countByIdNotAndCode(Long id, String code);
+    int countByIdNotAndCode(long id, String code);
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
-    boolean existsById(Long id);
+    boolean existsById(long id);
 
     Page<EdgeDo> findAll(EdgeSearchCriteriaDo criteria, Pageable pageable);
 
-    Optional<EdgeDo> findById(Long id);
+    Optional<EdgeDo> findById(long id);
 
     EdgeDo save(EdgeDo edgeDo);
 }

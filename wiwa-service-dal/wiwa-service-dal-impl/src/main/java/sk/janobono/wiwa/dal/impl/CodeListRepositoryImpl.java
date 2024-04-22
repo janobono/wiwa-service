@@ -58,7 +58,7 @@ public class CodeListRepositoryImpl implements CodeListRepository {
     }
 
     @Override
-    public int countByIdNotAndCode(final Long id, final String code) {
+    public int countByIdNotAndCode(final long id, final String code) {
         log.debug("countByIdNotAndCode({},{})", id, code);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -77,7 +77,7 @@ public class CodeListRepositoryImpl implements CodeListRepository {
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(final long id) {
         log.debug("deleteById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
@@ -91,7 +91,7 @@ public class CodeListRepositoryImpl implements CodeListRepository {
     }
 
     @Override
-    public boolean existsById(final Long id) {
+    public boolean existsById(final long id) {
         log.debug("existsById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -153,7 +153,7 @@ public class CodeListRepositoryImpl implements CodeListRepository {
     }
 
     @Override
-    public Optional<CodeListDo> findById(final Long id) {
+    public Optional<CodeListDo> findById(final long id) {
         log.debug("findById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,

@@ -12,7 +12,6 @@ public record OrderWebDto(
         LocalDateTime created,
         OrderStatus status,
         Long orderNumber,
-        Quantity weight,
         Quantity netWeight,
         Money total,
         Money vatTotal

@@ -134,4 +134,10 @@ public class ConfigApiService {
     public PriceForGluingLayerWebDto setPriceForGluingLayer(final PriceForGluingLayerWebDto priceForGluingLayer) {
         return uiWebMapper.mapToWebDto(applicationPropertyService.setPriceForGluingLayer(uiWebMapper.mapToData(priceForGluingLayer)));
     }
+
+    public List<FreeDayWebDto> setFreeDays(final List<FreeDayWebDto> freeDays) {
+        return applicationPropertyService.setFreeDays(
+                freeDays.stream().map(uiWebMapper::mapToData).toList()
+        ).stream().map(uiWebMapper::mapToWebDto).toList();
+    }
 }

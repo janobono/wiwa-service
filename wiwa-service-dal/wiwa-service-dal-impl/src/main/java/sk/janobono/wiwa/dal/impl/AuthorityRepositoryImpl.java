@@ -69,7 +69,7 @@ public class AuthorityRepositoryImpl implements AuthorityRepository {
     }
 
     @Override
-    public List<AuthorityDo> findByUserId(final Long userId) {
+    public List<AuthorityDo> findByUserId(final long userId) {
         log.debug("findByUserId({})", userId);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -105,7 +105,7 @@ public class AuthorityRepositoryImpl implements AuthorityRepository {
     }
 
     @Override
-    public void saveUserAuthorities(final Long userId, final List<Authority> authorities) {
+    public void saveUserAuthorities(final long userId, final List<Authority> authorities) {
         log.debug("saveUserAuthorities({},{})", userId, authorities);
         Connection connection = null;
         try {

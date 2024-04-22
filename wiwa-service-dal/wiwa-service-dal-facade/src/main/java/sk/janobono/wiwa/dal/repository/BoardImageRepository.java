@@ -8,11 +8,11 @@ import java.util.Optional;
 
 public interface BoardImageRepository {
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
-    List<ApplicationImageInfoDo> findAllByBoardId(Long boardId);
+    List<ApplicationImageInfoDo> findAllByBoardId(long boardId);
 
-    Optional<BoardImageDo> findByBoardIdAndFileName(Long boardId, String fileName);
+    Optional<BoardImageDo> findByBoardIdAndFileName(long boardId, String fileName);
 
     BoardImageDo save(BoardImageDo boardImageDo);
 }

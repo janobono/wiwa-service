@@ -29,7 +29,7 @@ public class CodeListController {
     }
 
     @GetMapping("/{id}")
-    public CodeListWebDto getCodeList(@PathVariable("id") final Long id) {
+    public CodeListWebDto getCodeList(@PathVariable("id") final long id) {
         return codeListApiService.getCodeList(id);
     }
 
@@ -42,13 +42,13 @@ public class CodeListController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListWebDto setCodeList(@PathVariable("id") final Long id, @Valid @RequestBody final CodeListChangeWebDto codeListChange) {
+    public CodeListWebDto setCodeList(@PathVariable("id") final long id, @Valid @RequestBody final CodeListChangeWebDto codeListChange) {
         return codeListApiService.setCodeList(id, codeListChange);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public void deleteCodeList(@PathVariable("id") final Long id) {
+    public void deleteCodeList(@PathVariable("id") final long id) {
         codeListApiService.deleteCodeList(id);
     }
 }

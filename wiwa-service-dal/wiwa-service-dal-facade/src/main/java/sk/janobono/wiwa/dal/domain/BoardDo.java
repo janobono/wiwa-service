@@ -16,7 +16,6 @@ public class BoardDo {
     private String description;
     private Boolean orientation;
     private Quantity sale;
-    private Quantity weight;
     private Quantity netWeight;
     private Quantity length;
     private Quantity width;

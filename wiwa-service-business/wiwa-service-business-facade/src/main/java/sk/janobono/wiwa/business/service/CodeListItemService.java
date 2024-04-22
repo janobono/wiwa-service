@@ -10,15 +10,15 @@ public interface CodeListItemService {
 
     Page<CodeListItemData> getCodeListItems(CodeListItemSearchCriteriaData criteria, Pageable pageable);
 
-    CodeListItemData getCodeListItem(Long id);
+    CodeListItemData getCodeListItem(long id);
 
     CodeListItemData addCodeListItem(CodeListItemChangeData data);
 
-    CodeListItemData setCodeListItem(Long id, CodeListItemChangeData data);
+    CodeListItemData setCodeListItem(long id, CodeListItemChangeData data);
 
-    void deleteCodeListItem(Long id);
+    void deleteCodeListItem(long id);
 
-    CodeListItemData moveCodeListItemUp(Long id);
+    CodeListItemData moveCodeListItemUp(long id);
 
-    CodeListItemData moveCodeListItemDown(Long id);
+    CodeListItemData moveCodeListItemDown(long id);
 }

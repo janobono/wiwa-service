@@ -14,8 +14,6 @@ public enum MetaColumnWiwaEdge {
     DESCRIPTION("description", DataType.STRING),
     SALE_VALUE("sale_value", DataType.BIG_DECIMAL),
     SALE_UNIT("sale_unit", DataType.STRING),
-    WEIGHT_VALUE("weight_value", DataType.BIG_DECIMAL),
-    WEIGHT_UNIT("weight_unit", DataType.STRING),
     NET_WEIGHT_VALUE("net_weight_value", DataType.BIG_DECIMAL),
     NET_WEIGHT_UNIT("net_weight_unit", DataType.STRING),
     WIDTH_VALUE("width_value", DataType.BIG_DECIMAL),

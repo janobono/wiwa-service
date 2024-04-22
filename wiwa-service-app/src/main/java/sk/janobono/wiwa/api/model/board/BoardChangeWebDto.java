@@ -14,7 +14,6 @@ public record BoardChangeWebDto(
         @NotBlank @Size(max = 255) String structureCode,
         @NotNull Boolean orientation,
         @NotNull Quantity sale,
-        Quantity weight,
         Quantity netWeight,
         @NotNull Quantity length,
         @NotNull Quantity width,

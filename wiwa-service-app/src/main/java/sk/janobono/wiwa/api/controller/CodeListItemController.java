@@ -33,7 +33,7 @@ public class CodeListItemController {
     }
 
     @GetMapping("/{id}")
-    public CodeListItemWebDto getCodeListItem(@PathVariable("id") final Long id) {
+    public CodeListItemWebDto getCodeListItem(@PathVariable("id") final long id) {
         return codeListItemApiService.getCodeListItem(id);
     }
 
@@ -46,25 +46,25 @@ public class CodeListItemController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListItemWebDto setCodeListItem(@PathVariable("id") final Long id, @Valid @RequestBody final CodeListItemChangeWebDto codeListItemChange) {
+    public CodeListItemWebDto setCodeListItem(@PathVariable("id") final long id, @Valid @RequestBody final CodeListItemChangeWebDto codeListItemChange) {
         return codeListItemApiService.setCodeListItem(id, codeListItemChange);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public void deleteCodeListItem(@PathVariable("id") final Long id) {
+    public void deleteCodeListItem(@PathVariable("id") final long id) {
         codeListItemApiService.deleteCodeListItem(id);
     }
 
     @PatchMapping("/{id}/move-up")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListItemWebDto moveCodeListItemUp(@PathVariable("id") final Long id) {
+    public CodeListItemWebDto moveCodeListItemUp(@PathVariable("id") final long id) {
         return codeListItemApiService.moveCodeListItemUp(id);
     }
 
     @PatchMapping("/{id}/move-down")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CodeListItemWebDto moveCodeListItemDown(@PathVariable("id") final Long id) {
+    public CodeListItemWebDto moveCodeListItemDown(@PathVariable("id") final long id) {
         return codeListItemApiService.moveCodeListItemDown(id);
     }
 }

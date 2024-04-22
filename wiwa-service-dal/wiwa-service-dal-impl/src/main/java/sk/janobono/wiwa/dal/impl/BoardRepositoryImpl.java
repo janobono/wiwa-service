@@ -61,7 +61,7 @@ public class BoardRepositoryImpl implements BoardRepository {
     }
 
     @Override
-    public int countByIdNotAndCode(final Long id, final String code) {
+    public int countByIdNotAndCode(final long id, final String code) {
         log.debug("countByIdNotAndCode({},{})", id, code);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -80,7 +80,7 @@ public class BoardRepositoryImpl implements BoardRepository {
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(final long id) {
         log.debug("deleteById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
@@ -94,7 +94,7 @@ public class BoardRepositoryImpl implements BoardRepository {
     }
 
     @Override
-    public boolean existsById(final Long id) {
+    public boolean existsById(final long id) {
         log.debug("existsById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -155,7 +155,7 @@ public class BoardRepositoryImpl implements BoardRepository {
     }
 
     @Override
-    public Optional<BoardDo> findById(final Long id) {
+    public Optional<BoardDo> findById(final long id) {
         log.debug("findById({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
@@ -362,14 +362,6 @@ public class BoardRepositoryImpl implements BoardRepository {
                                 MetaColumnWiwaBoard.SALE_UNIT.column(),
                                 criteriaUtil.mapDirection(order)
                         );
-                        case "weightValue" -> select.ORDER_BY(
-                                MetaColumnWiwaBoard.WEIGHT_VALUE.column(),
-                                criteriaUtil.mapDirection(order)
-                        );
-                        case "weightUnit" -> select.ORDER_BY(
-                                MetaColumnWiwaBoard.WEIGHT_UNIT.column(),
-                                criteriaUtil.mapDirection(order)
-                        );
                         case "netWeightValue" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.NET_WEIGHT_VALUE.column(),
                                 criteriaUtil.mapDirection(order)
@@ -426,9 +418,6 @@ public class BoardRepositoryImpl implements BoardRepository {
                 .orientation(wiwaBoardDto.orientation())
                 .sale(new Quantity(wiwaBoardDto.saleValue(), Unit.valueOf(wiwaBoardDto.saleUnit())))
 
-                .weight(Optional.ofNullable(wiwaBoardDto.weightValue())
-                        .map(v -> new Quantity(v, Optional.ofNullable(wiwaBoardDto.weightUnit()).map(Unit::valueOf).orElse(Unit.KILOGRAM)))
-                        .orElse(null))
                 .netWeight(Optional.ofNullable(wiwaBoardDto.netWeightValue())
                         .map(v -> new Quantity(v, Optional.ofNullable(wiwaBoardDto.netWeightUnit()).map(Unit::valueOf).orElse(Unit.KILOGRAM)))
                         .orElse(null))
@@ -451,8 +440,6 @@ public class BoardRepositoryImpl implements BoardRepository {
                 boardDo.getOrientation(),
                 boardDo.getSale().quantity(),
                 boardDo.getSale().unit().name(),
-                Optional.ofNullable(boardDo.getWeight()).map(Quantity::quantity).orElse(null),
-                Optional.ofNullable(boardDo.getWeight()).map(Quantity::unit).map(Unit::name).orElse(null),
                 Optional.ofNullable(boardDo.getNetWeight()).map(Quantity::quantity).orElse(null),
                 Optional.ofNullable(boardDo.getNetWeight()).map(Quantity::unit).map(Unit::name).orElse(null),
                 boardDo.getLength().quantity(),
