@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.dal.domain.EdgeDo;
 import sk.janobono.wiwa.dal.impl.component.CriteriaUtil;
-import sk.janobono.wiwa.dal.impl.mapper.EdgeDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaEdgeDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaCodeListItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaEdge;
@@ -17,6 +16,9 @@ import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaEdgeCodeListItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.model.EdgeSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.EdgeRepository;
+import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.Quantity;
+import sk.janobono.wiwa.model.Unit;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
@@ -37,7 +39,6 @@ public class EdgeRepositoryImpl implements EdgeRepository {
 
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
-    private final EdgeDoMapper mapper;
     private final ScDf scDf;
     private final CriteriaUtil criteriaUtil;
 
@@ -143,7 +144,7 @@ public class EdgeRepositoryImpl implements EdgeRepository {
                 final List<Object[]> rows = sqlBuilder.select(connection, select);
                 final List<EdgeDo> content = rows.stream()
                         .map(WiwaEdgeDto::toObject)
-                        .map(mapper::toEdgeDo)
+                        .map(this::toEdgeDo)
                         .toList();
                 return new PageImpl<>(content, pageable, totalRows);
             }
@@ -165,7 +166,7 @@ public class EdgeRepositoryImpl implements EdgeRepository {
             return rows.stream()
                     .findFirst()
                     .map(WiwaEdgeDto::toObject)
-                    .map(mapper::toEdgeDo);
+                    .map(this::toEdgeDo);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -177,11 +178,11 @@ public class EdgeRepositoryImpl implements EdgeRepository {
         try (final Connection connection = dataSource.getConnection()) {
             final WiwaEdgeDto wiwaEdgeDto;
             if (edgeDo.getId() == null) {
-                wiwaEdgeDto = insert(connection, mapper.toWiwaEdgeDto(edgeDo));
+                wiwaEdgeDto = insert(connection, toWiwaEdgeDto(edgeDo));
             } else {
-                wiwaEdgeDto = update(connection, mapper.toWiwaEdgeDto(edgeDo));
+                wiwaEdgeDto = update(connection, toWiwaEdgeDto(edgeDo));
             }
-            return mapper.toEdgeDo(wiwaEdgeDto);
+            return toEdgeDo(wiwaEdgeDto);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -233,47 +234,38 @@ public class EdgeRepositoryImpl implements EdgeRepository {
 
         // width from
         if (Optional.ofNullable(criteria.widthFrom()).isPresent()) {
-            select.AND(MetaColumnWiwaEdge.WIDTH_VALUE.column(), Condition.EQUALS_MORE, criteria.widthFrom());
+            select.AND(MetaColumnWiwaEdge.WIDTH_VALUE.column(), Condition.EQUALS_MORE, criteria.widthFrom().quantity())
+                    .AND(MetaColumnWiwaEdge.WIDTH_UNIT.column(), Condition.EQUALS, criteria.widthFrom().unit().name());
         }
 
         // width to
         if (Optional.ofNullable(criteria.widthTo()).isPresent()) {
-            select.AND(MetaColumnWiwaEdge.WIDTH_VALUE.column(), Condition.EQUALS_LESS, criteria.widthTo());
-        }
-
-        // width unit
-        if (Optional.ofNullable(criteria.widthUnit()).isPresent()) {
-            select.AND(MetaColumnWiwaEdge.WIDTH_UNIT.column(), Condition.EQUALS, criteria.widthUnit().name());
+            select.AND(MetaColumnWiwaEdge.WIDTH_VALUE.column(), Condition.EQUALS_LESS, criteria.widthTo().quantity())
+                    .AND(MetaColumnWiwaEdge.WIDTH_UNIT.column(), Condition.EQUALS, criteria.widthTo().unit().name());
         }
 
         // thickness from
         if (Optional.ofNullable(criteria.thicknessFrom()).isPresent()) {
-            select.AND(MetaColumnWiwaEdge.THICKNESS_VALUE.column(), Condition.EQUALS_MORE, criteria.thicknessFrom());
+            select.AND(MetaColumnWiwaEdge.THICKNESS_VALUE.column(), Condition.EQUALS_MORE, criteria.thicknessFrom().quantity())
+                    .AND(MetaColumnWiwaEdge.THICKNESS_UNIT.column(), Condition.EQUALS, criteria.thicknessFrom().unit().name());
         }
 
         // thickness to
         if (Optional.ofNullable(criteria.thicknessTo()).isPresent()) {
-            select.AND(MetaColumnWiwaEdge.THICKNESS_VALUE.column(), Condition.EQUALS_LESS, criteria.thicknessTo());
-        }
-
-        // thickness unit
-        if (Optional.ofNullable(criteria.thicknessUnit()).isPresent()) {
-            select.AND(MetaColumnWiwaEdge.THICKNESS_UNIT.column(), Condition.EQUALS, criteria.thicknessUnit().name());
+            select.AND(MetaColumnWiwaEdge.THICKNESS_VALUE.column(), Condition.EQUALS_LESS, criteria.thicknessTo().quantity())
+                    .AND(MetaColumnWiwaEdge.THICKNESS_UNIT.column(), Condition.EQUALS, criteria.thicknessTo().unit().name());
         }
 
         // price from
         if (Optional.ofNullable(criteria.priceFrom()).isPresent()) {
-            select.AND(MetaColumnWiwaEdge.PRICE_VALUE.column(), Condition.EQUALS_MORE, criteria.priceFrom());
+            select.AND(MetaColumnWiwaEdge.PRICE_VALUE.column(), Condition.EQUALS_MORE, criteria.priceFrom().amount())
+                    .AND(MetaColumnWiwaEdge.PRICE_UNIT.column(), Condition.EQUALS, criteria.priceFrom().currency().name());
         }
 
         // price to
         if (Optional.ofNullable(criteria.priceTo()).isPresent()) {
-            select.AND(MetaColumnWiwaEdge.PRICE_VALUE.column(), Condition.EQUALS_LESS, criteria.priceTo());
-        }
-
-        // price unit
-        if (Optional.ofNullable(criteria.priceUnit()).isPresent()) {
-            select.AND(MetaColumnWiwaEdge.PRICE_UNIT.column(), Condition.EQUALS, criteria.priceUnit().name());
+            select.AND(MetaColumnWiwaEdge.PRICE_VALUE.column(), Condition.EQUALS_LESS, criteria.priceTo().amount())
+                    .AND(MetaColumnWiwaEdge.PRICE_UNIT.column(), Condition.EQUALS, criteria.priceTo().currency().name());
         }
 
         // code list items
@@ -365,6 +357,48 @@ public class EdgeRepositoryImpl implements EdgeRepository {
                         );
                     }
                 }
+        );
+    }
+
+    private EdgeDo toEdgeDo(final WiwaEdgeDto wiwaEdgeDto) {
+        return EdgeDo.builder()
+                .id(wiwaEdgeDto.id())
+                .code(wiwaEdgeDto.code())
+                .name(wiwaEdgeDto.name())
+                .description(wiwaEdgeDto.description())
+                .sale(new Quantity(wiwaEdgeDto.saleValue(), Unit.valueOf(wiwaEdgeDto.saleUnit())))
+
+                .weight(Optional.ofNullable(wiwaEdgeDto.weightValue())
+                        .map(v -> new Quantity(v, Optional.ofNullable(wiwaEdgeDto.weightUnit()).map(Unit::valueOf).orElse(Unit.KILOGRAM)))
+                        .orElse(null))
+                .netWeight(Optional.ofNullable(wiwaEdgeDto.netWeightValue())
+                        .map(v -> new Quantity(v, Optional.ofNullable(wiwaEdgeDto.netWeightUnit()).map(Unit::valueOf).orElse(Unit.KILOGRAM)))
+                        .orElse(null))
+
+                .width(new Quantity(wiwaEdgeDto.widthValue(), Unit.valueOf(wiwaEdgeDto.widthUnit())))
+                .thickness(new Quantity(wiwaEdgeDto.thicknessValue(), Unit.valueOf(wiwaEdgeDto.thicknessUnit())))
+                .price(new Money(wiwaEdgeDto.priceValue(), Unit.valueOf(wiwaEdgeDto.priceUnit())))
+                .build();
+    }
+
+    private WiwaEdgeDto toWiwaEdgeDto(final EdgeDo edgeDo) {
+        return new WiwaEdgeDto(
+                edgeDo.getId(),
+                edgeDo.getCode(),
+                edgeDo.getName(),
+                edgeDo.getDescription(),
+                edgeDo.getSale().quantity(),
+                edgeDo.getSale().unit().name(),
+                Optional.ofNullable(edgeDo.getWeight()).map(Quantity::quantity).orElse(null),
+                Optional.ofNullable(edgeDo.getWeight()).map(Quantity::unit).map(Unit::name).orElse(null),
+                Optional.ofNullable(edgeDo.getNetWeight()).map(Quantity::quantity).orElse(null),
+                Optional.ofNullable(edgeDo.getNetWeight()).map(Quantity::unit).map(Unit::name).orElse(null),
+                edgeDo.getWidth().quantity(),
+                edgeDo.getWidth().unit().name(),
+                edgeDo.getThickness().quantity(),
+                edgeDo.getThickness().unit().name(),
+                edgeDo.getPrice().amount(),
+                edgeDo.getPrice().currency().name()
         );
     }
 

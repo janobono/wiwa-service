@@ -6,13 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.business.impl.mapper.ApplicationImageDataMapper;
 import sk.janobono.wiwa.business.model.application.ApplicationImageInfoData;
 import sk.janobono.wiwa.business.model.board.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.BoardService;
 import sk.janobono.wiwa.component.ImageUtil;
-import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.BoardDo;
@@ -72,20 +72,13 @@ public class BoardServiceImpl implements BoardService {
                 .boardCode(data.boardCode())
                 .structureCode(data.structureCode())
                 .orientation(data.orientation())
-                .saleValue(data.saleValue())
-                .saleUnit(data.saleUnit())
-                .weightValue(data.weightValue())
-                .weightUnit(data.weightUnit())
-                .netWeightValue(data.netWeightValue())
-                .netWeightUnit(data.netWeightUnit())
-                .lengthValue(data.lengthValue())
-                .lengthUnit(data.lengthUnit())
-                .widthValue(data.widthValue())
-                .widthUnit(data.widthUnit())
-                .thicknessValue(data.thicknessValue())
-                .thicknessUnit(data.thicknessUnit())
-                .priceValue(data.priceValue())
-                .priceUnit(data.priceUnit())
+                .sale(data.sale())
+                .weight(data.weight())
+                .netWeight(data.netWeight())
+                .length(data.length())
+                .width(data.width())
+                .thickness(data.thickness())
+                .price(data.price())
                 .build()
         );
         return toBoardData(boardDo, applicationPropertyService.getVatRate());
@@ -104,20 +97,13 @@ public class BoardServiceImpl implements BoardService {
         boardDo.setBoardCode(data.boardCode());
         boardDo.setStructureCode(data.structureCode());
         boardDo.setOrientation(data.orientation());
-        boardDo.setSaleValue(data.saleValue());
-        boardDo.setSaleUnit(data.saleUnit());
-        boardDo.setWeightValue(data.weightValue());
-        boardDo.setWeightUnit(data.weightUnit());
-        boardDo.setNetWeightValue(data.netWeightValue());
-        boardDo.setNetWeightUnit(data.netWeightUnit());
-        boardDo.setLengthValue(data.lengthValue());
-        boardDo.setLengthUnit(data.lengthUnit());
-        boardDo.setWidthValue(data.widthValue());
-        boardDo.setWidthUnit(data.widthUnit());
-        boardDo.setThicknessValue(data.thicknessValue());
-        boardDo.setThicknessUnit(data.thicknessUnit());
-        boardDo.setPriceValue(data.priceValue());
-        boardDo.setPriceUnit(data.priceUnit());
+        boardDo.setSale(data.sale());
+        boardDo.setWeight(data.weight());
+        boardDo.setNetWeight(data.netWeight());
+        boardDo.setLength(data.length());
+        boardDo.setWidth(data.width());
+        boardDo.setThickness(data.thickness());
+        boardDo.setPrice(data.price());
 
         return toBoardData(boardRepository.save(boardDo), applicationPropertyService.getVatRate());
     }
@@ -192,16 +178,12 @@ public class BoardServiceImpl implements BoardService {
                 criteria.orientation(),
                 criteria.lengthFrom(),
                 criteria.lengthTo(),
-                criteria.lengthUnit(),
                 criteria.widthFrom(),
                 criteria.widthTo(),
-                criteria.widthUnit(),
                 criteria.thicknessFrom(),
                 criteria.thicknessTo(),
-                criteria.thicknessUnit(),
                 priceUtil.countNoVatValue(criteria.priceFrom(), vatRate),
                 priceUtil.countNoVatValue(criteria.priceTo(), vatRate),
-                criteria.priceUnit(),
                 criteria.codeListItems()
         );
     }
@@ -220,21 +202,14 @@ public class BoardServiceImpl implements BoardService {
                 .boardCode(boardDo.getBoardCode())
                 .structureCode(boardDo.getStructureCode())
                 .orientation(boardDo.getOrientation())
-                .saleValue(boardDo.getSaleValue())
-                .saleUnit(boardDo.getSaleUnit())
-                .weightValue(boardDo.getWeightValue())
-                .weightUnit(boardDo.getWeightUnit())
-                .netWeightValue(boardDo.getNetWeightValue())
-                .netWeightUnit(boardDo.getNetWeightUnit())
-                .lengthValue(boardDo.getLengthValue())
-                .lengthUnit(boardDo.getLengthUnit())
-                .widthValue(boardDo.getWidthValue())
-                .widthUnit(boardDo.getWidthUnit())
-                .thicknessValue(boardDo.getThicknessValue())
-                .thicknessUnit(boardDo.getThicknessUnit())
-                .priceValue(boardDo.getPriceValue())
-                .vatPriceValue(priceUtil.countVatValue(boardDo.getPriceValue(), vatRate))
-                .priceUnit(boardDo.getPriceUnit())
+                .sale(boardDo.getSale())
+                .weight(boardDo.getWeight())
+                .netWeight(boardDo.getNetWeight())
+                .length(boardDo.getLength())
+                .width(boardDo.getWidth())
+                .thickness(boardDo.getThickness())
+                .price(boardDo.getPrice())
+                .vatPrice(priceUtil.countVatValue(boardDo.getPrice(), vatRate))
                 .images(toImages(boardDo.getId()))
                 .categoryItems(toBoardCategoryItems(boardDo.getId()))
                 .build();

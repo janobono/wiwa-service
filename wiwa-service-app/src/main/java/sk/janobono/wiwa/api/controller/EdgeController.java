@@ -31,13 +31,10 @@ public class EdgeController {
             @RequestParam(value = "name", required = false) final String name,
             @RequestParam(value = "widthFrom", required = false) final BigDecimal widthFrom,
             @RequestParam(value = "widthTo", required = false) final BigDecimal widthTo,
-            @RequestParam(value = "widthUnit", required = false) final Unit widthUnit,
             @RequestParam(value = "thicknessFrom", required = false) final BigDecimal thicknessFrom,
             @RequestParam(value = "thicknessTo", required = false) final BigDecimal thicknessTo,
-            @RequestParam(value = "thicknessUnit", required = false) final Unit thicknessUnit,
             @RequestParam(value = "priceFrom", required = false) final BigDecimal priceFrom,
             @RequestParam(value = "priceTo", required = false) final BigDecimal priceTo,
-            @RequestParam(value = "priceUnit", required = false) final Unit priceUnit,
             @RequestParam(value = "codeListItems", required = false) final List<String> codeListItems,
             final Pageable pageable
     ) {
@@ -47,13 +44,10 @@ public class EdgeController {
                 name,
                 widthFrom,
                 widthTo,
-                widthUnit,
                 thicknessFrom,
                 thicknessTo,
-                thicknessUnit,
                 priceFrom,
                 priceTo,
-                priceUnit,
                 codeListItems,
                 pageable
         );

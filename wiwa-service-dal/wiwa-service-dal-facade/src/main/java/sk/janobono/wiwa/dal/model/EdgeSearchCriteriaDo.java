@@ -1,23 +1,20 @@
 package sk.janobono.wiwa.dal.model;
 
-import sk.janobono.wiwa.model.Unit;
+import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.Quantity;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public record EdgeSearchCriteriaDo(
         String searchField,
         String code,
         String name,
-        BigDecimal widthFrom,
-        BigDecimal widthTo,
-        Unit widthUnit,
-        BigDecimal thicknessFrom,
-        BigDecimal thicknessTo,
-        Unit thicknessUnit,
-        BigDecimal priceFrom,
-        BigDecimal priceTo,
-        Unit priceUnit,
+        Quantity widthFrom,
+        Quantity widthTo,
+        Quantity thicknessFrom,
+        Quantity thicknessTo,
+        Money priceFrom,
+        Money priceTo,
         List<String> codeListItems
 ) {
 }

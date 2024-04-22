@@ -8,23 +8,28 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.api.model.ApplicationImageInfoWebDto;
+import sk.janobono.wiwa.api.model.application.ApplicationImageInfoWebDto;
 import sk.janobono.wiwa.api.model.board.BoardCategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardCategoryItemWebDto;
 import sk.janobono.wiwa.api.model.board.BoardChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardWebDto;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.component.ImageUtil;
-import sk.janobono.wiwa.component.PriceUtil;
+import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.CodeListDo;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.repository.CodeListItemRepository;
 import sk.janobono.wiwa.dal.repository.CodeListRepository;
+import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.Quantity;
 import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -64,20 +69,13 @@ class BoardControllerTest extends BaseControllerTest {
                     "BC" + i,
                     "SC" + i,
                     i % 2 == 0,
-                    new BigDecimal("1.000"),
-                    Unit.PIECE,
-                    new BigDecimal("120.000").add(BigDecimal.valueOf(i)),
-                    Unit.KILOGRAM,
-                    new BigDecimal("100.000").add(BigDecimal.valueOf(i)),
-                    Unit.KILOGRAM,
-                    new BigDecimal("2800.000").add(BigDecimal.valueOf(i)),
-                    Unit.MILLIMETER,
-                    new BigDecimal("2070.000").add(BigDecimal.valueOf(i)),
-                    Unit.MILLIMETER,
-                    new BigDecimal("18.000").add(BigDecimal.valueOf(i)),
-                    Unit.MILLIMETER,
-                    new BigDecimal("50.000").add(BigDecimal.valueOf(i)),
-                    Unit.EUR
+                    new Quantity(new BigDecimal("1.000"), Unit.PIECE),
+                    new Quantity(new BigDecimal("120.000").add(BigDecimal.valueOf(i)), Unit.KILOGRAM),
+                    new Quantity(new BigDecimal("100.000").add(BigDecimal.valueOf(i)), Unit.KILOGRAM),
+                    new Quantity(new BigDecimal("2800.000").add(BigDecimal.valueOf(i)), Unit.MILLIMETER),
+                    new Quantity(new BigDecimal("2070.000").add(BigDecimal.valueOf(i)), Unit.MILLIMETER),
+                    new Quantity(new BigDecimal("18.000").add(BigDecimal.valueOf(i)), Unit.MILLIMETER),
+                    new Money(new BigDecimal("50.000").add(BigDecimal.valueOf(i)), Unit.EUR)
             )));
         }
 
@@ -87,10 +85,6 @@ class BoardControllerTest extends BaseControllerTest {
 
         Page<BoardWebDto> searchResult = getBoards(headers,
                 "board-1",
-                null,
-                null,
-                null,
-                null,
                 null,
                 null,
                 null,
@@ -124,10 +118,6 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 null,
-                null,
-                null,
-                null,
-                null,
                 Pageable.unpaged());
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
 
@@ -135,10 +125,6 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 "board-1",
-                null,
-                null,
-                null,
-                null,
                 null,
                 null,
                 null,
@@ -170,10 +156,6 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 null,
-                null,
-                null,
-                null,
-                null,
                 Pageable.unpaged());
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
 
@@ -183,10 +165,6 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 "SC1",
-                null,
-                null,
-                null,
-                null,
                 null,
                 null,
                 null,
@@ -216,10 +194,6 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 null,
-                null,
-                null,
-                null,
-                null,
                 Pageable.unpaged());
         assertThat(searchResult.getTotalElements()).isEqualTo(5);
 
@@ -231,10 +205,6 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 new BigDecimal(2805),
-                null,
-                Unit.MILLIMETER,
-                null,
-                null,
                 null,
                 null,
                 null,
@@ -255,10 +225,6 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 new BigDecimal(2804),
-                Unit.MILLIMETER,
-                null,
-                null,
-                null,
                 null,
                 null,
                 null,
@@ -270,7 +236,6 @@ class BoardControllerTest extends BaseControllerTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(5);
 
         searchResult = getBoards(headers,
-                null,
                 null,
                 null,
                 null,
@@ -280,11 +245,7 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 new BigDecimal(2075),
-                null,
-                Unit.MILLIMETER,
-                null,
-                null,
-                null,
+                null, null,
                 null,
                 null,
                 null,
@@ -293,7 +254,6 @@ class BoardControllerTest extends BaseControllerTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(5);
 
         searchResult = getBoards(headers,
-                null,
                 null,
                 null,
                 null,
@@ -304,9 +264,6 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 new BigDecimal(2074),
-                Unit.MILLIMETER,
-                null,
-                null,
                 null,
                 null,
                 null,
@@ -316,8 +273,6 @@ class BoardControllerTest extends BaseControllerTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(5);
 
         searchResult = getBoards(headers,
-                null,
-                null,
                 null,
                 null,
                 null,
@@ -330,8 +285,6 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 new BigDecimal(23),
                 null,
-                Unit.MILLIMETER,
-                null,
                 null,
                 null,
                 null,
@@ -339,8 +292,6 @@ class BoardControllerTest extends BaseControllerTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(5);
 
         searchResult = getBoards(headers,
-                null,
-                null,
                 null,
                 null,
                 null,
@@ -353,8 +304,6 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 new BigDecimal(22),
-                Unit.MILLIMETER,
-                null,
                 null,
                 null,
                 null,
@@ -362,9 +311,6 @@ class BoardControllerTest extends BaseControllerTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(5);
 
         searchResult = getBoards(headers,
-                null,
-                null,
-                null,
                 null,
                 null,
                 null,
@@ -379,7 +325,6 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 priceUtil.countVatValue(new BigDecimal(55), applicationPropertyService.getVatRate()),
                 null,
-                Unit.EUR,
                 null,
                 Pageable.unpaged());
         assertThat(searchResult.getTotalElements()).isEqualTo(5);
@@ -398,11 +343,7 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 null,
-                null,
-                null,
-                null,
                 priceUtil.countVatValue(new BigDecimal(54), applicationPropertyService.getVatRate()),
-                Unit.EUR,
                 null,
                 Pageable.unpaged());
         assertThat(searchResult.getTotalElements()).isEqualTo(5);
@@ -422,20 +363,13 @@ class BoardControllerTest extends BaseControllerTest {
                 "SPSC01",
                 "Test board",
                 false,
-                new BigDecimal("1.000"),
-                Unit.PIECE,
-                new BigDecimal("120.000"),
-                Unit.KILOGRAM,
-                new BigDecimal("100.000"),
-                Unit.KILOGRAM,
-                new BigDecimal("2800.000"),
-                Unit.MILLIMETER,
-                new BigDecimal("2070.000"),
-                Unit.MILLIMETER,
-                new BigDecimal("18.000"),
-                Unit.MILLIMETER,
-                new BigDecimal("50.000"),
-                Unit.EUR
+                new Quantity(new BigDecimal("1.000"), Unit.PIECE),
+                new Quantity(new BigDecimal("120.000"), Unit.KILOGRAM),
+                new Quantity(new BigDecimal("100.000"), Unit.KILOGRAM),
+                new Quantity(new BigDecimal("2800.000"), Unit.MILLIMETER),
+                new Quantity(new BigDecimal("2070.000"), Unit.MILLIMETER),
+                new Quantity(new BigDecimal("18.000"), Unit.MILLIMETER),
+                new Money(new BigDecimal("50.000"), Unit.EUR)
         ));
         boards.set(boardIndex, testBoard);
 
@@ -518,19 +452,11 @@ class BoardControllerTest extends BaseControllerTest {
                 null,
                 null,
                 null,
-                null,
-                null,
-                null,
-                null,
                 List.of("code1"),
                 Pageable.unpaged());
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
 
         searchResult = getBoards(headers,
-                null,
-                null,
-                null,
-                null,
                 null,
                 null,
                 null,
@@ -575,16 +501,12 @@ class BoardControllerTest extends BaseControllerTest {
                                         final Boolean orientation,
                                         final BigDecimal lengthFrom,
                                         final BigDecimal lengthTo,
-                                        final Unit lengthUnit,
                                         final BigDecimal widthFrom,
                                         final BigDecimal widthTo,
-                                        final Unit widthUnit,
                                         final BigDecimal thicknessFrom,
                                         final BigDecimal thicknessTo,
-                                        final Unit thicknessUnit,
                                         final BigDecimal priceFrom,
                                         final BigDecimal priceTo,
-                                        final Unit priceUnit,
                                         final List<String> codeListItems,
                                         final Pageable pageable) {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -596,16 +518,12 @@ class BoardControllerTest extends BaseControllerTest {
         addToParams(params, "orientation", orientation);
         addToParams(params, "lengthFrom", lengthFrom);
         addToParams(params, "lengthTo", lengthTo);
-        addToParams(params, "lengthUnit", Optional.ofNullable(lengthUnit).map(Unit::name).orElse(null));
         addToParams(params, "widthFrom", widthFrom);
         addToParams(params, "widthTo", widthTo);
-        addToParams(params, "widthUnit", Optional.ofNullable(widthUnit).map(Unit::name).orElse(null));
         addToParams(params, "thicknessFrom", thicknessFrom);
         addToParams(params, "thicknessTo", thicknessTo);
-        addToParams(params, "thicknessUnit", Optional.ofNullable(thicknessUnit).map(Unit::name).orElse(null));
         addToParams(params, "priceFrom", priceFrom);
         addToParams(params, "priceTo", priceTo);
-        addToParams(params, "priceUnit", Optional.ofNullable(priceUnit).map(Unit::name).orElse(null));
         addToParams(params, "codeListItems", codeListItems);
         return getEntities(BoardWebDto.class, headers, "/boards", params, pageable);
     }

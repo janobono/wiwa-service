@@ -1,10 +1,10 @@
 package sk.janobono.wiwa.business.model.order;
 
 import lombok.Builder;
+import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.OrderStatus;
-import sk.janobono.wiwa.model.Unit;
+import sk.janobono.wiwa.model.Quantity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Builder
@@ -14,12 +14,9 @@ public record OrderData(
         LocalDateTime created,
         OrderStatus status,
         Long orderNumber,
-        BigDecimal weightValue,
-        Unit weightUnit,
-        BigDecimal netWeightValue,
-        Unit netWeightUnit,
-        BigDecimal totalValue,
-        BigDecimal vatTotalValue,
-        Unit totalUnit
+        Quantity weight,
+        Quantity netWeight,
+        Money total,
+        Money vatTotal
 ) {
 }

@@ -1,10 +1,9 @@
 package sk.janobono.wiwa.business.model.order;
 
 import lombok.Builder;
+import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.OrderStatus;
-import sk.janobono.wiwa.model.Unit;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,8 +13,7 @@ public record OrderSearchCriteriaData(
         LocalDateTime createdFrom,
         LocalDateTime createdTo,
         List<OrderStatus> statuses,
-        BigDecimal totalFrom,
-        BigDecimal totalTo,
-        Unit totalUnit
+        Money totalFrom,
+        Money totalTo
 ) {
 }

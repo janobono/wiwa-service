@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.dal.domain.BoardDo;
 import sk.janobono.wiwa.dal.impl.component.CriteriaUtil;
-import sk.janobono.wiwa.dal.impl.mapper.BoardDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaBoardDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaBoard;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaBoardCodeListItem;
@@ -17,6 +16,9 @@ import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaCodeListItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.model.BoardSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.BoardRepository;
+import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.Quantity;
+import sk.janobono.wiwa.model.Unit;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
@@ -37,7 +39,6 @@ public class BoardRepositoryImpl implements BoardRepository {
 
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
-    private final BoardDoMapper mapper;
     private final ScDf scDf;
     private final CriteriaUtil criteriaUtil;
 
@@ -143,7 +144,7 @@ public class BoardRepositoryImpl implements BoardRepository {
                 final List<Object[]> rows = sqlBuilder.select(connection, select);
                 final List<BoardDo> content = rows.stream()
                         .map(WiwaBoardDto::toObject)
-                        .map(mapper::toBoardDo)
+                        .map(this::toBoardDo)
                         .toList();
                 return new PageImpl<>(content, pageable, totalRows);
             }
@@ -165,7 +166,7 @@ public class BoardRepositoryImpl implements BoardRepository {
             return rows.stream()
                     .findFirst()
                     .map(WiwaBoardDto::toObject)
-                    .map(mapper::toBoardDo);
+                    .map(this::toBoardDo);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -177,11 +178,11 @@ public class BoardRepositoryImpl implements BoardRepository {
         try (final Connection connection = dataSource.getConnection()) {
             final WiwaBoardDto wiwaBoardDto;
             if (boardDo.getId() == null) {
-                wiwaBoardDto = insert(connection, mapper.toWiwaBoardDto(boardDo));
+                wiwaBoardDto = insert(connection, toWiwaBoardDto(boardDo));
             } else {
-                wiwaBoardDto = update(connection, mapper.toWiwaBoardDto(boardDo));
+                wiwaBoardDto = update(connection, toWiwaBoardDto(boardDo));
             }
-            return mapper.toBoardDo(wiwaBoardDto);
+            return toBoardDo(wiwaBoardDto);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -256,62 +257,50 @@ public class BoardRepositoryImpl implements BoardRepository {
 
         // length from
         if (Optional.ofNullable(criteria.lengthFrom()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.LENGTH_VALUE.column(), Condition.EQUALS_MORE, criteria.lengthFrom());
+            select.AND(MetaColumnWiwaBoard.LENGTH_VALUE.column(), Condition.EQUALS_MORE, criteria.lengthFrom().quantity())
+                    .AND(MetaColumnWiwaBoard.LENGTH_UNIT.column(), Condition.EQUALS, criteria.lengthFrom().unit().name());
         }
 
         // length to
         if (Optional.ofNullable(criteria.lengthTo()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.LENGTH_VALUE.column(), Condition.EQUALS_LESS, criteria.lengthTo());
-        }
-
-        // length unit
-        if (Optional.ofNullable(criteria.lengthUnit()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.LENGTH_UNIT.column(), Condition.EQUALS, criteria.lengthUnit().name());
+            select.AND(MetaColumnWiwaBoard.LENGTH_VALUE.column(), Condition.EQUALS_LESS, criteria.lengthTo().quantity())
+                    .AND(MetaColumnWiwaBoard.LENGTH_UNIT.column(), Condition.EQUALS, criteria.lengthTo().unit().name());
         }
 
         // width from
         if (Optional.ofNullable(criteria.widthFrom()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.WIDTH_VALUE.column(), Condition.EQUALS_MORE, criteria.widthFrom());
+            select.AND(MetaColumnWiwaBoard.WIDTH_VALUE.column(), Condition.EQUALS_MORE, criteria.widthFrom().quantity())
+                    .AND(MetaColumnWiwaBoard.WIDTH_UNIT.column(), Condition.EQUALS, criteria.widthFrom().unit().name());
         }
 
         // width to
         if (Optional.ofNullable(criteria.widthTo()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.WIDTH_VALUE.column(), Condition.EQUALS_LESS, criteria.widthTo());
-        }
-
-        // width unit
-        if (Optional.ofNullable(criteria.widthUnit()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.WIDTH_UNIT.column(), Condition.EQUALS, criteria.widthUnit().name());
+            select.AND(MetaColumnWiwaBoard.WIDTH_VALUE.column(), Condition.EQUALS_LESS, criteria.widthTo().quantity())
+                    .AND(MetaColumnWiwaBoard.WIDTH_UNIT.column(), Condition.EQUALS, criteria.widthTo().unit().name());
         }
 
         // thickness from
         if (Optional.ofNullable(criteria.thicknessFrom()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.THICKNESS_VALUE.column(), Condition.EQUALS_MORE, criteria.thicknessFrom());
+            select.AND(MetaColumnWiwaBoard.THICKNESS_VALUE.column(), Condition.EQUALS_MORE, criteria.thicknessFrom().quantity())
+                    .AND(MetaColumnWiwaBoard.THICKNESS_UNIT.column(), Condition.EQUALS, criteria.thicknessFrom().unit().name());
         }
 
         // thickness to
         if (Optional.ofNullable(criteria.thicknessTo()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.THICKNESS_VALUE.column(), Condition.EQUALS_LESS, criteria.thicknessTo());
-        }
-
-        // thickness unit
-        if (Optional.ofNullable(criteria.thicknessUnit()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.THICKNESS_UNIT.column(), Condition.EQUALS, criteria.thicknessUnit().name());
+            select.AND(MetaColumnWiwaBoard.THICKNESS_VALUE.column(), Condition.EQUALS_LESS, criteria.thicknessTo().quantity())
+                    .AND(MetaColumnWiwaBoard.THICKNESS_UNIT.column(), Condition.EQUALS, criteria.thicknessTo().unit().name());
         }
 
         // price from
         if (Optional.ofNullable(criteria.priceFrom()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.PRICE_VALUE.column(), Condition.EQUALS_MORE, criteria.priceFrom());
+            select.AND(MetaColumnWiwaBoard.PRICE_VALUE.column(), Condition.EQUALS_MORE, criteria.priceFrom().amount())
+                    .AND(MetaColumnWiwaBoard.PRICE_UNIT.column(), Condition.EQUALS, criteria.priceFrom().currency().name());
         }
 
         // price to
         if (Optional.ofNullable(criteria.priceTo()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.PRICE_VALUE.column(), Condition.EQUALS_LESS, criteria.priceTo());
-        }
-
-        // price unit
-        if (Optional.ofNullable(criteria.priceUnit()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.PRICE_UNIT.column(), Condition.EQUALS, criteria.priceUnit().name());
+            select.AND(MetaColumnWiwaBoard.PRICE_VALUE.column(), Condition.EQUALS_LESS, criteria.priceTo().amount())
+                    .AND(MetaColumnWiwaBoard.PRICE_UNIT.column(), Condition.EQUALS, criteria.priceTo().currency().name());
         }
 
         // code list items
@@ -423,6 +412,57 @@ public class BoardRepositoryImpl implements BoardRepository {
                         );
                     }
                 }
+        );
+    }
+
+    private BoardDo toBoardDo(final WiwaBoardDto wiwaBoardDto) {
+        return BoardDo.builder()
+                .id(wiwaBoardDto.id())
+                .code(wiwaBoardDto.code())
+                .boardCode(wiwaBoardDto.boardCode())
+                .structureCode(wiwaBoardDto.structureCode())
+                .name(wiwaBoardDto.name())
+                .description(wiwaBoardDto.description())
+                .orientation(wiwaBoardDto.orientation())
+                .sale(new Quantity(wiwaBoardDto.saleValue(), Unit.valueOf(wiwaBoardDto.saleUnit())))
+
+                .weight(Optional.ofNullable(wiwaBoardDto.weightValue())
+                        .map(v -> new Quantity(v, Optional.ofNullable(wiwaBoardDto.weightUnit()).map(Unit::valueOf).orElse(Unit.KILOGRAM)))
+                        .orElse(null))
+                .netWeight(Optional.ofNullable(wiwaBoardDto.netWeightValue())
+                        .map(v -> new Quantity(v, Optional.ofNullable(wiwaBoardDto.netWeightUnit()).map(Unit::valueOf).orElse(Unit.KILOGRAM)))
+                        .orElse(null))
+
+                .length(new Quantity(wiwaBoardDto.lengthValue(), Unit.valueOf(wiwaBoardDto.lengthUnit())))
+                .width(new Quantity(wiwaBoardDto.widthValue(), Unit.valueOf(wiwaBoardDto.widthUnit())))
+                .thickness(new Quantity(wiwaBoardDto.thicknessValue(), Unit.valueOf(wiwaBoardDto.thicknessUnit())))
+                .price(new Money(wiwaBoardDto.priceValue(), Unit.valueOf(wiwaBoardDto.priceUnit())))
+                .build();
+    }
+
+    private WiwaBoardDto toWiwaBoardDto(final BoardDo boardDo) {
+        return new WiwaBoardDto(
+                boardDo.getId(),
+                boardDo.getCode(),
+                boardDo.getBoardCode(),
+                boardDo.getStructureCode(),
+                boardDo.getName(),
+                boardDo.getDescription(),
+                boardDo.getOrientation(),
+                boardDo.getSale().quantity(),
+                boardDo.getSale().unit().name(),
+                Optional.ofNullable(boardDo.getWeight()).map(Quantity::quantity).orElse(null),
+                Optional.ofNullable(boardDo.getWeight()).map(Quantity::unit).map(Unit::name).orElse(null),
+                Optional.ofNullable(boardDo.getNetWeight()).map(Quantity::quantity).orElse(null),
+                Optional.ofNullable(boardDo.getNetWeight()).map(Quantity::unit).map(Unit::name).orElse(null),
+                boardDo.getLength().quantity(),
+                boardDo.getLength().unit().name(),
+                boardDo.getWidth().quantity(),
+                boardDo.getWidth().unit().name(),
+                boardDo.getThickness().quantity(),
+                boardDo.getThickness().unit().name(),
+                boardDo.getPrice().amount(),
+                boardDo.getPrice().currency().name()
         );
     }
 

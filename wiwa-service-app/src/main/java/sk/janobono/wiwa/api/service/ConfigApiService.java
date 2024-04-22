@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.api.mapper.ApplicationImageWebMapper;
 import sk.janobono.wiwa.api.mapper.UiWebMapper;
 import sk.janobono.wiwa.api.model.*;
+import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.business.service.ApplicationImageService;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 

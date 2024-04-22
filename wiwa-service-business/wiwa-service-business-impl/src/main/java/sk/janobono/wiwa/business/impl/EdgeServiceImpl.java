@@ -6,13 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.business.impl.mapper.ApplicationImageDataMapper;
 import sk.janobono.wiwa.business.model.application.ApplicationImageInfoData;
 import sk.janobono.wiwa.business.model.edge.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.EdgeService;
 import sk.janobono.wiwa.component.ImageUtil;
-import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.CodeListDo;
@@ -69,18 +69,12 @@ public class EdgeServiceImpl implements EdgeService {
                 .code(data.code())
                 .name(data.name())
                 .description(data.description())
-                .saleValue(data.saleValue())
-                .saleUnit(data.saleUnit())
-                .weightValue(data.weightValue())
-                .weightUnit(data.weightUnit())
-                .netWeightValue(data.netWeightValue())
-                .netWeightUnit(data.netWeightUnit())
-                .widthValue(data.widthValue())
-                .widthUnit(data.widthUnit())
-                .thicknessValue(data.thicknessValue())
-                .thicknessUnit(data.thicknessUnit())
-                .priceValue(data.priceValue())
-                .priceUnit(data.priceUnit())
+                .sale(data.sale())
+                .weight(data.weight())
+                .netWeight(data.netWeight())
+                .width(data.width())
+                .thickness(data.thickness())
+                .price(data.price())
                 .build()
         );
         return toEdgeData(edgeDo, applicationPropertyService.getVatRate());
@@ -96,18 +90,12 @@ public class EdgeServiceImpl implements EdgeService {
         edgeDo.setCode(data.code());
         edgeDo.setName(data.name());
         edgeDo.setDescription(data.description());
-        edgeDo.setSaleValue(data.saleValue());
-        edgeDo.setSaleUnit(data.saleUnit());
-        edgeDo.setWeightValue(data.weightValue());
-        edgeDo.setWeightUnit(data.weightUnit());
-        edgeDo.setNetWeightValue(data.netWeightValue());
-        edgeDo.setNetWeightUnit(data.netWeightUnit());
-        edgeDo.setWidthValue(data.widthValue());
-        edgeDo.setWidthUnit(data.widthUnit());
-        edgeDo.setThicknessValue(data.thicknessValue());
-        edgeDo.setThicknessUnit(data.thicknessUnit());
-        edgeDo.setPriceValue(data.priceValue());
-        edgeDo.setPriceUnit(data.priceUnit());
+        edgeDo.setSale(data.sale());
+        edgeDo.setWeight(data.weight());
+        edgeDo.setNetWeight(data.netWeight());
+        edgeDo.setWidth(data.width());
+        edgeDo.setThickness(data.thickness());
+        edgeDo.setPrice(data.price());
 
         return toEdgeData(edgeRepository.save(edgeDo), applicationPropertyService.getVatRate());
     }
@@ -179,13 +167,10 @@ public class EdgeServiceImpl implements EdgeService {
                 criteria.name(),
                 criteria.widthFrom(),
                 criteria.widthTo(),
-                criteria.widthUnit(),
                 criteria.thicknessFrom(),
                 criteria.thicknessTo(),
-                criteria.thicknessUnit(),
                 priceUtil.countNoVatValue(criteria.priceFrom(), vatRate),
                 priceUtil.countNoVatValue(criteria.priceTo(), vatRate),
-                criteria.priceUnit(),
                 criteria.codeListItems()
         );
     }
@@ -201,19 +186,13 @@ public class EdgeServiceImpl implements EdgeService {
                 .code(edgeDo.getCode())
                 .name(edgeDo.getName())
                 .description(edgeDo.getDescription())
-                .saleValue(edgeDo.getSaleValue())
-                .saleUnit(edgeDo.getSaleUnit())
-                .weightValue(edgeDo.getWeightValue())
-                .weightUnit(edgeDo.getWeightUnit())
-                .netWeightValue(edgeDo.getNetWeightValue())
-                .netWeightUnit(edgeDo.getNetWeightUnit())
-                .widthValue(edgeDo.getWidthValue())
-                .widthUnit(edgeDo.getWidthUnit())
-                .thicknessValue(edgeDo.getThicknessValue())
-                .thicknessUnit(edgeDo.getThicknessUnit())
-                .priceValue(edgeDo.getPriceValue())
-                .vatPriceValue(priceUtil.countVatValue(edgeDo.getPriceValue(), vatRate))
-                .priceUnit(edgeDo.getPriceUnit())
+                .sale(edgeDo.getSale())
+                .weight(edgeDo.getWeight())
+                .netWeight(edgeDo.getNetWeight())
+                .width(edgeDo.getWidth())
+                .thickness(edgeDo.getThickness())
+                .price(edgeDo.getPrice())
+                .vatPrice(priceUtil.countVatValue(edgeDo.getPrice(), vatRate))
                 .images(toImages(edgeDo.getId()))
                 .categoryItems(toEdgeCategoryItems(edgeDo.getId()))
                 .build();

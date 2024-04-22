@@ -3,7 +3,8 @@ package sk.janobono.wiwa.api.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.NullValueCheckStrategy;
-import sk.janobono.wiwa.api.model.*;
+import sk.janobono.wiwa.api.model.application.*;
+import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
 import sk.janobono.wiwa.business.model.application.*;
 import sk.janobono.wiwa.business.model.captcha.CaptchaData;
 

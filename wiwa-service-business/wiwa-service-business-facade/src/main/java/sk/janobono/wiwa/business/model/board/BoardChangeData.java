@@ -1,8 +1,7 @@
 package sk.janobono.wiwa.business.model.board;
 
-import sk.janobono.wiwa.model.Unit;
-
-import java.math.BigDecimal;
+import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.Quantity;
 
 public record BoardChangeData(
         String code,
@@ -11,19 +10,12 @@ public record BoardChangeData(
         String boardCode,
         String structureCode,
         Boolean orientation,
-        BigDecimal saleValue,
-        Unit saleUnit,
-        BigDecimal weightValue,
-        Unit weightUnit,
-        BigDecimal netWeightValue,
-        Unit netWeightUnit,
-        BigDecimal lengthValue,
-        Unit lengthUnit,
-        BigDecimal widthValue,
-        Unit widthUnit,
-        BigDecimal thicknessValue,
-        Unit thicknessUnit,
-        BigDecimal priceValue,
-        Unit priceUnit
+        Quantity sale,
+        Quantity weight,
+        Quantity netWeight,
+        Quantity length,
+        Quantity width,
+        Quantity thickness,
+        Money price
 ) {
 }

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.api.service.OrderApiService;
 import sk.janobono.wiwa.model.OrderStatus;
-import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,7 +30,6 @@ public class OrderController {
             @RequestParam(value = "statuses", required = false) final List<OrderStatus> statuses,
             @RequestParam(value = "totalFrom", required = false) final BigDecimal totalFrom,
             @RequestParam(value = "totalTo", required = false) final BigDecimal totalTo,
-            @RequestParam(value = "totalUnit", required = false) final Unit totalUnit,
             final Pageable pageable
     ) {
         return orderApiService.getOrders(
@@ -41,7 +39,6 @@ public class OrderController {
                 statuses,
                 totalFrom,
                 totalTo,
-                totalUnit,
                 pageable
         );
     }

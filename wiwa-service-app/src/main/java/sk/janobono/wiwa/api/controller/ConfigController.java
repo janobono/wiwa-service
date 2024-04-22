@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.api.model.*;
+import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.api.service.ConfigApiService;
 
 import java.math.BigDecimal;

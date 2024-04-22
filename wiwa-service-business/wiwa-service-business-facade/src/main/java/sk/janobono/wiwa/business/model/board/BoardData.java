@@ -2,9 +2,9 @@ package sk.janobono.wiwa.business.model.board;
 
 import lombok.Builder;
 import sk.janobono.wiwa.business.model.application.ApplicationImageInfoData;
-import sk.janobono.wiwa.model.Unit;
+import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.Quantity;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
@@ -16,21 +16,14 @@ public record BoardData(
         String boardCode,
         String structureCode,
         Boolean orientation,
-        BigDecimal saleValue,
-        Unit saleUnit,
-        BigDecimal weightValue,
-        Unit weightUnit,
-        BigDecimal netWeightValue,
-        Unit netWeightUnit,
-        BigDecimal lengthValue,
-        Unit lengthUnit,
-        BigDecimal widthValue,
-        Unit widthUnit,
-        BigDecimal thicknessValue,
-        Unit thicknessUnit,
-        BigDecimal priceValue,
-        BigDecimal vatPriceValue,
-        Unit priceUnit,
+        Quantity sale,
+        Quantity weight,
+        Quantity netWeight,
+        Quantity length,
+        Quantity width,
+        Quantity thickness,
+        Money price,
+        Money vatPrice,
         List<ApplicationImageInfoData> images,
         List<BoardCategoryItemData> categoryItems
 ) {

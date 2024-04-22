@@ -1,9 +1,9 @@
 package sk.janobono.wiwa.api.model.board;
 
-import sk.janobono.wiwa.api.model.ApplicationImageInfoWebDto;
-import sk.janobono.wiwa.model.Unit;
+import sk.janobono.wiwa.api.model.application.ApplicationImageInfoWebDto;
+import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.Quantity;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public record BoardWebDto(
@@ -14,21 +14,14 @@ public record BoardWebDto(
         String boardCode,
         String structureCode,
         Boolean orientation,
-        BigDecimal saleValue,
-        Unit saleUnit,
-        BigDecimal weightValue,
-        Unit weightUnit,
-        BigDecimal netWeightValue,
-        Unit netWeightUnit,
-        BigDecimal lengthValue,
-        Unit lengthUnit,
-        BigDecimal widthValue,
-        Unit widthUnit,
-        BigDecimal thicknessValue,
-        Unit thicknessUnit,
-        BigDecimal priceValue,
-        BigDecimal vatPriceValue,
-        Unit priceUnit,
+        Quantity sale,
+        Quantity weight,
+        Quantity netWeight,
+        Quantity length,
+        Quantity width,
+        Quantity thickness,
+        Money price,
+        Money vatPrice,
         List<ApplicationImageInfoWebDto> images,
         List<BoardCategoryItemWebDto> categoryItems
 ) {

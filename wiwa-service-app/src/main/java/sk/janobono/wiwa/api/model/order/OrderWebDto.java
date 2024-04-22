@@ -1,9 +1,9 @@
 package sk.janobono.wiwa.api.model.order;
 
+import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.OrderStatus;
-import sk.janobono.wiwa.model.Unit;
+import sk.janobono.wiwa.model.Quantity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record OrderWebDto(
@@ -12,12 +12,9 @@ public record OrderWebDto(
         LocalDateTime created,
         OrderStatus status,
         Long orderNumber,
-        BigDecimal weightValue,
-        Unit weightUnit,
-        BigDecimal netWeightValue,
-        Unit netWeightUnit,
-        BigDecimal totalValue,
-        BigDecimal vatTotalValue,
-        Unit totalUnit
+        Quantity weight,
+        Quantity netWeight,
+        Money total,
+        Money vatTotal
 ) {
 }

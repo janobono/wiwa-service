@@ -11,10 +11,13 @@ import sk.janobono.wiwa.api.model.edge.EdgeChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeWebDto;
 import sk.janobono.wiwa.business.model.edge.EdgeSearchCriteriaData;
 import sk.janobono.wiwa.business.service.EdgeService;
+import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.Quantity;
 import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -29,13 +32,10 @@ public class EdgeApiService {
             final String name,
             final BigDecimal widthFrom,
             final BigDecimal widthTo,
-            final Unit widthUnit,
             final BigDecimal thicknessFrom,
             final BigDecimal thicknessTo,
-            final Unit thicknessUnit,
             final BigDecimal priceFrom,
             final BigDecimal priceTo,
-            final Unit priceUnit,
             final List<String> codeListItems,
             final Pageable pageable
     ) {
@@ -43,15 +43,12 @@ public class EdgeApiService {
                 .searchField(searchField)
                 .code(code)
                 .name(name)
-                .widthFrom(widthFrom)
-                .widthTo(widthTo)
-                .widthUnit(widthUnit)
-                .thicknessFrom(thicknessFrom)
-                .thicknessTo(thicknessTo)
-                .thicknessUnit(thicknessUnit)
-                .priceFrom(priceFrom)
-                .priceTo(priceTo)
-                .priceUnit(priceUnit)
+                .widthFrom(Optional.ofNullable(widthFrom).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
+                .widthTo(Optional.ofNullable(widthTo).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
+                .thicknessFrom(Optional.ofNullable(thicknessFrom).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
+                .thicknessTo(Optional.ofNullable(thicknessTo).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
+                .priceFrom(Optional.ofNullable(priceFrom).map(v -> new Money(v, Unit.EUR)).orElse(null))
+                .priceTo(Optional.ofNullable(priceTo).map(v -> new Money(v, Unit.EUR)).orElse(null))
                 .codeListItems(codeListItems)
                 .build();
         return edgeService.getEdges(criteria, pageable).map(edgeWebMapper::mapToWebDto);

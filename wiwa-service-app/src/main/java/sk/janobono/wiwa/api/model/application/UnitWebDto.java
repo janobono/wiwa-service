@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.api.model;
+package sk.janobono.wiwa.api.model.application;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

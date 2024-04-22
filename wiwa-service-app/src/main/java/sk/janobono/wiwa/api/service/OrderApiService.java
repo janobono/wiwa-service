@@ -11,10 +11,7 @@ import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.component.AuthUtil;
-import sk.janobono.wiwa.model.Authority;
-import sk.janobono.wiwa.model.OrderStatus;
-import sk.janobono.wiwa.model.Unit;
-import sk.janobono.wiwa.model.User;
+import sk.janobono.wiwa.model.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -39,7 +36,6 @@ public class OrderApiService {
             final List<OrderStatus> statuses,
             final BigDecimal totalFrom,
             final BigDecimal totalTo,
-            final Unit totalUnit,
             final Pageable pageable
     ) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -48,9 +44,8 @@ public class OrderApiService {
                 .createdFrom(createdFrom)
                 .createdTo(createdTo)
                 .statuses(statuses)
-                .totalFrom(totalFrom)
-                .totalTo(totalTo)
-                .totalUnit(totalUnit)
+                .totalFrom(Optional.ofNullable(totalFrom).map(v -> new Money(v, Unit.EUR)).orElse(null))
+                .totalTo(Optional.ofNullable(totalTo).map(v -> new Money(v, Unit.EUR)).orElse(null))
                 .build();
         return orderService.getOrders(criteria, pageable).map(orderWebMapper::mapToWebDto);
     }

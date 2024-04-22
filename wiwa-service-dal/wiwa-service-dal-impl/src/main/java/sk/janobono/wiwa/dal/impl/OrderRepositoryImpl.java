@@ -8,13 +8,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import sk.janobono.wiwa.dal.domain.OrderDo;
 import sk.janobono.wiwa.dal.impl.component.CriteriaUtil;
-import sk.janobono.wiwa.dal.impl.mapper.OrderDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaOrderDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrder;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.model.OrderSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
+import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.OrderStatus;
+import sk.janobono.wiwa.model.Quantity;
+import sk.janobono.wiwa.model.Unit;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
@@ -35,7 +37,6 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     private final DataSource dataSource;
     private final SqlBuilder sqlBuilder;
-    private final OrderDoMapper mapper;
     private final CriteriaUtil criteriaUtil;
 
     @Override
@@ -103,7 +104,7 @@ public class OrderRepositoryImpl implements OrderRepository {
                 final List<Object[]> rows = sqlBuilder.select(connection, select);
                 final List<OrderDo> content = rows.stream()
                         .map(WiwaOrderDto::toObject)
-                        .map(mapper::toOrderDo)
+                        .map(this::toOrderDo)
                         .toList();
                 return new PageImpl<>(content, pageable, totalRows);
             }
@@ -142,7 +143,7 @@ public class OrderRepositoryImpl implements OrderRepository {
             return rows.stream()
                     .findFirst()
                     .map(WiwaOrderDto::toObject)
-                    .map(mapper::toOrderDo);
+                    .map(this::toOrderDo);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -154,11 +155,11 @@ public class OrderRepositoryImpl implements OrderRepository {
         try (final Connection connection = dataSource.getConnection()) {
             final WiwaOrderDto wiwaOrderDto;
             if (orderDo.getId() == null) {
-                wiwaOrderDto = insert(connection, mapper.toWiwaOrderDto(orderDo));
+                wiwaOrderDto = insert(connection, toWiwaOrderDto(orderDo));
             } else {
-                wiwaOrderDto = update(connection, mapper.toWiwaOrderDto(orderDo));
+                wiwaOrderDto = update(connection, toWiwaOrderDto(orderDo));
             }
-            return mapper.toOrderDo(wiwaOrderDto);
+            return toOrderDo(wiwaOrderDto);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -201,17 +202,14 @@ public class OrderRepositoryImpl implements OrderRepository {
 
         // total from
         if (Optional.ofNullable(criteria.totalFrom()).isPresent()) {
-            select.AND(MetaColumnWiwaOrder.TOTAL_VALUE.column(), Condition.EQUALS_MORE, criteria.totalFrom());
+            select.AND(MetaColumnWiwaOrder.TOTAL_VALUE.column(), Condition.EQUALS_MORE, criteria.totalFrom().amount())
+                    .AND(MetaColumnWiwaOrder.TOTAL_UNIT.column(), Condition.EQUALS, criteria.totalFrom().currency().name());
         }
 
         // total to
         if (Optional.ofNullable(criteria.totalTo()).isPresent()) {
-            select.AND(MetaColumnWiwaOrder.TOTAL_VALUE.column(), Condition.EQUALS_LESS, criteria.totalTo());
-        }
-
-        // total unit
-        if (Optional.ofNullable(criteria.totalUnit()).isPresent()) {
-            select.AND(MetaColumnWiwaOrder.TOTAL_UNIT.column(), Condition.EQUALS, criteria.totalUnit().name());
+            select.AND(MetaColumnWiwaOrder.TOTAL_VALUE.column(), Condition.EQUALS_LESS, criteria.totalTo().amount())
+                    .AND(MetaColumnWiwaOrder.TOTAL_UNIT.column(), Condition.EQUALS, criteria.totalTo().currency().name());
         }
     }
 
@@ -260,6 +258,35 @@ public class OrderRepositoryImpl implements OrderRepository {
                         );
                     }
                 }
+        );
+    }
+
+    private OrderDo toOrderDo(final WiwaOrderDto wiwaOrderDto) {
+        return OrderDo.builder()
+                .id(wiwaOrderDto.id())
+                .userId(wiwaOrderDto.userId())
+                .created(wiwaOrderDto.created())
+                .status(OrderStatus.valueOf(wiwaOrderDto.status()))
+                .orderNumber(wiwaOrderDto.orderNumber())
+                .weight(new Quantity(wiwaOrderDto.weightValue(), Unit.valueOf(wiwaOrderDto.weightUnit())))
+                .netWeight(new Quantity(wiwaOrderDto.netWeightValue(), Unit.valueOf(wiwaOrderDto.netWeightUnit())))
+                .total(new Money(wiwaOrderDto.totalValue(), Unit.valueOf(wiwaOrderDto.totalUnit())))
+                .build();
+    }
+
+    private WiwaOrderDto toWiwaOrderDto(final OrderDo orderDo) {
+        return new WiwaOrderDto(
+                orderDo.getId(),
+                orderDo.getUserId(),
+                orderDo.getCreated(),
+                orderDo.getStatus().name(),
+                orderDo.getOrderNumber(),
+                orderDo.getWeight().quantity(),
+                orderDo.getWeight().unit().name(),
+                orderDo.getNetWeight().quantity(),
+                orderDo.getNetWeight().unit().name(),
+                orderDo.getTotal().amount(),
+                orderDo.getTotal().currency().name()
         );
     }
 

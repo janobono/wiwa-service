@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.impl.component.OrderAttributeUtil;
 import sk.janobono.wiwa.business.impl.component.OrderCommentUtil;
 import sk.janobono.wiwa.business.impl.component.OrderItemUtil;
+import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
-import sk.janobono.wiwa.component.PriceUtil;
 import sk.janobono.wiwa.dal.domain.OrderDo;
 import sk.janobono.wiwa.dal.domain.UserDo;
 import sk.janobono.wiwa.dal.model.OrderSearchCriteriaDo;
@@ -21,9 +21,7 @@ import sk.janobono.wiwa.dal.repository.OrderContactRepository;
 import sk.janobono.wiwa.dal.repository.OrderNumberRepository;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.janobono.wiwa.exception.WiwaException;
-import sk.janobono.wiwa.model.OrderAttributeKey;
-import sk.janobono.wiwa.model.OrderStatus;
-import sk.janobono.wiwa.model.Unit;
+import sk.janobono.wiwa.model.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -84,12 +82,9 @@ public class OrderServiceImpl implements OrderService {
                         .created(LocalDateTime.now())
                         .status(OrderStatus.NEW)
                         .orderNumber(orderNumberRepository.getNextOrderNumber(userId))
-                        .weightValue(BigDecimal.ZERO)
-                        .weightUnit(Unit.KILOGRAM)
-                        .netWeightValue(BigDecimal.ZERO)
-                        .netWeightUnit(Unit.KILOGRAM)
-                        .totalValue(BigDecimal.ZERO)
-                        .totalUnit(Unit.EUR)
+                        .weight(new Quantity(BigDecimal.ZERO, Unit.KILOGRAM))
+                        .netWeight(new Quantity(BigDecimal.ZERO, Unit.KILOGRAM))
+                        .total(new Money(BigDecimal.ZERO, Unit.EUR))
                         .build());
 
         return toOrderData(orderDo, applicationPropertyService.getVatRate());
@@ -278,8 +273,7 @@ public class OrderServiceImpl implements OrderService {
                 criteria.createdTo(),
                 criteria.statuses(),
                 priceUtil.countNoVatValue(criteria.totalFrom(), vatRate),
-                priceUtil.countNoVatValue(criteria.totalTo(), vatRate),
-                criteria.totalUnit()
+                priceUtil.countNoVatValue(criteria.totalTo(), vatRate)
         );
     }
 
@@ -290,13 +284,10 @@ public class OrderServiceImpl implements OrderService {
                 .created(orderDo.getCreated())
                 .status(orderDo.getStatus())
                 .orderNumber(orderDo.getOrderNumber())
-                .weightValue(orderDo.getWeightValue())
-                .weightUnit(orderDo.getWeightUnit())
-                .netWeightValue(orderDo.getNetWeightValue())
-                .netWeightUnit(orderDo.getNetWeightUnit())
-                .totalValue(orderDo.getTotalValue())
-                .vatTotalValue(priceUtil.countVatValue(orderDo.getTotalValue(), vatRate))
-                .totalUnit(orderDo.getTotalUnit())
+                .weight(orderDo.getWeight())
+                .netWeight(orderDo.getNetWeight())
+                .total(orderDo.getTotal())
+                .vatTotal(priceUtil.countVatValue(orderDo.getTotal(), vatRate))
                 .build();
     }
 
@@ -328,11 +319,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void setOrderSummary(final OrderDo orderDo, final OrderItemUtil orderItemUtil) {
-        orderDo.setNetWeightValue(orderItemUtil.getNetWeightValue());
-        orderDo.setNetWeightUnit(orderItemUtil.getNetWeightUnit());
-        orderDo.setWeightValue(orderItemUtil.getWeightValue());
-        orderDo.setWeightUnit(orderItemUtil.getWeightUnit());
-        orderDo.setTotalValue(orderItemUtil.getTotalValue());
-        orderDo.setTotalUnit(orderItemUtil.getTotalUnit());
+        orderDo.setNetWeight(orderItemUtil.getNetWeight());
+        orderDo.setWeight(orderItemUtil.getWeight());
+        orderDo.setTotal(orderItemUtil.getTotal());
     }
 }

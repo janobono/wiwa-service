@@ -11,10 +11,13 @@ import sk.janobono.wiwa.api.model.board.BoardChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardWebDto;
 import sk.janobono.wiwa.business.model.board.BoardSearchCriteriaData;
 import sk.janobono.wiwa.business.service.BoardService;
+import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.Quantity;
 import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -32,16 +35,12 @@ public class BoardApiService {
             final Boolean orientation,
             final BigDecimal lengthFrom,
             final BigDecimal lengthTo,
-            final Unit lengthUnit,
             final BigDecimal widthFrom,
             final BigDecimal widthTo,
-            final Unit widthUnit,
             final BigDecimal thicknessFrom,
             final BigDecimal thicknessTo,
-            final Unit thicknessUnit,
             final BigDecimal priceFrom,
             final BigDecimal priceTo,
-            final Unit priceUnit,
             final List<String> codeListItems,
             final Pageable pageable
     ) {
@@ -52,18 +51,14 @@ public class BoardApiService {
                 .boardCode(boardCode)
                 .structureCode(structureCode)
                 .orientation(orientation)
-                .lengthFrom(lengthFrom)
-                .lengthTo(lengthTo)
-                .lengthUnit(lengthUnit)
-                .widthFrom(widthFrom)
-                .widthTo(widthTo)
-                .widthUnit(widthUnit)
-                .thicknessFrom(thicknessFrom)
-                .thicknessTo(thicknessTo)
-                .thicknessUnit(thicknessUnit)
-                .priceFrom(priceFrom)
-                .priceTo(priceTo)
-                .priceUnit(priceUnit)
+                .lengthFrom(Optional.ofNullable(lengthFrom).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
+                .lengthTo(Optional.ofNullable(lengthTo).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
+                .widthFrom(Optional.ofNullable(widthFrom).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
+                .widthTo(Optional.ofNullable(widthTo).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
+                .thicknessFrom(Optional.ofNullable(thicknessFrom).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
+                .thicknessTo(Optional.ofNullable(thicknessTo).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
+                .priceFrom(Optional.ofNullable(priceFrom).map(v -> new Money(v, Unit.EUR)).orElse(null))
+                .priceTo(Optional.ofNullable(priceTo).map(v -> new Money(v, Unit.EUR)).orElse(null))
                 .codeListItems(codeListItems)
                 .build();
         return boardService.getBoards(criteria, pageable).map(boardWebMapper::mapToWebDto);

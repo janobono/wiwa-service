@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.component;
+package sk.janobono.wiwa.business.impl.component;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +22,7 @@ class PriceUtilTest {
 
     @Test
     void countVatValue_EqualsToExpectedResult() {
-        assertThat(priceUtil.countVatValue(null, null)).isNull();
+        assertThat(priceUtil.countVatValue((BigDecimal) null, null)).isNull();
 
         assertThat(priceUtil.countVatValue(BigDecimal.valueOf(100L), BigDecimal.valueOf(20L)))
                 .isEqualTo(BigDecimal.valueOf(120L).setScale(3, RoundingMode.HALF_UP));
@@ -30,7 +30,7 @@ class PriceUtilTest {
 
     @Test
     void countNoVatValue_EqualsToExpectedResult() {
-        assertThat(priceUtil.countNoVatValue(null, null)).isNull();
+        assertThat(priceUtil.countNoVatValue((BigDecimal) null, null)).isNull();
 
         assertThat(priceUtil.countNoVatValue(BigDecimal.valueOf(120L), BigDecimal.valueOf(20L)))
                 .isEqualTo(BigDecimal.valueOf(100L).setScale(3, RoundingMode.HALF_UP));

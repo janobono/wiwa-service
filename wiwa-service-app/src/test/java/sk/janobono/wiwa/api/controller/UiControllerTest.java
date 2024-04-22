@@ -7,10 +7,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import sk.janobono.wiwa.api.model.ApplicationPropertiesWebDto;
-import sk.janobono.wiwa.api.model.CaptchaWebDto;
-import sk.janobono.wiwa.api.model.CompanyInfoWebDto;
-import sk.janobono.wiwa.api.model.UnitWebDto;
+import sk.janobono.wiwa.api.model.application.ApplicationPropertiesWebDto;
+import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
+import sk.janobono.wiwa.api.model.application.CompanyInfoWebDto;
+import sk.janobono.wiwa.api.model.application.UnitWebDto;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.component.ImageUtil;
 

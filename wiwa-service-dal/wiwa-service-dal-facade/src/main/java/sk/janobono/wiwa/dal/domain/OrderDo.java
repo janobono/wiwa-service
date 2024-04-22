@@ -2,10 +2,10 @@ package sk.janobono.wiwa.dal.domain;
 
 import lombok.Builder;
 import lombok.Data;
+import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.OrderStatus;
-import sk.janobono.wiwa.model.Unit;
+import sk.janobono.wiwa.model.Quantity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Builder
@@ -16,10 +16,7 @@ public class OrderDo {
     private LocalDateTime created;
     private OrderStatus status;
     private Long orderNumber;
-    private BigDecimal weightValue;
-    private Unit weightUnit;
-    private BigDecimal netWeightValue;
-    private Unit netWeightUnit;
-    private BigDecimal totalValue;
-    private Unit totalUnit;
+    private Quantity weight;
+    private Quantity netWeight;
+    private Money total;
 }
