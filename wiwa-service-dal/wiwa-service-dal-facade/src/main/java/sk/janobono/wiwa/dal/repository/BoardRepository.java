@@ -5,7 +5,9 @@ import org.springframework.data.domain.Pageable;
 import sk.janobono.wiwa.dal.domain.BoardDo;
 import sk.janobono.wiwa.dal.model.BoardSearchCriteriaDo;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface BoardRepository {
 
@@ -16,6 +18,8 @@ public interface BoardRepository {
     void deleteById(long id);
 
     boolean existsById(long id);
+
+    List<BoardDo> findAll(Set<String> codes);
 
     Page<BoardDo> findAll(BoardSearchCriteriaDo criteria, Pageable pageable);
 

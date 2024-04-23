@@ -3,7 +3,7 @@ package sk.janobono.wiwa.dal.impl.r3n.meta;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.DataType;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public enum MetaColumnWiwaOrder {
@@ -39,7 +39,7 @@ public enum MetaColumnWiwaOrder {
     }
 
     public static Column[] columns() {
-        final List<Column> columnList = new ArrayList<>();
+        final List<Column> columnList = new LinkedList<>();
         for (final MetaColumnWiwaOrder metaColumnWiwaOrder : values()) {
             columnList.add(metaColumnWiwaOrder.column());
         }
@@ -47,7 +47,7 @@ public enum MetaColumnWiwaOrder {
     }
 
     public static Column[] columns(final String tableAlias) {
-        final List<Column> columnList = new ArrayList<>();
+        final List<Column> columnList = new LinkedList<>();
         for (final MetaColumnWiwaOrder metaColumnWiwaOrder : values()) {
             columnList.add(metaColumnWiwaOrder.column(tableAlias));
         }
