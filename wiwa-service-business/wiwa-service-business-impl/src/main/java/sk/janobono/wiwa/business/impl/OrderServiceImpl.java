@@ -23,7 +23,10 @@ import sk.janobono.wiwa.dal.domain.UserDo;
 import sk.janobono.wiwa.dal.model.OrderViewSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
-import sk.janobono.wiwa.model.*;
+import sk.janobono.wiwa.model.OrderAttributeKey;
+import sk.janobono.wiwa.model.OrderStatus;
+import sk.janobono.wiwa.model.Quantity;
+import sk.janobono.wiwa.model.Unit;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -96,20 +99,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderData getOrder(final long id) {
-//        return toOrderData(getOrderViewDo(id), applicationPropertyService.getVatRate());
-        return null;
+        return toOrderData(getOrderViewDo(id), applicationPropertyService.getVatRate());
     }
 
     @Override
     public OrderData addOrder(final long userId) {
-        final OrderDo orderDo = orderRepository.save(
-                OrderDo.builder()
-                        .userId(userId)
-                        .created(LocalDateTime.now())
-                        .orderNumber(orderNumberRepository.getNextOrderNumber(userId))
-                        .build());
-
-        return toOrderData(orderDo, applicationPropertyService.getVatRate());
+        final OrderDo orderDo = orderRepository.save(OrderDo.builder()
+                .userId(userId)
+                .created(LocalDateTime.now())
+                .orderNumber(orderNumberRepository.getNextOrderNumber(userId))
+                .build());
+        return getOrder(orderDo.getId());
     }
 
     @Override
@@ -392,6 +392,11 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderDo getOrderDo(final Long id) {
         return orderRepository.findById(id)
+                .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
+    }
+
+    private OrderViewDo getOrderViewDo(final Long id) {
+        return orderViewRepository.findById(id)
                 .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
     }
 

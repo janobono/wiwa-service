@@ -113,12 +113,12 @@ public class OrderViewRepositoryImpl implements OrderViewRepository {
         }
 
         // delivery from
-        if (Optional.ofNullable(criteria.createdFrom()).isPresent()) {
+        if (Optional.ofNullable(criteria.deliveryFrom()).isPresent()) {
             select.AND(MetaColumnWiwaOrderView.DELIVERY.column(), Condition.EQUALS_MORE, criteria.deliveryFrom());
         }
 
         // delivery to
-        if (Optional.ofNullable(criteria.createdTo()).isPresent()) {
+        if (Optional.ofNullable(criteria.deliveryTo()).isPresent()) {
             select.AND(MetaColumnWiwaOrderView.DELIVERY.column(), Condition.EQUALS_LESS, criteria.deliveryTo());
         }
 
