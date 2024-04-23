@@ -33,6 +33,7 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -135,11 +136,13 @@ public class OrderServiceImpl implements OrderService {
     public OrderData recountOrder(final long id, final Long modifierId) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
         final UserDo modifier = userUtilService.getUserDo(modifierId);
+
         checkOrderStatus(orderViewDo, Set.of(OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
 
-        // TODO
+        recountItems(id, modifier);
+        recountSummary(id);
 
-        return null;
+        return toOrderData(getOrderViewDo(id), applicationPropertyService.getVatRate());
     }
 
     @Override
@@ -308,31 +311,64 @@ public class OrderServiceImpl implements OrderService {
 
         // TODO
 
+        recountSummary(id);
         return null;
     }
 
     @Override
     public OrderItemData moveUpItem(final long id, final long itemId, final long modifierId, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
-        final UserDo modifier = userUtilService.getUserDo(modifierId);
 
         checkOrderStatus(modifierId, manager, orderViewDo);
 
-        // TODO
+        final List<OrderItemDo> items = sortItems(id);
 
-        return null;
+        final OrderItemDo item = items.stream().filter(i -> i.getId() == itemId).findFirst()
+                .orElseThrow(() -> WiwaException.ORDER_ITEM_NOT_FOUND.exception("Item with id {0} not found", itemId));
+        final int itemIndex = items.indexOf(item);
+
+        if (itemIndex > 0) {
+            final List<OrderItemDo> batch = new ArrayList<>();
+
+            item.setSortNum(item.getSortNum() - 1);
+            batch.add(item);
+
+            final OrderItemDo downItem = items.get(itemIndex - 1);
+            downItem.setSortNum(downItem.getSortNum() + 1);
+            batch.add(downItem);
+
+            orderItemRepository.saveAll(batch);
+        }
+
+        return toOrderItemData(item);
     }
 
     @Override
     public OrderItemData moveDownItem(final long id, final long itemId, final long modifierId, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
-        final UserDo modifier = userUtilService.getUserDo(modifierId);
 
         checkOrderStatus(modifierId, manager, orderViewDo);
 
-        // TODO
+        final List<OrderItemDo> items = sortItems(id);
 
-        return null;
+        final OrderItemDo item = items.stream().filter(i -> i.getId() == itemId).findFirst()
+                .orElseThrow(() -> WiwaException.ORDER_ITEM_NOT_FOUND.exception("Item with id {0} not found", itemId));
+        final int itemIndex = items.indexOf(item);
+
+        if (itemIndex < items.size() - 1) {
+            final List<OrderItemDo> batch = new ArrayList<>();
+
+            item.setSortNum(item.getSortNum() + 1);
+            batch.add(item);
+
+            final OrderItemDo downItem = items.get(itemIndex + 1);
+            downItem.setSortNum(downItem.getSortNum() - 1);
+            batch.add(downItem);
+
+            orderItemRepository.saveAll(batch);
+        }
+
+        return toOrderItemData(item);
     }
 
     @Override
@@ -340,6 +376,8 @@ public class OrderServiceImpl implements OrderService {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
         checkOrderStatus(modifierId, manager, orderViewDo);
         orderItemRepository.deleteById(id);
+        sortItems(id);
+        recountSummary(id);
     }
 
     private OrderViewSearchCriteriaDo mapToDo(final OrderSearchCriteriaData criteria, final BigDecimal vatRate) {
@@ -461,5 +499,22 @@ public class OrderServiceImpl implements OrderService {
 
     private String getOrderUrl(final long id) {
         return commonConfigProperties.webUrl() + commonConfigProperties.ordersPath() + id;
+    }
+
+    private List<OrderItemDo> sortItems(final long id) {
+        final List<OrderItemDo> items = orderItemRepository.findAllByOrderId(id);
+        for (final OrderItemDo item : items) {
+            item.setSortNum(items.indexOf(item));
+        }
+        orderItemRepository.saveAll(items);
+        return items;
+    }
+
+    private void recountItems(long id, UserDo modifier) {
+        // TODO
+    }
+
+    private void recountSummary(long id) {
+        // TODO
     }
 }
