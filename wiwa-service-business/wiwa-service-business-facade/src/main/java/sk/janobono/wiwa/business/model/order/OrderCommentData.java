@@ -3,7 +3,6 @@ package sk.janobono.wiwa.business.model.order;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Builder
 public record OrderCommentData(
@@ -11,7 +10,6 @@ public record OrderCommentData(
         Long parentId,
         OrderUserData creator,
         LocalDateTime created,
-        String comment,
-        List<OrderCommentData> subComments
+        String comment
 ) {
 }

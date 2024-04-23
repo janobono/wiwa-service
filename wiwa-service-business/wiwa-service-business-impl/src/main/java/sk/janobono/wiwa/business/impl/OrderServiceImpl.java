@@ -1,25 +1,19 @@
 package sk.janobono.wiwa.business.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.impl.component.OrderAttributeUtil;
-import sk.janobono.wiwa.business.impl.component.OrderCommentUtil;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.business.impl.util.OrderCsvUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderPdfUtilService;
-import sk.janobono.wiwa.business.impl.util.OrderUtilService;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
 import sk.janobono.wiwa.business.model.application.FreeDayData;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
-import sk.janobono.wiwa.dal.domain.OrderContactDo;
-import sk.janobono.wiwa.dal.domain.OrderDo;
-import sk.janobono.wiwa.dal.domain.OrderViewDo;
-import sk.janobono.wiwa.dal.domain.UserDo;
+import sk.janobono.wiwa.dal.domain.*;
 import sk.janobono.wiwa.dal.model.OrderViewSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
@@ -34,27 +28,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    private final ApplicationContext applicationContext;
-
     private final PriceUtil priceUtil;
     private final OrderAttributeUtil orderAttributeUtil;
-    private final OrderCommentUtil orderCommentUtil;
 
     private final OrderRepository orderRepository;
     private final OrderAttributeRepository orderAttributeRepository;
+    private final OrderCommentRepository orderCommentRepository;
     private final OrderContactRepository orderContactRepository;
+    private final OrderItemRepository orderItemRepository;
     private final OrderNumberRepository orderNumberRepository;
     private final OrderViewRepository orderViewRepository;
 
     private final OrderCsvUtilService orderCsvUtilService;
     private final OrderPdfUtilService orderPdfUtilService;
-    private final OrderUtilService orderUtilService;
     private final UserUtilService userUtilService;
 
     private final ApplicationPropertyService applicationPropertyService;
@@ -132,16 +125,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderData recountOrder(final long id, final Long modifierId) {
-        final OrderDo order = getOrderDo(id);
+        final OrderViewDo orderViewDo = getOrderViewDo(id);
         final UserDo modifier = userUtilService.getUserDo(modifierId);
-        checkOrderStatus(order, Set.of(OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
-        return orderUtilService.recountOrder(order, modifier);
+        checkOrderStatus(orderViewDo, Set.of(OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
+
+        // TODO
+
+        return null;
     }
 
     @Override
     public byte[] getPdf(final long id) {
-        final OrderDo order = getOrderDo(id);
-        final Path pdf = orderPdfUtilService.generatePdf(order);
+        final OrderViewDo orderViewDo = getOrderViewDo(id);
+        final Path pdf = orderPdfUtilService.generatePdf(orderViewDo);
         try {
             return Files.readAllBytes(pdf);
         } catch (final IOException e) {
@@ -155,8 +151,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public byte[] getCsv(final long id) {
-        final OrderDo order = getOrderDo(id);
-        final Path csv = orderCsvUtilService.generateCsv(order);
+        final OrderViewDo orderViewDo = getOrderViewDo(id);
+        final Path csv = orderCsvUtilService.generateCsv(orderViewDo);
         try {
             return Files.readAllBytes(csv);
         } catch (final IOException e) {
@@ -170,10 +166,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderData sendOrder(final long id, final long modifierId, final SendOrderData sendOrder) {
-        final OrderDo order = getOrderDo(id);
+        final OrderViewDo orderViewDo = getOrderViewDo(id);
         final UserDo modifier = userUtilService.getUserDo(modifierId);
 
-        checkOrderStatus(order, Set.of(OrderStatus.SENT, OrderStatus.IN_PRODUCTION, OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
+        checkOrderStatus(orderViewDo, Set.of(OrderStatus.SENT, OrderStatus.IN_PRODUCTION, OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
 
         if (!sendOrder.businessConditionsAgreement() || !sendOrder.gdprAgreement()) {
             throw WiwaException.ORDER_AGREEMENTS_INVALID.exception("Both business conditions [{0}] and gdpr [{1}] agreements are needed",
@@ -184,7 +180,7 @@ public class OrderServiceImpl implements OrderService {
         checkDeliveryDate(sendOrder.deliveryDate(), applicationPropertyService.getFreeDays());
 
         orderContactRepository.save(OrderContactDo.builder()
-                .orderId(order.getId())
+                .orderId(id)
                 .name(sendOrder.contact().name())
                 .street(sendOrder.contact().street())
                 .zipCode(sendOrder.contact().street())
@@ -196,30 +192,18 @@ public class OrderServiceImpl implements OrderService {
                 .taxId(sendOrder.contact().taxId())
                 .build());
 
-//        order.setStatus(OrderStatus.SENT);
-        order.setDeliveryDate(sendOrder.deliveryDate());
-
-        final List<OrderCommentData> orderComments;
-        if (Optional.ofNullable(sendOrder.comment()).map(s -> !s.isBlank()).orElse(false)) {
-
-            orderComments = orderCommentUtil.addComment(getComments(id), toOrderUserData(modifier), null, sendOrder.comment());
-            orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.COMMENTS, orderComments));
-        } else {
-            orderComments = getComments(id);
-        }
-
         // TODO
 
 
-        return toOrderData(orderRepository.save(order), applicationPropertyService.getVatRate());
+        return getOrder(id);
     }
 
     @Override
     public OrderData setOrderStatus(final long id, final long modifierId, final OrderStatusChangeData orderStatusChange) {
-        final OrderDo order = getOrderDo(id);
+        final OrderViewDo orderViewDo = getOrderViewDo(id);
         final UserDo modifier = userUtilService.getUserDo(modifierId);
 
-        checkOrderStatus(order, Set.of(OrderStatus.NEW, OrderStatus.FINISHED, OrderStatus.CANCELLED));
+        checkOrderStatus(orderViewDo, Set.of(OrderStatus.NEW, OrderStatus.FINISHED, OrderStatus.CANCELLED));
 
         if (orderStatusChange.newStatus() == OrderStatus.NEW) {
             throw WiwaException.ORDER_STATUS_INVALID.exception("Status can't be changed to {0}",
@@ -240,85 +224,93 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
-        return orderUtilService.setOrderStatus(order, modifier, orderStatusChange);
+        return getOrder(id);
     }
 
     @Override
     public List<OrderCommentData> getComments(final long id) {
-        return orderAttributeRepository.findByOrderIdAndAttributeKey(id, OrderAttributeKey.COMMENTS)
-                .map(orderAttributeDo -> Arrays.asList(orderAttributeUtil.parseValue(orderAttributeDo, OrderCommentData[].class)))
-                .orElse(Collections.emptyList());
+        return orderCommentRepository.findAllByOrderId(id).stream()
+                .map(this::toOrderCommentData)
+                .toList();
     }
 
     @Override
     public List<OrderCommentData> addComment(final long id, final long creatorId, final OrderCommentChangeData orderCommentChange) {
-        final OrderDo order = getOrderDo(id);
-        final UserDo creator = userUtilService.getUserDo(creatorId);
-        checkOrderStatus(order, Set.of(OrderStatus.IN_PRODUCTION, OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
+        final OrderViewDo orderViewDo = getOrderViewDo(id);
+        checkOrderStatus(orderViewDo, Set.of(OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
 
-        final List<OrderCommentData> orderComments = orderCommentUtil.addComment(
-                getComments(id), toOrderUserData(creator), orderCommentChange.parentId(), orderCommentChange.comment()
-        );
+        orderCommentRepository.save(OrderCommentDo.builder()
+                .orderId(id)
+                .userId(creatorId)
+                .created(LocalDateTime.now())
+                .comment(orderCommentChange.comment())
+                .build());
 
-        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.COMMENTS, orderComments));
-        return orderComments;
+        // TODO send notification emails
+
+        return getComments(id);
     }
 
     @Override
     public List<OrderItemData> getOrderItems(final long id) {
-        return orderAttributeRepository.findByOrderIdAndAttributeKey(id, OrderAttributeKey.ITEMS)
-                .map(orderAttributeDo -> Arrays.asList(orderAttributeUtil.parseValue(orderAttributeDo, OrderItemData[].class)))
-                .orElse(Collections.emptyList());
+        return orderItemRepository.findAllByOrderId(id).stream()
+                .map(this::toOrderItemData)
+                .toList();
     }
 
     @Override
     public OrderItemData addItem(final long id, final long creatorId, final OrderItemChangeData orderItemChange, final boolean manager) {
-        final OrderDo order = getOrderDo(id);
+        final OrderViewDo orderViewDo = getOrderViewDo(id);
         final UserDo creator = userUtilService.getUserDo(creatorId);
 
-        checkOrderStatus(creatorId, manager, order);
+        checkOrderStatus(creatorId, manager, orderViewDo);
 
-        return orderUtilService.addItem(order, creator, orderItemChange);
+        // TODO
+
+        return null;
     }
 
     @Override
     public OrderItemData setItem(final long id, final long itemId, final long modifierId, final OrderItemChangeData orderItemChange, final boolean manager) {
-        final OrderDo order = getOrderDo(id);
+        final OrderViewDo orderViewDo = getOrderViewDo(id);
         final UserDo modifier = userUtilService.getUserDo(modifierId);
 
-        checkOrderStatus(modifierId, manager, order);
+        checkOrderStatus(modifierId, manager, orderViewDo);
 
-        return orderUtilService.setItem(order, modifier, itemId, orderItemChange);
+        // TODO
+
+        return null;
     }
 
     @Override
     public OrderItemData moveUpItem(final long id, final long itemId, final long modifierId, final boolean manager) {
-        final OrderDo order = getOrderDo(id);
+        final OrderViewDo orderViewDo = getOrderViewDo(id);
         final UserDo modifier = userUtilService.getUserDo(modifierId);
 
-        checkOrderStatus(modifierId, manager, order);
+        checkOrderStatus(modifierId, manager, orderViewDo);
 
-        return orderUtilService.moveUpItem(order, modifier, itemId);
+        // TODO
+
+        return null;
     }
 
     @Override
     public OrderItemData moveDownItem(final long id, final long itemId, final long modifierId, final boolean manager) {
-        final OrderDo order = getOrderDo(id);
+        final OrderViewDo orderViewDo = getOrderViewDo(id);
         final UserDo modifier = userUtilService.getUserDo(modifierId);
 
-        checkOrderStatus(modifierId, manager, order);
+        checkOrderStatus(modifierId, manager, orderViewDo);
 
-        return orderUtilService.moveDownItem(order, modifier, itemId);
+        // TODO
+
+        return null;
     }
 
     @Override
     public void deleteItem(final long id, final long itemId, final long modifierId, final boolean manager) {
-        final OrderDo order = getOrderDo(id);
-        final UserDo modifier = userUtilService.getUserDo(modifierId);
-
-        checkOrderStatus(modifierId, manager, order);
-
-        orderUtilService.deleteItem(order, modifier, itemId);
+        final OrderViewDo orderViewDo = getOrderViewDo(id);
+        checkOrderStatus(modifierId, manager, orderViewDo);
+        orderItemRepository.deleteById(id);
     }
 
     private OrderViewSearchCriteriaDo mapToDo(final OrderSearchCriteriaData criteria, final BigDecimal vatRate) {
@@ -376,6 +368,15 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+    private OrderCommentData toOrderCommentData(final OrderCommentDo orderCommentDo) {
+        return OrderCommentData.builder()
+                .id(orderCommentDo.getId())
+                .creator(toOrderUserData(userUtilService.getUserDo(orderCommentDo.getId())))
+                .created(orderCommentDo.getCreated())
+                .comment(orderCommentDo.getComment())
+                .build();
+    }
+
     private OrderContactData toOrderContactData(final OrderContactDo orderContactDo) {
         return OrderContactData.builder()
                 .name(orderContactDo.getName())
@@ -390,6 +391,13 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+    private OrderItemData toOrderItemData(final OrderItemDo orderItemDo) {
+        return OrderItemData.builder()
+                // TODO
+
+                .build();
+    }
+
     private OrderDo getOrderDo(final Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
@@ -400,15 +408,15 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
     }
 
-    private void checkOrderStatus(final long userId, final boolean manager, final OrderDo order) {
-        if (manager && userId != order.getUserId()) {
-            checkOrderStatus(order, Set.of(
+    private void checkOrderStatus(final long userId, final boolean manager, final OrderViewDo orderViewDo) {
+        if (manager && userId != orderViewDo.userId()) {
+            checkOrderStatus(orderViewDo, Set.of(
                     OrderStatus.NEW,
                     OrderStatus.READY,
                     OrderStatus.CANCELLED,
                     OrderStatus.FINISHED));
         } else {
-            checkOrderStatus(order, Set.of(
+            checkOrderStatus(orderViewDo, Set.of(
                     OrderStatus.SENT,
                     OrderStatus.IN_PRODUCTION,
                     OrderStatus.READY,
@@ -417,12 +425,12 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private void checkOrderStatus(final OrderDo order, final Set<OrderStatus> statuses) {
-//        if (statuses.contains(order.getStatus())) {
-//            throw WiwaException.ORDER_IS_IMMUTABLE.exception("Order with id {0} has status {1} is immutable",
-//                    order.getId(),
-//                    order.getStatus());
-//        }
+    private void checkOrderStatus(final OrderViewDo orderViewDo, final Set<OrderStatus> statuses) {
+        if (statuses.contains(orderViewDo.status())) {
+            throw WiwaException.ORDER_IS_IMMUTABLE.exception("Order with id {0} has status {1} is immutable",
+                    orderViewDo.id(),
+                    orderViewDo.status());
+        }
     }
 
     private void checkDeliveryDate(final LocalDate deliveryDate, final List<FreeDayData> freeDays) {

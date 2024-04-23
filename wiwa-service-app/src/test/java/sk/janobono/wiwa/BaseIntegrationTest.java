@@ -132,6 +132,12 @@ public abstract class BaseIntegrationTest {
     }
 
     public TestEmail[] getAllEmails() {
+        try {
+            Thread.sleep(3000);
+        } catch (final InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         return restTemplate.getForObject(
                 UriComponentsBuilder.fromHttpUrl("http://localhost:" + smtpServer.getMappedPort(1080))
                         .path("/email").build().toUri(),
