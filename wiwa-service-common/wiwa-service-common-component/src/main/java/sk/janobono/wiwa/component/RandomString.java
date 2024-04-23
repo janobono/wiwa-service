@@ -4,9 +4,9 @@ import org.springframework.stereotype.Component;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,7 +101,7 @@ public class RandomString {
         checkMinimalCharacters(params, minLength, maxLength);
         final int totalLength = getTotalStringLength(minLength, maxLength);
 
-        final List<Character> result = new ArrayList<>();
+        final List<Character> result = new LinkedList<>();
         if (params.type().useAlpha) {
             result.addAll(randomize(params.minAlpha(), ALPHA));
             result.addAll(randomize(params.minAlphaCap(), ALPHA_CAP));
@@ -166,7 +166,7 @@ public class RandomString {
     }
 
     private List<Character> randomize(final int size, final Character[] characters) {
-        final List<Character> result = new ArrayList<>();
+        final List<Character> result = new LinkedList<>();
         for (int i = 0; i < size; i++) {
             result.add(characters[rnd.nextInt(characters.length)]);
         }
@@ -174,7 +174,7 @@ public class RandomString {
     }
 
     private Character[] charactersByType(final Params params) {
-        final List<Character> result = new ArrayList<>();
+        final List<Character> result = new LinkedList<>();
         if (params.type().useAlpha) {
             result.addAll(Arrays.asList(ALPHA));
             result.addAll(Arrays.asList(ALPHA_CAP));

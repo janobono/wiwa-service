@@ -114,9 +114,21 @@ public class BoardRepositoryImpl implements BoardRepository {
     }
 
     @Override
-    public List<BoardDo> findAll(Set<String> codes) {
-        // TODO
-        return List.of();
+    public List<BoardDo> findAll(final Set<String> codes) {
+        log.debug("findAll({})", codes);
+        try (final Connection connection = dataSource.getConnection()) {
+            final List<Object[]> rows = sqlBuilder.select(connection,
+                    Query.SELECT(MetaColumnWiwaBoard.columns())
+                            .FROM(MetaTable.WIWA_BOARD.table())
+                            .WHERE(MetaColumnWiwaBoard.CODE.column(), Condition.IN, codes)
+            );
+            return rows.stream()
+                    .map(WiwaBoardDto::toObject)
+                    .map(this::toBoardDo)
+                    .toList();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

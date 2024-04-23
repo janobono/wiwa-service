@@ -28,4 +28,6 @@ public interface OrderWebMapper {
     SendOrderData mapToData(SendOrderWebDto sendOrder);
 
     OrderItemChangeData mapToData(OrderItemChangeWebDto orderItemChange);
+
+    OrderContactData mapToData(OrderContactWebDto orderContact);
 }

@@ -5,7 +5,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import sk.janobono.wiwa.business.impl.component.*;
+import sk.janobono.wiwa.business.impl.component.OrderAttributeUtil;
+import sk.janobono.wiwa.business.impl.component.OrderCommentUtil;
+import sk.janobono.wiwa.business.impl.component.PriceUtil;
+import sk.janobono.wiwa.business.impl.util.OrderCsvUtilService;
+import sk.janobono.wiwa.business.impl.util.OrderPdfUtilService;
+import sk.janobono.wiwa.business.impl.util.OrderUtilService;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
 import sk.janobono.wiwa.business.model.application.FreeDayData;
 import sk.janobono.wiwa.business.model.order.*;
@@ -22,7 +27,9 @@ import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,6 +50,9 @@ public class OrderServiceImpl implements OrderService {
     private final OrderContactRepository orderContactRepository;
     private final OrderNumberRepository orderNumberRepository;
 
+    private final OrderCsvUtilService orderCsvUtilService;
+    private final OrderPdfUtilService orderPdfUtilService;
+    private final OrderUtilService orderUtilService;
     private final UserUtilService userUtilService;
 
     private final ApplicationPropertyService applicationPropertyService;
@@ -66,6 +76,23 @@ public class OrderServiceImpl implements OrderService {
                 .businessId(value.businessId())
                 .taxId(value.taxId())
                 .build());
+    }
+
+    @Override
+    public OrderContactData setOrderContact(final long id, final OrderContactData orderContact) {
+        final OrderDo order = getOrderDo(id);
+        return toOrderContactData(orderContactRepository.save(OrderContactDo.builder()
+                .orderId(order.getId())
+                .name(orderContact.name())
+                .street(orderContact.street())
+                .zipCode(orderContact.street())
+                .city(orderContact.city())
+                .state(orderContact.state())
+                .phone(orderContact.phone())
+                .email(orderContact.email())
+                .businessId(orderContact.businessId())
+                .taxId(orderContact.taxId())
+                .build()));
     }
 
     @Override
@@ -107,26 +134,47 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderData recountOrder(long id, Long modifierId) {
-        // TODO
-        return null;
+    public OrderData recountOrder(final long id, final Long modifierId) {
+        final OrderDo order = getOrderDo(id);
+        final UserDo modifier = userUtilService.getUserDo(modifierId);
+        checkOrderStatus(order, Set.of(OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
+        return orderUtilService.recountOrder(order, modifier);
     }
 
     @Override
-    public byte[] getPdf(long id) {
-        // TODO
-        return new byte[0];
+    public byte[] getPdf(final long id) {
+        final OrderDo order = getOrderDo(id);
+        final Path pdf = orderPdfUtilService.generatePdf(order);
+        try {
+            return Files.readAllBytes(pdf);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (pdf != null) {
+                pdf.toFile().delete();
+            }
+        }
     }
 
     @Override
-    public byte[] getCsv(long id) {
-        // TODO
-        return new byte[0];
+    public byte[] getCsv(final long id) {
+        final OrderDo order = getOrderDo(id);
+        final Path csv = orderCsvUtilService.generateCsv(order);
+        try {
+            return Files.readAllBytes(csv);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (csv != null) {
+                csv.toFile().delete();
+            }
+        }
     }
 
     @Override
     public OrderData sendOrder(final long id, final long modifierId, final SendOrderData sendOrder) {
         final OrderDo order = getOrderDo(id);
+        final UserDo modifier = userUtilService.getUserDo(modifierId);
 
         checkOrderStatus(order, Set.of(OrderStatus.SENT, OrderStatus.IN_PRODUCTION, OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
 
@@ -156,34 +204,23 @@ public class OrderServiceImpl implements OrderService {
 
         final List<OrderCommentData> orderComments;
         if (Optional.ofNullable(sendOrder.comment()).map(s -> !s.isBlank()).orElse(false)) {
-            final UserDo modifier = userUtilService.getUserDo(modifierId);
-            orderComments = orderCommentUtil.addComment(getComments(id), toOrderUser(modifier), null, sendOrder.comment());
+
+            orderComments = orderCommentUtil.addComment(getComments(id), toOrderUserData(modifier), null, sendOrder.comment());
             orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.COMMENTS, orderComments));
         } else {
             orderComments = getComments(id);
         }
 
-        final OrderPdfUtil orderPdfUtil = applicationContext.getBean(OrderPdfUtil.class);
-        orderPdfUtil.init();
-        try {
-            final Path pdf = orderPdfUtil.createPdf(
-                    toOrderData(order, applicationPropertyService.getVatRate()),
-                    orderComments,
-                    getOrderItems(id),
-                    getOrderSummary(id),
-                    sendOrder);
+        // TODO
 
-            // TODO send email with PDF
 
-        } finally {
-            orderPdfUtil.cleanUp();
-        }
         return toOrderData(orderRepository.save(order), applicationPropertyService.getVatRate());
     }
 
     @Override
     public OrderData setOrderStatus(final long id, final long modifierId, final OrderStatusChangeData orderStatusChange) {
         final OrderDo order = getOrderDo(id);
+        final UserDo modifier = userUtilService.getUserDo(modifierId);
 
         checkOrderStatus(order, Set.of(OrderStatus.NEW, OrderStatus.FINISHED, OrderStatus.CANCELLED));
 
@@ -192,13 +229,21 @@ public class OrderServiceImpl implements OrderService {
                     orderStatusChange.newStatus());
         }
 
+        if (orderStatusChange.notifyUser()) {
+            switch (orderStatusChange.newStatus()) {
+                case IN_PRODUCTION:
 
+                    break;
+                case READY:
 
-        // TODO
+                    break;
+                case CANCELLED:
 
+                    break;
+            }
+        }
 
-        order.setStatus(orderStatusChange.newStatus());
-        return toOrderData(orderRepository.save(order), applicationPropertyService.getVatRate());
+        return orderUtilService.setOrderStatus(order, modifier, orderStatusChange);
     }
 
     @Override
@@ -215,7 +260,7 @@ public class OrderServiceImpl implements OrderService {
         checkOrderStatus(order, Set.of(OrderStatus.IN_PRODUCTION, OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
 
         final List<OrderCommentData> orderComments = orderCommentUtil.addComment(
-                getComments(id), toOrderUser(creator), orderCommentChange.parentId(), orderCommentChange.comment()
+                getComments(id), toOrderUserData(creator), orderCommentChange.parentId(), orderCommentChange.comment()
         );
 
         orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.COMMENTS, orderComments));
@@ -236,14 +281,7 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(creatorId, manager, order);
 
-        final OrderItemUtil orderItemUtil = initOrderItemUtil(order);
-        final OrderItemData orderItemData = orderItemUtil.addItem(toOrderUser(creator), orderItemChange);
-
-        saveOrder(order, orderItemUtil);
-        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.ITEMS, orderItemUtil.getOrderItems()));
-        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.SUMMARY, orderItemUtil.getOrderSummary()));
-
-        return orderItemData;
+        return orderUtilService.addItem(order, creator, orderItemChange);
     }
 
     @Override
@@ -253,14 +291,7 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(modifierId, manager, order);
 
-        final OrderItemUtil orderItemUtil = initOrderItemUtil(order);
-        final OrderItemData orderItemData = orderItemUtil.setItem(itemId, toOrderUser(modifier), orderItemChange);
-
-        saveOrder(order, orderItemUtil);
-        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.ITEMS, orderItemUtil.getOrderItems()));
-        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.SUMMARY, orderItemUtil.getOrderSummary()));
-
-        return orderItemData;
+        return orderUtilService.setItem(order, modifier, itemId, orderItemChange);
     }
 
     @Override
@@ -270,11 +301,7 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(modifierId, manager, order);
 
-        final OrderItemUtil orderItemUtil = initOrderItemUtil(order);
-        final OrderItemData orderItemData = orderItemUtil.moveUpItem(itemId, toOrderUser(modifier));
-
-        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.ITEMS, orderItemUtil.getOrderItems()));
-        return orderItemData;
+        return orderUtilService.moveUpItem(order, modifier, itemId);
     }
 
     @Override
@@ -284,25 +311,17 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(modifierId, manager, order);
 
-        final OrderItemUtil orderItemUtil = initOrderItemUtil(order);
-        final OrderItemData orderItemData = orderItemUtil.moveDownItem(itemId, toOrderUser(modifier));
-
-        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.ITEMS, orderItemUtil.getOrderItems()));
-        return orderItemData;
+        return orderUtilService.moveDownItem(order, modifier, itemId);
     }
 
     @Override
     public void deleteItem(final long id, final long itemId, final long modifierId, final boolean manager) {
         final OrderDo order = getOrderDo(id);
+        final UserDo modifier = userUtilService.getUserDo(modifierId);
 
         checkOrderStatus(modifierId, manager, order);
 
-        final OrderItemUtil orderItemUtil = initOrderItemUtil(order);
-        orderItemUtil.deleteItem(itemId);
-
-        saveOrder(order, orderItemUtil);
-        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.ITEMS, orderItemUtil.getOrderItems()));
-        orderAttributeRepository.save(orderAttributeUtil.serializeValue(id, OrderAttributeKey.SUMMARY, orderItemUtil.getOrderSummary()));
+        orderUtilService.deleteItem(order, modifier, itemId);
     }
 
     private OrderSearchCriteriaDo mapToDo(final OrderSearchCriteriaData criteria, final BigDecimal vatRate) {
@@ -319,7 +338,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderData toOrderData(final OrderDo orderDo, final BigDecimal vatRate) {
         return OrderData.builder()
                 .id(orderDo.getId())
-                .creator(toOrderUser(userUtilService.getUserDo(orderDo.getUserId())))
+                .creator(toOrderUserData(userUtilService.getUserDo(orderDo.getUserId())))
                 .created(orderDo.getCreated())
                 .status(orderDo.getStatus())
                 .orderNumber(orderDo.getOrderNumber())
@@ -332,7 +351,7 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    private OrderUserData toOrderUser(final UserDo userDo) {
+    private OrderUserData toOrderUserData(final UserDo userDo) {
         return OrderUserData.builder()
                 .id(userDo.getId())
                 .titleBefore(userDo.getTitleBefore())
@@ -341,6 +360,20 @@ public class OrderServiceImpl implements OrderService {
                 .lastName(userDo.getLastName())
                 .titleAfter(userDo.getTitleAfter())
                 .email(userDo.getEmail())
+                .build();
+    }
+
+    private OrderContactData toOrderContactData(final OrderContactDo orderContactDo) {
+        return OrderContactData.builder()
+                .name(orderContactDo.getName())
+                .street(orderContactDo.getStreet())
+                .zipCode(orderContactDo.getZipCode())
+                .city(orderContactDo.getCity())
+                .state(orderContactDo.getState())
+                .phone(orderContactDo.getPhone())
+                .email(orderContactDo.getEmail())
+                .businessId(orderContactDo.getBusinessId())
+                .taxId(orderContactDo.getTaxId())
                 .build();
     }
 
@@ -372,23 +405,6 @@ public class OrderServiceImpl implements OrderService {
                     order.getId(),
                     order.getStatus());
         }
-    }
-
-    private OrderItemUtil initOrderItemUtil(final OrderDo orderDo) {
-        final OrderItemUtil orderItemUtil = applicationContext.getBean(OrderItemUtil.class);
-        orderItemUtil.setVatRate(applicationPropertyService.getVatRate());
-        orderItemUtil.setManufactureProperties(applicationPropertyService.getManufactureProperties());
-        orderItemUtil.setPriceForGluingLayer(applicationPropertyService.getPriceForGluingLayer());
-        orderItemUtil.setPricesForCutting(applicationPropertyService.getPricesForCutting());
-        orderItemUtil.setPricesForGluingEdge(applicationPropertyService.getPricesForGluingEdge());
-        orderItemUtil.setOrderItems(getOrderItems(orderDo.getId()));
-        return orderItemUtil;
-    }
-
-    private void saveOrder(final OrderDo order, final OrderItemUtil orderItemUtil) {
-        order.setNetWeight(orderItemUtil.getNetWeight());
-        order.setTotal(orderItemUtil.getTotal());
-        orderRepository.save(order);
     }
 
     private void checkDeliveryDate(final LocalDate deliveryDate, final List<FreeDayData> freeDays) {

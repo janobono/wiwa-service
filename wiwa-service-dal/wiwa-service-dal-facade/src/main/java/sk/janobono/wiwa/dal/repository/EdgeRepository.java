@@ -5,7 +5,9 @@ import org.springframework.data.domain.Pageable;
 import sk.janobono.wiwa.dal.domain.EdgeDo;
 import sk.janobono.wiwa.dal.model.EdgeSearchCriteriaDo;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface EdgeRepository {
 
@@ -16,6 +18,8 @@ public interface EdgeRepository {
     void deleteById(long id);
 
     boolean existsById(long id);
+
+    List<EdgeDo> findAll(Set<String> codes);
 
     Page<EdgeDo> findAll(EdgeSearchCriteriaDo criteria, Pageable pageable);
 

@@ -54,6 +54,12 @@ public class OrderController {
         return orderApiService.getOrderContacts(pageable);
     }
 
+    @PostMapping("/{id}/contact")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public OrderContactWebDto setOrderContact(@PathVariable("id") final long id, @Valid @RequestBody final OrderContactWebDto orderContact) {
+        return orderApiService.setOrderContact(id, orderContact);
+    }
+
     @GetMapping("/{id}")
     public OrderWebDto getOrder(@PathVariable("id") final long id) {
         return orderApiService.getOrder(id);
