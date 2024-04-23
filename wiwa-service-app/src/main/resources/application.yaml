@@ -88,7 +88,9 @@ app:
     app-description: ${APP_DESCRIPTION:Woodworking Industry Web Application}
     web-url: ${WEB_URL:http://localhost:5173}
     confirm-path: ${CONFIRM_PATH:/ui/confirm/}
+    orders-path: ${ORDERS_PATH:/fixme/}
     mail: ${MAIL:mail@wiwa.sk}
+    orders-mail: ${ORDERS_MAIL:orders@wiwa.sk}
     max-image-resolution: ${MAX_IMAGE_RESOLUTION:1000}
     max-thumbnail-resolution: ${MAX_THUMBNAIL_RESOLUTION:130}
     captcha-length: ${CAPTCHA_LENGTH:4}

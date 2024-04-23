@@ -6,26 +6,31 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.impl.component.OrderAttributeUtil;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
+import sk.janobono.wiwa.business.impl.util.MailUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderCsvUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderPdfUtilService;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
 import sk.janobono.wiwa.business.model.application.FreeDayData;
+import sk.janobono.wiwa.business.model.application.OrderCommentMailData;
+import sk.janobono.wiwa.business.model.mail.MailContentData;
+import sk.janobono.wiwa.business.model.mail.MailData;
+import sk.janobono.wiwa.business.model.mail.MailLinkData;
+import sk.janobono.wiwa.business.model.mail.MailTemplate;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
+import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.*;
 import sk.janobono.wiwa.dal.model.OrderViewSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
-import sk.janobono.wiwa.model.OrderAttributeKey;
-import sk.janobono.wiwa.model.OrderStatus;
-import sk.janobono.wiwa.model.Quantity;
-import sk.janobono.wiwa.model.Unit;
+import sk.janobono.wiwa.model.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,6 +39,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Service
 public class OrderServiceImpl implements OrderService {
+
+    private final CommonConfigProperties commonConfigProperties;
 
     private final PriceUtil priceUtil;
     private final OrderAttributeUtil orderAttributeUtil;
@@ -46,6 +53,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderNumberRepository orderNumberRepository;
     private final OrderViewRepository orderViewRepository;
 
+    private final MailUtilService mailUtilService;
     private final OrderCsvUtilService orderCsvUtilService;
     private final OrderPdfUtilService orderPdfUtilService;
     private final UserUtilService userUtilService;
@@ -171,6 +179,10 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(orderViewDo, Set.of(OrderStatus.SENT, OrderStatus.IN_PRODUCTION, OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
 
+        if (orderViewDo.total().intValue() == 0) {
+            throw WiwaException.ORDER_IS_EMPTY.exception("Order is empty");
+        }
+
         if (!sendOrder.businessConditionsAgreement() || !sendOrder.gdprAgreement()) {
             throw WiwaException.ORDER_AGREEMENTS_INVALID.exception("Both business conditions [{0}] and gdpr [{1}] agreements are needed",
                     sendOrder.businessConditionsAgreement(),
@@ -237,6 +249,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderCommentData> addComment(final long id, final long creatorId, final OrderCommentChangeData orderCommentChange) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
+        final UserDo creator = userUtilService.getUserDo(creatorId);
         checkOrderStatus(orderViewDo, Set.of(OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
 
         orderCommentRepository.save(OrderCommentDo.builder()
@@ -246,7 +259,23 @@ public class OrderServiceImpl implements OrderService {
                 .comment(orderCommentChange.comment())
                 .build());
 
-        // TODO send notification emails
+        final OrderCommentMailData orderCommentMail = applicationPropertyService.getOrderCommentMail();
+        mailUtilService.sendEmail(new MailData(
+                commonConfigProperties.mail(),
+                null,
+                List.of(creator.getEmail(), commonConfigProperties.ordersMail()),
+                MessageFormat.format(orderCommentMail.subject(), orderViewDo.orderNumber()),
+                MailTemplate.BASE,
+                new MailContentData(
+                        MessageFormat.format(orderCommentMail.title(), orderViewDo.orderNumber()),
+                        List.of(
+                                orderCommentMail.message(),
+                                orderCommentChange.comment()
+                        ),
+                        new MailLinkData(getOrderUrl(id), orderCommentMail.link())
+                ),
+                null
+        ));
 
         return getComments(id);
     }
@@ -326,22 +355,6 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
-    private OrderData toOrderData(final OrderDo orderDo, final BigDecimal vatRate) {
-        return OrderData.builder()
-//                .id(orderDo.getId())
-//                .creator(toOrderUserData(userUtilService.getUserDo(orderDo.getUserId())))
-//                .created(orderDo.getCreated())
-//                .status(orderDo.getStatus())
-//                .orderNumber(orderDo.getOrderNumber())
-//                .netWeight(orderDo.getNetWeight())
-//                .total(orderDo.getTotal())
-//                .vatTotal(priceUtil.countVatValue(orderDo.getTotal(), vatRate))
-//                .deliveryDate(orderDo.getDeliveryDate())
-//                .ready(orderDo.getReady())
-//                .finished(orderDo.getFinished())
-                .build();
-    }
-
     private OrderData toOrderData(final OrderViewDo orderViewDo, final BigDecimal vatRate) {
         return OrderData.builder()
                 .id(orderViewDo.id())
@@ -350,8 +363,8 @@ public class OrderServiceImpl implements OrderService {
                 .status(orderViewDo.status())
                 .orderNumber(orderViewDo.orderNumber())
                 .netWeight(new Quantity(orderViewDo.netWeight(), Unit.KILOGRAM))
-//                .total(new Money(orderViewDo.total(), Unit.EUR))
-//                .vatTotal(new Money(priceUtil.countVatValue(orderViewDo.total(), vatRate), Unit.EUR))
+                .total(new Money(orderViewDo.total(), commonConfigProperties.currency()))
+                .vatTotal(new Money(priceUtil.countVatValue(orderViewDo.total(), vatRate), commonConfigProperties.currency()))
                 .deliveryDate(orderViewDo.delivery())
                 .build();
     }
@@ -394,7 +407,6 @@ public class OrderServiceImpl implements OrderService {
     private OrderItemData toOrderItemData(final OrderItemDo orderItemDo) {
         return OrderItemData.builder()
                 // TODO
-
                 .build();
     }
 
@@ -445,5 +457,9 @@ public class OrderServiceImpl implements OrderService {
                 throw WiwaException.ORDER_DELIVERY_DATE_INVALID.exception("Order delivery date is invalid {0}", deliveryDate.toString());
             }
         }
+    }
+
+    private String getOrderUrl(final long id) {
+        return commonConfigProperties.webUrl() + commonConfigProperties.ordersPath() + id;
     }
 }

@@ -76,4 +76,8 @@ public interface ApplicationPropertyService {
     List<FreeDayData> getFreeDays();
 
     List<FreeDayData> setFreeDays(List<FreeDayData> freeDays);
+
+    OrderCommentMailData getOrderCommentMail();
+
+    OrderCommentMailData setOrderCommentMail(OrderCommentMailData orderCommentMailData);
 }

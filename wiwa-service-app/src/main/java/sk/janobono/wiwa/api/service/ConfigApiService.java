@@ -140,4 +140,12 @@ public class ConfigApiService {
                 freeDays.stream().map(uiWebMapper::mapToData).toList()
         ).stream().map(uiWebMapper::mapToWebDto).toList();
     }
+
+    public OrderCommentMailWebDto getOrderCommentMail() {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getOrderCommentMail());
+    }
+
+    public OrderCommentMailWebDto setOrderCommentMail(final OrderCommentMailWebDto orderCommentMail) {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.setOrderCommentMail(uiWebMapper.mapToData(orderCommentMail)));
+    }
 }

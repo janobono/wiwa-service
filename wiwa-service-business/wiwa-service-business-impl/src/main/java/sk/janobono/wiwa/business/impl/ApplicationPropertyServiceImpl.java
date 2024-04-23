@@ -35,6 +35,7 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     private static final String PRICES_FOR_GLUING_EDGE = "PRICES_FOR_GLUING_EDGE";
     private static final String PRICES_FOR_CUTTING = "PRICES_FOR_CUTTING";
     private static final String FREE_DAYS = "FREE_DAYS";
+    private static final String ORDER_COMMENT_MAIL = "ORDER_COMMENT_MAIL";
 
     private final ObjectMapper objectMapper;
 
@@ -358,5 +359,28 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
             }
         }, FREE_DAYS, freeDays);
         return freeDays;
+    }
+
+    @Override
+    public OrderCommentMailData getOrderCommentMail() {
+        return propertyUtilService.getProperty(v -> {
+            try {
+                return objectMapper.readValue(v, OrderCommentMailData.class);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, ORDER_COMMENT_MAIL);
+    }
+
+    @Override
+    public OrderCommentMailData setOrderCommentMail(final OrderCommentMailData orderCommentMailData) {
+        propertyUtilService.setProperty(data -> {
+            try {
+                return objectMapper.writeValueAsString(data);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, ORDER_COMMENT_MAIL, orderCommentMailData);
+        return orderCommentMailData;
     }
 }

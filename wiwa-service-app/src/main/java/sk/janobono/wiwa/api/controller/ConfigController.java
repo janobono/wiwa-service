@@ -182,4 +182,16 @@ public class ConfigController {
     public List<FreeDayWebDto> setFreeDays(@Valid @RequestBody final List<FreeDayWebDto> freeDays) {
         return configApiService.setFreeDays(freeDays);
     }
+
+    @GetMapping(value = "/order-comment-mail")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public OrderCommentMailWebDto getOrderCommentMail() {
+        return configApiService.getOrderCommentMail();
+    }
+
+    @PostMapping(value = "/order-comment-mail")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public OrderCommentMailWebDto setOrderCommentMail(@Valid @RequestBody final OrderCommentMailWebDto orderCommentMail) {
+        return configApiService.setOrderCommentMail(orderCommentMail);
+    }
 }

@@ -203,14 +203,14 @@ _Lunch break from 12:00 to 13:00_
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('SIGN_UP_MAIL', e'{
 "subject":"Account activation",
 "title":"Account activation",
-"message":"Your account has been created.",
+"message":"Your account has been created. Please do not reply to this message.",
 "link":"Click to activate your account."
 }');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('RESET_PASSWORD_MAIL', e'{
 "subject":"Password activation",
 "title":"Password activation",
-"message":"We have generated a new password for you.",
+"message":"We have generated a new password for you. Please do not reply to this message.",
 "passwordMessage":"New password: {0}",
 "link":"Click to activate the password."
 }');
@@ -348,3 +348,10 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('FR
 "month":12
 }
 ]');
+
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('ORDER_COMMENT_MAIL', e'{
+"subject":"Order comment - order No.{0}",
+"title":"Order comment - order No.{0}",
+"message":"New comment was added. Please do not reply to this message.",
+"link":"Click to see order details."
+}');

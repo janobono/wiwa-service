@@ -30,15 +30,18 @@ import sk.janobono.wiwa.model.User;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    private final CommonConfigProperties appConfigProperties;
     private final AuthConfigProperties authConfigProperties;
+    private final CommonConfigProperties commonConfigProperties;
 
     private final PasswordEncoder passwordEncoder;
     private final Captcha captcha;
@@ -233,14 +236,14 @@ public class AuthServiceImpl implements AuthService {
         );
 
         mailUtilService.sendEmail(new MailData(
-                appConfigProperties.mail(),
+                commonConfigProperties.mail(),
                 null,
                 List.of(user.getEmail()),
                 resetPasswordMail.subject(),
                 MailTemplate.BASE,
                 new MailContentData(
                         resetPasswordMail.title(),
-                        Arrays.asList(
+                        List.of(
                                 resetPasswordMail.message(),
                                 MessageFormat.format(
                                         resetPasswordMail.passwordMessage(),
@@ -248,7 +251,7 @@ public class AuthServiceImpl implements AuthService {
                                 )
                         ),
                         new MailLinkData(
-                                getTokenUrl(appConfigProperties.webUrl(), appConfigProperties.confirmPath(), token),
+                                getTokenUrl(commonConfigProperties.webUrl(), commonConfigProperties.confirmPath(), token),
                                 resetPasswordMail.link()
                         )
                 ),
@@ -269,18 +272,16 @@ public class AuthServiceImpl implements AuthService {
         );
 
         mailUtilService.sendEmail(new MailData(
-                appConfigProperties.mail(),
+                commonConfigProperties.mail(),
                 null,
                 List.of(user.getEmail()),
                 signUpMail.subject(),
                 MailTemplate.BASE,
                 new MailContentData(
                         signUpMail.title(),
-                        Collections.singletonList(
-                                signUpMail.message()
-                        ),
+                        List.of(signUpMail.message()),
                         new MailLinkData(
-                                getTokenUrl(appConfigProperties.webUrl(), appConfigProperties.confirmPath(), token),
+                                getTokenUrl(commonConfigProperties.webUrl(), commonConfigProperties.confirmPath(), token),
                                 signUpMail.link()
                         )
                 ),
