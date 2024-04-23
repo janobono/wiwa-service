@@ -1,15 +1,15 @@
 package sk.janobono.wiwa.api.model.application;
 
 import jakarta.validation.constraints.NotNull;
-import sk.janobono.wiwa.model.Quantity;
+import sk.janobono.wiwa.api.model.QuantityWebDto;
 
 public record ManufacturePropertiesWebDto(
-        @NotNull Quantity minimalBoardDimension,
-        @NotNull Quantity minimalEdgedBoardDimension,
-        @NotNull Quantity minimalLayeredBoardDimension,
-        @NotNull Quantity minimalFrameBoardDimension,
-        @NotNull Quantity edgeWidthAppendDimension,
-        @NotNull Quantity edgeLengthAppendDimension,
-        @NotNull Quantity layeredBoardAppendDimension
+        @NotNull QuantityWebDto minimalBoardDimension,
+        @NotNull QuantityWebDto minimalEdgedBoardDimension,
+        @NotNull QuantityWebDto minimalLayeredBoardDimension,
+        @NotNull QuantityWebDto minimalFrameBoardDimension,
+        @NotNull QuantityWebDto edgeWidthAppendDimension,
+        @NotNull QuantityWebDto edgeLengthAppendDimension,
+        @NotNull QuantityWebDto layeredBoardAppendDimension
 ) {
 }

@@ -13,8 +13,7 @@ create table wiwa_edge
     width_unit       varchar(255)                       not null,
     thickness_value  numeric(19, 3)                     not null,
     thickness_unit   varchar(255)                       not null,
-    price_value      numeric(19, 3)                     not null,
-    price_unit       varchar(255)                       not null
+    price            numeric(19, 3)                     not null
 );
 
 create table wiwa_edge_image

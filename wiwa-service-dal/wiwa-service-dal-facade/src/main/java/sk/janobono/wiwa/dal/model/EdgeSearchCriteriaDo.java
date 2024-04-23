@@ -1,8 +1,8 @@
 package sk.janobono.wiwa.dal.model;
 
-import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.Quantity;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public record EdgeSearchCriteriaDo(
@@ -13,8 +13,8 @@ public record EdgeSearchCriteriaDo(
         Quantity widthTo,
         Quantity thicknessFrom,
         Quantity thicknessTo,
-        Money priceFrom,
-        Money priceTo,
+        BigDecimal priceFrom,
+        BigDecimal priceTo,
         List<String> codeListItems
 ) {
 }

@@ -7,7 +7,6 @@ import java.util.List;
 
 public record OrderCommentWebDto(
         Long id,
-        Long parentId,
         OrderUserWebDto creator,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime created,
         String comment,

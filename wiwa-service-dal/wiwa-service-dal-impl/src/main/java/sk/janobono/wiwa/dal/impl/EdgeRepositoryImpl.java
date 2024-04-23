@@ -16,7 +16,6 @@ import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaEdgeCodeListItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.model.EdgeSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.EdgeRepository;
-import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.Quantity;
 import sk.janobono.wiwa.model.Unit;
 import sk.r3n.jdbc.SqlBuilder;
@@ -277,14 +276,12 @@ public class EdgeRepositoryImpl implements EdgeRepository {
 
         // price from
         if (Optional.ofNullable(criteria.priceFrom()).isPresent()) {
-            select.AND(MetaColumnWiwaEdge.PRICE_VALUE.column(), Condition.EQUALS_MORE, criteria.priceFrom().amount())
-                    .AND(MetaColumnWiwaEdge.PRICE_UNIT.column(), Condition.EQUALS, criteria.priceFrom().currency().name());
+            select.AND(MetaColumnWiwaEdge.PRICE.column(), Condition.EQUALS_MORE, criteria.priceFrom());
         }
 
         // price to
         if (Optional.ofNullable(criteria.priceTo()).isPresent()) {
-            select.AND(MetaColumnWiwaEdge.PRICE_VALUE.column(), Condition.EQUALS_LESS, criteria.priceTo().amount())
-                    .AND(MetaColumnWiwaEdge.PRICE_UNIT.column(), Condition.EQUALS, criteria.priceTo().currency().name());
+            select.AND(MetaColumnWiwaEdge.PRICE.column(), Condition.EQUALS_LESS, criteria.priceTo());
         }
 
         // code list items
@@ -359,11 +356,7 @@ public class EdgeRepositoryImpl implements EdgeRepository {
                                 criteriaUtil.mapDirection(order)
                         );
                         case "priceValue" -> select.ORDER_BY(
-                                MetaColumnWiwaEdge.PRICE_VALUE.column(),
-                                criteriaUtil.mapDirection(order)
-                        );
-                        case "priceUnit" -> select.ORDER_BY(
-                                MetaColumnWiwaEdge.PRICE_UNIT.column(),
+                                MetaColumnWiwaEdge.PRICE.column(),
                                 criteriaUtil.mapDirection(order)
                         );
                     }
@@ -385,7 +378,7 @@ public class EdgeRepositoryImpl implements EdgeRepository {
 
                 .width(new Quantity(wiwaEdgeDto.widthValue(), Unit.valueOf(wiwaEdgeDto.widthUnit())))
                 .thickness(new Quantity(wiwaEdgeDto.thicknessValue(), Unit.valueOf(wiwaEdgeDto.thicknessUnit())))
-                .price(new Money(wiwaEdgeDto.priceValue(), Unit.valueOf(wiwaEdgeDto.priceUnit())))
+                .price(wiwaEdgeDto.price())
                 .build();
     }
 
@@ -403,8 +396,7 @@ public class EdgeRepositoryImpl implements EdgeRepository {
                 edgeDo.getWidth().unit().name(),
                 edgeDo.getThickness().quantity(),
                 edgeDo.getThickness().unit().name(),
-                edgeDo.getPrice().amount(),
-                edgeDo.getPrice().currency().name()
+                edgeDo.getPrice()
         );
     }
 

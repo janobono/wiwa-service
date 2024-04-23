@@ -13,14 +13,13 @@ import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.component.AuthUtil;
-import sk.janobono.wiwa.model.*;
+import sk.janobono.wiwa.model.Authority;
+import sk.janobono.wiwa.model.OrderStatus;
+import sk.janobono.wiwa.model.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -32,10 +31,10 @@ public class OrderApiService {
     private final OrderWebMapper orderWebMapper;
 
     public Page<OrderWebDto> getOrders(
-            final List<Long> userIds,
+            final Set<Long> userIds,
             final LocalDateTime createdFrom,
             final LocalDateTime createdTo,
-            final List<OrderStatus> statuses,
+            final Set<OrderStatus> statuses,
             final BigDecimal totalFrom,
             final BigDecimal totalTo,
             final Pageable pageable
@@ -46,8 +45,8 @@ public class OrderApiService {
                 .createdFrom(createdFrom)
                 .createdTo(createdTo)
                 .statuses(statuses)
-                .totalFrom(Optional.ofNullable(totalFrom).map(v -> new Money(v, Unit.EUR)).orElse(null))
-                .totalTo(Optional.ofNullable(totalTo).map(v -> new Money(v, Unit.EUR)).orElse(null))
+                .totalFrom(totalFrom)
+                .totalTo(totalTo)
                 .build();
         return orderService.getOrders(criteria, pageable).map(orderWebMapper::mapToWebDto);
     }
@@ -175,12 +174,12 @@ public class OrderApiService {
         orderService.deleteOrder(id);
     }
 
-    private List<Long> checkUserIds(final User user, final List<Long> userIds) {
+    private Set<Long> checkUserIds(final User user, final Set<Long> userIds) {
         if (isEmployee(user)) {
             return userIds;
         }
-        if (Optional.ofNullable(userIds).map(List::isEmpty).orElse(false)) {
-            return List.of(user.id());
+        if (Optional.ofNullable(userIds).map(Set::isEmpty).orElse(false)) {
+            return Set.of(user.id());
         }
         if (Optional.ofNullable(userIds).stream().flatMap(Collection::stream).anyMatch(id -> !Objects.equals(id, user.id()))) {
             throw new AccessDeniedException("You do not have permission to access this resource");

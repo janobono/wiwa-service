@@ -2,8 +2,9 @@ package sk.janobono.wiwa.dal.domain;
 
 import lombok.Builder;
 import lombok.Data;
-import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.Quantity;
+
+import java.math.BigDecimal;
 
 @Builder
 @Data
@@ -16,5 +17,5 @@ public class EdgeDo {
     private Quantity netWeight;
     private Quantity width;
     private Quantity thickness;
-    private Money price;
+    private BigDecimal price;
 }

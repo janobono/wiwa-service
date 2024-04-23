@@ -11,7 +11,6 @@ import sk.janobono.wiwa.api.model.board.BoardChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardWebDto;
 import sk.janobono.wiwa.business.model.board.BoardSearchCriteriaData;
 import sk.janobono.wiwa.business.service.BoardService;
-import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.Quantity;
 import sk.janobono.wiwa.model.Unit;
 
@@ -57,8 +56,8 @@ public class BoardApiService {
                 .widthTo(Optional.ofNullable(widthTo).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
                 .thicknessFrom(Optional.ofNullable(thicknessFrom).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
                 .thicknessTo(Optional.ofNullable(thicknessTo).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
-                .priceFrom(Optional.ofNullable(priceFrom).map(v -> new Money(v, Unit.EUR)).orElse(null))
-                .priceTo(Optional.ofNullable(priceTo).map(v -> new Money(v, Unit.EUR)).orElse(null))
+                .priceFrom(priceFrom)
+                .priceTo(priceTo)
                 .codeListItems(codeListItems)
                 .build();
         return boardService.getBoards(criteria, pageable).map(boardWebMapper::mapToWebDto);

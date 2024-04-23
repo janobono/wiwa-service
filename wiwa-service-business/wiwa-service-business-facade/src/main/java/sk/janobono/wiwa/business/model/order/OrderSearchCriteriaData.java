@@ -1,19 +1,22 @@
 package sk.janobono.wiwa.business.model.order;
 
 import lombok.Builder;
-import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.OrderStatus;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Builder
 public record OrderSearchCriteriaData(
-        List<Long> userIds,
+        Set<Long> userIds,
         LocalDateTime createdFrom,
         LocalDateTime createdTo,
-        List<OrderStatus> statuses,
-        Money totalFrom,
-        Money totalTo
+        LocalDate deliveryFrom,
+        LocalDate deliveryTo,
+        Set<OrderStatus> statuses,
+        BigDecimal totalFrom,
+        BigDecimal totalTo
 ) {
 }

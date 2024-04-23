@@ -1,9 +1,7 @@
 package sk.janobono.wiwa.business.model.board;
 
 import lombok.Builder;
-import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.Quantity;
-import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,8 +20,8 @@ public record BoardSearchCriteriaData(
         Quantity widthTo,
         Quantity thicknessFrom,
         Quantity thicknessTo,
-        Money priceFrom,
-        Money priceTo,
+        BigDecimal priceFrom,
+        BigDecimal priceTo,
         List<String> codeListItems
 ) {
 }

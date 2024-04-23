@@ -1,7 +1,8 @@
 package sk.janobono.wiwa.business.model.edge;
 
-import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.Quantity;
+
+import java.math.BigDecimal;
 
 public record EdgeChangeData(
         String code,
@@ -11,6 +12,6 @@ public record EdgeChangeData(
         Quantity netWeight,
         Quantity width,
         Quantity thickness,
-        Money price
+        BigDecimal price
 ) {
 }

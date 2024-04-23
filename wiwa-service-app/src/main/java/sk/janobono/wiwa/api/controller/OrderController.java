@@ -20,6 +20,7 @@ import sk.janobono.wiwa.model.OrderStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,10 +31,10 @@ public class OrderController {
 
     @GetMapping
     public Page<OrderWebDto> getOrders(
-            @RequestParam(value = "userIds", required = false) final List<Long> userIds,
+            @RequestParam(value = "userIds", required = false) final Set<Long> userIds,
             @RequestParam(value = "createdFrom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime createdFrom,
             @RequestParam(value = "createdTo", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime createdTo,
-            @RequestParam(value = "statuses", required = false) final List<OrderStatus> statuses,
+            @RequestParam(value = "statuses", required = false) final Set<OrderStatus> statuses,
             @RequestParam(value = "totalFrom", required = false) final BigDecimal totalFrom,
             @RequestParam(value = "totalTo", required = false) final BigDecimal totalTo,
             final Pageable pageable

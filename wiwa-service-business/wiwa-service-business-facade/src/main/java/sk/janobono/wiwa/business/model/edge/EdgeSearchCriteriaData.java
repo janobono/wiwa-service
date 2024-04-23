@@ -1,9 +1,9 @@
 package sk.janobono.wiwa.business.model.edge;
 
 import lombok.Builder;
-import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.Quantity;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
@@ -15,8 +15,8 @@ public record EdgeSearchCriteriaData(
         Quantity widthTo,
         Quantity thicknessFrom,
         Quantity thicknessTo,
-        Money priceFrom,
-        Money priceTo,
+        BigDecimal priceFrom,
+        BigDecimal priceTo,
         List<String> codeListItems
 ) {
 }

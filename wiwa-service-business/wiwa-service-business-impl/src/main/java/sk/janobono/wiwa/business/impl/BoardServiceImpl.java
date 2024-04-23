@@ -25,6 +25,7 @@ import sk.janobono.wiwa.dal.repository.BoardImageRepository;
 import sk.janobono.wiwa.dal.repository.BoardRepository;
 import sk.janobono.wiwa.dal.repository.CodeListRepository;
 import sk.janobono.wiwa.exception.WiwaException;
+import sk.janobono.wiwa.model.Money;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -205,8 +206,8 @@ public class BoardServiceImpl implements BoardService {
                 .length(boardDo.getLength())
                 .width(boardDo.getWidth())
                 .thickness(boardDo.getThickness())
-                .price(boardDo.getPrice())
-                .vatPrice(priceUtil.countVatValue(boardDo.getPrice(), vatRate))
+                .price(new Money(boardDo.getPrice(), commonConfigProperties.currency()))
+                .vatPrice(new Money(priceUtil.countVatValue(boardDo.getPrice(), vatRate), commonConfigProperties.currency()))
                 .images(toImages(boardDo.getId()))
                 .categoryItems(toBoardCategoryItems(boardDo.getId()))
                 .build();

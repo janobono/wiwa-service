@@ -8,7 +8,8 @@ import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
 import sk.janobono.wiwa.business.model.application.*;
 import sk.janobono.wiwa.business.model.captcha.CaptchaData;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+        uses = {QuantityWebMapper.class})
 public interface UiWebMapper {
     CaptchaWebDto mapToWebDto(CaptchaData captcha);
 

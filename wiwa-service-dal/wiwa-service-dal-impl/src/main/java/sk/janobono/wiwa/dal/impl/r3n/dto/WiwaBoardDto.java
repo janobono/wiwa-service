@@ -20,8 +20,7 @@ public record WiwaBoardDto(
         String widthUnit,
         BigDecimal thicknessValue,
         String thicknessUnit,
-        BigDecimal priceValue,
-        String priceUnit
+        BigDecimal price
 ) {
 
     public static Object[] toArray(final WiwaBoardDto wiwaBoardDto) {
@@ -43,8 +42,7 @@ public record WiwaBoardDto(
                 wiwaBoardDto.widthUnit,
                 wiwaBoardDto.thicknessValue,
                 wiwaBoardDto.thicknessUnit,
-                wiwaBoardDto.priceValue,
-                wiwaBoardDto.priceUnit
+                wiwaBoardDto.price
         };
     }
 
@@ -67,8 +65,7 @@ public record WiwaBoardDto(
                 (String) array[14],
                 (BigDecimal) array[15],
                 (String) array[16],
-                (BigDecimal) array[17],
-                (String) array[18]
+                (BigDecimal) array[17]
         );
     }
 }

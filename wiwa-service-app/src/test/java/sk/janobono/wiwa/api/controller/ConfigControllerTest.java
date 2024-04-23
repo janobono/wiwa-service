@@ -12,12 +12,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import sk.janobono.wiwa.api.model.QuantityWebDto;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
-import sk.janobono.wiwa.model.Money;
-import sk.janobono.wiwa.model.Quantity;
 import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
@@ -259,13 +258,13 @@ class ConfigControllerTest extends BaseControllerTest {
                 getURI("/config/units"),
                 HttpMethod.POST,
                 new HttpEntity<>(
-                        List.of(new UnitWebDto(Unit.EUR, "test")),
+                        List.of(new UnitWebDto(Unit.MILLIMETER, "test")),
                         headers
                 ),
                 UnitWebDto[].class
         );
         assertThat(units.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(Objects.requireNonNull(units.getBody())[0].id()).isEqualTo(Unit.EUR);
+        assertThat(Objects.requireNonNull(units.getBody())[0].id()).isEqualTo(Unit.MILLIMETER);
 
         // Vat rate
         final var newVatRate = setVatRate(headers, BigDecimal.valueOf(25L));
@@ -277,13 +276,13 @@ class ConfigControllerTest extends BaseControllerTest {
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new ManufacturePropertiesWebDto(
-                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
-                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
-                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
-                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
-                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
-                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER),
-                                new Quantity(new BigDecimal("1000.0000"), Unit.MILLIMETER)
+                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER),
+                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER),
+                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER),
+                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER),
+                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER),
+                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER),
+                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER)
                         ),
                         headers
                 ),
@@ -298,15 +297,15 @@ class ConfigControllerTest extends BaseControllerTest {
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new PriceForGluingLayerWebDto(
-                                new Quantity(BigDecimal.ONE, Unit.SQUARE_METER),
-                                new Money(new BigDecimal("123.123"), Unit.EUR)
+                                new QuantityWebDto(BigDecimal.ONE, Unit.SQUARE_METER),
+                                new BigDecimal("123.123")
                         ),
                         headers
                 ),
                 PriceForGluingLayerWebDto.class
         );
         assertThat(priceForGluingLayer.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(Objects.requireNonNull(priceForGluingLayer.getBody()).price().amount()).isEqualTo(new BigDecimal("123.123"));
+        assertThat(Objects.requireNonNull(priceForGluingLayer.getBody()).price()).isEqualTo(new BigDecimal("123.123"));
 
         priceForGluingLayer = restTemplate.exchange(
                 getURI("/config/price-for-gluing-layer"),
@@ -315,7 +314,7 @@ class ConfigControllerTest extends BaseControllerTest {
                 PriceForGluingLayerWebDto.class
         );
         assertThat(priceForGluingLayer.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(Objects.requireNonNull(priceForGluingLayer.getBody()).price().amount()).isEqualTo(new BigDecimal("123.123"));
+        assertThat(Objects.requireNonNull(priceForGluingLayer.getBody()).price()).isEqualTo(new BigDecimal("123.123"));
 
         // prices-for-cutting
         ResponseEntity<PriceForCuttingWebDto[]> pricesForCutting = restTemplate.exchange(
@@ -323,16 +322,16 @@ class ConfigControllerTest extends BaseControllerTest {
                 HttpMethod.POST,
                 new HttpEntity<>(
                         List.of(new PriceForCuttingWebDto(
-                                new Quantity(BigDecimal.ONE, Unit.MILLIMETER),
-                                new Quantity(BigDecimal.ONE, Unit.MILLIMETER),
-                                new Money(BigDecimal.ZERO, Unit.EUR)
+                                new QuantityWebDto(BigDecimal.ONE, Unit.MILLIMETER),
+                                new QuantityWebDto(BigDecimal.ONE, Unit.MILLIMETER),
+                                BigDecimal.ZERO
                         )),
                         headers
                 ),
                 PriceForCuttingWebDto[].class
         );
         assertThat(pricesForCutting.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(Objects.requireNonNull(pricesForCutting.getBody())[0].price().amount()).isEqualTo(BigDecimal.ZERO);
+        assertThat(Objects.requireNonNull(pricesForCutting.getBody())[0].price()).isEqualTo(BigDecimal.ZERO);
 
         pricesForCutting = restTemplate.exchange(
                 getURI("/config/prices-for-cutting"),
@@ -341,7 +340,7 @@ class ConfigControllerTest extends BaseControllerTest {
                 PriceForCuttingWebDto[].class
         );
         assertThat(pricesForCutting.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(Objects.requireNonNull(pricesForCutting.getBody())[0].price().amount()).isEqualTo(BigDecimal.ZERO);
+        assertThat(Objects.requireNonNull(pricesForCutting.getBody())[0].price()).isEqualTo(BigDecimal.ZERO);
 
         // prices-for-gluing-edge
         ResponseEntity<PriceForGluingEdgeWebDto[]> pricesForGluingEdge = restTemplate.exchange(
@@ -349,16 +348,16 @@ class ConfigControllerTest extends BaseControllerTest {
                 HttpMethod.POST,
                 new HttpEntity<>(
                         List.of(new PriceForGluingEdgeWebDto(
-                                new Quantity(BigDecimal.ONE, Unit.MILLIMETER),
-                                new Quantity(BigDecimal.ONE, Unit.MILLIMETER),
-                                new Money(BigDecimal.ZERO, Unit.EUR)
+                                new QuantityWebDto(BigDecimal.ONE, Unit.MILLIMETER),
+                                new QuantityWebDto(BigDecimal.ONE, Unit.MILLIMETER),
+                                BigDecimal.ZERO
                         )),
                         headers
                 ),
                 PriceForGluingEdgeWebDto[].class
         );
         assertThat(pricesForGluingEdge.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(Objects.requireNonNull(pricesForGluingEdge.getBody())[0].price().amount()).isEqualTo(BigDecimal.ZERO);
+        assertThat(Objects.requireNonNull(pricesForGluingEdge.getBody())[0].price()).isEqualTo(BigDecimal.ZERO);
 
         pricesForGluingEdge = restTemplate.exchange(
                 getURI("/config/prices-for-gluing-edge"),
@@ -367,7 +366,7 @@ class ConfigControllerTest extends BaseControllerTest {
                 PriceForGluingEdgeWebDto[].class
         );
         assertThat(pricesForGluingEdge.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(Objects.requireNonNull(pricesForGluingEdge.getBody())[0].price().amount()).isEqualTo(BigDecimal.ZERO);
+        assertThat(Objects.requireNonNull(pricesForGluingEdge.getBody())[0].price()).isEqualTo(BigDecimal.ZERO);
 
         // free-days
         final ResponseEntity<FreeDayWebDto[]> freeDays = restTemplate.exchange(

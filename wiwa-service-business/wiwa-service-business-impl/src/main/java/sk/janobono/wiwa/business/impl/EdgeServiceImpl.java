@@ -25,6 +25,7 @@ import sk.janobono.wiwa.dal.repository.EdgeCodeListItemRepository;
 import sk.janobono.wiwa.dal.repository.EdgeImageRepository;
 import sk.janobono.wiwa.dal.repository.EdgeRepository;
 import sk.janobono.wiwa.exception.WiwaException;
+import sk.janobono.wiwa.model.Money;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -188,8 +189,8 @@ public class EdgeServiceImpl implements EdgeService {
                 .netWeight(edgeDo.getNetWeight())
                 .width(edgeDo.getWidth())
                 .thickness(edgeDo.getThickness())
-                .price(edgeDo.getPrice())
-                .vatPrice(priceUtil.countVatValue(edgeDo.getPrice(), vatRate))
+                .price(new Money(edgeDo.getPrice(), commonConfigProperties.currency()))
+                .vatPrice(new Money(priceUtil.countVatValue(edgeDo.getPrice(), vatRate), commonConfigProperties.currency()))
                 .images(toImages(edgeDo.getId()))
                 .categoryItems(toEdgeCategoryItems(edgeDo.getId()))
                 .build();

@@ -16,7 +16,6 @@ import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaCodeListItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.model.BoardSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.BoardRepository;
-import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.Quantity;
 import sk.janobono.wiwa.model.Unit;
 import sk.r3n.jdbc.SqlBuilder;
@@ -312,14 +311,12 @@ public class BoardRepositoryImpl implements BoardRepository {
 
         // price from
         if (Optional.ofNullable(criteria.priceFrom()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.PRICE_VALUE.column(), Condition.EQUALS_MORE, criteria.priceFrom().amount())
-                    .AND(MetaColumnWiwaBoard.PRICE_UNIT.column(), Condition.EQUALS, criteria.priceFrom().currency().name());
+            select.AND(MetaColumnWiwaBoard.PRICE.column(), Condition.EQUALS_MORE, criteria.priceFrom());
         }
 
         // price to
         if (Optional.ofNullable(criteria.priceTo()).isPresent()) {
-            select.AND(MetaColumnWiwaBoard.PRICE_VALUE.column(), Condition.EQUALS_LESS, criteria.priceTo().amount())
-                    .AND(MetaColumnWiwaBoard.PRICE_UNIT.column(), Condition.EQUALS, criteria.priceTo().currency().name());
+            select.AND(MetaColumnWiwaBoard.PRICE.column(), Condition.EQUALS_LESS, criteria.priceTo());
         }
 
         // code list items
@@ -414,11 +411,7 @@ public class BoardRepositoryImpl implements BoardRepository {
                                 criteriaUtil.mapDirection(order)
                         );
                         case "priceValue" -> select.ORDER_BY(
-                                MetaColumnWiwaBoard.PRICE_VALUE.column(),
-                                criteriaUtil.mapDirection(order)
-                        );
-                        case "priceUnit" -> select.ORDER_BY(
-                                MetaColumnWiwaBoard.PRICE_UNIT.column(),
+                                MetaColumnWiwaBoard.PRICE.column(),
                                 criteriaUtil.mapDirection(order)
                         );
                     }
@@ -444,7 +437,7 @@ public class BoardRepositoryImpl implements BoardRepository {
                 .length(new Quantity(wiwaBoardDto.lengthValue(), Unit.valueOf(wiwaBoardDto.lengthUnit())))
                 .width(new Quantity(wiwaBoardDto.widthValue(), Unit.valueOf(wiwaBoardDto.widthUnit())))
                 .thickness(new Quantity(wiwaBoardDto.thicknessValue(), Unit.valueOf(wiwaBoardDto.thicknessUnit())))
-                .price(new Money(wiwaBoardDto.priceValue(), Unit.valueOf(wiwaBoardDto.priceUnit())))
+                .price(wiwaBoardDto.price())
                 .build();
     }
 
@@ -467,8 +460,7 @@ public class BoardRepositoryImpl implements BoardRepository {
                 boardDo.getWidth().unit().name(),
                 boardDo.getThickness().quantity(),
                 boardDo.getThickness().unit().name(),
-                boardDo.getPrice().amount(),
-                boardDo.getPrice().currency().name()
+                boardDo.getPrice()
         );
     }
 

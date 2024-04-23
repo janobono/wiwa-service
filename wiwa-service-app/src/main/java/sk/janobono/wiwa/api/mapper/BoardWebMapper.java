@@ -7,7 +7,7 @@ import sk.janobono.wiwa.api.model.board.*;
 import sk.janobono.wiwa.business.model.board.*;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
-        uses = {ApplicationImageWebMapper.class})
+        uses = {ApplicationImageWebMapper.class, QuantityWebMapper.class})
 public interface BoardWebMapper {
 
     BoardCategoryWebDto mapToWebDto(BoardCategoryData boardCategory);

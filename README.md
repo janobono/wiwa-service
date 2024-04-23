@@ -102,6 +102,8 @@ docker volume rm $(docker volume ls -q --filter dangling=true)
 | MAX_IMAGE_RESOLUTION               | 1000                                 |
 | MAX_THUMBNAIL_RESOLUTION           | 130                                  |
 | CAPTCHA_LENGTH                     | 4                                    |
+| CURRENCY_CODE                      | EUR                                  |
+| CURRENCY_SYMBOL                    | €                                    |
 | SIGN_UP_TOKEN_EXPIRES_IN           | 12 (hour)                            |
 | RESET_PASSWORD_TOKEN_EXPIRES_IN    | 12 (hour)                            |
 | REFRESH_TOKEN_EXPIRES_IN           | 5 (min)                              |

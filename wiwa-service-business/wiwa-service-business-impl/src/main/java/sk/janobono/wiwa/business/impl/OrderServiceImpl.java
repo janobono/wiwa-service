@@ -18,12 +18,10 @@ import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.dal.domain.OrderContactDo;
 import sk.janobono.wiwa.dal.domain.OrderDo;
+import sk.janobono.wiwa.dal.domain.OrderViewDo;
 import sk.janobono.wiwa.dal.domain.UserDo;
-import sk.janobono.wiwa.dal.model.OrderSearchCriteriaDo;
-import sk.janobono.wiwa.dal.repository.OrderAttributeRepository;
-import sk.janobono.wiwa.dal.repository.OrderContactRepository;
-import sk.janobono.wiwa.dal.repository.OrderNumberRepository;
-import sk.janobono.wiwa.dal.repository.OrderRepository;
+import sk.janobono.wiwa.dal.model.OrderViewSearchCriteriaDo;
+import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.*;
 
@@ -49,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderAttributeRepository orderAttributeRepository;
     private final OrderContactRepository orderContactRepository;
     private final OrderNumberRepository orderNumberRepository;
+    private final OrderViewRepository orderViewRepository;
 
     private final OrderCsvUtilService orderCsvUtilService;
     private final OrderPdfUtilService orderPdfUtilService;
@@ -60,12 +59,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<OrderData> getOrders(final OrderSearchCriteriaData criteria, final Pageable pageable) {
         final BigDecimal vatRate = applicationPropertyService.getVatRate();
-        return orderRepository.findAll(mapToDo(criteria, vatRate), pageable).map(value -> toOrderData(value, vatRate));
+        return orderViewRepository.findAll(mapToDo(criteria, vatRate), pageable).map(value -> toOrderData(value, vatRate));
     }
 
     @Override
     public Page<OrderContactData> getOrderContacts(final long userId, final Pageable pageable) {
-        return orderContactRepository.findByUserId(userId, pageable).map(value -> OrderContactData.builder()
+        return orderContactRepository.findAllByUserId(userId, pageable).map(value -> OrderContactData.builder()
                 .name(value.name())
                 .street(value.street())
                 .zipCode(value.zipCode())
@@ -97,7 +96,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderData getOrder(final long id) {
-        return toOrderData(getOrderDo(id), applicationPropertyService.getVatRate());
+//        return toOrderData(getOrderViewDo(id), applicationPropertyService.getVatRate());
+        return null;
     }
 
     @Override
@@ -106,10 +106,7 @@ public class OrderServiceImpl implements OrderService {
                 OrderDo.builder()
                         .userId(userId)
                         .created(LocalDateTime.now())
-                        .status(OrderStatus.NEW)
                         .orderNumber(orderNumberRepository.getNextOrderNumber(userId))
-                        .netWeight(new Quantity(BigDecimal.ZERO, Unit.KILOGRAM))
-                        .total(new Money(BigDecimal.ZERO, Unit.EUR))
                         .build());
 
         return toOrderData(orderDo, applicationPropertyService.getVatRate());
@@ -199,7 +196,7 @@ public class OrderServiceImpl implements OrderService {
                 .taxId(sendOrder.contact().taxId())
                 .build());
 
-        order.setStatus(OrderStatus.SENT);
+//        order.setStatus(OrderStatus.SENT);
         order.setDeliveryDate(sendOrder.deliveryDate());
 
         final List<OrderCommentData> orderComments;
@@ -324,11 +321,13 @@ public class OrderServiceImpl implements OrderService {
         orderUtilService.deleteItem(order, modifier, itemId);
     }
 
-    private OrderSearchCriteriaDo mapToDo(final OrderSearchCriteriaData criteria, final BigDecimal vatRate) {
-        return new OrderSearchCriteriaDo(
+    private OrderViewSearchCriteriaDo mapToDo(final OrderSearchCriteriaData criteria, final BigDecimal vatRate) {
+        return new OrderViewSearchCriteriaDo(
                 criteria.userIds(),
                 criteria.createdFrom(),
                 criteria.createdTo(),
+                criteria.deliveryFrom(),
+                criteria.deliveryTo(),
                 criteria.statuses(),
                 priceUtil.countNoVatValue(criteria.totalFrom(), vatRate),
                 priceUtil.countNoVatValue(criteria.totalTo(), vatRate)
@@ -337,17 +336,31 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderData toOrderData(final OrderDo orderDo, final BigDecimal vatRate) {
         return OrderData.builder()
-                .id(orderDo.getId())
-                .creator(toOrderUserData(userUtilService.getUserDo(orderDo.getUserId())))
-                .created(orderDo.getCreated())
-                .status(orderDo.getStatus())
-                .orderNumber(orderDo.getOrderNumber())
-                .netWeight(orderDo.getNetWeight())
-                .total(orderDo.getTotal())
-                .vatTotal(priceUtil.countVatValue(orderDo.getTotal(), vatRate))
-                .deliveryDate(orderDo.getDeliveryDate())
-                .ready(orderDo.getReady())
-                .finished(orderDo.getFinished())
+//                .id(orderDo.getId())
+//                .creator(toOrderUserData(userUtilService.getUserDo(orderDo.getUserId())))
+//                .created(orderDo.getCreated())
+//                .status(orderDo.getStatus())
+//                .orderNumber(orderDo.getOrderNumber())
+//                .netWeight(orderDo.getNetWeight())
+//                .total(orderDo.getTotal())
+//                .vatTotal(priceUtil.countVatValue(orderDo.getTotal(), vatRate))
+//                .deliveryDate(orderDo.getDeliveryDate())
+//                .ready(orderDo.getReady())
+//                .finished(orderDo.getFinished())
+                .build();
+    }
+
+    private OrderData toOrderData(final OrderViewDo orderViewDo, final BigDecimal vatRate) {
+        return OrderData.builder()
+                .id(orderViewDo.id())
+                .creator(toOrderUserData(userUtilService.getUserDo(orderViewDo.userId())))
+                .created(orderViewDo.created())
+                .status(orderViewDo.status())
+                .orderNumber(orderViewDo.orderNumber())
+                .netWeight(new Quantity(orderViewDo.netWeight(), Unit.KILOGRAM))
+//                .total(new Money(orderViewDo.total(), Unit.EUR))
+//                .vatTotal(new Money(priceUtil.countVatValue(orderViewDo.total(), vatRate), Unit.EUR))
+                .deliveryDate(orderViewDo.delivery())
                 .build();
     }
 
@@ -400,11 +413,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void checkOrderStatus(final OrderDo order, final Set<OrderStatus> statuses) {
-        if (statuses.contains(order.getStatus())) {
-            throw WiwaException.ORDER_IS_IMMUTABLE.exception("Order with id {0} has status {1} is immutable",
-                    order.getId(),
-                    order.getStatus());
-        }
+//        if (statuses.contains(order.getStatus())) {
+//            throw WiwaException.ORDER_IS_IMMUTABLE.exception("Order with id {0} has status {1} is immutable",
+//                    order.getId(),
+//                    order.getStatus());
+//        }
     }
 
     private void checkDeliveryDate(final LocalDate deliveryDate, final List<FreeDayData> freeDays) {

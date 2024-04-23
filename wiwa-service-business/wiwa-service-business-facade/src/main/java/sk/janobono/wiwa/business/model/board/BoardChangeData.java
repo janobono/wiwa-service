@@ -1,7 +1,8 @@
 package sk.janobono.wiwa.business.model.board;
 
-import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.Quantity;
+
+import java.math.BigDecimal;
 
 public record BoardChangeData(
         String code,
@@ -15,6 +16,6 @@ public record BoardChangeData(
         Quantity length,
         Quantity width,
         Quantity thickness,
-        Money price
+        BigDecimal price
 ) {
 }

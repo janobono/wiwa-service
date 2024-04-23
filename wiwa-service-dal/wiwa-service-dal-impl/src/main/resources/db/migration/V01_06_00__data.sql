@@ -28,7 +28,6 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('CO
 }');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('UNITS', e'[
-{"id":"EUR","value":"€"},
 {"id":"MILLIMETER","value":"mm"},
 {"id":"CENTIMETER","value":"cm"},
 {"id":"METER","value":"m"},
@@ -228,29 +227,29 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('MA
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PRICE_FOR_GLUING_LAYER', e'{
 "sale":{"quantity":1, "unit":"SQUARE_METER"},
-"price":{"amount":10, "currency":"EUR"}
+"price":10
 }');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PRICES_FOR_GLUING_EDGE', e'[
 {
 "width":{"quantity":23.00, "unit":"MILLIMETER"},
 "sale":{"quantity":1, "unit":"METER"},
-"price":{"amount":0.700, "currency":"EUR"}
+"price":0.700
 },
 {
 "width":{"quantity":33.00, "unit":"MILLIMETER"},
 "sale":{"quantity":1, "unit":"METER"},
-"price":{"amount":0.850, "currency":"EUR"}
+"price":0.850
 },
 {
 "width":{"quantity":45.00, "unit":"MILLIMETER"},
 "sale":{"quantity":1, "unit":"METER"},
-"price":{"amount":0.980, "currency":"EUR"}
+"price":0.980
 },
 {
 "width":{"quantity":65.00, "unit":"MILLIMETER"},
 "sale":{"quantity":1, "unit":"METER"},
-"price":{"amount":1.680, "currency":"EUR"}
+"price":1.680
 }
 ]');
 
@@ -258,17 +257,17 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PR
 {
 "thickness":{"quantity":19.00, "unit":"MILLIMETER"},
 "sale":{"quantity":1, "unit":"METER"},
-"price":{"amount":0.630, "currency":"EUR"}
+"price":0.630
 },
 {
 "thickness":{"quantity":45.00, "unit":"MILLIMETER"},
 "sale":{"quantity":1, "unit":"METER"},
-"price":{"amount":0.720, "currency":"EUR"}
+"price":0.720
 },
 {
 "thickness":{"quantity":65.00, "unit":"MILLIMETER"},
 "sale":{"quantity":1, "unit":"METER"},
-"price":{"amount":2.000, "currency":"EUR"}
+"price":2.000
 }
 ]');
 

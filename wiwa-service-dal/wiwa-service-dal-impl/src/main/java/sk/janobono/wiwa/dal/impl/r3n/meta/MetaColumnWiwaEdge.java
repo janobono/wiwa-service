@@ -20,8 +20,7 @@ public enum MetaColumnWiwaEdge {
     WIDTH_UNIT("width_unit", DataType.STRING),
     THICKNESS_VALUE("thickness_value", DataType.BIG_DECIMAL),
     THICKNESS_UNIT("thickness_unit", DataType.STRING),
-    PRICE_VALUE("price_value", DataType.BIG_DECIMAL),
-    PRICE_UNIT("price_unit", DataType.STRING);
+    PRICE("price", DataType.BIG_DECIMAL);
 
     private final String columnName;
 

@@ -26,7 +26,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -39,25 +38,7 @@ public class OrderContactRepositoryImpl implements OrderContactRepository {
     private final CriteriaUtil criteriaUtil;
 
     @Override
-    public Optional<OrderContactDo> findByOrderId(final long orderId) {
-        log.debug("findByOrderId({})", orderId);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaOrderContact.columns())
-                            .FROM(MetaTable.WIWA_ORDER_CONTACT.table())
-                            .WHERE(MetaColumnWiwaOrderContact.ORDER_ID.column(), Condition.EQUALS, orderId)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(WiwaOrderContactDto::toObject)
-                    .map(mapper::toOrderContactDo);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public Page<BaseOrderContactDo> findByUserId(final long userId, final Pageable pageable) {
+    public Page<BaseOrderContactDo> findAllByUserId(final long userId, final Pageable pageable) {
         log.debug("findByUserId({})", userId);
         final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaOrderContact.columns(), 1);
         try (final Connection connection = dataSource.getConnection()) {

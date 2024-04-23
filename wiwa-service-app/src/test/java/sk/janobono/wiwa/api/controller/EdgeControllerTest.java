@@ -8,21 +8,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import sk.janobono.wiwa.api.model.QuantityWebDto;
 import sk.janobono.wiwa.api.model.application.ApplicationImageInfoWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeCategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeCategoryItemWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeWebDto;
+import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.component.ImageUtil;
-import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.CodeListDo;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.repository.CodeListItemRepository;
 import sk.janobono.wiwa.dal.repository.CodeListRepository;
-import sk.janobono.wiwa.model.Money;
-import sk.janobono.wiwa.model.Quantity;
 import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
@@ -67,11 +66,11 @@ class EdgeControllerTest extends BaseControllerTest {
                     "code-edge-" + i,
                     "name-edge-" + i,
                     "this is edge " + i,
-                    new Quantity(new BigDecimal("1.000"), Unit.PIECE),
-                    new Quantity(new BigDecimal("100.000").add(BigDecimal.valueOf(i)), Unit.KILOGRAM),
-                    new Quantity(new BigDecimal("2070.000").add(BigDecimal.valueOf(i)), Unit.MILLIMETER),
-                    new Quantity(new BigDecimal("18.000").add(BigDecimal.valueOf(i)), Unit.MILLIMETER),
-                    new Money(new BigDecimal("50.000").add(BigDecimal.valueOf(i)), Unit.EUR)
+                    new QuantityWebDto(new BigDecimal("1.000"), Unit.PIECE),
+                    new QuantityWebDto(new BigDecimal("100.000").add(BigDecimal.valueOf(i)), Unit.KILOGRAM),
+                    new QuantityWebDto(new BigDecimal("2070.000").add(BigDecimal.valueOf(i)), Unit.MILLIMETER),
+                    new QuantityWebDto(new BigDecimal("18.000").add(BigDecimal.valueOf(i)), Unit.MILLIMETER),
+                    new BigDecimal("50.000").add(BigDecimal.valueOf(i))
             )));
         }
 
@@ -217,11 +216,11 @@ class EdgeControllerTest extends BaseControllerTest {
                 "SP01",
                 "SPBC01",
                 "This is test edge",
-                new Quantity(new BigDecimal("1.000"), Unit.PIECE),
-                new Quantity(new BigDecimal("100.000"), Unit.KILOGRAM),
-                new Quantity(new BigDecimal("2070.000"), Unit.MILLIMETER),
-                new Quantity(new BigDecimal("18.000"), Unit.MILLIMETER),
-                new Money(new BigDecimal("50.000"), Unit.EUR)
+                new QuantityWebDto(new BigDecimal("1.000"), Unit.PIECE),
+                new QuantityWebDto(new BigDecimal("100.000"), Unit.KILOGRAM),
+                new QuantityWebDto(new BigDecimal("2070.000"), Unit.MILLIMETER),
+                new QuantityWebDto(new BigDecimal("18.000"), Unit.MILLIMETER),
+                new BigDecimal("50.000")
         ));
         edges.set(edgeIndex, testEdge);
 

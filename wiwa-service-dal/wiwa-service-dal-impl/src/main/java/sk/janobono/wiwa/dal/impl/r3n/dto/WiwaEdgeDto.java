@@ -15,8 +15,7 @@ public record WiwaEdgeDto(
         String widthUnit,
         BigDecimal thicknessValue,
         String thicknessUnit,
-        BigDecimal priceValue,
-        String priceUnit
+        BigDecimal price
 ) {
 
     public static Object[] toArray(final WiwaEdgeDto wiwaEdgeDto) {
@@ -33,8 +32,7 @@ public record WiwaEdgeDto(
                 wiwaEdgeDto.widthUnit,
                 wiwaEdgeDto.thicknessValue,
                 wiwaEdgeDto.thicknessUnit,
-                wiwaEdgeDto.priceValue,
-                wiwaEdgeDto.priceUnit
+                wiwaEdgeDto.price
         };
     }
 
@@ -52,8 +50,7 @@ public record WiwaEdgeDto(
                 (String) array[9],
                 (BigDecimal) array[10],
                 (String) array[11],
-                (BigDecimal) array[12],
-                (String) array[13]
+                (BigDecimal) array[12]
         );
     }
 }

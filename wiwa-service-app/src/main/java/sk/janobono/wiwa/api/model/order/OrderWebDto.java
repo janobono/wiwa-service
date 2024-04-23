@@ -1,8 +1,9 @@
 package sk.janobono.wiwa.api.model.order;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import sk.janobono.wiwa.api.model.QuantityWebDto;
 import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.OrderStatus;
-import sk.janobono.wiwa.model.Quantity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,14 +11,12 @@ import java.time.LocalDateTime;
 public record OrderWebDto(
         Long id,
         OrderUserWebDto creator,
-        LocalDateTime created,
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime created,
         OrderStatus status,
         Long orderNumber,
-        Quantity netWeight,
+        QuantityWebDto netWeight,
         Money total,
         Money vatTotal,
-        LocalDate deliveryDate,
-        LocalDateTime ready,
-        LocalDateTime finished
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate deliveryDate
 ) {
 }

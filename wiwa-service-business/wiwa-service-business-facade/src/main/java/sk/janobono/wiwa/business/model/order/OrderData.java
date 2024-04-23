@@ -18,8 +18,6 @@ public record OrderData(
         Quantity netWeight,
         Money total,
         Money vatTotal,
-        LocalDate deliveryDate,
-        LocalDateTime ready,
-        LocalDateTime finished
+        LocalDate deliveryDate
 ) {
 }
