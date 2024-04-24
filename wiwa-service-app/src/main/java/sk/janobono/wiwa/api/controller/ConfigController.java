@@ -206,4 +206,16 @@ public class ConfigController {
     public OrderSendMailWebDto setOrderSendMail(@Valid @RequestBody final OrderSendMailWebDto orderSendMail) {
         return configApiService.setOrderSendMail(orderSendMail);
     }
+
+    @GetMapping(value = "/order-status-mail")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public OrderStatusMailWebDto getOrderStatusMail() {
+        return configApiService.getOrderStatusMail();
+    }
+
+    @PostMapping(value = "/order-status-mail")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public OrderStatusMailWebDto setOrderStatusMail(@Valid @RequestBody final OrderStatusMailWebDto orderStatusMail) {
+        return configApiService.setOrderStatusMail(orderStatusMail);
+    }
 }

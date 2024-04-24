@@ -19,11 +19,11 @@ public interface BoardRepository {
 
     boolean existsById(long id);
 
-    List<BoardDo> findAll(Set<String> codes);
-
     Page<BoardDo> findAll(BoardSearchCriteriaDo criteria, Pageable pageable);
 
     Optional<BoardDo> findById(long id);
+
+    List<BoardDo> findAllByIds(Set<Long> ids);
 
     BoardDo save(BoardDo boardDo);
 }

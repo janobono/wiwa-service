@@ -228,7 +228,7 @@ public class ImageUtil {
                 final IIOMetadataNode vert = new IIOMetadataNode("VerticalPixelSize");
                 vert.setAttribute("value", Double.toString(dotsPerMilli));
 
-                final IIOMetadataNode dim = new IIOMetadataNode("Dimension");
+                final IIOMetadataNode dim = new IIOMetadataNode("DimensionId");
                 dim.appendChild(horiz);
                 dim.appendChild(vert);
 

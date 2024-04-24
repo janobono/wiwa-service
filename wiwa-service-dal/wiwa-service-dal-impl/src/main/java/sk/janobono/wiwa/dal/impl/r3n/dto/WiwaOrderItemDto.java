@@ -6,9 +6,13 @@ public record WiwaOrderItemDto(
         Long id,
         Long orderId,
         Integer sortNum,
-        String data,
+        String name,
+        BigDecimal partPrice,
+        BigDecimal partNetWeight,
+        BigDecimal amount,
         BigDecimal netWeight,
-        BigDecimal total
+        BigDecimal total,
+        String data
 ) {
 
     public static Object[] toArray(final WiwaOrderItemDto wiwaOrderItemDto) {
@@ -16,9 +20,13 @@ public record WiwaOrderItemDto(
                 wiwaOrderItemDto.id,
                 wiwaOrderItemDto.orderId,
                 wiwaOrderItemDto.sortNum,
-                wiwaOrderItemDto.data,
+                wiwaOrderItemDto.name,
+                wiwaOrderItemDto.partPrice,
+                wiwaOrderItemDto.partNetWeight,
+                wiwaOrderItemDto.amount,
                 wiwaOrderItemDto.netWeight,
-                wiwaOrderItemDto.total
+                wiwaOrderItemDto.total,
+                wiwaOrderItemDto.data
         };
     }
 
@@ -29,7 +37,11 @@ public record WiwaOrderItemDto(
                 (Integer) array[2],
                 (String) array[3],
                 (BigDecimal) array[4],
-                (BigDecimal) array[5]
+                (BigDecimal) array[5],
+                (BigDecimal) array[6],
+                (BigDecimal) array[7],
+                (BigDecimal) array[8],
+                (String) array[9]
         );
     }
 }

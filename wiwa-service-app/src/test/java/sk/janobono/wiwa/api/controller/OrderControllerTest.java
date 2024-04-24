@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.api.model.order.OrderCommentChangeWebDto;
 import sk.janobono.wiwa.api.model.order.OrderWebDto;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.janobono.wiwa.model.OrderStatus;

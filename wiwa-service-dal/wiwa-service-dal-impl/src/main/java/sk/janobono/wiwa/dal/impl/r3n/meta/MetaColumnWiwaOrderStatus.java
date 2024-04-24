@@ -12,8 +12,7 @@ public enum MetaColumnWiwaOrderStatus {
     ORDER_ID("order_id", DataType.LONG),
     USER_ID("user_id", DataType.LONG),
     CREATED("created", DataType.TIME_STAMP),
-    STATUS("status", DataType.STRING),
-    COMMENT("comment", DataType.STRING);
+    STATUS("status", DataType.STRING);
 
     private final String columnName;
 

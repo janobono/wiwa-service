@@ -17,7 +17,7 @@ import sk.r3n.sql.Query;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,43 +81,48 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public OrderDo save(final OrderDo orderDo) {
-        log.debug("save({})", orderDo);
+    public OrderDo insert(final OrderDo orderDo) {
+        log.debug("insert({})", orderDo);
         try (final Connection connection = dataSource.getConnection()) {
-            final WiwaOrderDto wiwaOrderDto;
-            if (orderDo.getId() == null) {
-                wiwaOrderDto = insert(connection, mapper.toWiwaOrderDto(orderDo));
-            } else {
-                wiwaOrderDto = update(connection, mapper.toWiwaOrderDto(orderDo));
-            }
-            return mapper.toOrderDo(wiwaOrderDto);
+            final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaOrder.columns(), 1);
+            final Object[] values = criteriaUtil.removeFirst(WiwaOrderDto.toArray(mapper.toWiwaOrderDto(orderDo)), 1);
+
+            final Long id = (Long) sqlBuilder.insert(connection,
+                    Query.INSERT()
+                            .INTO(MetaTable.WIWA_ORDER.table(), columns)
+                            .VALUES(values).RETURNING(MetaColumnWiwaOrder.ID.column()));
+
+            return mapper.toOrderDo(WiwaOrderDto.toObject(criteriaUtil.concat(new Object[]{id}, values)));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private WiwaOrderDto insert(final Connection connection, final WiwaOrderDto wiwaOrderDto) throws SQLException {
-        final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaOrder.columns(), 1);
-        final Object[] values = criteriaUtil.removeFirst(WiwaOrderDto.toArray(wiwaOrderDto), 1);
-
-        final Long id = (Long) sqlBuilder.insert(connection,
-                Query.INSERT()
-                        .INTO(MetaTable.WIWA_ORDER.table(), columns)
-                        .VALUES(values).RETURNING(MetaColumnWiwaOrder.ID.column()));
-
-        return WiwaOrderDto.toObject(criteriaUtil.concat(new Object[]{id}, values));
+    @Override
+    public void setDelivery(final long id, final LocalDate delivery) {
+        log.debug("setDelivery({},{})", id, delivery);
+        try (final Connection connection = dataSource.getConnection()) {
+            sqlBuilder.update(connection,
+                    Query.UPDATE(MetaTable.WIWA_ORDER.table())
+                            .SET(MetaColumnWiwaOrder.DELIVERY.column(), delivery)
+                            .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, id)
+            );
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private WiwaOrderDto update(final Connection connection, final WiwaOrderDto wiwaOrderDto) throws SQLException {
-        final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaOrder.columns(), 1);
-        final Object[] values = criteriaUtil.removeFirst(WiwaOrderDto.toArray(wiwaOrderDto), 1);
-
-        sqlBuilder.update(connection,
-                Query.UPDATE(MetaTable.WIWA_ORDER.table())
-                        .SET(columns, values)
-                        .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, wiwaOrderDto.id())
-        );
-
-        return wiwaOrderDto;
+    @Override
+    public void setData(final long id, final String data) {
+        log.debug("setData({},{})", id, data);
+        try (final Connection connection = dataSource.getConnection()) {
+            sqlBuilder.update(connection,
+                    Query.UPDATE(MetaTable.WIWA_ORDER.table())
+                            .SET(MetaColumnWiwaOrder.DATA.column(), data)
+                            .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, id)
+            );
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

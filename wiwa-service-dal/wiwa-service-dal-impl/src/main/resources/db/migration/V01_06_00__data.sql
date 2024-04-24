@@ -363,3 +363,20 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('OR
 "link":"Click to see order details.",
 "attachment":"detail{0}.pdf"
 }');
+
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('ORDER_STATUS_MAIL', e'{
+"productionSubject":"Order in production - order No.{0}",
+"productionTitle":"Order in production - order No.{0}",
+"productionMessage":"Your order is in production. Please do not reply to this message.",
+"readySubject":"Order is ready for pickup - order No.{0}",
+"readyTitle":"Order is ready for pickup - order No.{0}",
+"readyMessage":"Your order is ready for pickup. Please do not reply to this message.",
+"finishedSubject":"Thank you - order No.{0}",
+"finishedTitle":"Thank you - order No.{0}",
+"finishedMessage":"Thank you for your order. Please do not reply to this message.",
+"cancelledSubject":"Order cancelled - order No.{0}",
+"cancelledTitle":"Order cancelled - order No.{0}",
+"cancelledMessage":"We are sorry, but we had to cancel your order. Please do not reply to this message.",
+"link":"Click to see order details.",
+"attachment":"detail{0}.pdf"
+}');

@@ -113,24 +113,6 @@ public class EdgeRepositoryImpl implements EdgeRepository {
     }
 
     @Override
-    public List<EdgeDo> findAll(final Set<String> codes) {
-        log.debug("findAll({})", codes);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaEdge.columns())
-                            .FROM(MetaTable.WIWA_EDGE.table())
-                            .WHERE(MetaColumnWiwaEdge.CODE.column(), Condition.IN, codes)
-            );
-            return rows.stream()
-                    .map(WiwaEdgeDto::toObject)
-                    .map(this::toEdgeDo)
-                    .toList();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public Page<EdgeDo> findAll(final EdgeSearchCriteriaDo criteria, final Pageable pageable) {
         log.debug("findAll({},{})", criteria, pageable);
         try (final Connection connection = dataSource.getConnection()) {
@@ -185,6 +167,24 @@ public class EdgeRepositoryImpl implements EdgeRepository {
                     .findFirst()
                     .map(WiwaEdgeDto::toObject)
                     .map(this::toEdgeDo);
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<EdgeDo> findAllByIds(final Set<Long> ids) {
+        log.debug("findAllByIds({})", ids);
+        try (final Connection connection = dataSource.getConnection()) {
+            final List<Object[]> rows = sqlBuilder.select(connection,
+                    Query.SELECT(MetaColumnWiwaEdge.columns())
+                            .FROM(MetaTable.WIWA_EDGE.table())
+                            .WHERE(MetaColumnWiwaEdge.ID.column(), Condition.IN, ids)
+            );
+            return rows.stream()
+                    .map(WiwaEdgeDto::toObject)
+                    .map(this::toEdgeDo)
+                    .toList();
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

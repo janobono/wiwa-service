@@ -19,11 +19,11 @@ public interface EdgeRepository {
 
     boolean existsById(long id);
 
-    List<EdgeDo> findAll(Set<String> codes);
-
     Page<EdgeDo> findAll(EdgeSearchCriteriaDo criteria, Pageable pageable);
 
     Optional<EdgeDo> findById(long id);
+
+    List<EdgeDo> findAllByIds(Set<Long> ids);
 
     EdgeDo save(EdgeDo edgeDo);
 }

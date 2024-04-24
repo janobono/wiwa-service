@@ -4,12 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import sk.janobono.wiwa.business.impl.component.OrderAttributeUtil;
+import sk.janobono.wiwa.business.impl.component.DataUtil;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
 import sk.janobono.wiwa.business.impl.model.mail.MailData;
 import sk.janobono.wiwa.business.impl.model.mail.MailLinkData;
 import sk.janobono.wiwa.business.impl.model.mail.MailTemplate;
+import sk.janobono.wiwa.business.impl.model.order.OrderJson;
 import sk.janobono.wiwa.business.impl.util.MailUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderCsvUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderPdfUtilService;
@@ -17,15 +18,20 @@ import sk.janobono.wiwa.business.impl.util.UserUtilService;
 import sk.janobono.wiwa.business.model.application.FreeDayData;
 import sk.janobono.wiwa.business.model.application.OrderCommentMailData;
 import sk.janobono.wiwa.business.model.application.OrderSendMailData;
+import sk.janobono.wiwa.business.model.application.OrderStatusMailData;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.*;
+import sk.janobono.wiwa.dal.model.OderItemSortNumDo;
 import sk.janobono.wiwa.dal.model.OrderViewSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
-import sk.janobono.wiwa.model.*;
+import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.OrderStatus;
+import sk.janobono.wiwa.model.Quantity;
+import sk.janobono.wiwa.model.Unit;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -42,15 +48,15 @@ public class OrderServiceImpl implements OrderService {
 
     private final CommonConfigProperties commonConfigProperties;
 
+    private final DataUtil dataUtil;
     private final PriceUtil priceUtil;
-    private final OrderAttributeUtil orderAttributeUtil;
 
     private final OrderRepository orderRepository;
-    private final OrderAttributeRepository orderAttributeRepository;
     private final OrderCommentRepository orderCommentRepository;
     private final OrderContactRepository orderContactRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderNumberRepository orderNumberRepository;
+    private final OrderStatusRepository orderStatusRepository;
     private final OrderViewRepository orderViewRepository;
 
     private final MailUtilService mailUtilService;
@@ -105,10 +111,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderData addOrder(final long userId) {
-        final OrderDo orderDo = orderRepository.save(OrderDo.builder()
+        final OrderDo orderDo = orderRepository.insert(OrderDo.builder()
                 .userId(userId)
                 .created(LocalDateTime.now())
                 .orderNumber(orderNumberRepository.getNextOrderNumber(userId))
+                .data(dataUtil.serializeValue(OrderJson.builder().build()))
+                .build());
+        orderStatusRepository.save(OrderStatusDo.builder()
+                .orderId(orderDo.getId())
+                .userId(userId)
+                .created(orderDo.getCreated())
+                .status(OrderStatus.NEW)
                 .build());
         return getOrder(orderDo.getId());
     }
@@ -126,9 +139,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderSummaryData getOrderSummary(final long id) {
-        return orderAttributeRepository.findByOrderIdAndAttributeKey(id, OrderAttributeKey.SUMMARY)
-                .map(orderAttributeDo -> orderAttributeUtil.parseValue(orderAttributeDo, OrderSummaryData.class))
-                .orElse(OrderSummaryData.builder().build());
+        return dataUtil.parseValue(getOrderDo(id).getData(), OrderJson.class).getOrderSummaryData();
     }
 
     @Override
@@ -177,7 +188,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderData sendOrder(final long id, final long modifierId, final SendOrderData sendOrder) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
-        final UserDo modifier = userUtilService.getUserDo(modifierId);
         final UserDo owner = userUtilService.getUserDo(orderViewDo.userId());
 
         checkOrderStatus(orderViewDo, Set.of(OrderStatus.SENT, OrderStatus.IN_PRODUCTION, OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
@@ -209,25 +219,32 @@ public class OrderServiceImpl implements OrderService {
 
         final Path pdf = orderPdfUtilService.generatePdf(orderViewDo);
 
-        final OrderSendMailData orderSendMailData = applicationPropertyService.getOrderSendMail();
+        final OrderSendMailData orderSendMail = applicationPropertyService.getOrderSendMail();
         mailUtilService.sendEmail(MailData.builder()
                 .from(commonConfigProperties.mail())
-                .recipients(getEmails(owner, orderContactRepository.findByOrderId(id).orElse(null)))
+                .recipients(getEmails(owner, orderContact))
                 .cc(List.of(commonConfigProperties.ordersMail()))
-                .subject(MessageFormat.format(orderSendMailData.subject(), orderViewDo.orderNumber()))
+                .subject(MessageFormat.format(orderSendMail.subject(), orderViewDo.orderNumber()))
                 .template(MailTemplate.BASE)
                 .content(MailContentData.builder()
-                        .title(MessageFormat.format(orderSendMailData.title(), orderViewDo.orderNumber()))
-                        .lines(List.of(orderSendMailData.message()))
+                        .title(MessageFormat.format(orderSendMail.title(), orderViewDo.orderNumber()))
+                        .lines(List.of(orderSendMail.message()))
                         .mailLink(MailLinkData.builder()
                                 .href(getOrderUrl(id))
-                                .text(orderSendMailData.link())
+                                .text(orderSendMail.link())
                                 .build())
                         .build())
                 .attachments(Map.of(
-                        MessageFormat.format(orderSendMailData.attachment(), orderViewDo.orderNumber()),
+                        MessageFormat.format(orderSendMail.attachment(), orderViewDo.orderNumber()),
                         pdf.toFile()
                 ))
+                .build());
+
+        orderStatusRepository.save(OrderStatusDo.builder()
+                .orderId(id)
+                .userId(modifierId)
+                .created(LocalDateTime.now())
+                .status(OrderStatus.SENT)
                 .build());
 
         return getOrder(id);
@@ -236,28 +253,77 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderData setOrderStatus(final long id, final long modifierId, final OrderStatusChangeData orderStatusChange) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
-        final UserDo modifier = userUtilService.getUserDo(modifierId);
+        final UserDo owner = userUtilService.getUserDo(orderViewDo.userId());
 
         checkOrderStatus(orderViewDo, Set.of(OrderStatus.NEW, OrderStatus.FINISHED, OrderStatus.CANCELLED));
 
-        if (orderStatusChange.newStatus() == OrderStatus.NEW) {
+        if (orderStatusChange.newStatus() == OrderStatus.NEW || orderStatusChange.newStatus() == OrderStatus.SENT) {
             throw WiwaException.ORDER_STATUS_INVALID.exception("Status can't be changed to {0}",
                     orderStatusChange.newStatus());
         }
 
+        final OrderStatusMailData orderStatusMail = applicationPropertyService.getOrderStatusMail();
+        final MailData.MailDataBuilder mailDataBuilder = MailData.builder();
+        mailDataBuilder.from(commonConfigProperties.mail())
+                .recipients(getEmails(owner, orderContactRepository.findByOrderId(id).orElse(null)))
+                .cc(List.of(commonConfigProperties.ordersMail()))
+                .template(MailTemplate.BASE);
+
+        final MailLinkData mailLink = MailLinkData.builder()
+                .href(getOrderUrl(id))
+                .text(orderStatusMail.link())
+                .build();
+
         if (orderStatusChange.notifyUser()) {
             switch (orderStatusChange.newStatus()) {
                 case IN_PRODUCTION:
-
+                    mailDataBuilder.subject(MessageFormat.format(orderStatusMail.productionSubject(), orderViewDo.orderNumber()));
+                    mailDataBuilder.content(MailContentData.builder()
+                            .title(MessageFormat.format(orderStatusMail.productionTitle(), orderViewDo.orderNumber()))
+                            .lines(List.of(orderStatusMail.productionMessage()))
+                            .mailLink(mailLink)
+                            .build());
                     break;
                 case READY:
-
+                    final Path pdf = orderPdfUtilService.generatePdf(orderViewDo);
+                    mailDataBuilder.subject(MessageFormat.format(orderStatusMail.readySubject(), orderViewDo.orderNumber()));
+                    mailDataBuilder.content(MailContentData.builder()
+                            .title(MessageFormat.format(orderStatusMail.readyTitle(), orderViewDo.orderNumber()))
+                            .lines(List.of(orderStatusMail.readyMessage()))
+                            .mailLink(mailLink)
+                            .build());
+                    mailDataBuilder.attachments(Map.of(
+                            MessageFormat.format(orderStatusMail.attachment(), orderViewDo.orderNumber()),
+                            pdf.toFile()
+                    ));
+                    break;
+                case FINISHED:
+                    mailDataBuilder.subject(MessageFormat.format(orderStatusMail.finishedSubject(), orderViewDo.orderNumber()));
+                    mailDataBuilder.content(MailContentData.builder()
+                            .title(MessageFormat.format(orderStatusMail.finishedTitle(), orderViewDo.orderNumber()))
+                            .lines(List.of(orderStatusMail.finishedMessage()))
+                            .mailLink(mailLink)
+                            .build());
                     break;
                 case CANCELLED:
-
+                    mailDataBuilder.subject(MessageFormat.format(orderStatusMail.cancelledSubject(), orderViewDo.orderNumber()));
+                    mailDataBuilder.content(MailContentData.builder()
+                            .title(MessageFormat.format(orderStatusMail.cancelledTitle(), orderViewDo.orderNumber()))
+                            .lines(List.of(orderStatusMail.cancelledMessage()))
+                            .mailLink(mailLink)
+                            .build());
                     break;
             }
         }
+
+        mailUtilService.sendEmail(mailDataBuilder.build());
+
+        orderStatusRepository.save(OrderStatusDo.builder()
+                .orderId(id)
+                .userId(modifierId)
+                .created(LocalDateTime.now())
+                .status(orderStatusChange.newStatus())
+                .build());
 
         return getOrder(id);
     }
@@ -272,7 +338,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderCommentData> addComment(final long id, final long creatorId, final OrderCommentChangeData orderCommentChange) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
-        final UserDo creator = userUtilService.getUserDo(creatorId);
         final UserDo owner = userUtilService.getUserDo(orderViewDo.userId());
         checkOrderStatus(orderViewDo, Set.of(OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
 
@@ -319,6 +384,12 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(creatorId, manager, orderViewDo);
 
+        // boards
+
+        // edges
+
+
+
         // TODO
 
         return null;
@@ -343,23 +414,15 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(modifierId, manager, orderViewDo);
 
-        final List<OrderItemDo> items = sortItems(id);
+        sortItems(id);
 
-        final OrderItemDo item = items.stream().filter(i -> i.getId() == itemId).findFirst()
-                .orElseThrow(() -> WiwaException.ORDER_ITEM_NOT_FOUND.exception("Item with id {0} not found", itemId));
-        final int itemIndex = items.indexOf(item);
-
-        if (itemIndex > 0) {
-            final List<OrderItemDo> batch = new ArrayList<>();
-
-            item.setSortNum(item.getSortNum() - 1);
-            batch.add(item);
-
-            final OrderItemDo downItem = items.get(itemIndex - 1);
-            downItem.setSortNum(downItem.getSortNum() + 1);
-            batch.add(downItem);
-
-            orderItemRepository.saveAll(batch);
+        final OrderItemDo item = getOrderItemDo(itemId);
+        if (item.getSortNum() > 0) {
+            final OrderItemDo upItem = getOrderItemDo(id, item.getSortNum() - 1);
+            orderItemRepository.setSortNums(List.of(
+                    new OderItemSortNumDo(upItem.getId(), item.getSortNum()),
+                    new OderItemSortNumDo(item.getId(), upItem.getSortNum())
+            ));
         }
 
         return toOrderItemData(item);
@@ -371,23 +434,15 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(modifierId, manager, orderViewDo);
 
-        final List<OrderItemDo> items = sortItems(id);
+        sortItems(id);
 
-        final OrderItemDo item = items.stream().filter(i -> i.getId() == itemId).findFirst()
-                .orElseThrow(() -> WiwaException.ORDER_ITEM_NOT_FOUND.exception("Item with id {0} not found", itemId));
-        final int itemIndex = items.indexOf(item);
-
-        if (itemIndex < items.size() - 1) {
-            final List<OrderItemDo> batch = new ArrayList<>();
-
-            item.setSortNum(item.getSortNum() + 1);
-            batch.add(item);
-
-            final OrderItemDo downItem = items.get(itemIndex + 1);
-            downItem.setSortNum(downItem.getSortNum() - 1);
-            batch.add(downItem);
-
-            orderItemRepository.saveAll(batch);
+        final OrderItemDo item = getOrderItemDo(itemId);
+        if (item.getSortNum() < orderItemRepository.countByOrderId(id)) {
+            final OrderItemDo downItem = getOrderItemDo(id, item.getSortNum() + 1);
+            orderItemRepository.setSortNums(List.of(
+                    new OderItemSortNumDo(downItem.getId(), item.getSortNum()),
+                    new OderItemSortNumDo(item.getId(), downItem.getSortNum())
+            ));
         }
 
         return toOrderItemData(item);
@@ -470,14 +525,24 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    private OrderDo getOrderDo(final Long id) {
+    private OrderDo getOrderDo(final long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
     }
 
-    private OrderViewDo getOrderViewDo(final Long id) {
+    private OrderViewDo getOrderViewDo(final long id) {
         return orderViewRepository.findById(id)
                 .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
+    }
+
+    private OrderItemDo getOrderItemDo(final long id) {
+        return orderItemRepository.findById(id)
+                .orElseThrow(() -> WiwaException.ORDER_ITEM_NOT_FOUND.exception("Order item with id {0} not found", id));
+    }
+
+    private OrderItemDo getOrderItemDo(final long orderId, final int sortNum) {
+        return orderItemRepository.findByOrderIdAndSortNum(orderId, sortNum)
+                .orElseThrow(() -> WiwaException.ORDER_ITEM_NOT_FOUND.exception("Order item with order id {0} and sort number {1} not found", orderId, sortNum));
     }
 
     private void checkOrderStatus(final long userId, final boolean manager, final OrderViewDo orderViewDo) {
@@ -523,13 +588,15 @@ public class OrderServiceImpl implements OrderService {
         return commonConfigProperties.webUrl() + commonConfigProperties.ordersPath() + id;
     }
 
-    private List<OrderItemDo> sortItems(final long id) {
+    private void sortItems(final long id) {
         final List<OrderItemDo> items = orderItemRepository.findAllByOrderId(id);
+        int sortNum = 0;
+        final List<OderItemSortNumDo> sortNums = new ArrayList<>();
         for (final OrderItemDo item : items) {
-            item.setSortNum(items.indexOf(item));
+            sortNums.add(new OderItemSortNumDo(item.getId(), sortNum));
+            sortNum++;
         }
-        orderItemRepository.saveAll(items);
-        return items;
+        orderItemRepository.setSortNums(sortNums);
     }
 
     private List<String> getEmails(final UserDo owner, final OrderContactDo orderContact) {

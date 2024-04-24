@@ -14,5 +14,4 @@ public class OrderStatusDo {
     private Long userId;
     private LocalDateTime created;
     private OrderStatus status;
-    private String comment;
 }

@@ -1,4 +1,7 @@
 package sk.janobono.wiwa.business.model.order;
 
-public record OrderItemChangeData() {
+import java.math.BigDecimal;
+
+public record OrderItemChangeData(
+) {
 }

@@ -84,4 +84,8 @@ public interface ApplicationPropertyService {
     OrderSendMailData getOrderSendMail();
 
     OrderSendMailData setOrderSendMail(OrderSendMailData orderSendMail);
+
+    OrderStatusMailData getOrderStatusMail();
+
+    OrderStatusMailData setOrderStatusMail(OrderStatusMailData orderStatusMail);
 }

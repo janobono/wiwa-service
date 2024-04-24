@@ -156,4 +156,12 @@ public class ConfigApiService {
     public OrderSendMailWebDto setOrderSendMail(final OrderSendMailWebDto orderSendMail) {
         return uiWebMapper.mapToWebDto(applicationPropertyService.setOrderSendMail(uiWebMapper.mapToData(orderSendMail)));
     }
+
+    public OrderStatusMailWebDto getOrderStatusMail() {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getOrderStatusMail());
+    }
+
+    public OrderStatusMailWebDto setOrderStatusMail(final OrderStatusMailWebDto orderStatusMail) {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.setOrderStatusMail(uiWebMapper.mapToData(orderStatusMail)));
+    }
 }

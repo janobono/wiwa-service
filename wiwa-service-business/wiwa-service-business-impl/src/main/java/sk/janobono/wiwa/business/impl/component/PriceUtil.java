@@ -1,7 +1,6 @@
 package sk.janobono.wiwa.business.impl.component;
 
 import org.springframework.stereotype.Component;
-import sk.janobono.wiwa.model.Money;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,13 +20,6 @@ public class PriceUtil {
         return value.multiply(multiplicand).setScale(3, RoundingMode.HALF_UP);
     }
 
-    public Money countVatValue(final Money money, final BigDecimal vatRate) {
-        if (money == null || vatRate == null) {
-            return null;
-        }
-        return new Money(countVatValue(money.amount(), vatRate), money.currency());
-    }
-
     public BigDecimal countNoVatValue(final BigDecimal value, final BigDecimal vatRate) {
         if (value == null || vatRate == null) {
             return null;
@@ -38,12 +30,5 @@ public class PriceUtil {
         );
 
         return value.divide(divider, RoundingMode.HALF_UP).setScale(3, RoundingMode.HALF_UP);
-    }
-
-    public Money countNoVatValue(final Money money, final BigDecimal vatRate) {
-        if (money == null || vatRate == null) {
-            return null;
-        }
-        return new Money(countNoVatValue(money.amount(), vatRate), money.currency());
     }
 }

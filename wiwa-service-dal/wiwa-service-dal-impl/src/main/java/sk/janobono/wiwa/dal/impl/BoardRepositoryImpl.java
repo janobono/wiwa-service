@@ -113,24 +113,6 @@ public class BoardRepositoryImpl implements BoardRepository {
     }
 
     @Override
-    public List<BoardDo> findAll(final Set<String> codes) {
-        log.debug("findAll({})", codes);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaBoard.columns())
-                            .FROM(MetaTable.WIWA_BOARD.table())
-                            .WHERE(MetaColumnWiwaBoard.CODE.column(), Condition.IN, codes)
-            );
-            return rows.stream()
-                    .map(WiwaBoardDto::toObject)
-                    .map(this::toBoardDo)
-                    .toList();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public Page<BoardDo> findAll(final BoardSearchCriteriaDo criteria, final Pageable pageable) {
         log.debug("findAll({},{})", criteria, pageable);
         try (final Connection connection = dataSource.getConnection()) {
@@ -185,6 +167,24 @@ public class BoardRepositoryImpl implements BoardRepository {
                     .findFirst()
                     .map(WiwaBoardDto::toObject)
                     .map(this::toBoardDo);
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<BoardDo> findAllByIds(final Set<Long> ids) {
+        log.debug("findAllByIds({})", ids);
+        try (final Connection connection = dataSource.getConnection()) {
+            final List<Object[]> rows = sqlBuilder.select(connection,
+                    Query.SELECT(MetaColumnWiwaBoard.columns())
+                            .FROM(MetaTable.WIWA_BOARD.table())
+                            .WHERE(MetaColumnWiwaBoard.ID.column(), Condition.IN, ids)
+            );
+            return rows.stream()
+                    .map(WiwaBoardDto::toObject)
+                    .map(this::toBoardDo)
+                    .toList();
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

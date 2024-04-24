@@ -41,6 +41,8 @@ public interface UiWebMapper {
 
     OrderSendMailWebDto mapToWebDto(OrderSendMailData orderSendMailData);
 
+    OrderStatusMailWebDto mapToWebDto(OrderStatusMailData orderStatusMail);
+
     ResetPasswordMailData mapToData(ResetPasswordMailWebDto resetPasswordMail);
 
     SignUpMailData mapToData(SignUpMailWebDto signUpMail);
@@ -58,4 +60,6 @@ public interface UiWebMapper {
     OrderCommentMailData mapToData(OrderCommentMailWebDto orderCommentMail);
 
     OrderSendMailData mapToData(OrderSendMailWebDto orderSendMail);
+
+    OrderStatusMailData mapToData(OrderStatusMailWebDto orderStatusMail);
 }

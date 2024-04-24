@@ -1,11 +1,8 @@
-package sk.janobono.wiwa.api.model.order;
+package sk.janobono.wiwa.dal.model;
 
 import java.math.BigDecimal;
 
-public record OrderItemWebDto(
-        Long id,
-        Integer sortNum,
-        String name,
+public record OderItemSummaryDo(
         BigDecimal partPrice,
         BigDecimal partNetWeight,
         BigDecimal amount,

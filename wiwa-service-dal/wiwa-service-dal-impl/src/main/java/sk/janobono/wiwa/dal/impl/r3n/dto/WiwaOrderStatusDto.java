@@ -7,8 +7,7 @@ public record WiwaOrderStatusDto(
         Long orderId,
         Long userId,
         LocalDateTime created,
-        String status,
-        String comment
+        String status
 ) {
 
     public static Object[] toArray(final WiwaOrderStatusDto wiwaOrderStatusDto) {
@@ -17,8 +16,7 @@ public record WiwaOrderStatusDto(
                 wiwaOrderStatusDto.orderId,
                 wiwaOrderStatusDto.userId,
                 wiwaOrderStatusDto.created,
-                wiwaOrderStatusDto.status,
-                wiwaOrderStatusDto.comment
+                wiwaOrderStatusDto.status
         };
     }
 
@@ -28,8 +26,7 @@ public record WiwaOrderStatusDto(
                 (Long) array[1],
                 (Long) array[2],
                 (LocalDateTime) array[3],
-                (String) array[4],
-                (String) array[5]
+                (String) array[4]
         );
     }
 }

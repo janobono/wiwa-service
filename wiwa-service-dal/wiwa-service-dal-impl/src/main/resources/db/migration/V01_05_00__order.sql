@@ -12,15 +12,8 @@ create table wiwa_order
     created      timestamp not null,
     order_number bigserial not null,
     delivery     date,
+    data         text      not null,
     unique (user_id, order_number)
-);
-
-create table wiwa_order_attribute
-(
-    order_id        bigint       not null references wiwa_order (id) on delete cascade,
-    attribute_key   varchar(255) not null,
-    attribute_value text         not null,
-    primary key (order_id, attribute_key)
 );
 
 create table wiwa_order_comment
@@ -48,12 +41,16 @@ create table wiwa_order_contact
 
 create table wiwa_order_item
 (
-    id         bigserial primary key,
-    order_id   bigint         not null references wiwa_order (id) on delete cascade,
-    sort_num   integer        not null,
-    data       text           not null,
-    net_weight numeric(19, 3) not null,
-    total      numeric(19, 3) not null
+    id              bigserial primary key,
+    order_id        bigint         not null references wiwa_order (id) on delete cascade,
+    sort_num        integer        not null,
+    name            varchar(255)   not null,
+    part_price      numeric(19, 3) not null,
+    part_net_weight numeric(19, 3) not null,
+    amount          numeric(19, 3) not null,
+    net_weight      numeric(19, 3) not null,
+    total           numeric(19, 3) not null,
+    data            text           not null
 );
 
 create table wiwa_order_status
@@ -93,8 +90,6 @@ FROM wiwa_order o;
 create index idx_wiwa_order_number on wiwa_order_number (user_id);
 
 create index idx_wiwa_order on wiwa_order (user_id);
-
-create index idx_wiwa_order_attribute on wiwa_order_attribute (order_id);
 
 create index idx_wiwa_order_comment on wiwa_order_comment (order_id);
 

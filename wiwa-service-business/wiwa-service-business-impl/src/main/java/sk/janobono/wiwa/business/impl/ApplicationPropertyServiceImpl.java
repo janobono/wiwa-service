@@ -37,6 +37,7 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     private static final String FREE_DAYS = "FREE_DAYS";
     private static final String ORDER_COMMENT_MAIL = "ORDER_COMMENT_MAIL";
     private static final String ORDER_SEND_MAIL = "ORDER_SEND_MAIL";
+    private static final String ORDER_STATUS_MAIL = "ORDER_STATUS_MAIL";
 
     private final ObjectMapper objectMapper;
 
@@ -406,5 +407,28 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
             }
         }, ORDER_SEND_MAIL, orderSendMail);
         return orderSendMail;
+    }
+
+    @Override
+    public OrderStatusMailData getOrderStatusMail() {
+        return propertyUtilService.getProperty(v -> {
+            try {
+                return objectMapper.readValue(v, OrderStatusMailData.class);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, ORDER_STATUS_MAIL);
+    }
+
+    @Override
+    public OrderStatusMailData setOrderStatusMail(final OrderStatusMailData orderStatusMail) {
+        propertyUtilService.setProperty(data -> {
+            try {
+                return objectMapper.writeValueAsString(data);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, ORDER_STATUS_MAIL, orderStatusMail);
+        return orderStatusMail;
     }
 }

@@ -13,5 +13,6 @@ public class OrderDo {
     private Long userId;
     private LocalDateTime created;
     private Long orderNumber;
-    private LocalDate deliveryDate;
+    private LocalDate delivery;
+    private String data;
 }
