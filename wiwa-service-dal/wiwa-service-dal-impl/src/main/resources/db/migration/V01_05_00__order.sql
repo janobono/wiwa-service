@@ -59,8 +59,7 @@ create table wiwa_order_status
     order_id bigint       not null references wiwa_order (id) on delete cascade,
     user_id  bigint       not null references wiwa_user (id) on delete cascade,
     created  timestamp    not null,
-    status   varchar(255) not null,
-    comment  text
+    status   varchar(255) not null
 );
 
 create view wiwa_order_view
