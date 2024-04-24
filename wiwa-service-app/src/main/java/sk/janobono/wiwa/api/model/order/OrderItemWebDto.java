@@ -1,15 +1,16 @@
 package sk.janobono.wiwa.api.model.order;
 
-import java.math.BigDecimal;
+import sk.janobono.wiwa.api.model.QuantityWebDto;
+import sk.janobono.wiwa.model.Money;
 
 public record OrderItemWebDto(
         Long id,
         Integer sortNum,
         String name,
-        BigDecimal partPrice,
-        BigDecimal partNetWeight,
-        BigDecimal amount,
-        BigDecimal netWeight,
-        BigDecimal total
+        Money partPrice,
+        QuantityWebDto partNetWeight,
+        QuantityWebDto amount,
+        QuantityWebDto netWeight,
+        Money total
 ) {
 }

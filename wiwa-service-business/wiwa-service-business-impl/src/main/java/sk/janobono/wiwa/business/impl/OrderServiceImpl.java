@@ -10,6 +10,7 @@ import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
 import sk.janobono.wiwa.business.impl.model.mail.MailData;
 import sk.janobono.wiwa.business.impl.model.mail.MailLinkData;
 import sk.janobono.wiwa.business.impl.model.mail.MailTemplate;
+import sk.janobono.wiwa.business.impl.model.order.OrderItemJson;
 import sk.janobono.wiwa.business.impl.model.order.OrderJson;
 import sk.janobono.wiwa.business.impl.util.MailUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderCsvUtilService;
@@ -372,8 +373,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderItemData> getOrderItems(final long id) {
+        final BigDecimal vatRate = applicationPropertyService.getVatRate();
         return orderItemRepository.findAllByOrderId(id).stream()
-                .map(this::toOrderItemData)
+                .map(v -> toOrderItemData(v, vatRate))
                 .toList();
     }
 
@@ -387,7 +389,6 @@ public class OrderServiceImpl implements OrderService {
         // boards
 
         // edges
-
 
 
         // TODO
@@ -425,7 +426,7 @@ public class OrderServiceImpl implements OrderService {
             ));
         }
 
-        return toOrderItemData(item);
+        return toOrderItemData(item, applicationPropertyService.getVatRate());
     }
 
     @Override
@@ -445,7 +446,7 @@ public class OrderServiceImpl implements OrderService {
             ));
         }
 
-        return toOrderItemData(item);
+        return toOrderItemData(item, applicationPropertyService.getVatRate());
     }
 
     @Override
@@ -519,9 +520,18 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    private OrderItemData toOrderItemData(final OrderItemDo orderItemDo) {
+    private OrderItemData toOrderItemData(final OrderItemDo orderItemDo, final BigDecimal vatRate) {
         return OrderItemData.builder()
-                // TODO
+                .id(orderItemDo.getId())
+                .sortNum(orderItemDo.getSortNum())
+                .name(orderItemDo.getName())
+                .partPrice(new Money(orderItemDo.getPartPrice(), commonConfigProperties.currency()))
+                .vatPartPrice(new Money(priceUtil.countVatValue(orderItemDo.getPartPrice(), vatRate), commonConfigProperties.currency()))
+                .amount(new Quantity(orderItemDo.getAmount(), Unit.PIECE))
+                .netWeight(new Quantity(orderItemDo.getNetWeight(), Unit.KILOGRAM))
+                .total(new Money(orderItemDo.getTotal(), commonConfigProperties.currency()))
+                .vatTotal(new Money(priceUtil.countVatValue(orderItemDo.getTotal(), vatRate), commonConfigProperties.currency()))
+                .partData(dataUtil.parseValue(orderItemDo.getData(), OrderItemJson.class).getParData())
                 .build();
     }
 

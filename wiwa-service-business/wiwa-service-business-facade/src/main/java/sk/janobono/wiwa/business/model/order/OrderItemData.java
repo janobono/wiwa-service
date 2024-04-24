@@ -1,18 +1,22 @@
 package sk.janobono.wiwa.business.model.order;
 
 import lombok.Builder;
-
-import java.math.BigDecimal;
+import sk.janobono.wiwa.business.model.order.part.PartData;
+import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.Quantity;
 
 @Builder
 public record OrderItemData(
         Long id,
         Integer sortNum,
         String name,
-        BigDecimal partPrice,
-        BigDecimal partNetWeight,
-        BigDecimal amount,
-        BigDecimal netWeight,
-        BigDecimal total
+        Money partPrice,
+        Money vatPartPrice,
+        Quantity partNetWeight,
+        Quantity amount,
+        Quantity netWeight,
+        Money total,
+        Money vatTotal,
+        PartData partData
 ) {
 }
