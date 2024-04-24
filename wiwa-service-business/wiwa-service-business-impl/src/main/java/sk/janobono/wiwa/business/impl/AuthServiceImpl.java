@@ -5,15 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
+import sk.janobono.wiwa.business.impl.model.mail.MailData;
+import sk.janobono.wiwa.business.impl.model.mail.MailLinkData;
+import sk.janobono.wiwa.business.impl.model.mail.MailTemplate;
 import sk.janobono.wiwa.business.impl.util.MailUtilService;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
 import sk.janobono.wiwa.business.model.application.ResetPasswordMailData;
 import sk.janobono.wiwa.business.model.application.SignUpMailData;
 import sk.janobono.wiwa.business.model.auth.*;
-import sk.janobono.wiwa.business.model.mail.MailContentData;
-import sk.janobono.wiwa.business.model.mail.MailData;
-import sk.janobono.wiwa.business.model.mail.MailLinkData;
-import sk.janobono.wiwa.business.model.mail.MailTemplate;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.AuthService;
 import sk.janobono.wiwa.component.*;
@@ -30,7 +30,6 @@ import sk.janobono.wiwa.model.User;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -235,28 +234,25 @@ public class AuthServiceImpl implements AuthService {
                 issuedAt + TimeUnit.MINUTES.toMillis(authConfigProperties.resetPasswordTokenExpiration())
         );
 
-        mailUtilService.sendEmail(new MailData(
-                commonConfigProperties.mail(),
-                null,
-                List.of(user.getEmail()),
-                resetPasswordMail.subject(),
-                MailTemplate.BASE,
-                new MailContentData(
-                        resetPasswordMail.title(),
-                        List.of(
+        mailUtilService.sendEmail(MailData.builder()
+                .from(commonConfigProperties.mail())
+                .recipients(List.of(user.getEmail()))
+                .subject(resetPasswordMail.subject())
+                .template(MailTemplate.BASE)
+                .content(MailContentData.builder()
+                        .title(resetPasswordMail.title())
+                        .lines(List.of(
                                 resetPasswordMail.message(),
                                 MessageFormat.format(
                                         resetPasswordMail.passwordMessage(),
                                         data.get(AuthTokenKey.NEW_PASSWORD.name())
-                                )
-                        ),
-                        new MailLinkData(
-                                getTokenUrl(commonConfigProperties.webUrl(), commonConfigProperties.confirmPath(), token),
-                                resetPasswordMail.link()
-                        )
-                ),
-                null
-        ));
+                                )))
+                        .mailLink(MailLinkData.builder()
+                                .href(getTokenUrl(commonConfigProperties.webUrl(), commonConfigProperties.confirmPath(), token))
+                                .text(resetPasswordMail.link())
+                                .build())
+                        .build())
+                .build());
     }
 
     private void sendSignUpMail(final UserDo user) {
@@ -271,22 +267,20 @@ public class AuthServiceImpl implements AuthService {
                 issuedAt + TimeUnit.MINUTES.toMillis(authConfigProperties.signUpTokenExpiration())
         );
 
-        mailUtilService.sendEmail(new MailData(
-                commonConfigProperties.mail(),
-                null,
-                List.of(user.getEmail()),
-                signUpMail.subject(),
-                MailTemplate.BASE,
-                new MailContentData(
-                        signUpMail.title(),
-                        List.of(signUpMail.message()),
-                        new MailLinkData(
-                                getTokenUrl(commonConfigProperties.webUrl(), commonConfigProperties.confirmPath(), token),
-                                signUpMail.link()
-                        )
-                ),
-                null
-        ));
+        mailUtilService.sendEmail(MailData.builder()
+                .from(commonConfigProperties.mail())
+                .recipients(List.of(user.getEmail()))
+                .subject(signUpMail.subject())
+                .template(MailTemplate.BASE)
+                .content(MailContentData.builder()
+                        .title(signUpMail.title())
+                        .lines(List.of(signUpMail.message()))
+                        .mailLink(MailLinkData.builder()
+                                .href(getTokenUrl(commonConfigProperties.webUrl(), commonConfigProperties.confirmPath(), token))
+                                .text(signUpMail.link())
+                                .build())
+                        .build())
+                .build());
     }
 
     private String getTokenUrl(final String webUrl, final String path, final String token) {

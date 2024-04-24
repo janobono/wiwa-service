@@ -37,7 +37,9 @@ public interface UiWebMapper {
 
     FreeDayWebDto mapToWebDto(FreeDayData freeDayData);
 
-    OrderCommentMailWebDto mapToWebDto(OrderCommentMailData OrderCommentMail);
+    OrderCommentMailWebDto mapToWebDto(OrderCommentMailData orderCommentMail);
+
+    OrderSendMailWebDto mapToWebDto(OrderSendMailData orderSendMailData);
 
     ResetPasswordMailData mapToData(ResetPasswordMailWebDto resetPasswordMail);
 
@@ -54,4 +56,6 @@ public interface UiWebMapper {
     FreeDayData mapToData(FreeDayWebDto freeDay);
 
     OrderCommentMailData mapToData(OrderCommentMailWebDto orderCommentMail);
+
+    OrderSendMailData mapToData(OrderSendMailWebDto orderSendMail);
 }

@@ -6,16 +6,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.impl.component.OrderAttributeUtil;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
+import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
+import sk.janobono.wiwa.business.impl.model.mail.MailData;
+import sk.janobono.wiwa.business.impl.model.mail.MailLinkData;
+import sk.janobono.wiwa.business.impl.model.mail.MailTemplate;
 import sk.janobono.wiwa.business.impl.util.MailUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderCsvUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderPdfUtilService;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
 import sk.janobono.wiwa.business.model.application.FreeDayData;
 import sk.janobono.wiwa.business.model.application.OrderCommentMailData;
-import sk.janobono.wiwa.business.model.mail.MailContentData;
-import sk.janobono.wiwa.business.model.mail.MailData;
-import sk.janobono.wiwa.business.model.mail.MailLinkData;
-import sk.janobono.wiwa.business.model.mail.MailTemplate;
+import sk.janobono.wiwa.business.model.application.OrderSendMailData;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
@@ -33,9 +34,7 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -179,6 +178,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderData sendOrder(final long id, final long modifierId, final SendOrderData sendOrder) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
         final UserDo modifier = userUtilService.getUserDo(modifierId);
+        final UserDo owner = userUtilService.getUserDo(orderViewDo.userId());
 
         checkOrderStatus(orderViewDo, Set.of(OrderStatus.SENT, OrderStatus.IN_PRODUCTION, OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
 
@@ -194,7 +194,7 @@ public class OrderServiceImpl implements OrderService {
 
         checkDeliveryDate(sendOrder.deliveryDate(), applicationPropertyService.getFreeDays());
 
-        orderContactRepository.save(OrderContactDo.builder()
+        final OrderContactDo orderContact = orderContactRepository.save(OrderContactDo.builder()
                 .orderId(id)
                 .name(sendOrder.contact().name())
                 .street(sendOrder.contact().street())
@@ -207,8 +207,28 @@ public class OrderServiceImpl implements OrderService {
                 .taxId(sendOrder.contact().taxId())
                 .build());
 
-        // TODO
+        final Path pdf = orderPdfUtilService.generatePdf(orderViewDo);
 
+        final OrderSendMailData orderSendMailData = applicationPropertyService.getOrderSendMail();
+        mailUtilService.sendEmail(MailData.builder()
+                .from(commonConfigProperties.mail())
+                .recipients(getEmails(owner, orderContactRepository.findByOrderId(id).orElse(null)))
+                .cc(List.of(commonConfigProperties.ordersMail()))
+                .subject(MessageFormat.format(orderSendMailData.subject(), orderViewDo.orderNumber()))
+                .template(MailTemplate.BASE)
+                .content(MailContentData.builder()
+                        .title(MessageFormat.format(orderSendMailData.title(), orderViewDo.orderNumber()))
+                        .lines(List.of(orderSendMailData.message()))
+                        .mailLink(MailLinkData.builder()
+                                .href(getOrderUrl(id))
+                                .text(orderSendMailData.link())
+                                .build())
+                        .build())
+                .attachments(Map.of(
+                        MessageFormat.format(orderSendMailData.attachment(), orderViewDo.orderNumber()),
+                        pdf.toFile()
+                ))
+                .build());
 
         return getOrder(id);
     }
@@ -253,6 +273,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderCommentData> addComment(final long id, final long creatorId, final OrderCommentChangeData orderCommentChange) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
         final UserDo creator = userUtilService.getUserDo(creatorId);
+        final UserDo owner = userUtilService.getUserDo(orderViewDo.userId());
         checkOrderStatus(orderViewDo, Set.of(OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
 
         orderCommentRepository.save(OrderCommentDo.builder()
@@ -263,23 +284,24 @@ public class OrderServiceImpl implements OrderService {
                 .build());
 
         final OrderCommentMailData orderCommentMail = applicationPropertyService.getOrderCommentMail();
-        mailUtilService.sendEmail(new MailData(
-                commonConfigProperties.mail(),
-                null,
-                List.of(creator.getEmail(), commonConfigProperties.ordersMail()),
-                MessageFormat.format(orderCommentMail.subject(), orderViewDo.orderNumber()),
-                MailTemplate.BASE,
-                new MailContentData(
-                        MessageFormat.format(orderCommentMail.title(), orderViewDo.orderNumber()),
-                        List.of(
+        mailUtilService.sendEmail(MailData.builder()
+                .from(commonConfigProperties.mail())
+                .recipients(getEmails(owner, orderContactRepository.findByOrderId(id).orElse(null)))
+                .cc(List.of(commonConfigProperties.ordersMail()))
+                .subject(MessageFormat.format(orderCommentMail.subject(), orderViewDo.orderNumber()))
+                .template(MailTemplate.BASE)
+                .content(MailContentData.builder()
+                        .title(MessageFormat.format(orderCommentMail.title(), orderViewDo.orderNumber()))
+                        .lines(List.of(
                                 orderCommentMail.message(),
                                 orderCommentChange.comment()
-                        ),
-                        new MailLinkData(getOrderUrl(id), orderCommentMail.link())
-                ),
-                null
-        ));
-
+                        ))
+                        .mailLink(MailLinkData.builder()
+                                .href(getOrderUrl(id))
+                                .text(orderCommentMail.link())
+                                .build())
+                        .build())
+                .build());
         return getComments(id);
     }
 
@@ -508,6 +530,17 @@ public class OrderServiceImpl implements OrderService {
         }
         orderItemRepository.saveAll(items);
         return items;
+    }
+
+    private List<String> getEmails(final UserDo owner, final OrderContactDo orderContact) {
+        final List<String> emails = new ArrayList<>();
+        emails.add(owner.getEmail());
+        Optional.ofNullable(orderContact).map(OrderContactDo::getEmail).ifPresent(email -> {
+            if (!emails.contains(email)) {
+                emails.add(email);
+            }
+        });
+        return emails;
     }
 
     private void recountItems(long id, UserDo modifier) {

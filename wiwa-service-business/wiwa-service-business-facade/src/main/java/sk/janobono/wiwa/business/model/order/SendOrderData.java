@@ -6,7 +6,6 @@ public record SendOrderData(
         OrderContactData contact,
         boolean gdprAgreement,
         boolean businessConditionsAgreement,
-        String comment,
         LocalDate deliveryDate
 ) {
 }

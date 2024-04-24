@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.business.model.mail;
+package sk.janobono.wiwa.business.impl.model.mail;
 
 import lombok.Getter;
 

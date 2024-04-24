@@ -194,4 +194,16 @@ public class ConfigController {
     public OrderCommentMailWebDto setOrderCommentMail(@Valid @RequestBody final OrderCommentMailWebDto orderCommentMail) {
         return configApiService.setOrderCommentMail(orderCommentMail);
     }
+
+    @GetMapping(value = "/order-send-mail")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public OrderSendMailWebDto getOrderSendMail() {
+        return configApiService.getOrderSendMail();
+    }
+
+    @PostMapping(value = "/order-send-mail")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public OrderSendMailWebDto setOrderSendMail(@Valid @RequestBody final OrderSendMailWebDto orderSendMail) {
+        return configApiService.setOrderSendMail(orderSendMail);
+    }
 }

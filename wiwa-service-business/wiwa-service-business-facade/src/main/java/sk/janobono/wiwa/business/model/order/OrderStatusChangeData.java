@@ -5,7 +5,6 @@ import sk.janobono.wiwa.model.OrderStatus;
 public record OrderStatusChangeData(
         Boolean notifyUser,
         Boolean sendSummary,
-        String comment,
         OrderStatus newStatus
 ) {
 }

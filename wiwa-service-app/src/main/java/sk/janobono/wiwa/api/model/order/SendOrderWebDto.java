@@ -7,9 +7,8 @@ import java.time.LocalDate;
 
 public record SendOrderWebDto(
         @NotNull OrderContactWebDto contact,
-        boolean gdprAgreement,
-        boolean businessConditionsAgreement,
-        String comment,
+        @NotNull Boolean gdprAgreement,
+        @NotNull Boolean businessConditionsAgreement,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate deliveryDate
 ) {
 }

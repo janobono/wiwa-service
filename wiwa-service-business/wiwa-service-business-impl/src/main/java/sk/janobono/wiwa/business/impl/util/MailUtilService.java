@@ -11,11 +11,13 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
-import sk.janobono.wiwa.business.model.mail.MailContentData;
-import sk.janobono.wiwa.business.model.mail.MailData;
-import sk.janobono.wiwa.business.model.mail.MailLinkData;
-import sk.janobono.wiwa.business.model.mail.MailTemplate;
+import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
+import sk.janobono.wiwa.business.impl.model.mail.MailData;
+import sk.janobono.wiwa.business.impl.model.mail.MailLinkData;
+import sk.janobono.wiwa.business.impl.model.mail.MailTemplate;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -27,35 +29,51 @@ public class MailUtilService {
 
     @Async
     public void sendEmail(final MailData mail) {
-        final MimeMessagePreparator mimeMessagePreparator = mimeMessage -> {
-            final MimeMessageHelper messageHelper = new MimeMessageHelper(
-                    mimeMessage,
-                    mail.attachments() != null && !mail.attachments().isEmpty()
-            );
-            messageHelper.setFrom(mail.from());
-            if (Optional.ofNullable(mail.replyTo()).filter(s -> !s.isBlank()).isPresent()) {
-                messageHelper.setReplyTo(mail.replyTo());
-            }
-            mail.recipients().forEach(recipient -> {
-                try {
-                    mimeMessage.addRecipients(Message.RecipientType.TO, recipient);
-                } catch (final MessagingException e) {
-                    throw new RuntimeException(e);
+        try {
+            final MimeMessagePreparator mimeMessagePreparator = mimeMessage -> {
+                final MimeMessageHelper messageHelper = new MimeMessageHelper(
+                        mimeMessage,
+                        Optional.ofNullable(mail.attachments()).map(att -> !att.isEmpty()).orElse(false)
+                );
+
+                messageHelper.setFrom(mail.from());
+
+                if (Optional.ofNullable(mail.replyTo()).filter(s -> !s.isBlank()).isPresent()) {
+                    messageHelper.setReplyTo(mail.replyTo());
                 }
-            });
-            messageHelper.setSubject(mail.subject());
-            messageHelper.setText(format(mail.template(), mail.content()), mail.template().getHtml());
-            if (mail.attachments() != null) {
-                mail.attachments().forEach(attachment -> {
+
+                Optional.ofNullable(mail.recipients()).stream().flatMap(Collection::stream).forEach(recipient -> {
                     try {
-                        messageHelper.addAttachment(attachment.getName(), attachment);
+                        mimeMessage.addRecipients(Message.RecipientType.TO, recipient);
                     } catch (final MessagingException e) {
                         throw new RuntimeException(e);
                     }
                 });
-            }
-        };
-        javaMailSender.send(mimeMessagePreparator);
+
+                Optional.ofNullable(mail.cc()).stream().flatMap(Collection::stream).forEach(cc -> {
+                    try {
+                        mimeMessage.addRecipients(Message.RecipientType.CC, cc);
+                    } catch (final MessagingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+                messageHelper.setSubject(mail.subject());
+                messageHelper.setText(format(mail.template(), mail.content()), mail.template().getHtml());
+
+                Optional.ofNullable(mail.attachments()).map(Map::entrySet).stream().flatMap(Collection::stream).forEach(attachment -> {
+                    try {
+                        messageHelper.addAttachment(attachment.getKey(), attachment.getValue());
+                    } catch (final MessagingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            };
+            javaMailSender.send(mimeMessagePreparator);
+        } finally {
+            Optional.ofNullable(mail.attachments()).map(Map::values).stream().flatMap(Collection::stream)
+                    .forEach(attachment -> attachment.delete());
+        }
     }
 
     private String format(final MailTemplate template, final MailContentData mailBaseContent) {

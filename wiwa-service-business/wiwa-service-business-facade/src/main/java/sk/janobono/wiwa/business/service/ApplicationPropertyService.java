@@ -79,5 +79,9 @@ public interface ApplicationPropertyService {
 
     OrderCommentMailData getOrderCommentMail();
 
-    OrderCommentMailData setOrderCommentMail(OrderCommentMailData orderCommentMailData);
+    OrderCommentMailData setOrderCommentMail(OrderCommentMailData orderCommentMail);
+
+    OrderSendMailData getOrderSendMail();
+
+    OrderSendMailData setOrderSendMail(OrderSendMailData orderSendMail);
 }

@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -86,6 +87,24 @@ public class OrderContactRepositoryImpl implements OrderContactRepository {
                 return new PageImpl<>(content, pageable, totalRows);
             }
             return new PageImpl<>(Collections.emptyList(), pageable, totalRows);
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Optional<OrderContactDo> findByOrderId(final long orderId) {
+        log.debug("findByOrderId({})", orderId);
+        try (final Connection connection = dataSource.getConnection()) {
+            final List<Object[]> rows = sqlBuilder.select(connection,
+                    Query.SELECT(MetaColumnWiwaOrderContact.columns())
+                            .FROM(MetaTable.WIWA_ORDER_CONTACT.table())
+                            .WHERE(MetaColumnWiwaOrderContact.ORDER_ID.column(), Condition.EQUALS, orderId)
+            );
+            return rows.stream()
+                    .findFirst()
+                    .map(WiwaOrderContactDto::toObject)
+                    .map(mapper::toOrderContactDo);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

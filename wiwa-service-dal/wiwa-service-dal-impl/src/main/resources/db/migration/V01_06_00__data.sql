@@ -355,3 +355,11 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('OR
 "message":"New comment was added. Please do not reply to this message.",
 "link":"Click to see order details."
 }');
+
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('ORDER_SEND_MAIL', e'{
+"subject":"Order send - order No.{0}",
+"title":"Order send - order No.{0}",
+"message":"Order was send. Please do not reply to this message.",
+"link":"Click to see order details.",
+"attachment":"detail{0}.pdf"
+}');
