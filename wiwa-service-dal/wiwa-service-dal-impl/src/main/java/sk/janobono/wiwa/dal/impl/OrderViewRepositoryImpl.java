@@ -167,8 +167,8 @@ public class OrderViewRepositoryImpl implements OrderViewRepository {
                                 MetaColumnWiwaOrderView.STATUS.column(),
                                 criteriaUtil.mapDirection(order)
                         );
-                        case "netWeight" -> select.ORDER_BY(
-                                MetaColumnWiwaOrderView.NET_WEIGHT.column(),
+                        case "weight" -> select.ORDER_BY(
+                                MetaColumnWiwaOrderView.WEIGHT.column(),
                                 criteriaUtil.mapDirection(order)
                         );
                         case "total" -> select.ORDER_BY(

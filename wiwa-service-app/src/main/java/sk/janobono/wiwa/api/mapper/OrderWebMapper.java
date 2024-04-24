@@ -6,8 +6,7 @@ import org.mapstruct.NullValueCheckStrategy;
 import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.business.model.order.*;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
-        uses = {QuantityWebMapper.class})
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface OrderWebMapper {
 
     OrderWebDto mapToWebDto(OrderData order);

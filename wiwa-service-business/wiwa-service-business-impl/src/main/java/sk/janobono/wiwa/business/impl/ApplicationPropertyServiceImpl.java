@@ -52,7 +52,8 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
                 commonConfigProperties.defaultLocale(),
                 commonConfigProperties.appTitle(),
                 commonConfigProperties.appDescription(),
-                jwtConfigProperties.expiration()
+                jwtConfigProperties.expiration(),
+                commonConfigProperties.currency()
         );
     }
 

@@ -13,9 +13,9 @@ public enum MetaColumnWiwaOrderItem {
     SORT_NUM("sort_num", DataType.INTEGER),
     NAME("name", DataType.STRING),
     PART_PRICE("part_price", DataType.BIG_DECIMAL),
-    PART_NET_WEIGHT("part_net_weight", DataType.BIG_DECIMAL),
-    AMOUNT("amount", DataType.BIG_DECIMAL),
-    NET_WEIGHT("net_weight", DataType.BIG_DECIMAL),
+    PART_WEIGHT("part_weight", DataType.BIG_DECIMAL),
+    AMOUNT("amount", DataType.INTEGER),
+    WEIGHT("weight", DataType.BIG_DECIMAL),
     TOTAL("total", DataType.BIG_DECIMAL),
     DATA("data", DataType.STRING);
 

@@ -11,12 +11,9 @@ import sk.janobono.wiwa.api.model.edge.EdgeChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeWebDto;
 import sk.janobono.wiwa.business.model.edge.EdgeSearchCriteriaData;
 import sk.janobono.wiwa.business.service.EdgeService;
-import sk.janobono.wiwa.model.Quantity;
-import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -42,10 +39,10 @@ public class EdgeApiService {
                 .searchField(searchField)
                 .code(code)
                 .name(name)
-                .widthFrom(Optional.ofNullable(widthFrom).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
-                .widthTo(Optional.ofNullable(widthTo).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
-                .thicknessFrom(Optional.ofNullable(thicknessFrom).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
-                .thicknessTo(Optional.ofNullable(thicknessTo).map(v -> new Quantity(v, Unit.MILLIMETER)).orElse(null))
+                .widthFrom(widthFrom)
+                .widthTo(widthTo)
+                .thicknessFrom(thicknessFrom)
+                .thicknessTo(thicknessTo)
                 .priceFrom(priceFrom)
                 .priceTo(priceTo)
                 .codeListItems(codeListItems)

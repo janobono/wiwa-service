@@ -14,7 +14,7 @@ public enum MetaColumnWiwaOrderView {
     ORDER_NUMBER("order_number", DataType.LONG),
     DELIVERY("delivery", DataType.DATE),
     STATUS("status", DataType.STRING),
-    NET_WEIGHT("net_weight", DataType.BIG_DECIMAL),
+    WEIGHT("weight", DataType.BIG_DECIMAL),
     TOTAL("total", DataType.BIG_DECIMAL);
 
     private final String columnName;

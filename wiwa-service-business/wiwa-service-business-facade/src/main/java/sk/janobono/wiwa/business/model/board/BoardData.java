@@ -17,7 +17,7 @@ public record BoardData(
         String structureCode,
         Boolean orientation,
         Quantity sale,
-        Quantity netWeight,
+        Quantity weight,
         Quantity length,
         Quantity width,
         Quantity thickness,

@@ -10,16 +10,10 @@ public record WiwaBoardDto(
         String name,
         String description,
         Boolean orientation,
-        BigDecimal saleValue,
-        String saleUnit,
-        BigDecimal netWeightValue,
-        String netWeightUnit,
-        BigDecimal lengthValue,
-        String lengthUnit,
-        BigDecimal widthValue,
-        String widthUnit,
-        BigDecimal thicknessValue,
-        String thicknessUnit,
+        BigDecimal weight,
+        BigDecimal length,
+        BigDecimal width,
+        BigDecimal thickness,
         BigDecimal price
 ) {
 
@@ -32,16 +26,10 @@ public record WiwaBoardDto(
                 wiwaBoardDto.name,
                 wiwaBoardDto.description,
                 wiwaBoardDto.orientation,
-                wiwaBoardDto.saleValue,
-                wiwaBoardDto.saleUnit,
-                wiwaBoardDto.netWeightValue,
-                wiwaBoardDto.netWeightUnit,
-                wiwaBoardDto.lengthValue,
-                wiwaBoardDto.lengthUnit,
-                wiwaBoardDto.widthValue,
-                wiwaBoardDto.widthUnit,
-                wiwaBoardDto.thicknessValue,
-                wiwaBoardDto.thicknessUnit,
+                wiwaBoardDto.weight,
+                wiwaBoardDto.length,
+                wiwaBoardDto.width,
+                wiwaBoardDto.thickness,
                 wiwaBoardDto.price
         };
     }
@@ -56,16 +44,10 @@ public record WiwaBoardDto(
                 (String) array[5],
                 (Boolean) array[6],
                 (BigDecimal) array[7],
-                (String) array[8],
+                (BigDecimal) array[8],
                 (BigDecimal) array[9],
-                (String) array[10],
-                (BigDecimal) array[11],
-                (String) array[12],
-                (BigDecimal) array[13],
-                (String) array[14],
-                (BigDecimal) array[15],
-                (String) array[16],
-                (BigDecimal) array[17]
+                (BigDecimal) array[10],
+                (BigDecimal) array[11]
         );
     }
 }

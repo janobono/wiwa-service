@@ -13,9 +13,9 @@ public class OrderItemDo {
     private Integer sortNum;
     private String name;
     private BigDecimal partPrice;
-    private BigDecimal partNetWeight;
-    private BigDecimal amount;
-    private BigDecimal netWeight;
+    private BigDecimal partWeight;
+    private Integer amount;
+    private BigDecimal weight;
     private BigDecimal total;
     private String data;
 }

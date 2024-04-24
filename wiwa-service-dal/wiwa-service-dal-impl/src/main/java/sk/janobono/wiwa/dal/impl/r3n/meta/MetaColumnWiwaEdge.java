@@ -12,14 +12,9 @@ public enum MetaColumnWiwaEdge {
     CODE("code", DataType.STRING),
     NAME("name", DataType.STRING),
     DESCRIPTION("description", DataType.STRING),
-    SALE_VALUE("sale_value", DataType.BIG_DECIMAL),
-    SALE_UNIT("sale_unit", DataType.STRING),
-    NET_WEIGHT_VALUE("net_weight_value", DataType.BIG_DECIMAL),
-    NET_WEIGHT_UNIT("net_weight_unit", DataType.STRING),
-    WIDTH_VALUE("width_value", DataType.BIG_DECIMAL),
-    WIDTH_UNIT("width_unit", DataType.STRING),
-    THICKNESS_VALUE("thickness_value", DataType.BIG_DECIMAL),
-    THICKNESS_UNIT("thickness_unit", DataType.STRING),
+    WEIGHT("weight", DataType.BIG_DECIMAL),
+    WIDTH("width", DataType.BIG_DECIMAL),
+    THICKNESS("thickness", DataType.BIG_DECIMAL),
     PRICE("price", DataType.BIG_DECIMAL);
 
     private final String columnName;

@@ -13,7 +13,7 @@ public record OrderViewDo(
         Long orderNumber,
         LocalDate delivery,
         OrderStatus status,
-        BigDecimal netWeight,
+        BigDecimal weight,
         BigDecimal total
 ) {
 }

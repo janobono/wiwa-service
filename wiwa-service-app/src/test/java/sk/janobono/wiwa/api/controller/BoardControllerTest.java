@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.api.model.QuantityWebDto;
 import sk.janobono.wiwa.api.model.application.ApplicationImageInfoWebDto;
 import sk.janobono.wiwa.api.model.board.BoardCategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardCategoryItemWebDto;
@@ -22,7 +21,6 @@ import sk.janobono.wiwa.dal.domain.CodeListDo;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.repository.CodeListItemRepository;
 import sk.janobono.wiwa.dal.repository.CodeListRepository;
-import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -68,11 +66,10 @@ class BoardControllerTest extends BaseControllerTest {
                     "BC" + i,
                     "SC" + i,
                     i % 2 == 0,
-                    new QuantityWebDto(new BigDecimal("1.000"), Unit.PIECE),
-                    new QuantityWebDto(new BigDecimal("100.000").add(BigDecimal.valueOf(i)), Unit.KILOGRAM),
-                    new QuantityWebDto(new BigDecimal("2800.000").add(BigDecimal.valueOf(i)), Unit.MILLIMETER),
-                    new QuantityWebDto(new BigDecimal("2070.000").add(BigDecimal.valueOf(i)), Unit.MILLIMETER),
-                    new QuantityWebDto(new BigDecimal("18.000").add(BigDecimal.valueOf(i)), Unit.MILLIMETER),
+                    new BigDecimal("100.000").add(BigDecimal.valueOf(i)),
+                    new BigDecimal("2800.000").add(BigDecimal.valueOf(i)),
+                    new BigDecimal("2070.000").add(BigDecimal.valueOf(i)),
+                    new BigDecimal("18.000").add(BigDecimal.valueOf(i)),
                     new BigDecimal("50.000").add(BigDecimal.valueOf(i))
             )));
         }
@@ -361,11 +358,10 @@ class BoardControllerTest extends BaseControllerTest {
                 "SPSC01",
                 "Test board",
                 false,
-                new QuantityWebDto(new BigDecimal("1.000"), Unit.PIECE),
-                new QuantityWebDto(new BigDecimal("100.000"), Unit.KILOGRAM),
-                new QuantityWebDto(new BigDecimal("2800.000"), Unit.MILLIMETER),
-                new QuantityWebDto(new BigDecimal("2070.000"), Unit.MILLIMETER),
-                new QuantityWebDto(new BigDecimal("18.000"), Unit.MILLIMETER),
+                new BigDecimal("100.000"),
+                new BigDecimal("2800.000"),
+                new BigDecimal("2070.000"),
+                new BigDecimal("18.000"),
                 new BigDecimal("50.000")
         ));
         boards.set(boardIndex, testBoard);

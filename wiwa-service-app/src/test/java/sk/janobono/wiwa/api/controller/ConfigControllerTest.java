@@ -12,7 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.api.model.QuantityWebDto;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.component.ImageUtil;
@@ -276,20 +275,20 @@ class ConfigControllerTest extends BaseControllerTest {
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new ManufacturePropertiesWebDto(
-                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER),
-                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER),
-                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER),
-                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER),
-                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER),
-                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER),
-                                new QuantityWebDto(new BigDecimal("1000.0000"), Unit.MILLIMETER)
+                                new BigDecimal("1000.0000"),
+                                new BigDecimal("1000.0000"),
+                                new BigDecimal("1000.0000"),
+                                new BigDecimal("1000.0000"),
+                                new BigDecimal("1000.0000"),
+                                new BigDecimal("1000.0000"),
+                                new BigDecimal("1000.0000")
                         ),
                         headers
                 ),
                 ManufacturePropertiesWebDto.class
         );
         assertThat(manufactureProperties.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(Objects.requireNonNull(manufactureProperties.getBody()).minimalBoardDimension().quantity()).isEqualTo(new BigDecimal("1000.0000"));
+        assertThat(Objects.requireNonNull(manufactureProperties.getBody()).minimalBoardDimension()).isEqualTo(new BigDecimal("1000.0000"));
 
         // price-for-gluing-layer
         ResponseEntity<PriceForGluingLayerWebDto> priceForGluingLayer = restTemplate.exchange(
@@ -297,7 +296,6 @@ class ConfigControllerTest extends BaseControllerTest {
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new PriceForGluingLayerWebDto(
-                                new QuantityWebDto(BigDecimal.ONE, Unit.SQUARE_METER),
                                 new BigDecimal("123.123")
                         ),
                         headers
@@ -322,8 +320,7 @@ class ConfigControllerTest extends BaseControllerTest {
                 HttpMethod.POST,
                 new HttpEntity<>(
                         List.of(new PriceForCuttingWebDto(
-                                new QuantityWebDto(BigDecimal.ONE, Unit.MILLIMETER),
-                                new QuantityWebDto(BigDecimal.ONE, Unit.MILLIMETER),
+                                BigDecimal.ONE,
                                 BigDecimal.ZERO
                         )),
                         headers
@@ -348,8 +345,7 @@ class ConfigControllerTest extends BaseControllerTest {
                 HttpMethod.POST,
                 new HttpEntity<>(
                         List.of(new PriceForGluingEdgeWebDto(
-                                new QuantityWebDto(BigDecimal.ONE, Unit.MILLIMETER),
-                                new QuantityWebDto(BigDecimal.ONE, Unit.MILLIMETER),
+                                BigDecimal.ONE,
                                 BigDecimal.ZERO
                         )),
                         headers

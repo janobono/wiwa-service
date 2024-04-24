@@ -216,57 +216,49 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('RE
 }');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('MANUFACTURE_PROPERTIES', e'{
-"minimalBoardDimension":{"quantity":30, "unit":"MILLIMETER"},
-"minimalEdgedBoardDimension":{"quantity":60, "unit":"MILLIMETER"},
-"minimalLayeredBoardDimension":{"quantity":80, "unit":"MILLIMETER"},
-"minimalFrameBoardDimension":{"quantity":70, "unit":"MILLIMETER"},
-"edgeWidthAppendDimension":{"quantity":8, "unit":"MILLIMETER"},
-"edgeLengthAppendDimension":{"quantity":40, "unit":"MILLIMETER"},
-"layeredBoardAppendDimension":{"quantity":10, "unit":"MILLIMETER"}
+"minimalBoardDimension":30,
+"minimalEdgedBoardDimension":60,
+"minimalLayeredBoardDimension":80,
+"minimalFrameBoardDimension":70,
+"edgeWidthAppendDimension":8,
+"edgeLengthAppendDimension":40,
+"layeredBoardAppendDimension":10
 }');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PRICE_FOR_GLUING_LAYER', e'{
-"sale":{"quantity":1, "unit":"SQUARE_METER"},
 "price":10
 }');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PRICES_FOR_GLUING_EDGE', e'[
 {
-"width":{"quantity":23.00, "unit":"MILLIMETER"},
-"sale":{"quantity":1, "unit":"METER"},
+"width":23.00,
 "price":0.700
 },
 {
-"width":{"quantity":33.00, "unit":"MILLIMETER"},
-"sale":{"quantity":1, "unit":"METER"},
+"width":33.00,
 "price":0.850
 },
 {
-"width":{"quantity":45.00, "unit":"MILLIMETER"},
-"sale":{"quantity":1, "unit":"METER"},
+"width":45.00,
 "price":0.980
 },
 {
-"width":{"quantity":65.00, "unit":"MILLIMETER"},
-"sale":{"quantity":1, "unit":"METER"},
+"width":65.00,
 "price":1.680
 }
 ]');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PRICES_FOR_CUTTING', e'[
 {
-"thickness":{"quantity":19.00, "unit":"MILLIMETER"},
-"sale":{"quantity":1, "unit":"METER"},
+"thickness":19.00,
 "price":0.630
 },
 {
-"thickness":{"quantity":45.00, "unit":"MILLIMETER"},
-"sale":{"quantity":1, "unit":"METER"},
+"thickness":45.00,
 "price":0.720
 },
 {
-"thickness":{"quantity":65.00, "unit":"MILLIMETER"},
-"sale":{"quantity":1, "unit":"METER"},
+"thickness":65.00,
 "price":2.000
 }
 ]');

@@ -26,6 +26,8 @@ import sk.janobono.wiwa.dal.repository.BoardRepository;
 import sk.janobono.wiwa.dal.repository.CodeListRepository;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.Quantity;
+import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -73,8 +75,7 @@ public class BoardServiceImpl implements BoardService {
                 .boardCode(data.boardCode())
                 .structureCode(data.structureCode())
                 .orientation(data.orientation())
-                .sale(data.sale())
-                .netWeight(data.netWeight())
+                .weight(data.weight())
                 .length(data.length())
                 .width(data.width())
                 .thickness(data.thickness())
@@ -97,8 +98,7 @@ public class BoardServiceImpl implements BoardService {
         boardDo.setBoardCode(data.boardCode());
         boardDo.setStructureCode(data.structureCode());
         boardDo.setOrientation(data.orientation());
-        boardDo.setSale(data.sale());
-        boardDo.setNetWeight(data.netWeight());
+        boardDo.setWeight(data.weight());
         boardDo.setLength(data.length());
         boardDo.setWidth(data.width());
         boardDo.setThickness(data.thickness());
@@ -201,11 +201,11 @@ public class BoardServiceImpl implements BoardService {
                 .boardCode(boardDo.getBoardCode())
                 .structureCode(boardDo.getStructureCode())
                 .orientation(boardDo.getOrientation())
-                .sale(boardDo.getSale())
-                .netWeight(boardDo.getNetWeight())
-                .length(boardDo.getLength())
-                .width(boardDo.getWidth())
-                .thickness(boardDo.getThickness())
+                .sale(new Quantity(BigDecimal.ONE, Unit.PIECE))
+                .weight(new Quantity(boardDo.getWeight(), Unit.KILOGRAM))
+                .length(new Quantity(boardDo.getLength(), Unit.MILLIMETER))
+                .width(new Quantity(boardDo.getWidth(), Unit.MILLIMETER))
+                .thickness(new Quantity(boardDo.getThickness(), Unit.MILLIMETER))
                 .price(new Money(boardDo.getPrice(), commonConfigProperties.currency()))
                 .vatPrice(new Money(priceUtil.countVatValue(boardDo.getPrice(), vatRate), commonConfigProperties.currency()))
                 .images(toImages(boardDo.getId()))

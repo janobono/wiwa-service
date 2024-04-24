@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.api.model.QuantityWebDto;
 import sk.janobono.wiwa.api.model.application.ApplicationImageInfoWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeCategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeCategoryItemWebDto;
@@ -22,7 +21,6 @@ import sk.janobono.wiwa.dal.domain.CodeListDo;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.repository.CodeListItemRepository;
 import sk.janobono.wiwa.dal.repository.CodeListRepository;
-import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -66,10 +64,9 @@ class EdgeControllerTest extends BaseControllerTest {
                     "code-edge-" + i,
                     "name-edge-" + i,
                     "this is edge " + i,
-                    new QuantityWebDto(new BigDecimal("1.000"), Unit.PIECE),
-                    new QuantityWebDto(new BigDecimal("100.000").add(BigDecimal.valueOf(i)), Unit.KILOGRAM),
-                    new QuantityWebDto(new BigDecimal("2070.000").add(BigDecimal.valueOf(i)), Unit.MILLIMETER),
-                    new QuantityWebDto(new BigDecimal("18.000").add(BigDecimal.valueOf(i)), Unit.MILLIMETER),
+                    new BigDecimal("100.000").add(BigDecimal.valueOf(i)),
+                    new BigDecimal("2070.000").add(BigDecimal.valueOf(i)),
+                    new BigDecimal("18.000").add(BigDecimal.valueOf(i)),
                     new BigDecimal("50.000").add(BigDecimal.valueOf(i))
             )));
         }
@@ -216,10 +213,9 @@ class EdgeControllerTest extends BaseControllerTest {
                 "SP01",
                 "SPBC01",
                 "This is test edge",
-                new QuantityWebDto(new BigDecimal("1.000"), Unit.PIECE),
-                new QuantityWebDto(new BigDecimal("100.000"), Unit.KILOGRAM),
-                new QuantityWebDto(new BigDecimal("2070.000"), Unit.MILLIMETER),
-                new QuantityWebDto(new BigDecimal("18.000"), Unit.MILLIMETER),
+                new BigDecimal("100.000"),
+                new BigDecimal("2070.000"),
+                new BigDecimal("18.000"),
                 new BigDecimal("50.000")
         ));
         edges.set(edgeIndex, testEdge);

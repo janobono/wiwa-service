@@ -11,7 +11,7 @@ public record WiwaOrderViewDto(
         Long orderNumber,
         LocalDate delivery,
         String status,
-        BigDecimal netWeight,
+        BigDecimal weight,
         BigDecimal total
 ) {
 
@@ -23,7 +23,7 @@ public record WiwaOrderViewDto(
                 wiwaOrderViewDto.orderNumber,
                 wiwaOrderViewDto.delivery,
                 wiwaOrderViewDto.status,
-                wiwaOrderViewDto.netWeight,
+                wiwaOrderViewDto.weight,
                 wiwaOrderViewDto.total
         };
     }

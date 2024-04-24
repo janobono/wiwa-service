@@ -8,9 +8,9 @@ public record WiwaOrderItemDto(
         Integer sortNum,
         String name,
         BigDecimal partPrice,
-        BigDecimal partNetWeight,
-        BigDecimal amount,
-        BigDecimal netWeight,
+        BigDecimal partWeight,
+        Integer amount,
+        BigDecimal weight,
         BigDecimal total,
         String data
 ) {
@@ -22,9 +22,9 @@ public record WiwaOrderItemDto(
                 wiwaOrderItemDto.sortNum,
                 wiwaOrderItemDto.name,
                 wiwaOrderItemDto.partPrice,
-                wiwaOrderItemDto.partNetWeight,
+                wiwaOrderItemDto.partWeight,
                 wiwaOrderItemDto.amount,
-                wiwaOrderItemDto.netWeight,
+                wiwaOrderItemDto.weight,
                 wiwaOrderItemDto.total,
                 wiwaOrderItemDto.data
         };
@@ -38,7 +38,7 @@ public record WiwaOrderItemDto(
                 (String) array[3],
                 (BigDecimal) array[4],
                 (BigDecimal) array[5],
-                (BigDecimal) array[6],
+                (Integer) array[6],
                 (BigDecimal) array[7],
                 (BigDecimal) array[8],
                 (String) array[9]

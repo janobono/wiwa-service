@@ -201,9 +201,9 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
             sqlBuilder.update(connection,
                     Query.UPDATE(MetaTable.WIWA_ORDER_ITEM.table())
                             .SET(MetaColumnWiwaOrderItem.PART_PRICE.column(), oderItemSummary.partPrice())
-                            .SET(MetaColumnWiwaOrderItem.PART_NET_WEIGHT.column(), oderItemSummary.partNetWeight())
+                            .SET(MetaColumnWiwaOrderItem.WEIGHT.column(), oderItemSummary.partWeight())
                             .SET(MetaColumnWiwaOrderItem.AMOUNT.column(), oderItemSummary.amount())
-                            .SET(MetaColumnWiwaOrderItem.NET_WEIGHT.column(), oderItemSummary.netWeight())
+                            .SET(MetaColumnWiwaOrderItem.WEIGHT.column(), oderItemSummary.weight())
                             .SET(MetaColumnWiwaOrderItem.TOTAL.column(), oderItemSummary.total())
                             .WHERE(MetaColumnWiwaOrderItem.ID.column(), Condition.EQUALS, id)
             );

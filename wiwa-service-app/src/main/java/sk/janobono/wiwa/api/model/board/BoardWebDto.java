@@ -1,8 +1,8 @@
 package sk.janobono.wiwa.api.model.board;
 
-import sk.janobono.wiwa.api.model.QuantityWebDto;
 import sk.janobono.wiwa.api.model.application.ApplicationImageInfoWebDto;
 import sk.janobono.wiwa.model.Money;
+import sk.janobono.wiwa.model.Quantity;
 
 import java.util.List;
 
@@ -14,11 +14,11 @@ public record BoardWebDto(
         String boardCode,
         String structureCode,
         Boolean orientation,
-        QuantityWebDto sale,
-        QuantityWebDto netWeight,
-        QuantityWebDto length,
-        QuantityWebDto width,
-        QuantityWebDto thickness,
+        Quantity sale,
+        Quantity weight,
+        Quantity length,
+        Quantity width,
+        Quantity thickness,
         Money price,
         Money vatPrice,
         List<ApplicationImageInfoWebDto> images,

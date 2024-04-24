@@ -2,7 +2,6 @@ package sk.janobono.wiwa.dal.domain;
 
 import lombok.Builder;
 import lombok.Data;
-import sk.janobono.wiwa.model.Quantity;
 
 import java.math.BigDecimal;
 
@@ -16,10 +15,9 @@ public class BoardDo {
     private String name;
     private String description;
     private Boolean orientation;
-    private Quantity sale;
-    private Quantity netWeight;
-    private Quantity length;
-    private Quantity width;
-    private Quantity thickness;
+    private BigDecimal weight;
+    private BigDecimal length;
+    private BigDecimal width;
+    private BigDecimal thickness;
     private BigDecimal price;
 }

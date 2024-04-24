@@ -1,7 +1,6 @@
 package sk.janobono.wiwa.business.model.board;
 
 import lombok.Builder;
-import sk.janobono.wiwa.model.Quantity;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,12 +13,12 @@ public record BoardSearchCriteriaData(
         String boardCode,
         String structureCode,
         Boolean orientation,
-        Quantity lengthFrom,
-        Quantity lengthTo,
-        Quantity widthFrom,
-        Quantity widthTo,
-        Quantity thicknessFrom,
-        Quantity thicknessTo,
+        BigDecimal lengthFrom,
+        BigDecimal lengthTo,
+        BigDecimal widthFrom,
+        BigDecimal widthTo,
+        BigDecimal thicknessFrom,
+        BigDecimal thicknessTo,
         BigDecimal priceFrom,
         BigDecimal priceTo,
         List<String> codeListItems

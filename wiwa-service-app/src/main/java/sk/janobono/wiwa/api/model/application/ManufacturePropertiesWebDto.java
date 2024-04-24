@@ -1,15 +1,17 @@
 package sk.janobono.wiwa.api.model.application;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import sk.janobono.wiwa.api.model.QuantityWebDto;
+
+import java.math.BigDecimal;
 
 public record ManufacturePropertiesWebDto(
-        @NotNull QuantityWebDto minimalBoardDimension,
-        @NotNull QuantityWebDto minimalEdgedBoardDimension,
-        @NotNull QuantityWebDto minimalLayeredBoardDimension,
-        @NotNull QuantityWebDto minimalFrameBoardDimension,
-        @NotNull QuantityWebDto edgeWidthAppendDimension,
-        @NotNull QuantityWebDto edgeLengthAppendDimension,
-        @NotNull QuantityWebDto layeredBoardAppendDimension
+        @NotNull @Min(0) BigDecimal minimalBoardDimension,
+        @NotNull @Min(0) BigDecimal minimalEdgedBoardDimension,
+        @NotNull @Min(0) BigDecimal minimalLayeredBoardDimension,
+        @NotNull @Min(0) BigDecimal minimalFrameBoardDimension,
+        @NotNull @Min(0) BigDecimal edgeWidthAppendDimension,
+        @NotNull @Min(0) BigDecimal edgeLengthAppendDimension,
+        @NotNull @Min(0) BigDecimal layeredBoardAppendDimension
 ) {
 }

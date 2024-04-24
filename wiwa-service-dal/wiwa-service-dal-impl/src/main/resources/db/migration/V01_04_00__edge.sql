@@ -1,19 +1,14 @@
 -- TABLE
 create table wiwa_edge
 (
-    id               bigserial primary key,
-    code             varchar(255)                       not null unique,
-    name             varchar(255) collate "sk-SK-x-icu" not null,
-    description      text,
-    sale_value       numeric(19, 3)                     not null,
-    sale_unit        varchar(255)                       not null,
-    net_weight_value numeric(19, 3),
-    net_weight_unit  varchar(255),
-    width_value      numeric(19, 3)                     not null,
-    width_unit       varchar(255)                       not null,
-    thickness_value  numeric(19, 3)                     not null,
-    thickness_unit   varchar(255)                       not null,
-    price            numeric(19, 3)                     not null
+    id          bigserial primary key,
+    code        varchar(255)                       not null unique,
+    name        varchar(255) collate "sk-SK-x-icu" not null,
+    description text,
+    weight      numeric(19, 3),
+    width       numeric(19, 3)                     not null,
+    thickness   numeric(19, 3)                     not null,
+    price       numeric(19, 3)                     not null
 );
 
 create table wiwa_edge_image

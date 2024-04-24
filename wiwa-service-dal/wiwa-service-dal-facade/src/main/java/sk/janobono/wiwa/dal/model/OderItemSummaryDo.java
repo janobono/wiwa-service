@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 
 public record OderItemSummaryDo(
         BigDecimal partPrice,
-        BigDecimal partNetWeight,
+        BigDecimal partWeight,
         BigDecimal amount,
-        BigDecimal netWeight,
+        BigDecimal weight,
         BigDecimal total
 ) {
 }

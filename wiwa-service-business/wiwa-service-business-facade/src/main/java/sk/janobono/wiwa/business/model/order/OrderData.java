@@ -15,7 +15,7 @@ public record OrderData(
         LocalDateTime created,
         OrderStatus status,
         Long orderNumber,
-        Quantity netWeight,
+        Quantity weight,
         Money total,
         Money vatTotal,
         LocalDate deliveryDate

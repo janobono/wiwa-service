@@ -12,9 +12,9 @@ public record OrderItemData(
         String name,
         Money partPrice,
         Money vatPartPrice,
-        Quantity partNetWeight,
+        Quantity partWeight,
         Quantity amount,
-        Quantity netWeight,
+        Quantity weight,
         Money total,
         Money vatTotal,
         PartData partData

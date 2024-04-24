@@ -1,24 +1,18 @@
 -- TABLE
 create table wiwa_board
 (
-    id               bigserial primary key,
-    code             varchar(255)                       not null unique,
-    board_code       varchar(255)                       not null,
-    structure_code   varchar(255)                       not null,
-    name             varchar(255) collate "sk-SK-x-icu" not null,
-    description      text,
-    orientation      boolean                            not null,
-    sale_value       numeric(19, 3)                     not null,
-    sale_unit        varchar(255)                       not null,
-    net_weight_value numeric(19, 3),
-    net_weight_unit  varchar(255),
-    length_value     numeric(19, 3)                     not null,
-    length_unit      varchar(255)                       not null,
-    width_value      numeric(19, 3)                     not null,
-    width_unit       varchar(255)                       not null,
-    thickness_value  numeric(19, 3)                     not null,
-    thickness_unit   varchar(255)                       not null,
-    price            numeric(19, 3)                     not null
+    id             bigserial primary key,
+    code           varchar(255)                       not null unique,
+    board_code     varchar(255)                       not null,
+    structure_code varchar(255)                       not null,
+    name           varchar(255) collate "sk-SK-x-icu" not null,
+    description    text,
+    orientation    boolean                            not null,
+    weight         numeric(19, 3),
+    length         numeric(19, 3)                     not null,
+    width          numeric(19, 3)                     not null,
+    thickness      numeric(19, 3)                     not null,
+    price          numeric(19, 3)                     not null
 );
 
 create table wiwa_board_image

@@ -7,14 +7,9 @@ public record WiwaEdgeDto(
         String code,
         String name,
         String description,
-        BigDecimal saleValue,
-        String saleUnit,
-        BigDecimal netWeightValue,
-        String netWeightUnit,
-        BigDecimal widthValue,
-        String widthUnit,
-        BigDecimal thicknessValue,
-        String thicknessUnit,
+        BigDecimal weight,
+        BigDecimal width,
+        BigDecimal thickness,
         BigDecimal price
 ) {
 
@@ -24,14 +19,9 @@ public record WiwaEdgeDto(
                 wiwaEdgeDto.code,
                 wiwaEdgeDto.name,
                 wiwaEdgeDto.description,
-                wiwaEdgeDto.saleValue,
-                wiwaEdgeDto.saleUnit,
-                wiwaEdgeDto.netWeightValue,
-                wiwaEdgeDto.netWeightUnit,
-                wiwaEdgeDto.widthValue,
-                wiwaEdgeDto.widthUnit,
-                wiwaEdgeDto.thicknessValue,
-                wiwaEdgeDto.thicknessUnit,
+                wiwaEdgeDto.weight,
+                wiwaEdgeDto.width,
+                wiwaEdgeDto.thickness,
                 wiwaEdgeDto.price
         };
     }
@@ -43,14 +33,9 @@ public record WiwaEdgeDto(
                 (String) array[2],
                 (String) array[3],
                 (BigDecimal) array[4],
-                (String) array[5],
+                (BigDecimal) array[5],
                 (BigDecimal) array[6],
-                (String) array[7],
-                (BigDecimal) array[8],
-                (String) array[9],
-                (BigDecimal) array[10],
-                (String) array[11],
-                (BigDecimal) array[12]
+                (BigDecimal) array[7]
         );
     }
 }
