@@ -14,6 +14,6 @@ import sk.janobono.wiwa.model.OrderStatus;
 public interface OrderViewDoMapper {
 
     @Mapping(target = "status", expression = "java(OrderStatus.valueOf(wiwaOrderViewDto.status()))")
-    @Mapping(target = "packageType", expression = "java(OrderPackageType.valueOf(wiwaOrderViewDto.packageType()))")
+    @Mapping(target = "packageType", expression = "java(wiwaOrderViewDto.packageType() != null ? OrderPackageType.valueOf(wiwaOrderViewDto.packageType()) : null)")
     OrderViewDo toOrderViewDo(WiwaOrderViewDto wiwaOrderViewDto);
 }

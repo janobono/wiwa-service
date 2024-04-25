@@ -8,12 +8,14 @@ create table wiwa_order_number
 create table wiwa_order
 (
     id           bigserial primary key,
-    user_id      bigint    not null references wiwa_user (id) on delete cascade,
-    created      timestamp not null,
-    order_number bigint    not null,
+    user_id      bigint         not null references wiwa_user (id) on delete cascade,
+    created      timestamp      not null,
+    order_number bigint         not null,
     delivery     date,
     package_type varchar(255),
-    data         text      not null,
+    weight       numeric(19, 3) not null,
+    total        numeric(19, 3) not null,
+    data         text           not null,
     unique (user_id, order_number)
 );
 
@@ -43,11 +45,9 @@ create table wiwa_order_contact
 create table wiwa_order_item
 (
     id       bigserial primary key,
-    order_id bigint         not null references wiwa_order (id) on delete cascade,
-    sort_num integer        not null,
-    weight   numeric(19, 3) not null,
-    total    numeric(19, 3) not null,
-    data     text           not null
+    order_id bigint  not null references wiwa_order (id) on delete cascade,
+    sort_num integer not null,
+    data     text    not null
 );
 
 create table wiwa_order_status
@@ -74,13 +74,9 @@ SELECT o.id,
                  FROM wiwa_order_status
                  WHERE wiwa_order_status.order_id = o.id
                  ORDER BY wiwa_order_status.created DESC
-                 LIMIT 1), 'NEW')                           as status,
-       COALESCE((SELECT sum(wiwa_order_item.weight)
-                 FROM wiwa_order_item
-                 WHERE wiwa_order_item.order_id = o.id), 0) as weight,
-       COALESCE((SELECT sum(wiwa_order_item.total)
-                 FROM wiwa_order_item
-                 WHERE wiwa_order_item.order_id = o.id), 0) as total
+                 LIMIT 1), 'NEW') as status,
+       o.weight,
+       o.total
 FROM wiwa_order o;
 
 -- INDEX

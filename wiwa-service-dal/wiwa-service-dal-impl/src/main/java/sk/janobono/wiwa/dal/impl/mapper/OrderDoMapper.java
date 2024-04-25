@@ -12,9 +12,9 @@ import sk.janobono.wiwa.model.OrderPackageType;
         imports = {OrderPackageType.class})
 public interface OrderDoMapper {
 
-    @Mapping(target = "packageType", expression = "java(OrderPackageType.valueOf(wiwaOrderDto.packageType()))")
+    @Mapping(target = "packageType", expression = "java(wiwaOrderDto.packageType() != null ? OrderPackageType.valueOf(wiwaOrderDto.packageType()) : null)")
     OrderDo toOrderDo(WiwaOrderDto wiwaOrderDto);
 
-    @Mapping(target = "packageType", expression = "java(orderDo.getPackageType().name())")
+    @Mapping(target = "packageType", expression = "java(orderDo.getPackageType() != null ? orderDo.getPackageType().name() : null)")
     WiwaOrderDto toWiwaOrderDto(OrderDo orderDo);
 }

@@ -1,5 +1,6 @@
 package sk.janobono.wiwa.dal.impl.r3n.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -10,6 +11,8 @@ public record WiwaOrderDto(
         Long orderNumber,
         LocalDate delivery,
         String packageType,
+        BigDecimal weight,
+        BigDecimal total,
         String data
 ) {
 
@@ -21,6 +24,8 @@ public record WiwaOrderDto(
                 wiwaOrderDto.orderNumber,
                 wiwaOrderDto.delivery,
                 wiwaOrderDto.packageType,
+                wiwaOrderDto.weight,
+                wiwaOrderDto.total,
                 wiwaOrderDto.data
         };
     }
@@ -33,7 +38,9 @@ public record WiwaOrderDto(
                 (Long) array[3],
                 (LocalDate) array[4],
                 (String) array[5],
-                (String) array[6]
+                (BigDecimal) array[6],
+                (BigDecimal) array[7],
+                (String) array[8]
         );
     }
 }

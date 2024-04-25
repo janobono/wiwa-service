@@ -14,6 +14,8 @@ public enum MetaColumnWiwaOrder {
     ORDER_NUMBER("order_number", DataType.LONG),
     DELIVERY("delivery", DataType.DATE),
     PACKAGE_TYPE("package_type", DataType.STRING),
+    WEIGHT("weight", DataType.BIG_DECIMAL),
+    TOTAL("total", DataType.BIG_DECIMAL),
     DATA("data", DataType.STRING);
 
     private final String columnName;

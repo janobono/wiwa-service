@@ -1,13 +1,9 @@
 package sk.janobono.wiwa.dal.impl.r3n.dto;
 
-import java.math.BigDecimal;
-
 public record WiwaOrderItemDto(
         Long id,
         Long orderId,
         Integer sortNum,
-        BigDecimal weight,
-        BigDecimal total,
         String data
 ) {
 
@@ -16,8 +12,6 @@ public record WiwaOrderItemDto(
                 wiwaOrderItemDto.id,
                 wiwaOrderItemDto.orderId,
                 wiwaOrderItemDto.sortNum,
-                wiwaOrderItemDto.weight,
-                wiwaOrderItemDto.total,
                 wiwaOrderItemDto.data
         };
     }
@@ -27,9 +21,7 @@ public record WiwaOrderItemDto(
                 (Long) array[0],
                 (Long) array[1],
                 (Integer) array[2],
-                (BigDecimal) array[3],
-                (BigDecimal) array[4],
-                (String) array[5]
+                (String) array[3]
         );
     }
 }

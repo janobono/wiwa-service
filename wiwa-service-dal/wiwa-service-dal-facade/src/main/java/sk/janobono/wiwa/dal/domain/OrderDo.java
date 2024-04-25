@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import sk.janobono.wiwa.model.OrderPackageType;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -16,5 +17,7 @@ public class OrderDo {
     private Long orderNumber;
     private LocalDate delivery;
     private OrderPackageType packageType;
+    private BigDecimal weight;
+    private BigDecimal total;
     private String data;
 }

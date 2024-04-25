@@ -22,13 +22,13 @@ import sk.janobono.wiwa.business.model.application.OrderStatusMailData;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.model.order.item.OrderItemChangeData;
 import sk.janobono.wiwa.business.model.order.item.OrderItemData;
+import sk.janobono.wiwa.business.model.order.item.part.PartBasicData;
 import sk.janobono.wiwa.business.model.order.item.part.PartData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.*;
 import sk.janobono.wiwa.dal.model.OderItemSortNumDo;
-import sk.janobono.wiwa.dal.model.OderItemSummaryDo;
 import sk.janobono.wiwa.dal.model.OrderDeliveryDo;
 import sk.janobono.wiwa.dal.model.OrderViewSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.*;
@@ -122,9 +122,9 @@ public class OrderServiceImpl implements OrderService {
                 .userId(userId)
                 .created(LocalDateTime.now())
                 .orderNumber(orderNumberRepository.getNextOrderNumber(userId))
-                .data(dataUtil.serializeValue(OrderSummaryData.builder()
-                        // TODO
-                        .build()))
+                .weight(BigDecimal.ZERO)
+                .total(BigDecimal.ZERO)
+                .data(dataUtil.serializeValue(createEmptyOrderSummary()))
                 .build());
         orderStatusRepository.save(OrderStatusDo.builder()
                 .orderId(orderDo.getId())
@@ -378,14 +378,10 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(creatorId, manager, orderViewDo);
 
-        final PartData part = toPartData(orderItemChange);
-
         orderItemRepository.insert(OrderItemDo.builder()
                 .orderId(id)
                 .sortNum(orderItemRepository.countByOrderId(id))
-                .weight(part.summary().getWeight().quantity())
-                .total(part.summary().getTotal().amount())
-                .data(dataUtil.serializeValue(part))
+                .data(dataUtil.serializeValue(toPartData(orderItemChange)))
                 .build());
 
         recountOrderSummary(id);
@@ -399,12 +395,7 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(modifierId, manager, orderViewDo);
 
-        final PartData partData = toPartData(orderItemChange);
-
-        orderItemRepository.setData(itemId, dataUtil.serializeValue(partData));
-        orderItemRepository.setSummary(itemId, new OderItemSummaryDo(
-                partData.summary().getWeight().quantity(), partData.summary().getTotal().amount()
-        ));
+        orderItemRepository.setData(itemId, dataUtil.serializeValue(toPartData(orderItemChange)));
 
         recountOrderSummary(id);
 
@@ -617,9 +608,14 @@ public class OrderServiceImpl implements OrderService {
         return emails;
     }
 
+    private OrderSummaryData createEmptyOrderSummary() {
+        // TODO
+        return OrderSummaryData.builder().build();
+    }
+
     private PartData toPartData(final OrderItemChangeData orderItemChange) {
 // TODO
-        return null;
+        return PartBasicData.builder().build();
     }
 
     private void recountOrderItems(final long id) {

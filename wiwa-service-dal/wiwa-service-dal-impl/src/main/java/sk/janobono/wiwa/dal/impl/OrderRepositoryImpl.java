@@ -10,6 +10,7 @@ import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaOrderDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrder;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.model.OrderDeliveryDo;
+import sk.janobono.wiwa.dal.model.OrderSummaryDo;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
@@ -120,6 +121,21 @@ public class OrderRepositoryImpl implements OrderRepository {
             sqlBuilder.update(connection,
                     Query.UPDATE(MetaTable.WIWA_ORDER.table())
                             .SET(MetaColumnWiwaOrder.DATA.column(), data)
+                            .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, id)
+            );
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void setOrderSummary(final long id, final OrderSummaryDo orderSummary) {
+        log.debug("setOrderSummary({},{})", id, orderSummary);
+        try (final Connection connection = dataSource.getConnection()) {
+            sqlBuilder.update(connection,
+                    Query.UPDATE(MetaTable.WIWA_ORDER.table())
+                            .SET(MetaColumnWiwaOrder.WEIGHT.column(), orderSummary.weight())
+                            .SET(MetaColumnWiwaOrder.TOTAL.column(), orderSummary.total())
                             .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, id)
             );
         } catch (final Exception e) {

@@ -2,7 +2,7 @@ package sk.janobono.wiwa.dal.model;
 
 import java.math.BigDecimal;
 
-public record OderItemSummaryDo(
+public record OrderSummaryDo(
         BigDecimal weight,
         BigDecimal total
 ) {
