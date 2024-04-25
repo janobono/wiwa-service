@@ -17,13 +17,9 @@ create table wiwa_board
 
 create table wiwa_board_image
 (
-    id        bigserial primary key,
-    board_id  bigint       not null references wiwa_board (id) on delete cascade,
-    file_name varchar(255) not null,
+    board_id  bigint primary key references wiwa_board (id) on delete cascade,
     file_type varchar(255) not null,
-    thumbnail bytea        not null,
-    data      bytea        not null,
-    unique (board_id, file_name)
+    data      bytea        not null
 );
 
 create table wiwa_board_code_list_item
@@ -34,7 +30,5 @@ create table wiwa_board_code_list_item
 );
 
 -- INDEX
-create index idx_wiwa_board_image on wiwa_board_image (board_id);
-
 create index idx_wiwa_board_code_list_item1 on wiwa_board_code_list_item (board_id);
 create index idx_wiwa_board_code_list_item2 on wiwa_board_code_list_item (code_list_item_id);

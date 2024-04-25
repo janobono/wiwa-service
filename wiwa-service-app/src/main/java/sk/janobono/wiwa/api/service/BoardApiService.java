@@ -76,12 +76,12 @@ public class BoardApiService {
         boardService.deleteBoard(id);
     }
 
-    public BoardWebDto setBoardImage(final long id, final MultipartFile multipartFile) {
-        return boardWebMapper.mapToWebDto(boardService.setBoardImage(id, multipartFile));
+    public void setBoardImage(final long id, final MultipartFile multipartFile) {
+        boardService.setBoardImage(id, multipartFile);
     }
 
-    public BoardWebDto deleteBoardImage(final long id, final String fileName) {
-        return boardWebMapper.mapToWebDto(boardService.deleteBoardImage(id, fileName));
+    public void deleteBoardImage(final long id) {
+        boardService.deleteBoardImage(id);
     }
 
     public BoardWebDto setBoardCategoryItems(final long id, final List<BoardCategoryItemChangeWebDto> categoryItems) {

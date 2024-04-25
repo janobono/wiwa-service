@@ -97,18 +97,18 @@ public class UiController {
                 .body(resourceEntity.resource());
     }
 
-    @GetMapping("/board-images/{id}/{fileName}")
-    public ResponseEntity<Resource> getBoardImage(@PathVariable("id") final Long boardId, @PathVariable("fileName") final String fileName) {
-        final ResourceEntityWebDto resourceEntity = uiApiService.getBoardImage(boardId, fileName);
+    @GetMapping("/board-images/{id}")
+    public ResponseEntity<Resource> getBoardImage(@PathVariable("id") final Long boardId) {
+        final ResourceEntityWebDto resourceEntity = uiApiService.getBoardImage(boardId);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(resourceEntity.contentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntity.fileName() + "\"")
                 .body(resourceEntity.resource());
     }
 
-    @GetMapping("/edge-images/{id}/{fileName}")
-    public ResponseEntity<Resource> getEdgeImage(@PathVariable("id") final Long edgeId, @PathVariable("fileName") final String fileName) {
-        final ResourceEntityWebDto resourceEntity = uiApiService.getEdgeImage(edgeId, fileName);
+    @GetMapping("/edge-images/{id}")
+    public ResponseEntity<Resource> getEdgeImage(@PathVariable("id") final Long edgeId) {
+        final ResourceEntityWebDto resourceEntity = uiApiService.getEdgeImage(edgeId);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(resourceEntity.contentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntity.fileName() + "\"")

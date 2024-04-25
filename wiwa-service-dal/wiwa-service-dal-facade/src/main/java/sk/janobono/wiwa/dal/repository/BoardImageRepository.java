@@ -1,18 +1,14 @@
 package sk.janobono.wiwa.dal.repository;
 
 import sk.janobono.wiwa.dal.domain.BoardImageDo;
-import sk.janobono.wiwa.dal.model.ApplicationImageInfoDo;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface BoardImageRepository {
 
-    void deleteById(long id);
+    void deleteByBoardId(long boardId);
 
-    List<ApplicationImageInfoDo> findAllByBoardId(long boardId);
-
-    Optional<BoardImageDo> findByBoardIdAndFileName(long boardId, String fileName);
+    Optional<BoardImageDo> findByBoardId(long boardId);
 
     BoardImageDo save(BoardImageDo boardImageDo);
 }

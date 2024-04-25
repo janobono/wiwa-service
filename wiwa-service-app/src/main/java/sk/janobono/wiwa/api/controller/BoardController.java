@@ -101,14 +101,14 @@ public class BoardController {
 
     @PostMapping("/{id}/images")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public BoardWebDto setBoardImage(@PathVariable("id") final long id, @RequestParam("file") final MultipartFile multipartFile) {
-        return boardApiService.setBoardImage(id, multipartFile);
+    public void setBoardImage(@PathVariable("id") final long id, @RequestParam("file") final MultipartFile multipartFile) {
+        boardApiService.setBoardImage(id, multipartFile);
     }
 
-    @DeleteMapping("/{id}/images/{fileName}")
+    @DeleteMapping("/{id}/images")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public BoardWebDto deleteBoardImage(@PathVariable("id") final long id, @PathVariable("fileName") final String fileName) {
-        return boardApiService.deleteBoardImage(id, fileName);
+    public void deleteBoardImage(@PathVariable("id") final long id) {
+        boardApiService.deleteBoardImage(id);
     }
 
     @PostMapping("/{id}/category-items")

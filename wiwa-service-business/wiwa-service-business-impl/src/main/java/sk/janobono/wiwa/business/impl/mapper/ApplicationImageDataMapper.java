@@ -6,8 +6,6 @@ import org.mapstruct.NullValueCheckStrategy;
 import sk.janobono.wiwa.business.model.application.ApplicationImageData;
 import sk.janobono.wiwa.business.model.application.ApplicationImageInfoData;
 import sk.janobono.wiwa.dal.domain.ApplicationImageDo;
-import sk.janobono.wiwa.dal.domain.BoardImageDo;
-import sk.janobono.wiwa.dal.domain.EdgeImageDo;
 import sk.janobono.wiwa.dal.model.ApplicationImageInfoDo;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
@@ -18,8 +16,4 @@ public interface ApplicationImageDataMapper {
     ApplicationImageInfoData mapToInfoData(ApplicationImageDo applicationImage);
 
     ApplicationImageData mapToData(ApplicationImageDo applicationImage);
-
-    ApplicationImageData mapToData(BoardImageDo boardImage);
-
-    ApplicationImageData mapToData(EdgeImageDo edgeImage);
 }

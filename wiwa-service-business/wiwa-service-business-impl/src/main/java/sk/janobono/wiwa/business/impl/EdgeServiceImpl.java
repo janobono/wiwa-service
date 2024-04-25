@@ -7,13 +7,10 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
-import sk.janobono.wiwa.business.impl.mapper.ApplicationImageDataMapper;
-import sk.janobono.wiwa.business.model.application.ApplicationImageInfoData;
 import sk.janobono.wiwa.business.model.edge.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.EdgeService;
 import sk.janobono.wiwa.component.ImageUtil;
-import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.CodeListDo;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
@@ -41,9 +38,6 @@ public class EdgeServiceImpl implements EdgeService {
 
     private final ImageUtil imageUtil;
     private final PriceUtil priceUtil;
-    private final ScDf scDf;
-
-    private final ApplicationImageDataMapper applicationImageDataMapper;
 
     private final CodeListRepository codeListRepository;
     private final EdgeRepository edgeRepository;
@@ -106,44 +100,35 @@ public class EdgeServiceImpl implements EdgeService {
     }
 
     @Override
-    public EdgeData setEdgeImage(final long edgeId, final MultipartFile multipartFile) {
+    public void setEdgeImage(final long edgeId, final MultipartFile multipartFile) {
         if (!edgeRepository.existsById(edgeId)) {
             throw WiwaException.BOARD_NOT_FOUND.exception("Edge with id {0} not found", edgeId);
         }
 
-        final String fileName = scDf.toStripAndLowerCase(multipartFile.getOriginalFilename());
         final String fileType = Optional.ofNullable(multipartFile.getContentType()).orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
         if (!imageUtil.isImageFile(fileType)) {
             throw WiwaException.APPLICATION_IMAGE_NOT_SUPPORTED.exception("Unsupported file type {0}", fileType);
         }
 
-        final EdgeImageDo edgeImageDo = edgeImageRepository.findByEdgeIdAndFileName(edgeId, fileName)
-                .orElse(EdgeImageDo.builder().build());
-        edgeImageDo.setEdgeId(edgeId);
-        edgeImageDo.setFileName(fileName);
-        edgeImageDo.setFileType(fileType);
-        edgeImageDo.setThumbnail(imageUtil.scaleImage(fileType,
-                imageUtil.getFileData(multipartFile),
-                commonConfigProperties.maxThumbnailResolution(),
-                commonConfigProperties.maxThumbnailResolution()));
-        edgeImageDo.setData(imageUtil.scaleImage(fileType,
-                imageUtil.getFileData(multipartFile),
-                commonConfigProperties.maxImageResolution(),
-                commonConfigProperties.maxImageResolution()));
-        edgeImageRepository.save(edgeImageDo);
-
-        return toEdgeData(getEdgeDo(edgeId), applicationPropertyService.getVatRate());
+        edgeImageRepository.save(EdgeImageDo.builder()
+                .edgeId(edgeId)
+                .fileType(fileType)
+                .data(imageUtil.scaleImage(fileType,
+                        imageUtil.getFileData(multipartFile),
+                        commonConfigProperties.maxImageResolution(),
+                        commonConfigProperties.maxImageResolution())
+                )
+                .build());
     }
 
     @Override
-    public EdgeData deleteEdgeImage(final long edgeId, final String fileName) {
+    public void deleteEdgeImage(final long edgeId) {
         if (!edgeRepository.existsById(edgeId)) {
             throw WiwaException.BOARD_NOT_FOUND.exception("Edge with id {0} not found", edgeId);
         }
-        edgeImageRepository.findByEdgeIdAndFileName(edgeId, fileName)
-                .ifPresent(edgeImageDo -> edgeImageRepository.deleteById(edgeImageDo.getId()));
-        return toEdgeData(getEdgeDo(edgeId), applicationPropertyService.getVatRate());
+
+        edgeImageRepository.deleteByEdgeId(edgeId);
     }
 
     @Override
@@ -191,15 +176,8 @@ public class EdgeServiceImpl implements EdgeService {
                 .thickness(new Quantity(edgeDo.getThickness(), Unit.MILLIMETER))
                 .price(new Money(edgeDo.getPrice(), commonConfigProperties.currency()))
                 .vatPrice(new Money(priceUtil.countVatValue(edgeDo.getPrice(), vatRate), commonConfigProperties.currency()))
-                .images(toImages(edgeDo.getId()))
                 .categoryItems(toEdgeCategoryItems(edgeDo.getId()))
                 .build();
-    }
-
-    private List<ApplicationImageInfoData> toImages(final long edgeId) {
-        return edgeImageRepository.findAllByEdgeId(edgeId).stream()
-                .map(applicationImageDataMapper::mapToData)
-                .toList();
     }
 
     private List<EdgeCategoryItemData> toEdgeCategoryItems(final long edgeId) {

@@ -7,13 +7,10 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
-import sk.janobono.wiwa.business.impl.mapper.ApplicationImageDataMapper;
-import sk.janobono.wiwa.business.model.application.ApplicationImageInfoData;
 import sk.janobono.wiwa.business.model.board.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.BoardService;
 import sk.janobono.wiwa.component.ImageUtil;
-import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.BoardDo;
 import sk.janobono.wiwa.dal.domain.BoardImageDo;
@@ -41,9 +38,6 @@ public class BoardServiceImpl implements BoardService {
 
     private final ImageUtil imageUtil;
     private final PriceUtil priceUtil;
-    private final ScDf scDf;
-
-    private final ApplicationImageDataMapper applicationImageDataMapper;
 
     private final CodeListRepository codeListRepository;
     private final BoardRepository boardRepository;
@@ -114,44 +108,34 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardData setBoardImage(final long boardId, final MultipartFile multipartFile) {
+    public void setBoardImage(final long boardId, final MultipartFile multipartFile) {
         if (!boardRepository.existsById(boardId)) {
             throw WiwaException.BOARD_NOT_FOUND.exception("Board with id {0} not found", boardId);
         }
 
-        final String fileName = scDf.toStripAndLowerCase(multipartFile.getOriginalFilename());
         final String fileType = Optional.ofNullable(multipartFile.getContentType()).orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
         if (!imageUtil.isImageFile(fileType)) {
             throw WiwaException.APPLICATION_IMAGE_NOT_SUPPORTED.exception("Unsupported file type {0}", fileType);
         }
 
-        final BoardImageDo boardImageDo = boardImageRepository.findByBoardIdAndFileName(boardId, fileName)
-                .orElse(BoardImageDo.builder().build());
-        boardImageDo.setBoardId(boardId);
-        boardImageDo.setFileName(fileName);
-        boardImageDo.setFileType(fileType);
-        boardImageDo.setThumbnail(imageUtil.scaleImage(fileType,
-                imageUtil.getFileData(multipartFile),
-                commonConfigProperties.maxThumbnailResolution(),
-                commonConfigProperties.maxThumbnailResolution()));
-        boardImageDo.setData(imageUtil.scaleImage(fileType,
-                imageUtil.getFileData(multipartFile),
-                commonConfigProperties.maxImageResolution(),
-                commonConfigProperties.maxImageResolution()));
-        boardImageRepository.save(boardImageDo);
-
-        return toBoardData(getBoardDo(boardId), applicationPropertyService.getVatRate());
+        boardImageRepository.save(BoardImageDo.builder()
+                .boardId(boardId)
+                .fileType(fileType)
+                .data(imageUtil.scaleImage(fileType,
+                        imageUtil.getFileData(multipartFile),
+                        commonConfigProperties.maxImageResolution(),
+                        commonConfigProperties.maxImageResolution())
+                )
+                .build());
     }
 
     @Override
-    public BoardData deleteBoardImage(final long boardId, final String fileName) {
+    public void deleteBoardImage(final long boardId) {
         if (!boardRepository.existsById(boardId)) {
             throw WiwaException.BOARD_NOT_FOUND.exception("Board with id {0} not found", boardId);
         }
-        boardImageRepository.findByBoardIdAndFileName(boardId, fileName)
-                .ifPresent(boardImageDo -> boardImageRepository.deleteById(boardImageDo.getId()));
-        return toBoardData(getBoardDo(boardId), applicationPropertyService.getVatRate());
+        boardImageRepository.deleteByBoardId(boardId);
     }
 
     @Override
@@ -208,15 +192,8 @@ public class BoardServiceImpl implements BoardService {
                 .thickness(new Quantity(boardDo.getThickness(), Unit.MILLIMETER))
                 .price(new Money(boardDo.getPrice(), commonConfigProperties.currency()))
                 .vatPrice(new Money(priceUtil.countVatValue(boardDo.getPrice(), vatRate), commonConfigProperties.currency()))
-                .images(toImages(boardDo.getId()))
                 .categoryItems(toBoardCategoryItems(boardDo.getId()))
                 .build();
-    }
-
-    private List<ApplicationImageInfoData> toImages(final Long boardId) {
-        return boardImageRepository.findAllByBoardId(boardId).stream()
-                .map(applicationImageDataMapper::mapToData)
-                .toList();
     }
 
     private List<BoardCategoryItemData> toBoardCategoryItems(final Long boardId) {

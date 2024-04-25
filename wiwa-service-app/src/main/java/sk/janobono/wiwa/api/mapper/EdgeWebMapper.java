@@ -6,8 +6,7 @@ import org.mapstruct.NullValueCheckStrategy;
 import sk.janobono.wiwa.api.model.edge.*;
 import sk.janobono.wiwa.business.model.edge.*;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
-        uses = {ApplicationImageWebMapper.class})
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface EdgeWebMapper {
 
     EdgeCategoryWebDto mapToWebDto(EdgeCategoryData edgeCategory);

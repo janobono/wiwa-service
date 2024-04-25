@@ -22,9 +22,9 @@ public interface EdgeService {
 
     void deleteEdge(long id);
 
-    EdgeData setEdgeImage(long edgeId, MultipartFile multipartFile);
+    void setEdgeImage(long edgeId, MultipartFile multipartFile);
 
-    EdgeData deleteEdgeImage(long edgeId, String fileName);
+    void deleteEdgeImage(long edgeId);
 
     EdgeData setEdgeCategoryItems(long edgeId, List<EdgeCategoryItemChangeData> categoryItems);
 }

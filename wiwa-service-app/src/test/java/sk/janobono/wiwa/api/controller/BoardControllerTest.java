@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.api.model.application.ApplicationImageInfoWebDto;
 import sk.janobono.wiwa.api.model.board.BoardCategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardCategoryItemWebDto;
 import sk.janobono.wiwa.api.model.board.BoardChangeWebDto;
@@ -372,23 +371,7 @@ class BoardControllerTest extends BaseControllerTest {
 
         setBoardImage(token, testBoardId, "test01.png");
         setBoardImage(token, testBoardId, "test02.png");
-        final List<ApplicationImageInfoWebDto> boardImages = setBoardImage(token, testBoardId, "test03.png").images();
-        final List<ApplicationImageInfoWebDto> savedBoardImages = getBoard(headers, testBoardId).images();
-
-        for (final ApplicationImageInfoWebDto originalImage : boardImages) {
-            final ApplicationImageInfoWebDto savedImage = savedBoardImages.stream()
-                    .filter(s -> s.fileName().equals(originalImage.fileName()))
-                    .findFirst()
-                    .orElseThrow();
-            assertThat(savedImage).usingRecursiveComparison().isEqualTo(originalImage);
-            assertThat(getBoardImage(testBoardId, savedImage.fileName()))
-                    .isEqualTo(imageUtil.scaleImage(
-                            "png",
-                            imageUtil.generateMessageImage(savedImage.fileName()),
-                            commonConfigProperties.maxImageResolution(),
-                            commonConfigProperties.maxImageResolution()
-                    ));
-        }
+        setBoardImage(token, testBoardId, "test03.png");
 
         final CodeListDo codeList = codeListRepository.save(CodeListDo.builder()
                 .code("code")
@@ -473,9 +456,8 @@ class BoardControllerTest extends BaseControllerTest {
         assertThat(categoryItems.size()).isEqualTo(0);
         assertThat(categoryItems.size()).isEqualTo(savedCategoryItems.size());
 
-        for (final ApplicationImageInfoWebDto originalImage : boardImages) {
-            deleteBoardImage(headers, testBoardId, originalImage.fileName());
-        }
+        deleteBoardImage(headers, testBoardId);
+
         for (final BoardWebDto board : boards) {
             deleteBoard(headers, board.id());
         }
@@ -540,7 +522,7 @@ class BoardControllerTest extends BaseControllerTest {
         );
     }
 
-    private BoardWebDto setBoardImage(final String token, final Long id, final String fileName) {
+    private void setBoardImage(final String token, final Long id, final String fileName) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.setBearerAuth(token);
@@ -554,27 +536,23 @@ class BoardControllerTest extends BaseControllerTest {
         });
         final HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
 
-        final ResponseEntity<BoardWebDto> response = restTemplate.exchange(
+        final ResponseEntity<Void> response = restTemplate.exchange(
                 getURI("/boards/{id}/images", Map.of("id", Long.toString(id))),
                 HttpMethod.POST,
                 httpEntity,
-                BoardWebDto.class
+                Void.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        return response.getBody();
     }
 
-    public BoardWebDto deleteBoardImage(final HttpHeaders headers, final Long id, final String fileName) {
-        final ResponseEntity<BoardWebDto> response = restTemplate.exchange(
-                getURI("/boards/{id}/images/{fileName}", Map.of("id", Long.toString(id), "fileName", fileName)),
+    public void deleteBoardImage(final HttpHeaders headers, final Long id) {
+        final ResponseEntity<Void> response = restTemplate.exchange(
+                getURI("/boards/{id}/images", Map.of("id", Long.toString(id))),
                 HttpMethod.DELETE,
                 new HttpEntity<>(headers),
-                BoardWebDto.class
+                Void.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        return response.getBody();
     }
 
     public BoardWebDto setBoardCodeListItems(final HttpHeaders headers, final Long id, final List<BoardCategoryItemChangeWebDto> categoryItems) {

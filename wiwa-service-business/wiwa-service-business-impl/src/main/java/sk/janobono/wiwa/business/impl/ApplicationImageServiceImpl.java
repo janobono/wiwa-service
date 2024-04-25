@@ -56,11 +56,16 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
     }
 
     @Override
-    public ApplicationImageData getBoardImage(final long boardId, final String fileName) {
-        return boardImageRepository.findByBoardIdAndFileName(boardId, scDf.toStripAndLowerCase(fileName))
-                .map(applicationImageDataMapper::mapToData)
+    public ApplicationImageData getBoardImage(final long boardId) {
+        final String name = "board%d".formatted(boardId);
+        return boardImageRepository.findByBoardId(boardId)
+                .map(boardImageDo -> ApplicationImageData.builder()
+                        .fileName(getFileName(name, boardImageDo.getFileType()))
+                        .fileType(boardImageDo.getFileType())
+                        .data(boardImageDo.getData())
+                        .build())
                 .orElseGet(() -> new ApplicationImageData(
-                        fileName,
+                        getFileName("board%d".formatted(boardId), MediaType.IMAGE_PNG_VALUE),
                         MediaType.IMAGE_PNG_VALUE,
                         imageUtil.generateMessageImage(null),
                         imageUtil.generateMessageImage(null)
@@ -68,11 +73,16 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
     }
 
     @Override
-    public ApplicationImageData getEdgeImage(final long edgeId, final String fileName) {
-        return edgeImageRepository.findByEdgeIdAndFileName(edgeId, scDf.toStripAndLowerCase(fileName))
-                .map(applicationImageDataMapper::mapToData)
+    public ApplicationImageData getEdgeImage(final long edgeId) {
+        final String name = "edge%d".formatted(edgeId);
+        return edgeImageRepository.findByEdgeId(edgeId)
+                .map(edgeImageDo -> ApplicationImageData.builder()
+                        .fileName(getFileName(name, edgeImageDo.getFileType()))
+                        .fileType(edgeImageDo.getFileType())
+                        .data(edgeImageDo.getData())
+                        .build())
                 .orElseGet(() -> new ApplicationImageData(
-                        fileName,
+                        getFileName(name, MediaType.IMAGE_PNG_VALUE),
                         MediaType.IMAGE_PNG_VALUE,
                         imageUtil.generateMessageImage(null),
                         imageUtil.generateMessageImage(null)
@@ -150,5 +160,15 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
                 .build();
 
         return applicationImageDataMapper.mapToInfoData(applicationImageRepository.save(applicationImageDo));
+    }
+
+    private String getFileName(final String name, final String fileType) {
+        return switch (fileType) {
+            case MediaType.IMAGE_PNG_VALUE -> name + ".png";
+            case MediaType.IMAGE_JPEG_VALUE -> name + ".jpg";
+            case MediaType.IMAGE_GIF_VALUE -> name + ".gif";
+            default ->
+                    throw WiwaException.APPLICATION_IMAGE_NOT_SUPPORTED.exception("Unsupported file type {0}", fileType);
+        };
     }
 }

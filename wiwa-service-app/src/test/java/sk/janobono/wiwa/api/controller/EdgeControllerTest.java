@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import sk.janobono.wiwa.api.model.application.ApplicationImageInfoWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeCategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeCategoryItemWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeChangeWebDto;
@@ -226,23 +225,7 @@ class EdgeControllerTest extends BaseControllerTest {
 
         setEdgeImage(token, testEdgeId, "test01.png");
         setEdgeImage(token, testEdgeId, "test02.png");
-        final List<ApplicationImageInfoWebDto> edgeImages = setEdgeImage(token, testEdgeId, "test03.png").images();
-        final List<ApplicationImageInfoWebDto> savedEdgeImages = getEdge(headers, testEdgeId).images();
-
-        for (final ApplicationImageInfoWebDto originalImage : edgeImages) {
-            final ApplicationImageInfoWebDto savedImage = savedEdgeImages.stream()
-                    .filter(s -> s.fileName().equals(originalImage.fileName()))
-                    .findFirst()
-                    .orElseThrow();
-            assertThat(savedImage).usingRecursiveComparison().isEqualTo(originalImage);
-            assertThat(getEdgeImage(testEdgeId, savedImage.fileName()))
-                    .isEqualTo(imageUtil.scaleImage(
-                            "png",
-                            imageUtil.generateMessageImage(savedImage.fileName()),
-                            commonConfigProperties.maxImageResolution(),
-                            commonConfigProperties.maxImageResolution()
-                    ));
-        }
+        setEdgeImage(token, testEdgeId, "test03.png");
 
         final CodeListDo codeList = codeListRepository.save(CodeListDo.builder()
                 .code("code")
@@ -317,9 +300,7 @@ class EdgeControllerTest extends BaseControllerTest {
         assertThat(categoryItems.size()).isEqualTo(0);
         assertThat(categoryItems.size()).isEqualTo(savedCategoryItems.size());
 
-        for (final ApplicationImageInfoWebDto originalImage : edgeImages) {
-            deleteEdgeImage(headers, testEdgeId, originalImage.fileName());
-        }
+        deleteEdgeImage(headers, testEdgeId);
         for (final EdgeWebDto edge : edges) {
             deleteEdge(headers, edge.id());
         }
@@ -374,7 +355,7 @@ class EdgeControllerTest extends BaseControllerTest {
         );
     }
 
-    private EdgeWebDto setEdgeImage(final String token, final Long id, final String fileName) {
+    private void setEdgeImage(final String token, final Long id, final String fileName) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.setBearerAuth(token);
@@ -388,27 +369,23 @@ class EdgeControllerTest extends BaseControllerTest {
         });
         final HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
 
-        final ResponseEntity<EdgeWebDto> response = restTemplate.exchange(
+        final ResponseEntity<Void> response = restTemplate.exchange(
                 getURI("/edges/{id}/images", Map.of("id", Long.toString(id))),
                 HttpMethod.POST,
                 httpEntity,
-                EdgeWebDto.class
+                Void.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        return response.getBody();
     }
 
-    public EdgeWebDto deleteEdgeImage(final HttpHeaders headers, final Long id, final String fileName) {
-        final ResponseEntity<EdgeWebDto> response = restTemplate.exchange(
-                getURI("/edges/{id}/images/{fileName}", Map.of("id", Long.toString(id), "fileName", fileName)),
+    public void deleteEdgeImage(final HttpHeaders headers, final Long id) {
+        final ResponseEntity<Void> response = restTemplate.exchange(
+                getURI("/edges/{id}/images", Map.of("id", Long.toString(id))),
                 HttpMethod.DELETE,
                 new HttpEntity<>(headers),
-                EdgeWebDto.class
+                Void.class
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        return response.getBody();
     }
 
     public EdgeWebDto setEdgeCodeListItems(final HttpHeaders headers, final Long id, final List<EdgeCategoryItemChangeWebDto> categoryItems) {

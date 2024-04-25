@@ -1,18 +1,14 @@
 package sk.janobono.wiwa.dal.repository;
 
 import sk.janobono.wiwa.dal.domain.EdgeImageDo;
-import sk.janobono.wiwa.dal.model.ApplicationImageInfoDo;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface EdgeImageRepository {
 
-    void deleteById(long id);
+    void deleteByEdgeId(long edgeId);
 
-    List<ApplicationImageInfoDo> findAllByEdgeId(long edgeId);
-
-    Optional<EdgeImageDo> findByEdgeIdAndFileName(long edgeId, String fileName);
+    Optional<EdgeImageDo> findByEdgeId(long edgeId);
 
     EdgeImageDo save(EdgeImageDo edgeImageDo);
 }

@@ -91,14 +91,14 @@ public class EdgeController {
 
     @PostMapping("/{id}/images")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public EdgeWebDto setEdgeImage(@PathVariable("id") final long id, @RequestParam("file") final MultipartFile multipartFile) {
-        return edgeApiService.setEdgeImage(id, multipartFile);
+    public void setEdgeImage(@PathVariable("id") final long id, @RequestParam("file") final MultipartFile multipartFile) {
+        edgeApiService.setEdgeImage(id, multipartFile);
     }
 
-    @DeleteMapping("/{id}/images/{fileName}")
+    @DeleteMapping("/{id}/images")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public EdgeWebDto deleteEdgeImage(@PathVariable("id") final long id, @PathVariable("fileName") final String fileName) {
-        return edgeApiService.deleteEdgeImage(id, fileName);
+    public void deleteEdgeImage(@PathVariable("id") final long id) {
+        edgeApiService.deleteEdgeImage(id);
     }
 
     @PostMapping("/{id}/category-items")

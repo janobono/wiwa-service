@@ -22,9 +22,9 @@ public interface BoardService {
 
     void deleteBoard(long id);
 
-    BoardData setBoardImage(long boardId, MultipartFile multipartFile);
+    void setBoardImage(long boardId, MultipartFile multipartFile);
 
-    BoardData deleteBoardImage(long boardId, String fileName);
+    void deleteBoardImage(long boardId);
 
     BoardData setBoardCategoryItems(long boardId, List<BoardCategoryItemChangeData> categoryItems);
 }

@@ -6,12 +6,9 @@ import lombok.ToString;
 
 @Builder
 @Data
-@ToString(exclude = {"thumbnail", "data"})
+@ToString(exclude = {"data"})
 public class BoardImageDo {
-    private Long id;
     private Long boardId;
-    private String fileName;
     private String fileType;
-    private byte[] thumbnail;
     private byte[] data;
 }

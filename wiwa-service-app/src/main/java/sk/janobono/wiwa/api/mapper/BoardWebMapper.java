@@ -6,8 +6,7 @@ import org.mapstruct.NullValueCheckStrategy;
 import sk.janobono.wiwa.api.model.board.*;
 import sk.janobono.wiwa.business.model.board.*;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
-        uses = {ApplicationImageWebMapper.class})
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface BoardWebMapper {
 
     BoardCategoryWebDto mapToWebDto(BoardCategoryData boardCategory);

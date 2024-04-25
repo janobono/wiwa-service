@@ -66,12 +66,12 @@ public class EdgeApiService {
         edgeService.deleteEdge(id);
     }
 
-    public EdgeWebDto setEdgeImage(final long id, final MultipartFile multipartFile) {
-        return edgeWebMapper.mapToWebDto(edgeService.setEdgeImage(id, multipartFile));
+    public void setEdgeImage(final long id, final MultipartFile multipartFile) {
+        edgeService.setEdgeImage(id, multipartFile);
     }
 
-    public EdgeWebDto deleteEdgeImage(final long id, final String fileName) {
-        return edgeWebMapper.mapToWebDto(edgeService.deleteEdgeImage(id, fileName));
+    public void deleteEdgeImage(final long id) {
+        edgeService.deleteEdgeImage(id);
     }
 
     public EdgeWebDto setEdgeCategoryItems(final long id, final List<EdgeCategoryItemChangeWebDto> categoryItems) {

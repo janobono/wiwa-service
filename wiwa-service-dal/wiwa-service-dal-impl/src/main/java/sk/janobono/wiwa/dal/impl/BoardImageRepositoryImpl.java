@@ -9,12 +9,10 @@ import sk.janobono.wiwa.dal.impl.mapper.BoardImageDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaBoardImageDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaBoardImage;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
-import sk.janobono.wiwa.dal.model.ApplicationImageInfoDo;
 import sk.janobono.wiwa.dal.repository.BoardImageRepository;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
-import sk.r3n.sql.Order;
 import sk.r3n.sql.Query;
 
 import javax.sql.DataSource;
@@ -34,53 +32,26 @@ public class BoardImageRepositoryImpl implements BoardImageRepository {
     private final CriteriaUtil criteriaUtil;
 
     @Override
-    public void deleteById(final long id) {
-        log.debug("deleteById({})", id);
+    public void deleteByBoardId(final long boardId) {
+        log.debug("deleteByBoardId({})", boardId);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
                     Query.DELETE()
                             .FROM(MetaTable.WIWA_BOARD_IMAGE.table())
-                            .WHERE(MetaColumnWiwaBoardImage.ID.column(), Condition.EQUALS, id));
+                            .WHERE(MetaColumnWiwaBoardImage.BOARD_ID.column(), Condition.EQUALS, boardId));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<ApplicationImageInfoDo> findAllByBoardId(final long boardId) {
-        log.debug("findAllByBoardId({})", boardId);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(
-                                    MetaColumnWiwaBoardImage.FILE_NAME.column(),
-                                    MetaColumnWiwaBoardImage.FILE_TYPE.column(),
-                                    MetaColumnWiwaBoardImage.THUMBNAIL.column()
-                            )
-                            .FROM(MetaTable.WIWA_BOARD_IMAGE.table())
-                            .WHERE(MetaColumnWiwaBoardImage.BOARD_ID.column(), Condition.EQUALS, boardId)
-                            .ORDER_BY(MetaColumnWiwaBoardImage.FILE_NAME.column(), Order.ASC)
-            );
-            return rows.stream()
-                    .map(row -> new ApplicationImageInfoDo(
-                            (String) row[0],
-                            (String) row[1],
-                            (byte[]) row[2])
-                    )
-                    .toList();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public Optional<BoardImageDo> findByBoardIdAndFileName(final long boardId, final String fileName) {
-        log.debug("findByBoardIdAndFileName({},{})", boardId, fileName);
+    public Optional<BoardImageDo> findByBoardId(final long boardId) {
+        log.debug("findByBoardId({})", boardId);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
                     Query.SELECT(MetaColumnWiwaBoardImage.columns())
                             .FROM(MetaTable.WIWA_BOARD_IMAGE.table())
-                            .WHERE(MetaColumnWiwaBoardImage.BOARD_ID.column(), Condition.EQUALS, boardId)
-                            .AND(MetaColumnWiwaBoardImage.FILE_NAME.column(), Condition.EQUALS, fileName));
+                            .WHERE(MetaColumnWiwaBoardImage.BOARD_ID.column(), Condition.EQUALS, boardId));
             return rows.stream()
                     .findFirst()
                     .map(WiwaBoardImageDto::toObject)
@@ -95,7 +66,7 @@ public class BoardImageRepositoryImpl implements BoardImageRepository {
         log.debug("save({})", boardImageDo);
         try (final Connection connection = dataSource.getConnection()) {
             final WiwaBoardImageDto result;
-            if (boardImageDo.getId() == null) {
+            if (countByBoardId(connection, boardImageDo.getBoardId()) == 0) {
                 result = insert(connection, mapper.toWiwaBoardImageDto(boardImageDo));
             } else {
                 result = update(connection, mapper.toWiwaBoardImageDto(boardImageDo));
@@ -106,16 +77,25 @@ public class BoardImageRepositoryImpl implements BoardImageRepository {
         }
     }
 
+    private int countByBoardId(final Connection connection, final long boardId) throws SQLException {
+        final List<Object[]> rows = sqlBuilder.select(connection,
+                Query.SELECT(MetaColumnWiwaBoardImage.BOARD_ID.column()).COUNT()
+                        .FROM(MetaTable.WIWA_BOARD_IMAGE.table())
+                        .WHERE(MetaColumnWiwaBoardImage.BOARD_ID.column(), Condition.EQUALS, boardId)
+        );
+        return rows.stream()
+                .findFirst()
+                .map(row -> (Integer) row[0])
+                .orElse(0);
+    }
+
     private WiwaBoardImageDto insert(final Connection connection, final WiwaBoardImageDto wiwaBoardImageDto) throws SQLException {
-        final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaBoardImage.columns(), 1);
-        final Object[] values = criteriaUtil.removeFirst(WiwaBoardImageDto.toArray(wiwaBoardImageDto), 1);
-
-        final Long id = (Long) sqlBuilder.insert(connection,
+        sqlBuilder.insert(connection,
                 Query.INSERT()
-                        .INTO(MetaTable.WIWA_BOARD_IMAGE.table(), columns)
-                        .VALUES(values).RETURNING(MetaColumnWiwaBoardImage.ID.column()));
+                        .INTO(MetaTable.WIWA_BOARD_IMAGE.table(), MetaColumnWiwaBoardImage.columns())
+                        .VALUES(WiwaBoardImageDto.toArray(wiwaBoardImageDto)));
 
-        return WiwaBoardImageDto.toObject(criteriaUtil.concat(new Object[]{id}, values));
+        return wiwaBoardImageDto;
     }
 
     private WiwaBoardImageDto update(final Connection connection, final WiwaBoardImageDto wiwaBoardImageDto) throws SQLException {
@@ -125,7 +105,7 @@ public class BoardImageRepositoryImpl implements BoardImageRepository {
         sqlBuilder.update(connection,
                 Query.UPDATE(MetaTable.WIWA_BOARD_IMAGE.table())
                         .SET(columns, values)
-                        .WHERE(MetaColumnWiwaBoardImage.ID.column(), Condition.EQUALS, wiwaBoardImageDto.id())
+                        .WHERE(MetaColumnWiwaBoardImage.BOARD_ID.column(), Condition.EQUALS, wiwaBoardImageDto.boardId())
         );
 
         return wiwaBoardImageDto;

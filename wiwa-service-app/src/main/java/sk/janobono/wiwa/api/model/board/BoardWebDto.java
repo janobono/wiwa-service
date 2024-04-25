@@ -1,6 +1,5 @@
 package sk.janobono.wiwa.api.model.board;
 
-import sk.janobono.wiwa.api.model.application.ApplicationImageInfoWebDto;
 import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.Quantity;
 
@@ -21,7 +20,6 @@ public record BoardWebDto(
         Quantity thickness,
         Money price,
         Money vatPrice,
-        List<ApplicationImageInfoWebDto> images,
         List<BoardCategoryItemWebDto> categoryItems
 ) {
 }

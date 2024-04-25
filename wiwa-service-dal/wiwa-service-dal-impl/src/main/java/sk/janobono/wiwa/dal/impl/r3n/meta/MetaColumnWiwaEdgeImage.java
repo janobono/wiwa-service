@@ -8,11 +8,8 @@ import java.util.List;
 
 public enum MetaColumnWiwaEdgeImage {
 
-    ID("id", DataType.LONG),
     EDGE_ID("edge_id", DataType.LONG),
-    FILE_NAME("file_name", DataType.STRING),
     FILE_TYPE("file_type", DataType.STRING),
-    THUMBNAIL("thumbnail", DataType.BLOB),
     DATA("data", DataType.BLOB);
 
     private final String columnName;

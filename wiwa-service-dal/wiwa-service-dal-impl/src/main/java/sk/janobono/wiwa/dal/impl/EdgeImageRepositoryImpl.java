@@ -9,12 +9,10 @@ import sk.janobono.wiwa.dal.impl.mapper.EdgeImageDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaEdgeImageDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaEdgeImage;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
-import sk.janobono.wiwa.dal.model.ApplicationImageInfoDo;
 import sk.janobono.wiwa.dal.repository.EdgeImageRepository;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
-import sk.r3n.sql.Order;
 import sk.r3n.sql.Query;
 
 import javax.sql.DataSource;
@@ -34,53 +32,26 @@ public class EdgeImageRepositoryImpl implements EdgeImageRepository {
     private final CriteriaUtil criteriaUtil;
 
     @Override
-    public void deleteById(final long id) {
-        log.debug("deleteById({})", id);
+    public void deleteByEdgeId(final long edgeId) {
+        log.debug("deleteByEdgeId({})", edgeId);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
                     Query.DELETE()
                             .FROM(MetaTable.WIWA_EDGE_IMAGE.table())
-                            .WHERE(MetaColumnWiwaEdgeImage.ID.column(), Condition.EQUALS, id));
+                            .WHERE(MetaColumnWiwaEdgeImage.EDGE_ID.column(), Condition.EQUALS, edgeId));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<ApplicationImageInfoDo> findAllByEdgeId(final long edgeId) {
-        log.debug("findAllByEdgeId({})", edgeId);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(
-                                    MetaColumnWiwaEdgeImage.FILE_NAME.column(),
-                                    MetaColumnWiwaEdgeImage.FILE_TYPE.column(),
-                                    MetaColumnWiwaEdgeImage.THUMBNAIL.column()
-                            )
-                            .FROM(MetaTable.WIWA_EDGE_IMAGE.table())
-                            .WHERE(MetaColumnWiwaEdgeImage.EDGE_ID.column(), Condition.EQUALS, edgeId)
-                            .ORDER_BY(MetaColumnWiwaEdgeImage.FILE_NAME.column(), Order.ASC)
-            );
-            return rows.stream()
-                    .map(row -> new ApplicationImageInfoDo(
-                            (String) row[0],
-                            (String) row[1],
-                            (byte[]) row[2])
-                    )
-                    .toList();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public Optional<EdgeImageDo> findByEdgeIdAndFileName(final long edgeId, final String fileName) {
-        log.debug("findByEdgeIdAndFileName({},{})", edgeId, fileName);
+    public Optional<EdgeImageDo> findByEdgeId(final long edgeId) {
+        log.debug("findByEdgeId({})", edgeId);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
                     Query.SELECT(MetaColumnWiwaEdgeImage.columns())
                             .FROM(MetaTable.WIWA_EDGE_IMAGE.table())
-                            .WHERE(MetaColumnWiwaEdgeImage.EDGE_ID.column(), Condition.EQUALS, edgeId)
-                            .AND(MetaColumnWiwaEdgeImage.FILE_NAME.column(), Condition.EQUALS, fileName));
+                            .WHERE(MetaColumnWiwaEdgeImage.EDGE_ID.column(), Condition.EQUALS, edgeId));
             return rows.stream()
                     .findFirst()
                     .map(WiwaEdgeImageDto::toObject)
@@ -95,7 +66,7 @@ public class EdgeImageRepositoryImpl implements EdgeImageRepository {
         log.debug("save({})", edgeImageDo);
         try (final Connection connection = dataSource.getConnection()) {
             final WiwaEdgeImageDto result;
-            if (edgeImageDo.getId() == null) {
+            if (countByEdgeId(connection, edgeImageDo.getEdgeId()) == 0) {
                 result = insert(connection, mapper.toWiwaEdgeImageDto(edgeImageDo));
             } else {
                 result = update(connection, mapper.toWiwaEdgeImageDto(edgeImageDo));
@@ -106,16 +77,25 @@ public class EdgeImageRepositoryImpl implements EdgeImageRepository {
         }
     }
 
+    private int countByEdgeId(final Connection connection, final long edgeId) throws SQLException {
+        final List<Object[]> rows = sqlBuilder.select(connection,
+                Query.SELECT(MetaColumnWiwaEdgeImage.EDGE_ID.column()).COUNT()
+                        .FROM(MetaTable.WIWA_EDGE_IMAGE.table())
+                        .WHERE(MetaColumnWiwaEdgeImage.EDGE_ID.column(), Condition.EQUALS, edgeId)
+        );
+        return rows.stream()
+                .findFirst()
+                .map(row -> (Integer) row[0])
+                .orElse(0);
+    }
+
     private WiwaEdgeImageDto insert(final Connection connection, final WiwaEdgeImageDto wiwaEdgeImageDto) throws SQLException {
-        final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaEdgeImage.columns(), 1);
-        final Object[] values = criteriaUtil.removeFirst(WiwaEdgeImageDto.toArray(wiwaEdgeImageDto), 1);
-
-        final Long id = (Long) sqlBuilder.insert(connection,
+        sqlBuilder.insert(connection,
                 Query.INSERT()
-                        .INTO(MetaTable.WIWA_EDGE_IMAGE.table(), columns)
-                        .VALUES(values).RETURNING(MetaColumnWiwaEdgeImage.ID.column()));
+                        .INTO(MetaTable.WIWA_EDGE_IMAGE.table(), MetaColumnWiwaEdgeImage.columns())
+                        .VALUES(WiwaEdgeImageDto.toArray(wiwaEdgeImageDto)));
 
-        return WiwaEdgeImageDto.toObject(criteriaUtil.concat(new Object[]{id}, values));
+        return wiwaEdgeImageDto;
     }
 
     private WiwaEdgeImageDto update(final Connection connection, final WiwaEdgeImageDto wiwaEdgeImageDto) throws SQLException {
@@ -125,7 +105,7 @@ public class EdgeImageRepositoryImpl implements EdgeImageRepository {
         sqlBuilder.update(connection,
                 Query.UPDATE(MetaTable.WIWA_EDGE_IMAGE.table())
                         .SET(columns, values)
-                        .WHERE(MetaColumnWiwaEdgeImage.ID.column(), Condition.EQUALS, wiwaEdgeImageDto.id())
+                        .WHERE(MetaColumnWiwaEdgeImage.EDGE_ID.column(), Condition.EQUALS, wiwaEdgeImageDto.edgeId())
         );
 
         return wiwaEdgeImageDto;

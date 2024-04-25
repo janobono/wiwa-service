@@ -1,7 +1,6 @@
 package sk.janobono.wiwa.business.model.board;
 
 import lombok.Builder;
-import sk.janobono.wiwa.business.model.application.ApplicationImageInfoData;
 import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.Quantity;
 
@@ -23,7 +22,6 @@ public record BoardData(
         Quantity thickness,
         Money price,
         Money vatPrice,
-        List<ApplicationImageInfoData> images,
         List<BoardCategoryItemData> categoryItems
 ) {
 }
