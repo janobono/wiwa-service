@@ -5,6 +5,7 @@ import org.mapstruct.MappingConstants;
 import org.mapstruct.NullValueCheckStrategy;
 import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.business.model.order.*;
+import sk.janobono.wiwa.business.model.order.summary.OrderSummaryData;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface OrderWebMapper {

@@ -1,5 +1,11 @@
 package sk.janobono.wiwa.api.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,7 +18,6 @@ import sk.janobono.wiwa.api.model.board.BoardCategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardWebDto;
 import sk.janobono.wiwa.api.service.BoardApiService;
-import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,6 +29,13 @@ public class BoardController {
 
     private final BoardApiService boardApiService;
 
+    @Operation(parameters = {
+            @Parameter(in = ParameterIn.QUERY, name = "page", content = @Content(schema = @Schema(type = "integer"))),
+            @Parameter(in = ParameterIn.QUERY, name = "size", content = @Content(schema = @Schema(type = "integer"))),
+            @Parameter(in = ParameterIn.QUERY, name = "sort",
+                    content = @Content(array = @ArraySchema(schema = @Schema(type = "string")))
+            )
+    })
     @GetMapping
     public Page<BoardWebDto> getBoards(
             @RequestParam(value = "searchField", required = false) final String searchField,

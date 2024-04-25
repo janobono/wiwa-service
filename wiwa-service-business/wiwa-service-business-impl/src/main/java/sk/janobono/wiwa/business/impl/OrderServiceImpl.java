@@ -21,11 +21,13 @@ import sk.janobono.wiwa.business.model.application.OrderCommentMailData;
 import sk.janobono.wiwa.business.model.application.OrderSendMailData;
 import sk.janobono.wiwa.business.model.application.OrderStatusMailData;
 import sk.janobono.wiwa.business.model.order.*;
+import sk.janobono.wiwa.business.model.order.summary.OrderSummaryData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.*;
 import sk.janobono.wiwa.dal.model.OderItemSortNumDo;
+import sk.janobono.wiwa.dal.model.OderItemSummaryDo;
 import sk.janobono.wiwa.dal.model.OrderViewSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
@@ -146,11 +148,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderData recountOrder(final long id, final Long modifierId) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
-        final UserDo modifier = userUtilService.getUserDo(modifierId);
 
         checkOrderStatus(orderViewDo, Set.of(OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
 
-        recountItems(id, modifier);
+        recountItems(id);
         recountSummary(id);
 
         return toOrderData(getOrderViewDo(id), applicationPropertyService.getVatRate());
@@ -382,31 +383,44 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderItemData addItem(final long id, final long creatorId, final OrderItemChangeData orderItemChange, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
-        final UserDo creator = userUtilService.getUserDo(creatorId);
 
         checkOrderStatus(creatorId, manager, orderViewDo);
 
-        // boards
+        final OrderItemJson orderItemJson = initOrderItemJson(orderItemChange);
+        final OderItemSummaryDo oderItemSummary = orderItemJson.getOderItemSummary();
 
-        // edges
+        final OrderItemDo orderItemDo = orderItemRepository.insert(OrderItemDo.builder()
+                .orderId(id)
+                .sortNum(orderItemRepository.countByOrderId(id))
+                .name(orderItemChange.name())
+                .partPrice(oderItemSummary.partPrice())
+                .partWeight(oderItemSummary.partWeight())
+                .amount(oderItemSummary.amount())
+                .weight(oderItemSummary.weight())
+                .total(oderItemSummary.total())
+                .data(dataUtil.serializeValue(orderItemJson.getParData()))
+                .build());
 
+        recountSummary(id);
 
-        // TODO
-
-        return null;
+        return toOrderItemData(orderItemDo, applicationPropertyService.getVatRate());
     }
 
     @Override
     public OrderItemData setItem(final long id, final long itemId, final long modifierId, final OrderItemChangeData orderItemChange, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
-        final UserDo modifier = userUtilService.getUserDo(modifierId);
 
         checkOrderStatus(modifierId, manager, orderViewDo);
 
-        // TODO
+        final OrderItemJson orderItemJson = initOrderItemJson(orderItemChange);
+
+        orderItemRepository.setName(itemId, orderItemChange.name());
+        orderItemRepository.setData(itemId, dataUtil.serializeValue(orderItemJson.getParData()));
+        orderItemRepository.setSummary(itemId, orderItemJson.getOderItemSummary());
 
         recountSummary(id);
-        return null;
+
+        return toOrderItemData(getOrderItemDo(itemId), applicationPropertyService.getVatRate());
     }
 
     @Override
@@ -620,7 +634,12 @@ public class OrderServiceImpl implements OrderService {
         return emails;
     }
 
-    private void recountItems(long id, UserDo modifier) {
+    private OrderItemJson initOrderItemJson(OrderItemChangeData orderItemChange) {
+        // TODO
+        return null;
+    }
+
+    private void recountItems(long id) {
         // TODO
     }
 

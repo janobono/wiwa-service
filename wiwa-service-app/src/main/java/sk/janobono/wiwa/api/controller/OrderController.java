@@ -1,5 +1,11 @@
 package sk.janobono.wiwa.api.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -29,6 +35,13 @@ public class OrderController {
 
     private final OrderApiService orderApiService;
 
+    @Operation(parameters = {
+            @Parameter(in = ParameterIn.QUERY, name = "page", content = @Content(schema = @Schema(type = "integer"))),
+            @Parameter(in = ParameterIn.QUERY, name = "size", content = @Content(schema = @Schema(type = "integer"))),
+            @Parameter(in = ParameterIn.QUERY, name = "sort",
+                    content = @Content(array = @ArraySchema(schema = @Schema(type = "string")))
+            )
+    })
     @GetMapping
     public Page<OrderWebDto> getOrders(
             @RequestParam(value = "userIds", required = false) final Set<Long> userIds,

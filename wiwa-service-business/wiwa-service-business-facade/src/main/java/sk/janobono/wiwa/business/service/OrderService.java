@@ -3,6 +3,7 @@ package sk.janobono.wiwa.business.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import sk.janobono.wiwa.business.model.order.*;
+import sk.janobono.wiwa.business.model.order.summary.OrderSummaryData;
 
 import java.util.List;
 
