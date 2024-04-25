@@ -19,7 +19,10 @@ import sk.janobono.wiwa.model.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -56,7 +59,7 @@ public class OrderApiService {
         return orderService.getOrderContacts(user.id(), pageable).map(orderWebMapper::mapToWebDto);
     }
 
-    public OrderContactWebDto setOrderContact(final long id, final OrderContactWebDto orderContact) {
+    public OrderWebDto setOrderContact(final long id, final OrderContactWebDto orderContact) {
         return orderWebMapper.mapToWebDto(orderService.setOrderContact(id, orderWebMapper.mapToData(orderContact)));
     }
 
@@ -113,49 +116,34 @@ public class OrderApiService {
         return orderWebMapper.mapToWebDto(orderService.setOrderStatus(id, user.id(), orderWebMapper.mapToData(orderStatusChange)));
     }
 
-    public List<OrderCommentWebDto> getComments(final Long id) {
-        checkEmployeeAccess(id);
-        return orderService.getComments(id).stream().map(orderWebMapper::mapToWebDto).toList();
-    }
-
-    public List<OrderCommentWebDto> addComment(final Long id, final OrderCommentChangeWebDto commentChange) {
+    public OrderWebDto addComment(final Long id, final OrderCommentChangeWebDto commentChange) {
         final User user = checkManagerAccess(id);
-        return orderService.addComment(id, user.id(), orderWebMapper.mapToData(commentChange)).stream().map(orderWebMapper::mapToWebDto).toList();
+        return orderWebMapper.mapToWebDto(orderService.addComment(id, user.id(), orderWebMapper.mapToData(commentChange)));
     }
 
-    public List<OrderItemWebDto> getItems(final Long id) {
-        checkEmployeeAccess(id);
-        return orderService.getOrderItems(id).stream().map(orderWebMapper::mapToWebDto).toList();
-    }
-
-    public OrderItemWebDto addItem(final Long id, final OrderItemChangeWebDto orderItemChange) {
+    public OrderWebDto addItem(final Long id, final OrderItemChangeWebDto orderItemChange) {
         final User user = checkManagerAccess(id);
         return orderWebMapper.mapToWebDto(orderService.addItem(id, user.id(), orderWebMapper.mapToData(orderItemChange), isManager(user)));
     }
 
-    public OrderItemWebDto setItem(final Long id, final Long itemId, final OrderItemChangeWebDto orderItemChange) {
+    public OrderWebDto setItem(final Long id, final Long itemId, final OrderItemChangeWebDto orderItemChange) {
         final User user = checkManagerAccess(id);
         return orderWebMapper.mapToWebDto(orderService.setItem(id, itemId, user.id(), orderWebMapper.mapToData(orderItemChange), isManager(user)));
     }
 
-    public OrderItemWebDto moveUpItem(final Long id, final Long itemId) {
+    public OrderWebDto moveUpItem(final Long id, final Long itemId) {
         final User user = checkManagerAccess(id);
         return orderWebMapper.mapToWebDto(orderService.moveUpItem(id, itemId, user.id(), isManager(user)));
     }
 
-    public OrderItemWebDto moveDownItem(final Long id, final Long itemId) {
+    public OrderWebDto moveDownItem(final Long id, final Long itemId) {
         final User user = checkManagerAccess(id);
         return orderWebMapper.mapToWebDto(orderService.moveDownItem(id, itemId, user.id(), isManager(user)));
     }
 
-    public void deleteItem(final Long id, final Long itemId) {
+    public OrderWebDto deleteItem(final Long id, final Long itemId) {
         final User user = checkManagerAccess(id);
-        orderService.deleteItem(id, itemId, user.id(), isManager(user));
-    }
-
-    public OrderSummaryWebDto getOrderSummary(final Long id) {
-        checkEmployeeAccess(id);
-        return orderWebMapper.mapToWebDto(orderService.getOrderSummary(id));
+        return orderWebMapper.mapToWebDto(orderService.deleteItem(id, itemId, user.id(), isManager(user)));
     }
 
     public void deleteOrder(final Long id) {

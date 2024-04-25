@@ -1,6 +1,7 @@
 package sk.janobono.wiwa.business.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,6 @@ import sk.janobono.wiwa.business.model.application.OrderCommentMailData;
 import sk.janobono.wiwa.business.model.application.OrderSendMailData;
 import sk.janobono.wiwa.business.model.application.OrderStatusMailData;
 import sk.janobono.wiwa.business.model.order.*;
-import sk.janobono.wiwa.business.model.order.summary.OrderSummaryData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
@@ -45,6 +45,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -91,9 +92,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderContactData setOrderContact(final long id, final OrderContactData orderContact) {
+    public OrderData setOrderContact(final long id, final OrderContactData orderContact) {
         final OrderDo order = getOrderDo(id);
-        return toOrderContactData(orderContactRepository.save(OrderContactDo.builder()
+        orderContactRepository.save(OrderContactDo.builder()
                 .orderId(order.getId())
                 .name(orderContact.name())
                 .street(orderContact.street())
@@ -104,7 +105,8 @@ public class OrderServiceImpl implements OrderService {
                 .email(orderContact.email())
                 .businessId(orderContact.businessId())
                 .taxId(orderContact.taxId())
-                .build()));
+                .build());
+        return getOrder(id);
     }
 
     @Override
@@ -141,19 +143,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderSummaryData getOrderSummary(final long id) {
-        return dataUtil.parseValue(getOrderDo(id).getData(), OrderJson.class).getOrderSummaryData();
-    }
-
-    @Override
     public OrderData recountOrder(final long id, final Long modifierId) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
-
         checkOrderStatus(orderViewDo, Set.of(OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
-
         recountItems(id);
         recountSummary(id);
-
         return toOrderData(getOrderViewDo(id), applicationPropertyService.getVatRate());
     }
 
@@ -167,7 +161,10 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException(e);
         } finally {
             if (pdf != null) {
-                pdf.toFile().delete();
+                final boolean deleted = pdf.toFile().delete();
+                if (!deleted) {
+                    log.warn("Pdf wasn't deleted {}", pdf);
+                }
             }
         }
     }
@@ -182,7 +179,10 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException(e);
         } finally {
             if (csv != null) {
-                csv.toFile().delete();
+                final boolean deleted = csv.toFile().delete();
+                if (!deleted) {
+                    log.warn("Csv wasn't deleted {}", csv);
+                }
             }
         }
     }
@@ -331,14 +331,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderCommentData> getComments(final long id) {
-        return orderCommentRepository.findAllByOrderId(id).stream()
-                .map(this::toOrderCommentData)
-                .toList();
-    }
-
-    @Override
-    public List<OrderCommentData> addComment(final long id, final long creatorId, final OrderCommentChangeData orderCommentChange) {
+    public OrderData addComment(final long id, final long creatorId, final OrderCommentChangeData orderCommentChange) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
         final UserDo owner = userUtilService.getUserDo(orderViewDo.userId());
         checkOrderStatus(orderViewDo, Set.of(OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
@@ -369,19 +362,12 @@ public class OrderServiceImpl implements OrderService {
                                 .build())
                         .build())
                 .build());
-        return getComments(id);
+
+        return getOrder(id);
     }
 
     @Override
-    public List<OrderItemData> getOrderItems(final long id) {
-        final BigDecimal vatRate = applicationPropertyService.getVatRate();
-        return orderItemRepository.findAllByOrderId(id).stream()
-                .map(v -> toOrderItemData(v, vatRate))
-                .toList();
-    }
-
-    @Override
-    public OrderItemData addItem(final long id, final long creatorId, final OrderItemChangeData orderItemChange, final boolean manager) {
+    public OrderData addItem(final long id, final long creatorId, final OrderItemChangeData orderItemChange, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
 
         checkOrderStatus(creatorId, manager, orderViewDo);
@@ -389,7 +375,7 @@ public class OrderServiceImpl implements OrderService {
         final OrderItemJson orderItemJson = initOrderItemJson(orderItemChange);
         final OderItemSummaryDo oderItemSummary = orderItemJson.getOderItemSummary();
 
-        final OrderItemDo orderItemDo = orderItemRepository.insert(OrderItemDo.builder()
+        orderItemRepository.insert(OrderItemDo.builder()
                 .orderId(id)
                 .sortNum(orderItemRepository.countByOrderId(id))
                 .name(orderItemChange.name())
@@ -403,11 +389,11 @@ public class OrderServiceImpl implements OrderService {
 
         recountSummary(id);
 
-        return toOrderItemData(orderItemDo, applicationPropertyService.getVatRate());
+        return getOrder(id);
     }
 
     @Override
-    public OrderItemData setItem(final long id, final long itemId, final long modifierId, final OrderItemChangeData orderItemChange, final boolean manager) {
+    public OrderData setItem(final long id, final long itemId, final long modifierId, final OrderItemChangeData orderItemChange, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
 
         checkOrderStatus(modifierId, manager, orderViewDo);
@@ -420,11 +406,11 @@ public class OrderServiceImpl implements OrderService {
 
         recountSummary(id);
 
-        return toOrderItemData(getOrderItemDo(itemId), applicationPropertyService.getVatRate());
+        return getOrder(id);
     }
 
     @Override
-    public OrderItemData moveUpItem(final long id, final long itemId, final long modifierId, final boolean manager) {
+    public OrderData moveUpItem(final long id, final long itemId, final long modifierId, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
 
         checkOrderStatus(modifierId, manager, orderViewDo);
@@ -440,11 +426,11 @@ public class OrderServiceImpl implements OrderService {
             ));
         }
 
-        return toOrderItemData(item, applicationPropertyService.getVatRate());
+        return getOrder(id);
     }
 
     @Override
-    public OrderItemData moveDownItem(final long id, final long itemId, final long modifierId, final boolean manager) {
+    public OrderData moveDownItem(final long id, final long itemId, final long modifierId, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
 
         checkOrderStatus(modifierId, manager, orderViewDo);
@@ -460,16 +446,17 @@ public class OrderServiceImpl implements OrderService {
             ));
         }
 
-        return toOrderItemData(item, applicationPropertyService.getVatRate());
+        return getOrder(id);
     }
 
     @Override
-    public void deleteItem(final long id, final long itemId, final long modifierId, final boolean manager) {
+    public OrderData deleteItem(final long id, final long itemId, final long modifierId, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
         checkOrderStatus(modifierId, manager, orderViewDo);
         orderItemRepository.deleteById(id);
         sortItems(id);
         recountSummary(id);
+        return getOrder(id);
     }
 
     private OrderViewSearchCriteriaDo mapToDo(final OrderSearchCriteriaData criteria, final BigDecimal vatRate) {
@@ -634,16 +621,18 @@ public class OrderServiceImpl implements OrderService {
         return emails;
     }
 
-    private OrderItemJson initOrderItemJson(OrderItemChangeData orderItemChange) {
-        // TODO
-        return null;
+    private OrderItemJson initOrderItemJson(final OrderItemChangeData orderItemChange) {
+        return OrderItemJson.builder()
+                // TODO
+
+                .build();
     }
 
-    private void recountItems(long id) {
+    private void recountItems(final long id) {
         // TODO
     }
 
-    private void recountSummary(long id) {
+    private void recountSummary(final long id) {
         // TODO
     }
 }

@@ -25,7 +25,6 @@ import sk.janobono.wiwa.model.OrderStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -70,7 +69,7 @@ public class OrderController {
 
     @PostMapping("/{id}/contact")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public OrderContactWebDto setOrderContact(@PathVariable("id") final long id, @Valid @RequestBody final OrderContactWebDto orderContact) {
+    public OrderWebDto setOrderContact(@PathVariable("id") final long id, @Valid @RequestBody final OrderContactWebDto orderContact) {
         return orderApiService.setOrderContact(id, orderContact);
     }
 
@@ -119,49 +118,34 @@ public class OrderController {
         return orderApiService.setOrderStatus(id, orderStatusChange);
     }
 
-    @GetMapping("/{id}/comments")
-    public List<OrderCommentWebDto> getComments(@PathVariable("id") final long id) {
-        return orderApiService.getComments(id);
-    }
-
     @PostMapping("/{id}/comments")
-    public List<OrderCommentWebDto> addComment(@PathVariable("id") final long id, @Valid @RequestBody final OrderCommentChangeWebDto orderCommentChange) {
+    public OrderWebDto addComment(@PathVariable("id") final long id, @Valid @RequestBody final OrderCommentChangeWebDto orderCommentChange) {
         return orderApiService.addComment(id, orderCommentChange);
     }
 
-    @GetMapping("/{id}/item")
-    public List<OrderItemWebDto> getItems(@PathVariable("id") final long id) {
-        return orderApiService.getItems(id);
-    }
-
     @PostMapping("/{id}/item")
-    public OrderItemWebDto addItem(@PathVariable("id") final long id, @Valid @RequestBody final OrderItemChangeWebDto orderItemChange) {
+    public OrderWebDto addItem(@PathVariable("id") final long id, @Valid @RequestBody final OrderItemChangeWebDto orderItemChange) {
         return orderApiService.addItem(id, orderItemChange);
     }
 
     @PutMapping("/{id}/item/{itemId}")
-    public OrderItemWebDto setItem(@PathVariable("id") final long id, @PathVariable("itemId") final long itemId, @Valid @RequestBody final OrderItemChangeWebDto orderItemChange) {
+    public OrderWebDto setItem(@PathVariable("id") final long id, @PathVariable("itemId") final long itemId, @Valid @RequestBody final OrderItemChangeWebDto orderItemChange) {
         return orderApiService.setItem(id, itemId, orderItemChange);
     }
 
     @PatchMapping("/{id}/item/{itemId}/move-up")
-    public OrderItemWebDto moveUpItem(@PathVariable("id") final long id, @PathVariable("itemId") final long itemId) {
+    public OrderWebDto moveUpItem(@PathVariable("id") final long id, @PathVariable("itemId") final long itemId) {
         return orderApiService.moveUpItem(id, itemId);
     }
 
     @PatchMapping("/{id}/item/{itemId}/move-down")
-    public OrderItemWebDto moveDownItem(@PathVariable("id") final long id, @PathVariable("itemId") final long itemId) {
+    public OrderWebDto moveDownItem(@PathVariable("id") final long id, @PathVariable("itemId") final long itemId) {
         return orderApiService.moveDownItem(id, itemId);
     }
 
     @DeleteMapping("/{id}/item/{itemId}")
-    public void deleteItem(@PathVariable("id") final long id, @PathVariable("itemId") final long itemId) {
-        orderApiService.deleteItem(id, itemId);
-    }
-
-    @GetMapping("/{id}/summary")
-    public OrderSummaryWebDto getOrderSummary(@PathVariable("id") final long id) {
-        return orderApiService.getOrderSummary(id);
+    public OrderWebDto deleteItem(@PathVariable("id") final long id, @PathVariable("itemId") final long itemId) {
+        return orderApiService.deleteItem(id, itemId);
     }
 
     @DeleteMapping("/{id}")

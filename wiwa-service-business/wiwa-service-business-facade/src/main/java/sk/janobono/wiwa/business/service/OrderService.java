@@ -13,7 +13,7 @@ public interface OrderService {
 
     Page<OrderContactData> getOrderContacts(long userId, Pageable pageable);
 
-    OrderContactData setOrderContact(long id, OrderContactData orderContact);
+    OrderData setOrderContact(long id, OrderContactData orderContact);
 
     OrderData getOrder(long id);
 
@@ -22,8 +22,6 @@ public interface OrderService {
     void deleteOrder(long id);
 
     Long getOrderCreatorId(long id);
-
-    OrderSummaryData getOrderSummary(long id);
 
     OrderData recountOrder(long id, Long modifierId);
 
@@ -35,19 +33,15 @@ public interface OrderService {
 
     OrderData setOrderStatus(long id, long modifierId, OrderStatusChangeData orderStatusChange);
 
-    List<OrderCommentData> getComments(long id);
+    OrderData addComment(long id, long creatorId, OrderCommentChangeData orderCommentChange);
 
-    List<OrderCommentData> addComment(long id, long creatorId, OrderCommentChangeData orderCommentChange);
+    OrderData addItem(long id, long creatorId, OrderItemChangeData orderItemChange, boolean manager);
 
-    List<OrderItemData> getOrderItems(long id);
+    OrderData setItem(long id, long itemId, long modifierId, OrderItemChangeData orderItemChange, boolean manager);
 
-    OrderItemData addItem(long id, long creatorId, OrderItemChangeData orderItemChange, boolean manager);
+    OrderData moveUpItem(long id, long itemId, long modifierId, boolean manager);
 
-    OrderItemData setItem(long id, long itemId, long modifierId, OrderItemChangeData orderItemChange, boolean manager);
+    OrderData moveDownItem(long id, long itemId, long modifierId, boolean manager);
 
-    OrderItemData moveUpItem(long id, long itemId, long modifierId, boolean manager);
-
-    OrderItemData moveDownItem(long id, long itemId, long modifierId, boolean manager);
-
-    void deleteItem(long id, long itemId, long modifierId, boolean manager);
+    OrderData deleteItem(long id, long itemId, long modifierId, boolean manager);
 }
