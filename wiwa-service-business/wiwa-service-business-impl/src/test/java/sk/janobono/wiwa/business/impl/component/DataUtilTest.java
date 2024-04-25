@@ -3,10 +3,10 @@ package sk.janobono.wiwa.business.impl.component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sk.janobono.wiwa.business.model.order.part.PartChangeBasicData;
-import sk.janobono.wiwa.business.model.order.part.PartChangeData;
-import sk.janobono.wiwa.business.model.order.part.PartCornerChangeRoundedData;
-import sk.janobono.wiwa.business.model.order.part.PartCornerChangeStraightData;
+import sk.janobono.wiwa.business.model.order.item.part.PartChangeBasicData;
+import sk.janobono.wiwa.business.model.order.item.part.PartChangeData;
+import sk.janobono.wiwa.business.model.order.item.part.PartCornerChangeRoundedData;
+import sk.janobono.wiwa.business.model.order.item.part.PartCornerChangeStraightData;
 
 import java.math.BigDecimal;
 

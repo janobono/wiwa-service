@@ -13,6 +13,7 @@ public enum MetaColumnWiwaOrder {
     CREATED("created", DataType.TIME_STAMP),
     ORDER_NUMBER("order_number", DataType.LONG),
     DELIVERY("delivery", DataType.DATE),
+    PACKAGE_TYPE("package_type", DataType.STRING),
     DATA("data", DataType.STRING);
 
     private final String columnName;

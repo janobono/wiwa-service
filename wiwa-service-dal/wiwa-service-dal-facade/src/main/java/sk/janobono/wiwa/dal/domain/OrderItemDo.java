@@ -11,10 +11,6 @@ public class OrderItemDo {
     private Long id;
     private Long orderId;
     private Integer sortNum;
-    private String name;
-    private BigDecimal partPrice;
-    private BigDecimal partWeight;
-    private Integer amount;
     private BigDecimal weight;
     private BigDecimal total;
     private String data;

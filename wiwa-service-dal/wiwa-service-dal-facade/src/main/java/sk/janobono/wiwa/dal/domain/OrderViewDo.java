@@ -1,5 +1,6 @@
 package sk.janobono.wiwa.dal.domain;
 
+import sk.janobono.wiwa.model.OrderPackageType;
 import sk.janobono.wiwa.model.OrderStatus;
 
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ public record OrderViewDo(
         LocalDateTime created,
         Long orderNumber,
         LocalDate delivery,
+        OrderPackageType packageType,
         OrderStatus status,
         BigDecimal weight,
         BigDecimal total

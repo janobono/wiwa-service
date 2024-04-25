@@ -11,8 +11,6 @@ import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
 import sk.janobono.wiwa.business.impl.model.mail.MailData;
 import sk.janobono.wiwa.business.impl.model.mail.MailLinkData;
 import sk.janobono.wiwa.business.impl.model.mail.MailTemplate;
-import sk.janobono.wiwa.business.impl.model.order.OrderItemJson;
-import sk.janobono.wiwa.business.impl.model.order.OrderJson;
 import sk.janobono.wiwa.business.impl.util.MailUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderCsvUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderPdfUtilService;
@@ -22,12 +20,16 @@ import sk.janobono.wiwa.business.model.application.OrderCommentMailData;
 import sk.janobono.wiwa.business.model.application.OrderSendMailData;
 import sk.janobono.wiwa.business.model.application.OrderStatusMailData;
 import sk.janobono.wiwa.business.model.order.*;
+import sk.janobono.wiwa.business.model.order.item.OrderItemChangeData;
+import sk.janobono.wiwa.business.model.order.item.OrderItemData;
+import sk.janobono.wiwa.business.model.order.item.part.PartData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.*;
 import sk.janobono.wiwa.dal.model.OderItemSortNumDo;
 import sk.janobono.wiwa.dal.model.OderItemSummaryDo;
+import sk.janobono.wiwa.dal.model.OrderDeliveryDo;
 import sk.janobono.wiwa.dal.model.OrderViewSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
@@ -120,7 +122,9 @@ public class OrderServiceImpl implements OrderService {
                 .userId(userId)
                 .created(LocalDateTime.now())
                 .orderNumber(orderNumberRepository.getNextOrderNumber(userId))
-                .data(dataUtil.serializeValue(OrderJson.builder().build()))
+                .data(dataUtil.serializeValue(OrderSummaryData.builder()
+                        // TODO
+                        .build()))
                 .build());
         orderStatusRepository.save(OrderStatusDo.builder()
                 .orderId(orderDo.getId())
@@ -146,8 +150,8 @@ public class OrderServiceImpl implements OrderService {
     public OrderData recountOrder(final long id, final Long modifierId) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
         checkOrderStatus(orderViewDo, Set.of(OrderStatus.READY, OrderStatus.CANCELLED, OrderStatus.FINISHED));
-        recountItems(id);
-        recountSummary(id);
+        recountOrderItems(id);
+        recountOrderSummary(id);
         return toOrderData(getOrderViewDo(id), applicationPropertyService.getVatRate());
     }
 
@@ -205,6 +209,8 @@ public class OrderServiceImpl implements OrderService {
         }
 
         checkDeliveryDate(sendOrder.deliveryDate(), applicationPropertyService.getFreeDays());
+
+        orderRepository.setDelivery(id, new OrderDeliveryDo(sendOrder.deliveryDate(), sendOrder.packageType()));
 
         final OrderContactDo orderContact = orderContactRepository.save(OrderContactDo.builder()
                 .orderId(id)
@@ -372,22 +378,17 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(creatorId, manager, orderViewDo);
 
-        final OrderItemJson orderItemJson = initOrderItemJson(orderItemChange);
-        final OderItemSummaryDo oderItemSummary = orderItemJson.getOderItemSummary();
+        final PartData part = toPartData(orderItemChange);
 
         orderItemRepository.insert(OrderItemDo.builder()
                 .orderId(id)
                 .sortNum(orderItemRepository.countByOrderId(id))
-                .name(orderItemChange.name())
-                .partPrice(oderItemSummary.partPrice())
-                .partWeight(oderItemSummary.partWeight())
-                .amount(oderItemSummary.amount())
-                .weight(oderItemSummary.weight())
-                .total(oderItemSummary.total())
-                .data(dataUtil.serializeValue(orderItemJson.getParData()))
+                .weight(part.summary().getWeight().quantity())
+                .total(part.summary().getTotal().amount())
+                .data(dataUtil.serializeValue(part))
                 .build());
 
-        recountSummary(id);
+        recountOrderSummary(id);
 
         return getOrder(id);
     }
@@ -398,13 +399,14 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(modifierId, manager, orderViewDo);
 
-        final OrderItemJson orderItemJson = initOrderItemJson(orderItemChange);
+        final PartData partData = toPartData(orderItemChange);
 
-        orderItemRepository.setName(itemId, orderItemChange.name());
-        orderItemRepository.setData(itemId, dataUtil.serializeValue(orderItemJson.getParData()));
-        orderItemRepository.setSummary(itemId, orderItemJson.getOderItemSummary());
+        orderItemRepository.setData(itemId, dataUtil.serializeValue(partData));
+        orderItemRepository.setSummary(itemId, new OderItemSummaryDo(
+                partData.summary().getWeight().quantity(), partData.summary().getTotal().amount()
+        ));
 
-        recountSummary(id);
+        recountOrderSummary(id);
 
         return getOrder(id);
     }
@@ -455,7 +457,7 @@ public class OrderServiceImpl implements OrderService {
         checkOrderStatus(modifierId, manager, orderViewDo);
         orderItemRepository.deleteById(id);
         sortItems(id);
-        recountSummary(id);
+        recountOrderSummary(id);
         return getOrder(id);
     }
 
@@ -483,6 +485,7 @@ public class OrderServiceImpl implements OrderService {
                 .total(new Money(orderViewDo.total(), commonConfigProperties.currency()))
                 .vatTotal(new Money(priceUtil.countVatValue(orderViewDo.total(), vatRate), commonConfigProperties.currency()))
                 .deliveryDate(orderViewDo.delivery())
+                .packageType(orderViewDo.packageType())
                 .build();
     }
 
@@ -525,14 +528,7 @@ public class OrderServiceImpl implements OrderService {
         return OrderItemData.builder()
                 .id(orderItemDo.getId())
                 .sortNum(orderItemDo.getSortNum())
-                .name(orderItemDo.getName())
-                .partPrice(new Money(orderItemDo.getPartPrice(), commonConfigProperties.currency()))
-                .vatPartPrice(new Money(priceUtil.countVatValue(orderItemDo.getPartPrice(), vatRate), commonConfigProperties.currency()))
-                .amount(new Quantity(BigDecimal.valueOf(orderItemDo.getAmount()), Unit.PIECE))
-                .weight(new Quantity(orderItemDo.getWeight(), Unit.KILOGRAM))
-                .total(new Money(orderItemDo.getTotal(), commonConfigProperties.currency()))
-                .vatTotal(new Money(priceUtil.countVatValue(orderItemDo.getTotal(), vatRate), commonConfigProperties.currency()))
-                .partData(dataUtil.parseValue(orderItemDo.getData(), OrderItemJson.class).getParData())
+                .part(dataUtil.parseValue(orderItemDo.getData(), PartData.class))
                 .build();
     }
 
@@ -621,18 +617,16 @@ public class OrderServiceImpl implements OrderService {
         return emails;
     }
 
-    private OrderItemJson initOrderItemJson(final OrderItemChangeData orderItemChange) {
-        return OrderItemJson.builder()
-                // TODO
-
-                .build();
+    private PartData toPartData(final OrderItemChangeData orderItemChange) {
+// TODO
+        return null;
     }
 
-    private void recountItems(final long id) {
+    private void recountOrderItems(final long id) {
         // TODO
     }
 
-    private void recountSummary(final long id) {
+    private void recountOrderSummary(final long id) {
         // TODO
     }
 }

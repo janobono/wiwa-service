@@ -184,7 +184,7 @@ public class AuthServiceImpl implements AuthService {
         if (AuthToken.valueOf(data.get(AuthTokenKey.TYPE.name())) != AuthToken.REFRESH) {
             throw new AccessDeniedException("Invalid token");
         }
-        final Long userId = Long.valueOf(data.get(AuthTokenKey.USER_ID.name()));
+        final long userId = Long.parseLong(data.get(AuthTokenKey.USER_ID.name()));
         final UserDo userDo = userRepository.findById(userId)
                 .orElseThrow(() -> WiwaException.USER_NOT_FOUND.exception("User with id {0} not found", userId));
         return createAuthenticationResponse(userDo);

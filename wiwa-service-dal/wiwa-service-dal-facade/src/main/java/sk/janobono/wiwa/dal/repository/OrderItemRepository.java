@@ -25,7 +25,5 @@ public interface OrderItemRepository {
 
     void setData(long id, String data);
 
-    void setName(long id, String name);
-
     void setSummary(long id, OderItemSummaryDo oderItemSummary);
 }

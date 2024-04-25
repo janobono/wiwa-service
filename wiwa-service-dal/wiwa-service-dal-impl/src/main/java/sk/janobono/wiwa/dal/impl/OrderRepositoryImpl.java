@@ -9,6 +9,7 @@ import sk.janobono.wiwa.dal.impl.mapper.OrderDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaOrderDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrder;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
+import sk.janobono.wiwa.dal.model.OrderDeliveryDo;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
@@ -17,7 +18,6 @@ import sk.r3n.sql.Query;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,12 +99,13 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public void setDelivery(final long id, final LocalDate delivery) {
-        log.debug("setDelivery({},{})", id, delivery);
+    public void setDelivery(final long id, final OrderDeliveryDo orderDelivery) {
+        log.debug("setDelivery({},{})", id, orderDelivery);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.update(connection,
                     Query.UPDATE(MetaTable.WIWA_ORDER.table())
-                            .SET(MetaColumnWiwaOrder.DELIVERY.column(), delivery)
+                            .SET(MetaColumnWiwaOrder.DELIVERY.column(), orderDelivery.delivery())
+                            .SET(MetaColumnWiwaOrder.PACKAGE_TYPE.column(), orderDelivery.packageType().name())
                             .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, id)
             );
         } catch (final Exception e) {

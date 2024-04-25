@@ -9,6 +9,7 @@ public record WiwaOrderDto(
         LocalDateTime created,
         Long orderNumber,
         LocalDate delivery,
+        String packageType,
         String data
 ) {
 
@@ -19,6 +20,7 @@ public record WiwaOrderDto(
                 wiwaOrderDto.created,
                 wiwaOrderDto.orderNumber,
                 wiwaOrderDto.delivery,
+                wiwaOrderDto.packageType,
                 wiwaOrderDto.data
         };
     }
@@ -30,7 +32,8 @@ public record WiwaOrderDto(
                 (LocalDateTime) array[2],
                 (Long) array[3],
                 (LocalDate) array[4],
-                (String) array[5]
+                (String) array[5],
+                (String) array[6]
         );
     }
 }

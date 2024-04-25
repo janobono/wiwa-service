@@ -1,8 +1,8 @@
 package sk.janobono.wiwa.dal.repository;
 
 import sk.janobono.wiwa.dal.domain.OrderDo;
+import sk.janobono.wiwa.dal.model.OrderDeliveryDo;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 public interface OrderRepository {
@@ -15,7 +15,7 @@ public interface OrderRepository {
 
     OrderDo insert(OrderDo orderDo);
 
-    void setDelivery(long id, LocalDate delivery);
+    void setDelivery(long id, OrderDeliveryDo orderDelivery);
 
     void setData(long id, String data);
 }

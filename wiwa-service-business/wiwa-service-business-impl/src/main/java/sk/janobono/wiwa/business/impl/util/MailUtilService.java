@@ -3,6 +3,7 @@ package sk.janobono.wiwa.business.impl.util;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
@@ -20,6 +21,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class MailUtilService {
@@ -72,7 +74,12 @@ public class MailUtilService {
             javaMailSender.send(mimeMessagePreparator);
         } finally {
             Optional.ofNullable(mail.attachments()).map(Map::values).stream().flatMap(Collection::stream)
-                    .forEach(attachment -> attachment.delete());
+                    .forEach(attachment -> {
+                        final boolean deleted = attachment.delete();
+                        if (!deleted) {
+                            log.warn("Attachment not deleted {}", attachment);
+                        }
+                    });
         }
     }
 

@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.business.model.order.part;
+package sk.janobono.wiwa.business.model.order.item.part;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

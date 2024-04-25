@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.api.mapper.OrderWebMapper;
 import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
 import sk.janobono.wiwa.api.model.order.*;
+import sk.janobono.wiwa.api.model.order.item.OrderItemChangeWebDto;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.component.AuthUtil;

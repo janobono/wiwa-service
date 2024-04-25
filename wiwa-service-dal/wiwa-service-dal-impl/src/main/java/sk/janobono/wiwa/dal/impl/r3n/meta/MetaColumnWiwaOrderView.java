@@ -13,6 +13,7 @@ public enum MetaColumnWiwaOrderView {
     CREATED("created", DataType.TIME_STAMP),
     ORDER_NUMBER("order_number", DataType.LONG),
     DELIVERY("delivery", DataType.DATE),
+    PACKAGE_TYPE("package_type", DataType.STRING),
     STATUS("status", DataType.STRING),
     WEIGHT("weight", DataType.BIG_DECIMAL),
     TOTAL("total", DataType.BIG_DECIMAL);

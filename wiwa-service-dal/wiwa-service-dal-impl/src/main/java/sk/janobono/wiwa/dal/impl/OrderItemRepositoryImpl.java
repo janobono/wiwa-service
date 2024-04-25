@@ -181,28 +181,11 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     }
 
     @Override
-    public void setName(final long id, final String name) {
-        log.debug("setName({},{})", id, name);
-        try (final Connection connection = dataSource.getConnection()) {
-            sqlBuilder.update(connection,
-                    Query.UPDATE(MetaTable.WIWA_ORDER_ITEM.table())
-                            .SET(MetaColumnWiwaOrderItem.NAME.column(), name)
-                            .WHERE(MetaColumnWiwaOrderItem.ID.column(), Condition.EQUALS, id)
-            );
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public void setSummary(final long id, final OderItemSummaryDo oderItemSummary) {
         log.debug("setSummary({},{})", id, oderItemSummary);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.update(connection,
                     Query.UPDATE(MetaTable.WIWA_ORDER_ITEM.table())
-                            .SET(MetaColumnWiwaOrderItem.PART_PRICE.column(), oderItemSummary.partPrice())
-                            .SET(MetaColumnWiwaOrderItem.WEIGHT.column(), oderItemSummary.partWeight())
-                            .SET(MetaColumnWiwaOrderItem.AMOUNT.column(), oderItemSummary.amount())
                             .SET(MetaColumnWiwaOrderItem.WEIGHT.column(), oderItemSummary.weight())
                             .SET(MetaColumnWiwaOrderItem.TOTAL.column(), oderItemSummary.total())
                             .WHERE(MetaColumnWiwaOrderItem.ID.column(), Condition.EQUALS, id)

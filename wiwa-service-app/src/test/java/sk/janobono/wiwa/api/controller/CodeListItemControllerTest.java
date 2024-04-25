@@ -66,9 +66,7 @@ public class CodeListItemControllerTest extends BaseControllerTest {
         }
 
         codeListItems.clear();
-        codeLists.forEach(codeList -> {
-            codeListItems.addAll(getCodeListItems(headers, codeList.getId(), true, null, null, null, null, null, Pageable.unpaged()).stream().toList());
-        });
+        codeLists.forEach(codeList -> codeListItems.addAll(getCodeListItems(headers, codeList.getId(), true, null, null, null, null, null, Pageable.unpaged()).stream().toList()));
 
         for (final CodeListItemWebDto codeListItem : codeListItems) {
             assertThat(codeListItem).usingRecursiveComparison().isEqualTo(getCodeListItem(headers, codeListItem.id()));
@@ -103,9 +101,7 @@ public class CodeListItemControllerTest extends BaseControllerTest {
         assertThat(movedItem).usingRecursiveComparison().isEqualTo(rootCodeListItems.getFirst());
 
         rootCodeListItems.forEach(rootCategory -> getCodeListItems(headers, rootCategory.codeListId(), null, rootCategory.id(), null, null, null, null, Pageable.unpaged())
-                .forEach(child -> {
-                    assertThat(child.leafNode()).isTrue();
-                }));
+                .forEach(child -> assertThat(child.leafNode()).isTrue()));
 
         codeListItems.forEach(codeListItemSo -> {
             getCodeListItems(headers, codeListItemSo.codeListId(), null, codeListItemSo.id(), null, null, null, null, Pageable.unpaged())

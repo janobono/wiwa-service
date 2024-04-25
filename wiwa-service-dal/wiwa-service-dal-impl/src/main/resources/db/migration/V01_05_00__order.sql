@@ -12,6 +12,7 @@ create table wiwa_order
     created      timestamp not null,
     order_number bigint    not null,
     delivery     date,
+    package_type varchar(255),
     data         text      not null,
     unique (user_id, order_number)
 );
@@ -41,16 +42,12 @@ create table wiwa_order_contact
 
 create table wiwa_order_item
 (
-    id          bigserial primary key,
-    order_id    bigint         not null references wiwa_order (id) on delete cascade,
-    sort_num    integer        not null,
-    name        varchar(255)   not null,
-    part_price  numeric(19, 3) not null,
-    part_weight numeric(19, 3) not null,
-    amount      integer        not null,
-    weight      numeric(19, 3) not null,
-    total       numeric(19, 3) not null,
-    data        text           not null
+    id       bigserial primary key,
+    order_id bigint         not null references wiwa_order (id) on delete cascade,
+    sort_num integer        not null,
+    weight   numeric(19, 3) not null,
+    total    numeric(19, 3) not null,
+    data     text           not null
 );
 
 create table wiwa_order_status
@@ -64,7 +61,7 @@ create table wiwa_order_status
 
 create view wiwa_order_view
             (
-             id, user_id, created, order_number, delivery, status, weight, total
+             id, user_id, created, order_number, delivery, package_type, status, weight, total
                 )
 as
 SELECT o.id,
@@ -72,6 +69,7 @@ SELECT o.id,
        o.created,
        o.order_number,
        o.delivery,
+       o.package_type,
        COALESCE((SELECT wiwa_order_status.status
                  FROM wiwa_order_status
                  WHERE wiwa_order_status.order_id = o.id

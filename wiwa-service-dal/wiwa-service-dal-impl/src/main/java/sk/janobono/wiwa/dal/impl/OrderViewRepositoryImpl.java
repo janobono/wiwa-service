@@ -163,6 +163,10 @@ public class OrderViewRepositoryImpl implements OrderViewRepository {
                                 MetaColumnWiwaOrderView.DELIVERY.column(),
                                 criteriaUtil.mapDirection(order)
                         );
+                        case "packageType" -> select.ORDER_BY(
+                                MetaColumnWiwaOrderView.PACKAGE_TYPE.column(),
+                                criteriaUtil.mapDirection(order)
+                        );
                         case "status" -> select.ORDER_BY(
                                 MetaColumnWiwaOrderView.STATUS.column(),
                                 criteriaUtil.mapDirection(order)

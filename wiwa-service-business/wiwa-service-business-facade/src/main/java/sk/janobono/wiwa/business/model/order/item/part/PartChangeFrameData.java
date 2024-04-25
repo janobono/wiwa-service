@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.business.model.order.part;
+package sk.janobono.wiwa.business.model.order.item.part;
 
 import lombok.Builder;
 
