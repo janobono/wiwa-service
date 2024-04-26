@@ -29,7 +29,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -167,24 +166,6 @@ public class EdgeRepositoryImpl implements EdgeRepository {
                     .findFirst()
                     .map(WiwaEdgeDto::toObject)
                     .map(mapper::toEdgeDo);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public List<EdgeDo> findAllByIds(final Set<Long> ids) {
-        log.debug("findAllByIds({})", ids);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaEdge.columns())
-                            .FROM(MetaTable.WIWA_EDGE.table())
-                            .WHERE(MetaColumnWiwaEdge.ID.column(), Condition.IN, ids)
-            );
-            return rows.stream()
-                    .map(WiwaEdgeDto::toObject)
-                    .map(mapper::toEdgeDo)
-                    .toList();
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

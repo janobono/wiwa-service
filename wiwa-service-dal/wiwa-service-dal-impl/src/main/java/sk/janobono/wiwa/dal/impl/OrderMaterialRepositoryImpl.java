@@ -8,6 +8,7 @@ import sk.janobono.wiwa.dal.impl.mapper.OrderMaterialDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaOrderMaterialDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrderMaterial;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
+import sk.janobono.wiwa.dal.model.OrderMaterialIdDo;
 import sk.janobono.wiwa.dal.repository.OrderMaterialRepository;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Condition;
@@ -29,25 +30,25 @@ public class OrderMaterialRepositoryImpl implements OrderMaterialRepository {
     private final OrderMaterialDoMapper mapper;
 
     @Override
-    public int countByOrderIdAndMaterialIdAndCode(final long orderId, final long materialId, final String code) {
-        log.debug("countByOrderIdAndMaterialIdAndCode({},{},{})", orderId, materialId, code);
+    public int countById(final OrderMaterialIdDo id) {
+        log.debug("countByOrderIdAndMaterialIdAndCode({})", id);
         try (final Connection connection = dataSource.getConnection()) {
-            return countByOrderIdAndMaterialIdAndCode(connection, orderId, materialId, code);
+            return countByOrderIdAndMaterialIdAndCode(connection, id.orderId(), id.materialId(), id.code());
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void deleteByOrderIdAndMaterialIdAndCode(final long orderId, final long materialId, final String code) {
-        log.debug("deleteByOrderIdAndMaterialIdAndCode({},{},{})", orderId, materialId, code);
+    public void deleteById(final OrderMaterialIdDo id) {
+        log.debug("deleteByOrderIdAndMaterialIdAndCode({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.delete(connection,
                     Query.DELETE()
                             .FROM(MetaTable.WIWA_ORDER_MATERIAL.table())
-                            .WHERE(MetaColumnWiwaOrderMaterial.ORDER_ID.column(), Condition.EQUALS, orderId)
-                            .AND(MetaColumnWiwaOrderMaterial.MATERIAL_ID.column(), Condition.EQUALS, materialId)
-                            .AND(MetaColumnWiwaOrderMaterial.CODE.column(), Condition.EQUALS, code)
+                            .WHERE(MetaColumnWiwaOrderMaterial.ORDER_ID.column(), Condition.EQUALS, id.orderId())
+                            .AND(MetaColumnWiwaOrderMaterial.MATERIAL_ID.column(), Condition.EQUALS, id.materialId())
+                            .AND(MetaColumnWiwaOrderMaterial.CODE.column(), Condition.EQUALS, id.code())
             );
         } catch (final Exception e) {
             throw new RuntimeException(e);
@@ -55,15 +56,15 @@ public class OrderMaterialRepositoryImpl implements OrderMaterialRepository {
     }
 
     @Override
-    public Optional<OrderMaterialDo> findByOrderIdAndMaterialIdAndCode(final long orderId, final long materialId, final String code) {
-        log.debug("findByOrderIdAndMaterialIdAndCode({},{},{})", orderId, materialId, code);
+    public Optional<OrderMaterialDo> findById(final OrderMaterialIdDo id) {
+        log.debug("findByOrderIdAndMaterialIdAndCode({})", id);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
                     Query.SELECT(MetaColumnWiwaOrderMaterial.columns())
                             .FROM(MetaTable.WIWA_ORDER_MATERIAL.table())
-                            .WHERE(MetaColumnWiwaOrderMaterial.ORDER_ID.column(), Condition.EQUALS, orderId)
-                            .AND(MetaColumnWiwaOrderMaterial.MATERIAL_ID.column(), Condition.EQUALS, materialId)
-                            .AND(MetaColumnWiwaOrderMaterial.CODE.column(), Condition.EQUALS, code)
+                            .WHERE(MetaColumnWiwaOrderMaterial.ORDER_ID.column(), Condition.EQUALS, id.orderId())
+                            .AND(MetaColumnWiwaOrderMaterial.MATERIAL_ID.column(), Condition.EQUALS, id.materialId())
+                            .AND(MetaColumnWiwaOrderMaterial.CODE.column(), Condition.EQUALS, id.code())
             );
             return rows.stream()
                     .findFirst()

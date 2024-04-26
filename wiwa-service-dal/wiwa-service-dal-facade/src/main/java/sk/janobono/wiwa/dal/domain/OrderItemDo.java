@@ -12,5 +12,4 @@ public class OrderItemDo {
     private String name;
     private Integer quantity;
     private String part;
-    private String summary;
 }

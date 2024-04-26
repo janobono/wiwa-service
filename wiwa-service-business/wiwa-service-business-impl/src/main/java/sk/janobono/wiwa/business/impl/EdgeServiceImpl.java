@@ -99,7 +99,7 @@ public class EdgeServiceImpl implements EdgeService {
     @Override
     public void setEdgeImage(final long edgeId, final MultipartFile multipartFile) {
         if (!edgeRepository.existsById(edgeId)) {
-            throw WiwaException.BOARD_NOT_FOUND.exception("Edge with id {0} not found", edgeId);
+            throw WiwaException.EDGE_NOT_FOUND.exception("Edge with id {0} not found", edgeId);
         }
 
         final String fileType = Optional.ofNullable(multipartFile.getContentType()).orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE);
@@ -122,7 +122,7 @@ public class EdgeServiceImpl implements EdgeService {
     @Override
     public void deleteEdgeImage(final long edgeId) {
         if (!edgeRepository.existsById(edgeId)) {
-            throw WiwaException.BOARD_NOT_FOUND.exception("Edge with id {0} not found", edgeId);
+            throw WiwaException.EDGE_NOT_FOUND.exception("Edge with id {0} not found", edgeId);
         }
 
         edgeImageRepository.deleteByEdgeId(edgeId);
@@ -158,7 +158,7 @@ public class EdgeServiceImpl implements EdgeService {
 
     private EdgeDo getEdgeDo(final Long id) {
         return edgeRepository.findById(id)
-                .orElseThrow(() -> WiwaException.BOARD_NOT_FOUND.exception("Edge with id {0} not found", id));
+                .orElseThrow(() -> WiwaException.EDGE_NOT_FOUND.exception("Edge with id {0} not found", id));
     }
 
     private EdgeData toEdgeData(final EdgeDo edgeDo, final BigDecimal vatRate) {

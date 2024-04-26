@@ -218,6 +218,8 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('MA
 "minimalEdgedBoardDimension":60,
 "minimalLayeredBoardDimension":80,
 "minimalFrameBoardDimension":70,
+"minimalCornerStraightDimension":10,
+"minimalCornerRoundedDimension":10,
 "edgeWidthAppendDimension":8,
 "edgeLengthAppendDimension":40,
 "layeredBoardAppendDimension":10

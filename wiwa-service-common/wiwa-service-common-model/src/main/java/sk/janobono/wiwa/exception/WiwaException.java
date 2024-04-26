@@ -28,7 +28,8 @@ public enum WiwaException {
     ORDER_IS_EMPTY,
     ORDER_AGREEMENTS_INVALID,
     ORDER_DELIVERY_DATE_INVALID,
-    ORDER_ITEM_NOT_FOUND;
+    ORDER_ITEM_NOT_FOUND,
+    ORDER_ITEM_PART_CORNER_INVALID;
 
     public ApplicationException exception(final String pattern, final Object... arguments) {
         return exception(null, pattern, arguments);

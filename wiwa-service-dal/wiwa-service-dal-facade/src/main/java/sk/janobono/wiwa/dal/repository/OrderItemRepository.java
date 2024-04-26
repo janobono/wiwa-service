@@ -26,6 +26,4 @@ public interface OrderItemRepository {
     void setOrderItemInfo(long id, OrderItemInfoDo orderItemInfo);
 
     void setPart(long id, String part);
-
-    void setSummary(long id, String summary);
 }

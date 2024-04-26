@@ -194,18 +194,4 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
             throw new RuntimeException(e);
         }
     }
-
-    @Override
-    public void setSummary(final long id, final String summary) {
-        log.debug("setSummary({},{})", id, summary);
-        try (final Connection connection = dataSource.getConnection()) {
-            sqlBuilder.update(connection,
-                    Query.UPDATE(MetaTable.WIWA_ORDER_ITEM.table())
-                            .SET(MetaColumnWiwaOrderItem.SUMMARY.column(), summary)
-                            .WHERE(MetaColumnWiwaOrderItem.ID.column(), Condition.EQUALS, id)
-            );
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

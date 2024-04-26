@@ -29,7 +29,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -167,24 +166,6 @@ public class BoardRepositoryImpl implements BoardRepository {
                     .findFirst()
                     .map(WiwaBoardDto::toObject)
                     .map(mapper::toBoardDo);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public List<BoardDo> findAllByIds(final Set<Long> ids) {
-        log.debug("findAllByIds({})", ids);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaBoard.columns())
-                            .FROM(MetaTable.WIWA_BOARD.table())
-                            .WHERE(MetaColumnWiwaBoard.ID.column(), Condition.IN, ids)
-            );
-            return rows.stream()
-                    .map(WiwaBoardDto::toObject)
-                    .map(mapper::toBoardDo)
-                    .toList();
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

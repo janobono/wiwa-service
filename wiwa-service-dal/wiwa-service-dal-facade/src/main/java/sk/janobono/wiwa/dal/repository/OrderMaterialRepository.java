@@ -1,17 +1,18 @@
 package sk.janobono.wiwa.dal.repository;
 
 import sk.janobono.wiwa.dal.domain.OrderMaterialDo;
+import sk.janobono.wiwa.dal.model.OrderMaterialIdDo;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface OrderMaterialRepository {
 
-    int countByOrderIdAndMaterialIdAndCode(long orderId, long materialId, String code);
+    int countById(OrderMaterialIdDo id);
 
-    void deleteByOrderIdAndMaterialIdAndCode(long orderId, long materialId, String code);
+    void deleteById(OrderMaterialIdDo id);
 
-    Optional<OrderMaterialDo> findByOrderIdAndMaterialIdAndCode(long orderId, long materialId, String code);
+    Optional<OrderMaterialDo> findById(OrderMaterialIdDo id);
 
     List<OrderMaterialDo> findAllByOrderId(long orderId);
 

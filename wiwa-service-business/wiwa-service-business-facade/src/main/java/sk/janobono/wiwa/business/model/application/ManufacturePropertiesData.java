@@ -7,6 +7,8 @@ public record ManufacturePropertiesData(
         BigDecimal minimalEdgedBoardDimension,
         BigDecimal minimalLayeredBoardDimension,
         BigDecimal minimalFrameBoardDimension,
+        BigDecimal minimalCornerStraightDimension,
+        BigDecimal minimalCornerRoundedDimension,
         BigDecimal edgeWidthAppendDimension,
         BigDecimal edgeLengthAppendDimension,
         BigDecimal layeredBoardAppendDimension

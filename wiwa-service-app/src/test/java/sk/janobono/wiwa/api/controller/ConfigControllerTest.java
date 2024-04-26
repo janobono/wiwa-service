@@ -281,6 +281,8 @@ class ConfigControllerTest extends BaseControllerTest {
                                 new BigDecimal("1000.0000"),
                                 new BigDecimal("1000.0000"),
                                 new BigDecimal("1000.0000"),
+                                new BigDecimal("1000.0000"),
+                                new BigDecimal("1000.0000"),
                                 new BigDecimal("1000.0000")
                         ),
                         headers

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.impl.component.DataUtil;
 import sk.janobono.wiwa.business.impl.component.MaterialUtil;
+import sk.janobono.wiwa.business.impl.component.PartUtil;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
 import sk.janobono.wiwa.business.impl.model.mail.MailData;
@@ -21,7 +22,6 @@ import sk.janobono.wiwa.business.model.application.OrderCommentMailData;
 import sk.janobono.wiwa.business.model.application.OrderSendMailData;
 import sk.janobono.wiwa.business.model.application.OrderStatusMailData;
 import sk.janobono.wiwa.business.model.order.*;
-import sk.janobono.wiwa.business.model.order.part.PartBasicData;
 import sk.janobono.wiwa.business.model.order.part.PartData;
 import sk.janobono.wiwa.business.model.order.summary.OrderItemSummaryData;
 import sk.janobono.wiwa.business.model.order.summary.OrderSummaryData;
@@ -55,8 +55,11 @@ public class OrderServiceImpl implements OrderService {
 
     private final DataUtil dataUtil;
     private final MaterialUtil materialUtil;
+    private final PartUtil partUtil;
     private final PriceUtil priceUtil;
 
+    private final BoardRepository boardRepository;
+    private final EdgeRepository edgeRepository;
     private final OrderRepository orderRepository;
     private final OrderCommentRepository orderCommentRepository;
     private final OrderContactRepository orderContactRepository;
@@ -385,14 +388,15 @@ public class OrderServiceImpl implements OrderService {
 
         validate(id, orderItemChange);
 
-        orderItemRepository.insert(OrderItemDo.builder()
+        final OrderItemDo orderItemDo = orderItemRepository.insert(OrderItemDo.builder()
                 .orderId(id)
                 .sortNum(orderItemRepository.countByOrderId(id))
                 .name(orderItemChange.name())
                 .quantity(orderItemChange.quantity())
                 .part(dataUtil.serializeValue(orderItemChange.part()))
-                .summary(dataUtil.serializeValue(countItemSummary(id, orderItemChange)))
                 .build());
+
+        recountItemSummary(id, orderItemDo.getId());
 
         recountOrderSummary(id);
 
@@ -408,8 +412,9 @@ public class OrderServiceImpl implements OrderService {
         validate(id, orderItemChange);
 
         orderItemRepository.setOrderItemInfo(itemId, new OrderItemInfoDo(orderItemChange.name(), orderItemChange.quantity()));
-        orderItemRepository.setPart(itemId, dataUtil.serializeValue(toPartData(orderItemChange)));
-        orderItemRepository.setSummary(itemId, dataUtil.serializeValue(countItemSummary(itemId, orderItemChange)));
+        orderItemRepository.setPart(itemId, dataUtil.serializeValue(orderItemChange.part()));
+
+        recountItemSummary(id, itemId);
 
         recountOrderSummary(id);
 
@@ -637,34 +642,111 @@ public class OrderServiceImpl implements OrderService {
         return emails;
     }
 
-    private void validate(long id, OrderItemChangeData orderItemChange) {
-        // TODO
-
+    private OrderBoardData toOrderBoard(final BoardDo boardDo) {
+        return OrderBoardData.builder()
+                .id(boardDo.getId())
+                .code(boardDo.getCode())
+                .name(boardDo.getName())
+                .boardCode(boardDo.getBoardCode())
+                .structureCode(boardDo.getStructureCode())
+                .orientation(boardDo.getOrientation())
+                .weight(boardDo.getWeight())
+                .length(boardDo.getLength())
+                .width(boardDo.getWidth())
+                .thickness(boardDo.getThickness())
+                .price(boardDo.getPrice())
+                .build();
     }
 
-    private OrderItemSummaryData countItemSummary(long id, OrderItemChangeData orderItemChange) {
+    private OrderEdgeData toOrderEdge(final EdgeDo edgeDo) {
+        return OrderEdgeData.builder()
+                .id(edgeDo.getId())
+                .code(edgeDo.getCode())
+                .name(edgeDo.getName())
+                .weight(edgeDo.getWeight())
+                .width(edgeDo.getWidth())
+                .thickness(edgeDo.getThickness())
+                .price(edgeDo.getPrice())
+                .build();
+    }
+
+    private void validate(final long orderId, final OrderItemChangeData orderItemChange) {
+        final Set<Long> boardIds = partUtil.getBoardIds(orderItemChange.part());
+        final Map<Long, OrderBoardData> boards = new HashMap<>();
+        for (final Long boardId : boardIds) {
+            boards.putIfAbsent(boardId,
+                    boardRepository.findById(boardId)
+                            .map(this::toOrderBoard)
+                            .orElseThrow(() -> WiwaException.BOARD_NOT_FOUND.exception("Board with id {0} not found", boardId))
+            );
+        }
+
+        final Set<Long> edgeIds = partUtil.getEdgeIds(orderItemChange.part());
+        final Map<Long, OrderEdgeData> edges = new HashMap<>();
+        for (final Long edgeId : edgeIds) {
+            edges.putIfAbsent(edgeId, edgeRepository.findById(edgeId)
+                    .map(this::toOrderEdge)
+                    .orElseThrow(() -> WiwaException.BOARD_NOT_FOUND.exception("Edge with id {0} not found", edgeId))
+            );
+        }
+
+        partUtil.validate(orderItemChange.part(), boards, edges, applicationPropertyService.getManufactureProperties());
+
+        for (final OrderBoardData board : boards.values()) {
+            orderMaterialRepository.save(materialUtil.toMaterial(orderId, board));
+        }
+
+        for (final OrderEdgeData edge : edges.values()) {
+            orderMaterialRepository.save(materialUtil.toMaterial(orderId, edge));
+        }
+    }
+
+    private void recountItemSummary(long id, Long id1) {
+        // fetch item
+
+        // count summary
+    }
+
+    private OrderItemSummaryData countItemSummary(final long id, final OrderItemChangeData orderItemChange) {
         // TODO
 
+//export interface SummaryBorderItem {
+//    borderId: number;
+//    length: number;
+//    price: number;
+//    stickLength: number;
+//    stickPrice: number;
+//}
+
+//export interface SummaryMaterialItem {
+//    materialId: number;
+//    itemCount: number;
+//    sawLength: number;
+//    sawPrice: number;
+//    doubleSawLength: number;
+//    doubleSawPrice: number;
+//    rawArea: number;
+//    materialCount: number;
+//    materialPrice: number;
+//    stickArea: number;
+//    stickPrice: number;
+//    borderItems: SummaryBorderItem[];
+//}
+
+//export interface Summary {
+//    materialItems: SummaryMaterialItem[];
+//    materialItem: SummaryMaterialItem;
+//    borderItems: SummaryBorderItem[];
+//    borderItem: SummaryBorderItem;
+//    totalPrice: number;
+//}
         return OrderItemSummaryData.builder().build();
-    }
-
-    private PartData toPartData(final OrderItemChangeData orderItemChange) {
-
-        // validate item part
-
-        // find or add materials
-
-        // create new structure
-
-// TODO
-        return PartBasicData.builder().build();
     }
 
     private void recountOrderItems(final long id) {
         // reload all used materials - new values
 
         // recount all items summary
-
 
         // TODO
     }
