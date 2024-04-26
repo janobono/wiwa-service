@@ -275,12 +275,10 @@ class ConfigControllerTest extends BaseControllerTest {
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new ManufacturePropertiesWebDto(
-                                new BigDecimal("1000.0000"),
-                                new BigDecimal("1000.0000"),
-                                new BigDecimal("1000.0000"),
-                                new BigDecimal("1000.0000"),
-                                new BigDecimal("1000.0000"),
-                                new BigDecimal("1000.0000"),
+                                new ManufactureDimensionsWebDto(new BigDecimal("1000.0000"), new BigDecimal("1000.0000")),
+                                new ManufactureDimensionsWebDto(new BigDecimal("1000.0000"), new BigDecimal("1000.0000")),
+                                new ManufactureDimensionsWebDto(new BigDecimal("1000.0000"), new BigDecimal("1000.0000")),
+                                new ManufactureDimensionsWebDto(new BigDecimal("1000.0000"), new BigDecimal("1000.0000")),
                                 new BigDecimal("1000.0000"),
                                 new BigDecimal("1000.0000"),
                                 new BigDecimal("1000.0000")
@@ -290,7 +288,7 @@ class ConfigControllerTest extends BaseControllerTest {
                 ManufacturePropertiesWebDto.class
         );
         assertThat(manufactureProperties.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(Objects.requireNonNull(manufactureProperties.getBody()).minimalBoardDimension()).isEqualTo(new BigDecimal("1000.0000"));
+        assertThat(Objects.requireNonNull(manufactureProperties.getBody()).minimalSystemDimensions().x()).isEqualTo(new BigDecimal("1000.0000"));
 
         // price-for-gluing-layer
         ResponseEntity<PriceForGluingLayerWebDto> priceForGluingLayer = restTemplate.exchange(

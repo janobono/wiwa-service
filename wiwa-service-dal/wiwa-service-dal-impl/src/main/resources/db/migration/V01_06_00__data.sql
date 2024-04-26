@@ -214,15 +214,13 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('RE
 }');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('MANUFACTURE_PROPERTIES', e'{
-"minimalBoardDimension":30,
-"minimalEdgedBoardDimension":60,
-"minimalLayeredBoardDimension":80,
-"minimalFrameBoardDimension":70,
-"minimalCornerStraightDimension":10,
-"minimalCornerRoundedDimension":10,
-"edgeWidthAppendDimension":8,
-"edgeLengthAppendDimension":40,
-"layeredBoardAppendDimension":10
+"minimalSystemDimensions":{"x":50,"y":50},
+"minimalEdgedBoardDimensions":{"x":250,"y":60},
+"minimalLayeredBoardDimension":{"x":250,"y":80},
+"minimalFrameBoardDimensions":{"x":250,"y":80},
+"edgeWidthAppend":8,
+"edgeLengthAppend":40,
+"duplicatedBoardAppend":10
 }');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PRICE_FOR_GLUING_LAYER', e'{

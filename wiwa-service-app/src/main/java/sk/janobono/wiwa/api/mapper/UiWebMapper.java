@@ -26,6 +26,8 @@ public interface UiWebMapper {
 
     SignUpMailWebDto mapToWebDto(SignUpMailData signUpMail);
 
+    ManufactureDimensionsWebDto mapToWebDto(ManufactureDimensionsData manufactureDimensions);
+
     ManufacturePropertiesWebDto mapToWebDto(ManufacturePropertiesData manufactureProperties);
 
     PriceForCuttingWebDto mapToWebDto(PriceForCuttingData priceForCutting);
@@ -38,13 +40,15 @@ public interface UiWebMapper {
 
     OrderCommentMailWebDto mapToWebDto(OrderCommentMailData orderCommentMail);
 
-    OrderSendMailWebDto mapToWebDto(OrderSendMailData orderSendMailData);
+    OrderSendMailWebDto mapToWebDto(OrderSendMailData orderSendMail);
 
     OrderStatusMailWebDto mapToWebDto(OrderStatusMailData orderStatusMail);
 
     ResetPasswordMailData mapToData(ResetPasswordMailWebDto resetPasswordMail);
 
     SignUpMailData mapToData(SignUpMailWebDto signUpMail);
+
+    ManufactureDimensionsData mapToData(ManufactureDimensionsWebDto manufactureDimensions);
 
     ManufacturePropertiesData mapToData(ManufacturePropertiesWebDto manufactureProperties);
 

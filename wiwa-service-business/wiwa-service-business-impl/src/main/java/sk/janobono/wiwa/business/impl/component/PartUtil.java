@@ -2,17 +2,17 @@ package sk.janobono.wiwa.business.impl.component;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import sk.janobono.wiwa.business.impl.model.part.CornerPosition;
+import sk.janobono.wiwa.business.model.application.ManufactureDimensionsData;
 import sk.janobono.wiwa.business.model.application.ManufacturePropertiesData;
 import sk.janobono.wiwa.business.model.order.OrderBoardData;
 import sk.janobono.wiwa.business.model.order.OrderEdgeData;
 import sk.janobono.wiwa.business.model.order.part.*;
 import sk.janobono.wiwa.exception.WiwaException;
 
+import java.math.BigDecimal;
 import java.security.InvalidParameterException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Component
@@ -55,17 +55,31 @@ public class PartUtil {
         };
     }
 
-    private void validateBasic(final PartBasicData partBasic,
+    private void validateBasic(final PartBasicData part,
                                final Map<Long, OrderBoardData> boards,
                                final Map<Long, OrderEdgeData> edges,
                                final ManufacturePropertiesData manufactureProperties) {
-        // TODO
+        checkDimensions(part.dimensionA(), part.dimensionB(), part.boardId(), boards, manufactureProperties);
+
+        final Map<CornerPosition, ManufactureDimensionsData> cornerDimensions = new HashMap<>();
+        Optional.ofNullable(part.cornerA1B1()).ifPresent(cornerData -> cornerDimensions.put(CornerPosition.A1B1, getCornerDimensions(cornerData)));
+        Optional.ofNullable(part.cornerA1B2()).ifPresent(cornerData -> cornerDimensions.put(CornerPosition.A1B2, getCornerDimensions(cornerData)));
+        Optional.ofNullable(part.cornerA2B1()).ifPresent(cornerData -> cornerDimensions.put(CornerPosition.A2B1, getCornerDimensions(cornerData)));
+        Optional.ofNullable(part.cornerA2B2()).ifPresent(cornerData -> cornerDimensions.put(CornerPosition.A2B2, getCornerDimensions(cornerData)));
+        checkCorners(part.dimensionA(), part.dimensionB(), cornerDimensions);
+
+        checkEdges(boards.get(part.boardId()).thickness(), getEdgeIds(part), edges, manufactureProperties);
     }
 
-    private void validateFrame(final PartFrameData partFrame,
+    private void validateFrame(final PartFrameData part,
                                final Map<Long, OrderBoardData> boards,
                                final Map<Long, OrderEdgeData> edges,
                                final ManufacturePropertiesData manufactureProperties) {
+
+       
+        // TODO
+
+
         // TODO
     }
 
@@ -81,30 +95,6 @@ public class PartUtil {
                                              final Map<Long, OrderEdgeData> edges,
                                              final ManufacturePropertiesData manufactureProperties) {
         // TODO
-    }
-
-    private void validate(final PartCornerData partCorner, final ManufacturePropertiesData manufactureProperties) {
-        switch (partCorner) {
-            case final PartCornerStraightData cornerStraight ->
-                    validateCornerStraight(cornerStraight, manufactureProperties);
-            case final PartCornerRoundedData cornerRounded ->
-                    validateCornerRounded(cornerRounded, manufactureProperties);
-            default ->
-                    throw new InvalidParameterException("Unsupported part corner type: " + partCorner.getClass().getSimpleName());
-        }
-    }
-
-    private void validateCornerStraight(final PartCornerStraightData cornerStraight, final ManufacturePropertiesData manufactureProperties) {
-        if (manufactureProperties.minimalCornerStraightDimension().doubleValue() > cornerStraight.dimensionX().doubleValue() ||
-                manufactureProperties.minimalCornerStraightDimension().doubleValue() > cornerStraight.dimensionY().doubleValue()) {
-            throw WiwaException.ORDER_ITEM_PART_CORNER_INVALID.exception("Corner X or Y less than minimum");
-        }
-    }
-
-    private void validateCornerRounded(final PartCornerRoundedData cornerRounded, final ManufacturePropertiesData manufactureProperties) {
-        if (manufactureProperties.minimalCornerStraightDimension().doubleValue() > cornerRounded.radius().doubleValue()) {
-            throw WiwaException.ORDER_ITEM_PART_CORNER_INVALID.exception("Corner radius less than minimum");
-        }
     }
 
     private Set<Long> getBasicBoardIds(final PartBasicData partBasic) {
@@ -171,5 +161,73 @@ public class PartUtil {
         Optional.ofNullable(partDuplicatedFrame.edgeIdB2()).ifPresent(ids::add);
         Optional.ofNullable(partDuplicatedFrame.edgeIdB2IBottom()).ifPresent(ids::add);
         return ids;
+    }
+
+    private void checkDimensions(final BigDecimal x,
+                                 final BigDecimal y,
+                                 final long boardId,
+                                 final Map<Long, OrderBoardData> boards,
+                                 final ManufacturePropertiesData manufactureProperties) {
+        final ManufactureDimensionsData max = getMax(boardId, boards);
+        checkMax(x, y, max);
+        checkMin(x, y, manufactureProperties.minimalSystemDimensions());
+    }
+
+    private void checkMax(final BigDecimal x, final BigDecimal y, final ManufactureDimensionsData max) {
+        final boolean horizontalIsOk = x.doubleValue() <= max.x().doubleValue() && y.doubleValue() <= max.y().doubleValue();
+        final boolean verticalIsOk = x.doubleValue() <= max.y().doubleValue() && y.doubleValue() <= max.x().doubleValue();
+
+        if (horizontalIsOk || verticalIsOk) {
+            return;
+        }
+
+        throw WiwaException.ORDER_ITEM_PART_INVALID.exception("Invalid dimensions [{0},{1}] maximum is {2}", x, y, max);
+    }
+
+    private void checkMin(final BigDecimal x, final BigDecimal y, final ManufactureDimensionsData min) {
+        final boolean horizontalIsOk = x.doubleValue() >= min.x().doubleValue() && y.doubleValue() >= min.y().doubleValue();
+        final boolean verticalIsOk = x.doubleValue() >= min.y().doubleValue() && y.doubleValue() >= min.x().doubleValue();
+
+        if (horizontalIsOk || verticalIsOk) {
+            return;
+        }
+
+        throw WiwaException.ORDER_ITEM_PART_INVALID.exception("Invalid dimensions [{0},{1}] minimum is {2}", x, y, min);
+    }
+
+    private ManufactureDimensionsData getMax(final long boardId, final Map<Long, OrderBoardData> boards) {
+        return new ManufactureDimensionsData(boards.get(boardId).length(), boards.get(boardId).width());
+    }
+
+    private ManufactureDimensionsData getCornerDimensions(final PartCornerData partCorner) {
+        return switch (partCorner) {
+            case final PartCornerStraightData cornerStraight ->
+                    new ManufactureDimensionsData(cornerStraight.dimensionX(), cornerStraight.dimensionY());
+            case final PartCornerRoundedData cornerRounded ->
+                    new ManufactureDimensionsData(cornerRounded.radius(), cornerRounded.radius());
+            default ->
+                    throw new InvalidParameterException("Unsupported part corner type: " + partCorner.getClass().getSimpleName());
+        };
+    }
+
+    private void checkCorners(final BigDecimal x, final BigDecimal y, final Map<CornerPosition, ManufactureDimensionsData> cornerDimensions) {
+        if (cornerDimensions.isEmpty()) {
+            return;
+        }
+
+        // TODO
+    }
+
+    private void checkEdges(final BigDecimal thickness,
+                            final Set<Long> edgeIds,
+                            final Map<Long, OrderEdgeData> edges,
+                            final ManufacturePropertiesData manufactureProperties) {
+        for (final Long edgeId : edgeIds) {
+            if (thickness.add(manufactureProperties.edgeWidthAppend()).doubleValue() > edges.get(edgeId).width().doubleValue()) {
+                throw WiwaException.ORDER_ITEM_PART_INVALID.exception("Invalid edge width [{0}] minimum is {1}",
+                        edges.get(edgeId).width(),
+                        thickness.add(manufactureProperties.edgeWidthAppend()));
+            }
+        }
     }
 }
