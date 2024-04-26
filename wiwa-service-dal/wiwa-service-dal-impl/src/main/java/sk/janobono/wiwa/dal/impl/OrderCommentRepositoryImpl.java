@@ -7,7 +7,6 @@ import sk.janobono.wiwa.dal.domain.OrderCommentDo;
 import sk.janobono.wiwa.dal.impl.component.CriteriaUtil;
 import sk.janobono.wiwa.dal.impl.mapper.OrderCommentDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaOrderCommentDto;
-import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaCodeListItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrderComment;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.OrderCommentRepository;
@@ -37,7 +36,7 @@ public class OrderCommentRepositoryImpl implements OrderCommentRepository {
         log.debug("findByOrderId({})", orderId);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaCodeListItem.columns())
+                    Query.SELECT(MetaColumnWiwaOrderComment.columns())
                             .FROM(MetaTable.WIWA_ORDER_COMMENT.table())
                             .WHERE(MetaColumnWiwaOrderComment.ORDER_ID.column(), Condition.EQUALS, orderId)
                             .ORDER_BY(MetaColumnWiwaOrderComment.CREATED.column(), Order.ASC)

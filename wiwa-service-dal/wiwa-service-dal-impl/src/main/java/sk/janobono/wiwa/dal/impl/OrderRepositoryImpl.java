@@ -10,7 +10,7 @@ import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaOrderDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrder;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.model.OrderDeliveryDo;
-import sk.janobono.wiwa.dal.model.OrderSummaryDo;
+import sk.janobono.wiwa.dal.model.OrderTotalDo;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
@@ -115,12 +115,13 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public void setData(final long id, final String data) {
-        log.debug("setData({},{})", id, data);
+    public void setOrderTotal(final long id, final OrderTotalDo orderTotal) {
+        log.debug("setOrderTotal({},{})", id, orderTotal);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.update(connection,
                     Query.UPDATE(MetaTable.WIWA_ORDER.table())
-                            .SET(MetaColumnWiwaOrder.DATA.column(), data)
+                            .SET(MetaColumnWiwaOrder.WEIGHT.column(), orderTotal.weight())
+                            .SET(MetaColumnWiwaOrder.TOTAL.column(), orderTotal.total())
                             .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, id)
             );
         } catch (final Exception e) {
@@ -129,13 +130,12 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public void setOrderSummary(final long id, final OrderSummaryDo orderSummary) {
-        log.debug("setOrderSummary({},{})", id, orderSummary);
+    public void setSummary(final long id, final String summary) {
+        log.debug("setSummary({},{})", id, summary);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.update(connection,
                     Query.UPDATE(MetaTable.WIWA_ORDER.table())
-                            .SET(MetaColumnWiwaOrder.WEIGHT.column(), orderSummary.weight())
-                            .SET(MetaColumnWiwaOrder.TOTAL.column(), orderSummary.total())
+                            .SET(MetaColumnWiwaOrder.SUMMARY.column(), summary)
                             .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, id)
             );
         } catch (final Exception e) {

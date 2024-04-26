@@ -4,13 +4,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.NullValueCheckStrategy;
 import sk.janobono.wiwa.api.model.order.*;
-import sk.janobono.wiwa.api.model.order.item.OrderItemChangeWebDto;
-import sk.janobono.wiwa.api.model.order.item.OrderItemWebDto;
-import sk.janobono.wiwa.api.model.order.item.part.*;
+import sk.janobono.wiwa.api.model.order.part.*;
+import sk.janobono.wiwa.api.model.order.summary.OrderItemSummaryWebDto;
+import sk.janobono.wiwa.api.model.order.summary.OrderSummaryWebDto;
 import sk.janobono.wiwa.business.model.order.*;
-import sk.janobono.wiwa.business.model.order.item.OrderItemChangeData;
-import sk.janobono.wiwa.business.model.order.item.OrderItemData;
-import sk.janobono.wiwa.business.model.order.item.part.*;
+import sk.janobono.wiwa.business.model.order.part.*;
+import sk.janobono.wiwa.business.model.order.summary.OrderItemSummaryData;
+import sk.janobono.wiwa.business.model.order.summary.OrderSummaryData;
 
 import java.security.InvalidParameterException;
 
@@ -24,8 +24,6 @@ public interface OrderWebMapper {
     OrderContactWebDto mapToWebDto(OrderContactData orderContact);
 
     OrderEdgeWebDto mapToWebDto(OrderEdgeData orderEdgeData);
-
-    OrderSummaryWebDto mapToWebDto(OrderSummaryData orderSummary);
 
     OrderUserWebDto mapToWebDto(OrderUserData orderUser);
 
@@ -71,6 +69,10 @@ public interface OrderWebMapper {
 
     PartCornerRoundedWebDto mapToWebDto(PartCornerRoundedData partCorner);
 
+    OrderItemSummaryWebDto mapToWebDto(OrderItemSummaryData orderItemSummary);
+
+    OrderSummaryWebDto mapToWebDto(OrderSummaryData orderSummary);
+
     OrderCommentChangeData mapToData(OrderCommentChangeWebDto orderCommentChange);
 
     SendOrderData mapToData(SendOrderWebDto sendOrder);
@@ -81,45 +83,41 @@ public interface OrderWebMapper {
 
     OrderItemChangeData mapToData(OrderItemChangeWebDto orderItemChange);
 
-    default PartChangeData mapToData(final PartChangeWebDto partChange) {
-        if (partChange != null) {
-            return switch (partChange) {
-                case final PartChangeBasicWebDto partChangeBasicWebDto -> mapToData(partChangeBasicWebDto);
-                case final PartChangeFrameWebDto partChangeFrameWebDto -> mapToData(partChangeFrameWebDto);
-                case final PartChangeDuplicatedBasicWebDto partChangeDuplicatedBasicWebDto ->
-                        mapToData(partChangeDuplicatedBasicWebDto);
-                case final PartChangeDuplicatedFrameWebDto partChangeDuplicatedFrameWebDto ->
-                        mapToData(partChangeDuplicatedFrameWebDto);
+    default PartData mapToData(final PartWebDto part) {
+        if (part != null) {
+            return switch (part) {
+                case final PartBasicWebDto partBasicWebDto -> mapToData(partBasicWebDto);
+                case final PartFrameWebDto partFrameWebDto -> mapToData(partFrameWebDto);
+                case final PartDuplicatedBasicWebDto partDuplicatedBasicWebDto -> mapToData(partDuplicatedBasicWebDto);
+                case final PartDuplicatedFrameWebDto partDuplicatedFrameWebDto -> mapToData(partDuplicatedFrameWebDto);
                 default ->
-                        throw new InvalidParameterException("Unsupported part change type: " + partChange.getClass().getSimpleName());
+                        throw new InvalidParameterException("Unsupported part type: " + part.getClass().getSimpleName());
             };
         }
         return null;
     }
 
-    PartChangeBasicData mapToData(PartChangeBasicWebDto partChange);
+    PartBasicData mapToData(PartBasicWebDto part);
 
-    PartChangeFrameData mapToData(PartChangeFrameWebDto partChange);
+    PartFrameData mapToData(PartFrameWebDto part);
 
-    PartChangeDuplicatedBasicData mapToData(PartChangeDuplicatedBasicWebDto partChange);
+    PartDuplicatedBasicData mapToData(PartDuplicatedBasicWebDto part);
 
-    PartChangeDuplicatedFrameData mapToData(PartChangeDuplicatedFrameWebDto partChange);
+    PartDuplicatedFrameData mapToData(PartDuplicatedFrameWebDto part);
 
-    default PartCornerChangeData mapToData(final PartCornerChangeWebDto partCornerChange) {
-        if (partCornerChange != null) {
-            return switch (partCornerChange) {
-                case final PartCornerChangeStraightWebDto partCornerChangeStraightWebDto ->
-                        mapToData(partCornerChangeStraightWebDto);
-                case final PartCornerChangeRoundedWebDto partCornerChangeRoundedWebDto ->
-                        mapToData(partCornerChangeRoundedWebDto);
+    default PartCornerData mapToData(final PartCornerWebDto partCorner) {
+        if (partCorner != null) {
+            return switch (partCorner) {
+                case final PartCornerStraightWebDto partCornerStraightWebDto -> mapToData(partCornerStraightWebDto);
+                case final PartCornerRoundedWebDto partCornerRoundedWebDto -> mapToData(partCornerRoundedWebDto);
                 default ->
-                        throw new InvalidParameterException("Unsupported part corner change type: " + partCornerChange.getClass().getSimpleName());
+                        throw new InvalidParameterException("Unsupported part corner type: " + partCorner.getClass().getSimpleName());
             };
         }
         return null;
     }
 
-    PartCornerChangeStraightData mapToData(PartCornerChangeStraightWebDto partChange);
+    PartCornerStraightData mapToData(PartCornerStraightWebDto partCorner);
 
-    PartCornerChangeRoundedData mapToData(PartCornerChangeRoundedWebDto partChange);
+    PartCornerRoundedData mapToData(PartCornerRoundedWebDto partCorner);
 }

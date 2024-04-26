@@ -1,7 +1,7 @@
 package sk.janobono.wiwa.api.model.order;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import sk.janobono.wiwa.api.model.order.item.OrderItemWebDto;
+import sk.janobono.wiwa.api.model.order.summary.OrderSummaryWebDto;
 import sk.janobono.wiwa.model.OrderPackageType;
 import sk.janobono.wiwa.model.OrderStatus;
 
@@ -21,6 +21,8 @@ public record OrderWebDto(
         BigDecimal vatTotal,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate deliveryDate,
         OrderPackageType packageType,
+        List<OrderBoardWebDto> boards,
+        List<OrderEdgeWebDto> edges,
         List<OrderItemWebDto> items,
         OrderSummaryWebDto summary,
         List<OrderCommentWebDto> comments

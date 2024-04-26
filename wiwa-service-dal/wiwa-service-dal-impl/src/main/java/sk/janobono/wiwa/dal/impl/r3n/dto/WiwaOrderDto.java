@@ -13,7 +13,7 @@ public record WiwaOrderDto(
         String packageType,
         BigDecimal weight,
         BigDecimal total,
-        String data
+        String summary
 ) {
 
     public static Object[] toArray(final WiwaOrderDto wiwaOrderDto) {
@@ -26,7 +26,7 @@ public record WiwaOrderDto(
                 wiwaOrderDto.packageType,
                 wiwaOrderDto.weight,
                 wiwaOrderDto.total,
-                wiwaOrderDto.data
+                wiwaOrderDto.summary
         };
     }
 

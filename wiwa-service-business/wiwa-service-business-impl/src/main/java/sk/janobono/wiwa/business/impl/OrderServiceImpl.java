@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.impl.component.DataUtil;
+import sk.janobono.wiwa.business.impl.component.MaterialUtil;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
 import sk.janobono.wiwa.business.impl.model.mail.MailData;
@@ -20,16 +21,17 @@ import sk.janobono.wiwa.business.model.application.OrderCommentMailData;
 import sk.janobono.wiwa.business.model.application.OrderSendMailData;
 import sk.janobono.wiwa.business.model.application.OrderStatusMailData;
 import sk.janobono.wiwa.business.model.order.*;
-import sk.janobono.wiwa.business.model.order.item.OrderItemChangeData;
-import sk.janobono.wiwa.business.model.order.item.OrderItemData;
-import sk.janobono.wiwa.business.model.order.item.part.PartBasicData;
-import sk.janobono.wiwa.business.model.order.item.part.PartData;
+import sk.janobono.wiwa.business.model.order.part.PartBasicData;
+import sk.janobono.wiwa.business.model.order.part.PartData;
+import sk.janobono.wiwa.business.model.order.summary.OrderItemSummaryData;
+import sk.janobono.wiwa.business.model.order.summary.OrderSummaryData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.*;
 import sk.janobono.wiwa.dal.model.OderItemSortNumDo;
 import sk.janobono.wiwa.dal.model.OrderDeliveryDo;
+import sk.janobono.wiwa.dal.model.OrderItemInfoDo;
 import sk.janobono.wiwa.dal.model.OrderViewSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
@@ -52,14 +54,18 @@ public class OrderServiceImpl implements OrderService {
     private final CommonConfigProperties commonConfigProperties;
 
     private final DataUtil dataUtil;
+    private final MaterialUtil materialUtil;
     private final PriceUtil priceUtil;
 
     private final OrderRepository orderRepository;
     private final OrderCommentRepository orderCommentRepository;
     private final OrderContactRepository orderContactRepository;
     private final OrderItemRepository orderItemRepository;
+    private final OrderItemSummaryRepository orderItemSummaryRepository;
+    private final OrderMaterialRepository orderMaterialRepository;
     private final OrderNumberRepository orderNumberRepository;
     private final OrderStatusRepository orderStatusRepository;
+    private final OrderSummaryViewRepository orderSummaryViewRepository;
     private final OrderViewRepository orderViewRepository;
 
     private final MailUtilService mailUtilService;
@@ -121,7 +127,9 @@ public class OrderServiceImpl implements OrderService {
                 .orderNumber(orderNumberRepository.getNextOrderNumber(userId))
                 .weight(BigDecimal.ZERO)
                 .total(BigDecimal.ZERO)
-                .data(dataUtil.serializeValue(createEmptyOrderSummary()))
+                .summary(dataUtil.serializeValue(OrderSummaryData.builder()
+                        // TODO
+                        .build()))
                 .build());
         orderStatusRepository.save(OrderStatusDo.builder()
                 .orderId(orderDo.getId())
@@ -375,10 +383,15 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(creatorId, manager, orderViewDo);
 
+        validate(id, orderItemChange);
+
         orderItemRepository.insert(OrderItemDo.builder()
                 .orderId(id)
                 .sortNum(orderItemRepository.countByOrderId(id))
-                .data(dataUtil.serializeValue(toPartData(orderItemChange)))
+                .name(orderItemChange.name())
+                .quantity(orderItemChange.quantity())
+                .part(dataUtil.serializeValue(orderItemChange.part()))
+                .summary(dataUtil.serializeValue(countItemSummary(id, orderItemChange)))
                 .build());
 
         recountOrderSummary(id);
@@ -392,7 +405,11 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(modifierId, manager, orderViewDo);
 
-        orderItemRepository.setData(itemId, dataUtil.serializeValue(toPartData(orderItemChange)));
+        validate(id, orderItemChange);
+
+        orderItemRepository.setOrderItemInfo(itemId, new OrderItemInfoDo(orderItemChange.name(), orderItemChange.quantity()));
+        orderItemRepository.setPart(itemId, dataUtil.serializeValue(toPartData(orderItemChange)));
+        orderItemRepository.setSummary(itemId, dataUtil.serializeValue(countItemSummary(itemId, orderItemChange)));
 
         recountOrderSummary(id);
 
@@ -463,6 +480,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private OrderData toOrderData(final OrderViewDo orderViewDo, final BigDecimal vatRate) {
+        final List<OrderMaterialDo> materials = orderMaterialRepository.findAllByOrderId(orderViewDo.id());
+        final List<OrderItemDo> items = orderItemRepository.findAllByOrderId(orderViewDo.id());
+        final List<OrderCommentDo> comments = orderCommentRepository.findAllByOrderId(orderViewDo.id());
+
         return OrderData.builder()
                 .id(orderViewDo.id())
                 .creator(toOrderUserData(userUtilService.getUserDo(orderViewDo.userId())))
@@ -474,6 +495,14 @@ public class OrderServiceImpl implements OrderService {
                 .vatTotal(priceUtil.countVatValue(orderViewDo.total(), vatRate))
                 .deliveryDate(orderViewDo.delivery())
                 .packageType(orderViewDo.packageType())
+                .contact(orderContactRepository.findByOrderId(orderViewDo.id())
+                        .map(this::toOrderContactData).orElse(null))
+                .boards(materialUtil.toBoards(materials))
+                .edges(materialUtil.toEdges(materials))
+                .items(items.stream().map(this::toOrderItemData).toList())
+                .summary(orderRepository.findById(orderViewDo.id())
+                        .map(o -> dataUtil.parseValue(o.getSummary(), OrderSummaryData.class)).orElse(null))
+                .comments(comments.stream().map(this::toOrderCommentData).toList())
                 .build();
     }
 
@@ -512,11 +541,14 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    private OrderItemData toOrderItemData(final OrderItemDo orderItemDo, final BigDecimal vatRate) {
+    private OrderItemData toOrderItemData(final OrderItemDo orderItemDo) {
         return OrderItemData.builder()
                 .id(orderItemDo.getId())
                 .sortNum(orderItemDo.getSortNum())
-                .part(dataUtil.parseValue(orderItemDo.getData(), PartData.class))
+                .name(orderItemDo.getName())
+                .quantity(orderItemDo.getQuantity())
+                .part(dataUtil.parseValue(orderItemDo.getPart(), PartData.class))
+                .summary(dataUtil.parseValue(orderItemDo.getPart(), OrderItemSummaryData.class))
                 .build();
     }
 
@@ -605,21 +637,44 @@ public class OrderServiceImpl implements OrderService {
         return emails;
     }
 
-    private OrderSummaryData createEmptyOrderSummary() {
+    private void validate(long id, OrderItemChangeData orderItemChange) {
         // TODO
-        return OrderSummaryData.builder().build();
+
+    }
+
+    private OrderItemSummaryData countItemSummary(long id, OrderItemChangeData orderItemChange) {
+        // TODO
+
+        return OrderItemSummaryData.builder().build();
     }
 
     private PartData toPartData(final OrderItemChangeData orderItemChange) {
+
+        // validate item part
+
+        // find or add materials
+
+        // create new structure
+
 // TODO
         return PartBasicData.builder().build();
     }
 
     private void recountOrderItems(final long id) {
+        // reload all used materials - new values
+
+        // recount all items summary
+
+
         // TODO
     }
 
     private void recountOrderSummary(final long id) {
         // TODO
+        // check material - remove not used
+
+        // count summary
+
+        // save summary
     }
 }

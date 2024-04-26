@@ -3,10 +3,10 @@ package sk.janobono.wiwa.business.impl.component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sk.janobono.wiwa.business.model.order.item.part.PartChangeBasicData;
-import sk.janobono.wiwa.business.model.order.item.part.PartChangeData;
-import sk.janobono.wiwa.business.model.order.item.part.PartCornerChangeRoundedData;
-import sk.janobono.wiwa.business.model.order.item.part.PartCornerChangeStraightData;
+import sk.janobono.wiwa.business.model.order.part.PartBasicData;
+import sk.janobono.wiwa.business.model.order.part.PartCornerRoundedData;
+import sk.janobono.wiwa.business.model.order.part.PartCornerStraightData;
+import sk.janobono.wiwa.business.model.order.part.PartData;
 
 import java.math.BigDecimal;
 
@@ -24,16 +24,16 @@ class DataUtilTest {
 
     @Test
     void partChangeDataTest() {
-        final PartChangeData basic = PartChangeBasicData.builder()
+        final PartData basic = PartBasicData.builder()
                 .boardId(1L)
                 .edgeIdA1(2L)
                 .dimensionA(new BigDecimal("200.3"))
                 .dimensionB(new BigDecimal("23.4"))
-                .cornerA1B1(new PartCornerChangeStraightData(BigDecimal.ONE, BigDecimal.ONE))
-                .cornerA1B2(new PartCornerChangeRoundedData(BigDecimal.ONE))
+                .cornerA1B1(new PartCornerStraightData(BigDecimal.ONE, BigDecimal.ONE))
+                .cornerA1B2(new PartCornerRoundedData(BigDecimal.ONE))
                 .build();
         final String basicValue = dataUtil.serializeValue(basic);
-        assertThat(basic).usingRecursiveComparison().isEqualTo(dataUtil.parseValue(basicValue, PartChangeData.class));
+        assertThat(basic).usingRecursiveComparison().isEqualTo(dataUtil.parseValue(basicValue, PartData.class));
     }
 
 }

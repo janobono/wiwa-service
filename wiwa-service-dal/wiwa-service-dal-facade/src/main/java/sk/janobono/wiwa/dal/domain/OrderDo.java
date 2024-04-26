@@ -19,5 +19,5 @@ public class OrderDo {
     private OrderPackageType packageType;
     private BigDecimal weight;
     private BigDecimal total;
-    private String data;
+    private String summary;
 }

@@ -15,7 +15,7 @@ create table wiwa_order
     package_type varchar(255),
     weight       numeric(19, 3) not null,
     total        numeric(19, 3) not null,
-    data         text           not null,
+    summary      text           not null,
     unique (user_id, order_number)
 );
 
@@ -45,9 +45,12 @@ create table wiwa_order_contact
 create table wiwa_order_item
 (
     id       bigserial primary key,
-    order_id bigint  not null references wiwa_order (id) on delete cascade,
-    sort_num integer not null,
-    data     text    not null
+    order_id bigint       not null references wiwa_order (id) on delete cascade,
+    sort_num integer      not null,
+    name     varchar(255) not null,
+    quantity integer      not null,
+    part     text         not null,
+    summary  text         not null
 );
 
 create table wiwa_order_item_summary

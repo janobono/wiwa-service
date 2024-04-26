@@ -16,7 +16,7 @@ public enum MetaColumnWiwaOrder {
     PACKAGE_TYPE("package_type", DataType.STRING),
     WEIGHT("weight", DataType.BIG_DECIMAL),
     TOTAL("total", DataType.BIG_DECIMAL),
-    DATA("data", DataType.STRING);
+    SUMMARY("summary", DataType.STRING);
 
     private final String columnName;
 

@@ -20,7 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
 import sk.janobono.wiwa.api.model.order.*;
-import sk.janobono.wiwa.api.model.order.item.OrderItemChangeWebDto;
+import sk.janobono.wiwa.api.model.order.OrderItemChangeWebDto;
 import sk.janobono.wiwa.api.service.OrderApiService;
 import sk.janobono.wiwa.model.OrderStatus;
 

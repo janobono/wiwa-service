@@ -1,7 +1,7 @@
 package sk.janobono.wiwa.business.model.order;
 
 import lombok.Builder;
-import sk.janobono.wiwa.business.model.order.item.OrderItemData;
+import sk.janobono.wiwa.business.model.order.summary.OrderSummaryData;
 import sk.janobono.wiwa.model.OrderPackageType;
 import sk.janobono.wiwa.model.OrderStatus;
 
@@ -22,6 +22,9 @@ public record OrderData(
         BigDecimal vatTotal,
         LocalDate deliveryDate,
         OrderPackageType packageType,
+        OrderContactData contact,
+        List<OrderBoardData> boards,
+        List<OrderEdgeData> edges,
         List<OrderItemData> items,
         OrderSummaryData summary,
         List<OrderCommentData> comments

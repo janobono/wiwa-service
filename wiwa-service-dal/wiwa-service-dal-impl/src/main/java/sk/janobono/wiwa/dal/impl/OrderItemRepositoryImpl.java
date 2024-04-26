@@ -10,6 +10,7 @@ import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaOrderItemDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrderItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.model.OderItemSortNumDo;
+import sk.janobono.wiwa.dal.model.OrderItemInfoDo;
 import sk.janobono.wiwa.dal.repository.OrderItemRepository;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.jdbc.SqlUtil;
@@ -104,7 +105,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
 
     @Override
     public List<OrderItemDo> findAllByOrderId(final long orderId) {
-        log.debug("findByOrderId({})", orderId);
+        log.debug("findAllByOrderId({})", orderId);
         try (final Connection connection = dataSource.getConnection()) {
             final List<Object[]> rows = sqlBuilder.select(connection,
                     Query.SELECT(MetaColumnWiwaOrderItem.columns())
@@ -166,12 +167,41 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     }
 
     @Override
-    public void setData(final long id, final String data) {
-        log.debug("setData({},{})", id, data);
+    public void setOrderItemInfo(final long id, final OrderItemInfoDo orderItemInfo) {
+        log.debug("setOrderItemInfo({},{})", id, orderItemInfo);
         try (final Connection connection = dataSource.getConnection()) {
             sqlBuilder.update(connection,
                     Query.UPDATE(MetaTable.WIWA_ORDER_ITEM.table())
-                            .SET(MetaColumnWiwaOrderItem.DATA.column(), data)
+                            .SET(MetaColumnWiwaOrderItem.NAME.column(), orderItemInfo.name())
+                            .SET(MetaColumnWiwaOrderItem.QUANTITY.column(), orderItemInfo.quantity())
+                            .WHERE(MetaColumnWiwaOrderItem.ID.column(), Condition.EQUALS, id)
+            );
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void setPart(final long id, final String part) {
+        log.debug("setPart({},{})", id, part);
+        try (final Connection connection = dataSource.getConnection()) {
+            sqlBuilder.update(connection,
+                    Query.UPDATE(MetaTable.WIWA_ORDER_ITEM.table())
+                            .SET(MetaColumnWiwaOrderItem.PART.column(), part)
+                            .WHERE(MetaColumnWiwaOrderItem.ID.column(), Condition.EQUALS, id)
+            );
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void setSummary(final long id, final String summary) {
+        log.debug("setSummary({},{})", id, summary);
+        try (final Connection connection = dataSource.getConnection()) {
+            sqlBuilder.update(connection,
+                    Query.UPDATE(MetaTable.WIWA_ORDER_ITEM.table())
+                            .SET(MetaColumnWiwaOrderItem.SUMMARY.column(), summary)
                             .WHERE(MetaColumnWiwaOrderItem.ID.column(), Condition.EQUALS, id)
             );
         } catch (final Exception e) {

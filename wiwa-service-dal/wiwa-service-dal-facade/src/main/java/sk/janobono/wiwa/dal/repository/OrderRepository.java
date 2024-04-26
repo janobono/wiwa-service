@@ -2,7 +2,7 @@ package sk.janobono.wiwa.dal.repository;
 
 import sk.janobono.wiwa.dal.domain.OrderDo;
 import sk.janobono.wiwa.dal.model.OrderDeliveryDo;
-import sk.janobono.wiwa.dal.model.OrderSummaryDo;
+import sk.janobono.wiwa.dal.model.OrderTotalDo;
 
 import java.util.Optional;
 
@@ -18,7 +18,7 @@ public interface OrderRepository {
 
     void setDelivery(long id, OrderDeliveryDo orderDelivery);
 
-    void setData(long id, String data);
+    void setOrderTotal(long id, OrderTotalDo orderTotal);
 
-    void setOrderSummary(long id, OrderSummaryDo orderSummary);
+    void setSummary(long id, String summary);
 }
