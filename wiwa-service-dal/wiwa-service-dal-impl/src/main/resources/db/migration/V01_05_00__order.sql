@@ -50,6 +50,23 @@ create table wiwa_order_item
     data     text    not null
 );
 
+create table wiwa_order_item_summary
+(
+    order_item_id bigint         not null references wiwa_order_item (id) on delete cascade,
+    code          varchar(255)   not null,
+    amount        numeric(19, 3) not null,
+    primary key (order_item_id, code)
+);
+
+create table wiwa_order_material
+(
+    order_id    bigint       not null references wiwa_order (id) on delete cascade,
+    material_id bigint       not null,
+    code        varchar(255) not null,
+    data        text         not null,
+    primary key (order_id, material_id, code)
+);
+
 create table wiwa_order_status
 (
     id       bigserial primary key,
@@ -59,11 +76,7 @@ create table wiwa_order_status
     status   varchar(255) not null
 );
 
-create view wiwa_order_view
-            (
-             id, user_id, created, order_number, delivery, package_type, status, weight, total
-                )
-as
+create view wiwa_order_view (id, user_id, created, order_number, delivery, package_type, status, weight, total) as
 SELECT o.id,
        o.user_id,
        o.created,
@@ -78,6 +91,15 @@ SELECT o.id,
        o.weight,
        o.total
 FROM wiwa_order o;
+
+create view wiwa_order_summary_view (id, code, amount) as
+SELECT o.id,
+       ois.code,
+       sum(ois.amount)
+FROM wiwa_order o
+         LEFT JOIN wiwa_order_item oi on o.id = oi.order_id
+         LEFT JOIN wiwa_order_item_summary ois on oi.id = ois.order_item_id
+GROUP BY o.id, ois.code;
 
 -- INDEX
 create index idx_wiwa_order_number on wiwa_order_number (user_id);
