@@ -1,8 +1,6 @@
 package sk.janobono.wiwa.api.model.board;
 
-import sk.janobono.wiwa.model.Money;
-import sk.janobono.wiwa.model.Quantity;
-
+import java.math.BigDecimal;
 import java.util.List;
 
 public record BoardWebDto(
@@ -13,13 +11,13 @@ public record BoardWebDto(
         String boardCode,
         String structureCode,
         Boolean orientation,
-        Quantity sale,
-        Quantity weight,
-        Quantity length,
-        Quantity width,
-        Quantity thickness,
-        Money price,
-        Money vatPrice,
+        BigDecimal sale,
+        BigDecimal weight,
+        BigDecimal length,
+        BigDecimal width,
+        BigDecimal thickness,
+        BigDecimal price,
+        BigDecimal vatPrice,
         List<BoardCategoryItemWebDto> categoryItems
 ) {
 }

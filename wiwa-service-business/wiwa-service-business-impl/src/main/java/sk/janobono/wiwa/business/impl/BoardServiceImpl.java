@@ -22,9 +22,6 @@ import sk.janobono.wiwa.dal.repository.BoardImageRepository;
 import sk.janobono.wiwa.dal.repository.BoardRepository;
 import sk.janobono.wiwa.dal.repository.CodeListRepository;
 import sk.janobono.wiwa.exception.WiwaException;
-import sk.janobono.wiwa.model.Money;
-import sk.janobono.wiwa.model.Quantity;
-import sk.janobono.wiwa.model.Unit;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -185,13 +182,13 @@ public class BoardServiceImpl implements BoardService {
                 .boardCode(boardDo.getBoardCode())
                 .structureCode(boardDo.getStructureCode())
                 .orientation(boardDo.getOrientation())
-                .sale(new Quantity(BigDecimal.ONE, Unit.PIECE))
-                .weight(new Quantity(boardDo.getWeight(), Unit.KILOGRAM))
-                .length(new Quantity(boardDo.getLength(), Unit.MILLIMETER))
-                .width(new Quantity(boardDo.getWidth(), Unit.MILLIMETER))
-                .thickness(new Quantity(boardDo.getThickness(), Unit.MILLIMETER))
-                .price(new Money(boardDo.getPrice(), commonConfigProperties.currency()))
-                .vatPrice(new Money(priceUtil.countVatValue(boardDo.getPrice(), vatRate), commonConfigProperties.currency()))
+                .sale(BigDecimal.ONE)
+                .weight(boardDo.getWeight())
+                .length(boardDo.getLength())
+                .width(boardDo.getWidth())
+                .thickness(boardDo.getThickness())
+                .price(boardDo.getPrice())
+                .vatPrice(priceUtil.countVatValue(boardDo.getPrice(), vatRate))
                 .categoryItems(toBoardCategoryItems(boardDo.getId()))
                 .build();
     }

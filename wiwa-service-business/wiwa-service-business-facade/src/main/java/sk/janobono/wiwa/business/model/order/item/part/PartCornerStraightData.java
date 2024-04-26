@@ -1,9 +1,9 @@
 package sk.janobono.wiwa.business.model.order.item.part;
 
-import sk.janobono.wiwa.model.Quantity;
+import java.math.BigDecimal;
 
 public record PartCornerStraightData(
-        Quantity dimensionX,
-        Quantity dimensionY
+        BigDecimal dimensionX,
+        BigDecimal dimensionY
 ) implements PartCornerData {
 }

@@ -1,9 +1,8 @@
 package sk.janobono.wiwa.business.model.edge;
 
 import lombok.Builder;
-import sk.janobono.wiwa.model.Money;
-import sk.janobono.wiwa.model.Quantity;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
@@ -12,12 +11,12 @@ public record EdgeData(
         String code,
         String name,
         String description,
-        Quantity sale,
-        Quantity weight,
-        Quantity width,
-        Quantity thickness,
-        Money price,
-        Money vatPrice,
+        BigDecimal sale,
+        BigDecimal weight,
+        BigDecimal width,
+        BigDecimal thickness,
+        BigDecimal price,
+        BigDecimal vatPrice,
         List<EdgeCategoryItemData> categoryItems
 ) {
 }

@@ -33,10 +33,7 @@ import sk.janobono.wiwa.dal.model.OrderDeliveryDo;
 import sk.janobono.wiwa.dal.model.OrderViewSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
-import sk.janobono.wiwa.model.Money;
 import sk.janobono.wiwa.model.OrderStatus;
-import sk.janobono.wiwa.model.Quantity;
-import sk.janobono.wiwa.model.Unit;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -472,9 +469,9 @@ public class OrderServiceImpl implements OrderService {
                 .created(orderViewDo.created())
                 .status(orderViewDo.status())
                 .orderNumber(orderViewDo.orderNumber())
-                .weight(new Quantity(orderViewDo.weight(), Unit.KILOGRAM))
-                .total(new Money(orderViewDo.total(), commonConfigProperties.currency()))
-                .vatTotal(new Money(priceUtil.countVatValue(orderViewDo.total(), vatRate), commonConfigProperties.currency()))
+                .weight(orderViewDo.weight())
+                .total(orderViewDo.total())
+                .vatTotal(priceUtil.countVatValue(orderViewDo.total(), vatRate))
                 .deliveryDate(orderViewDo.delivery())
                 .packageType(orderViewDo.packageType())
                 .build();

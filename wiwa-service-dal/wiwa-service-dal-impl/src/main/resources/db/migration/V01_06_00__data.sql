@@ -29,10 +29,8 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('CO
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('UNITS', e'[
 {"id":"MILLIMETER","value":"mm"},
-{"id":"CENTIMETER","value":"cm"},
 {"id":"METER","value":"m"},
 {"id":"SQUARE_METER","value":"m2"},
-{"id":"GRAM","value":"g"},
 {"id":"KILOGRAM","value":"kg"},
 {"id":"PIECE","value":"p"}
 ]');

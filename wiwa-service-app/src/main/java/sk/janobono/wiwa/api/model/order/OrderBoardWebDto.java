@@ -1,7 +1,6 @@
 package sk.janobono.wiwa.api.model.order;
 
-import sk.janobono.wiwa.model.Currency;
-import sk.janobono.wiwa.model.Quantity;
+import java.math.BigDecimal;
 
 public record OrderBoardWebDto(
         Long id,
@@ -10,10 +9,10 @@ public record OrderBoardWebDto(
         String boardCode,
         String structureCode,
         Boolean orientation,
-        Quantity weight,
-        Quantity length,
-        Quantity width,
-        Quantity thickness,
-        Currency price
+        BigDecimal weight,
+        BigDecimal length,
+        BigDecimal width,
+        BigDecimal thickness,
+        BigDecimal price
 ) {
 }

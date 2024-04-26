@@ -1,7 +1,8 @@
 package sk.janobono.wiwa.business.model.order.item.part;
 
 import lombok.Builder;
-import sk.janobono.wiwa.model.Quantity;
+
+import java.math.BigDecimal;
 
 @Builder
 public record PartBasicData(
@@ -10,8 +11,8 @@ public record PartBasicData(
         Long edgeIdA2,
         Long edgeIdB1,
         Long edgeIdB2,
-        Quantity dimensionA,
-        Quantity dimensionB,
+        BigDecimal dimensionA,
+        BigDecimal dimensionB,
         PartCornerData cornerA1B1,
         PartCornerData cornerA1B2,
         PartCornerData cornerA2B1,

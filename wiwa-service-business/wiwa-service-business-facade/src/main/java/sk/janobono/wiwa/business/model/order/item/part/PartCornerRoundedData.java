@@ -1,8 +1,8 @@
 package sk.janobono.wiwa.business.model.order.item.part;
 
-import sk.janobono.wiwa.model.Quantity;
+import java.math.BigDecimal;
 
 public record PartCornerRoundedData(
-        Quantity radius
+        BigDecimal radius
 ) implements PartCornerData {
 }

@@ -1,17 +1,17 @@
 package sk.janobono.wiwa.business.model.order;
 
 import lombok.Builder;
-import sk.janobono.wiwa.model.Currency;
-import sk.janobono.wiwa.model.Quantity;
+
+import java.math.BigDecimal;
 
 @Builder
 public record OrderEdgeData(
         Long id,
         String code,
         String name,
-        Quantity weight,
-        Quantity width,
-        Quantity thickness,
-        Currency price
+        BigDecimal weight,
+        BigDecimal width,
+        BigDecimal thickness,
+        BigDecimal price
 ) {
 }

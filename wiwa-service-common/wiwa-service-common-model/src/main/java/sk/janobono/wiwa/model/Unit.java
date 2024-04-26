@@ -1,8 +1,8 @@
 package sk.janobono.wiwa.model;
 
 public enum Unit {
-    MILLIMETER, CENTIMETER, METER,
+    MILLIMETER, METER,
     SQUARE_METER,
-    GRAM, KILOGRAM,
+    KILOGRAM,
     PIECE
 }

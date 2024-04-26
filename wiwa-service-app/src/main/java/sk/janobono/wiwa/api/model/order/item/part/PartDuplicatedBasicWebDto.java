@@ -1,6 +1,6 @@
 package sk.janobono.wiwa.api.model.order.item.part;
 
-import sk.janobono.wiwa.model.Quantity;
+import java.math.BigDecimal;
 
 public record PartDuplicatedBasicWebDto(
         Long boardIdTop,
@@ -9,8 +9,8 @@ public record PartDuplicatedBasicWebDto(
         Long edgeIdA2,
         Long edgeIdB1,
         Long edgeIdB2,
-        Quantity dimensionA,
-        Quantity dimensionB,
+        BigDecimal dimensionA,
+        BigDecimal dimensionB,
         PartCornerWebDto cornerA1B1,
         PartCornerWebDto cornerA1B2,
         PartCornerWebDto cornerA2B1,

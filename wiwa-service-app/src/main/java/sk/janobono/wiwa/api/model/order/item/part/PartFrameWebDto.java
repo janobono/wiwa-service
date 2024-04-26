@@ -1,6 +1,6 @@
 package sk.janobono.wiwa.api.model.order.item.part;
 
-import sk.janobono.wiwa.model.Quantity;
+import java.math.BigDecimal;
 
 public record PartFrameWebDto(
         Long boardIdA1,
@@ -16,12 +16,12 @@ public record PartFrameWebDto(
         Long edgeIdB2,
         Long edgeIdB2I,
         Boolean horizontal,
-        Quantity dimensionA,
-        Quantity dimensionB,
-        Quantity dimensionA1,
-        Quantity dimensionA2,
-        Quantity dimensionB1,
-        Quantity dimensionB2,
+        BigDecimal dimensionA,
+        BigDecimal dimensionB,
+        BigDecimal dimensionA1,
+        BigDecimal dimensionA2,
+        BigDecimal dimensionB1,
+        BigDecimal dimensionB2,
         PartSummaryWebDto summary
 ) implements PartWebDto {
 }
