@@ -1,0 +1,35 @@
+{
+  "type": "BASIC",
+  "rotate": false,
+  "boardId": 1,
+  "edgeIdA1": 1,
+  "edgeIdA2": 1,
+  "edgeIdB1": 1,
+  "edgeIdB2": 1,
+  "dimensions": {
+    "x": 500,
+    "y": 500
+  },
+  "cornerA1B1": {
+    "type": "STRAIGHT",
+    "dimensions": {
+      "x": 50,
+      "y": 50
+    }
+  },
+  "cornerA1B2": {
+    "type": "STRAIGHT",
+    "dimensions": {
+      "x": 50,
+      "y": 50
+    }
+  },
+  "cornerA2B1": {
+    "type": "ROUNDED",
+    "radius": 50
+  },
+  "cornerA2B2": {
+    "type": "ROUNDED",
+    "radius": 50
+  }
+}

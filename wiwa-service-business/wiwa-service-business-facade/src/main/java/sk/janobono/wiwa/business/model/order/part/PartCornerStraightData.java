@@ -1,9 +1,6 @@
 package sk.janobono.wiwa.business.model.order.part;
 
-import java.math.BigDecimal;
+import sk.janobono.wiwa.business.model.DimensionsData;
 
-public record PartCornerStraightData(
-        BigDecimal dimensionX,
-        BigDecimal dimensionY
-) implements PartCornerData {
+public record PartCornerStraightData(DimensionsData dimensions) implements PartCornerData {
 }

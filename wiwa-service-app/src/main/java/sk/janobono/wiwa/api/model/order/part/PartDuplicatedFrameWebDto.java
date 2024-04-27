@@ -1,30 +1,30 @@
 package sk.janobono.wiwa.api.model.order.part;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-
-import java.math.BigDecimal;
+import sk.janobono.wiwa.api.model.DimensionsWebDto;
+import sk.janobono.wiwa.model.FrameType;
 
 public record PartDuplicatedFrameWebDto(
-        @NotNull Long boardIdTop,
-        Long boardIdA1Bottom,
-        Long boardIdA2Bottom,
-        Long boardIdB1Bottom,
-        Long boardIdB2Bottom,
+        @NotNull FrameType frameType,
+        @NotNull Boolean rotate,
+        @NotNull Long boardId,
+        Long boardIdA1,
+        Long boardIdA2,
+        Long boardIdB1,
+        Long boardIdB2,
         Long edgeIdA1,
-        Long edgeIdA1IBottom,
+        Long edgeIdA1I,
         Long edgeIdA2,
-        Long edgeIdA2IBottom,
+        Long edgeIdA2I,
         Long edgeIdB1,
-        Long edgeIdB1IBottom,
+        Long edgeIdB1I,
         Long edgeIdB2,
-        Long edgeIdB2IBottom,
-        @NotNull @Min(0) BigDecimal dimensionA,
-        @NotNull @Min(0) BigDecimal dimensionB,
-        BigDecimal dimensionA1Bottom,
-        BigDecimal dimensionA2Bottom,
-        BigDecimal dimensionB1Bottom,
-        BigDecimal dimensionB2Bottom,
+        Long edgeIdB2I,
+        @NotNull DimensionsWebDto dimensions,
+        DimensionsWebDto dimensionsA1,
+        DimensionsWebDto dimensionsA2,
+        DimensionsWebDto dimensionsB1,
+        DimensionsWebDto dimensionsB2,
         PartCornerWebDto cornerA1B1,
         PartCornerWebDto cornerA1B2,
         PartCornerWebDto cornerA2B1,

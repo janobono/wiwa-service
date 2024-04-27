@@ -1,0 +1,36 @@
+{
+  "type": "DUPLICATED_BASIC",
+  "rotate": true,
+  "boardId": 1,
+  "boardIdBottom": 2,
+  "edgeIdA1": 3,
+  "edgeIdA2": 3,
+  "edgeIdB1": 3,
+  "edgeIdB2": 3,
+  "dimensions": {
+    "x": 500,
+    "y": 500
+  },
+  "cornerA1B1": {
+    "type": "STRAIGHT",
+    "dimensions": {
+      "x": 50,
+      "y": 50
+    }
+  },
+  "cornerA1B2": {
+    "type": "STRAIGHT",
+    "dimensions": {
+      "x": 50,
+      "y": 50
+    }
+  },
+  "cornerA2B1": {
+    "type": "ROUNDED",
+    "radius": 50
+  },
+  "cornerA2B2": {
+    "type": "ROUNDED",
+    "radius": 50
+  }
+}

@@ -45,6 +45,7 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -671,7 +672,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void validate(final long orderId, final OrderItemChangeData orderItemChange) {
-        final Set<Long> boardIds = partUtil.getBoardIds(orderItemChange.part());
+        final Set<Long> boardIds = new HashSet<>(orderItemChange.part().boards().values());
         final Map<Long, OrderBoardData> boards = new HashMap<>();
         for (final Long boardId : boardIds) {
             boards.putIfAbsent(boardId,
@@ -681,7 +682,7 @@ public class OrderServiceImpl implements OrderService {
             );
         }
 
-        final Set<Long> edgeIds = partUtil.getEdgeIds(orderItemChange.part());
+        final Set<Long> edgeIds = new HashSet<>(orderItemChange.part().edges().values());
         final Map<Long, OrderEdgeData> edges = new HashMap<>();
         for (final Long edgeId : edgeIds) {
             edges.putIfAbsent(edgeId, edgeRepository.findById(edgeId)

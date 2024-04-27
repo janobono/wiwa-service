@@ -2,6 +2,7 @@ package sk.janobono.wiwa.business.model.order.part;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import sk.janobono.wiwa.business.model.DimensionsData;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -13,4 +14,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = PartCornerRoundedData.class, name = "ROUNDED")
 })
 public interface PartCornerData {
+    DimensionsData dimensions();
 }

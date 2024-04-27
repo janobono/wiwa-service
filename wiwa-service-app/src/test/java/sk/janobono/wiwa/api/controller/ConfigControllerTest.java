@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import sk.janobono.wiwa.api.model.DimensionsWebDto;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.component.ImageUtil;
@@ -275,10 +276,10 @@ class ConfigControllerTest extends BaseControllerTest {
                 HttpMethod.POST,
                 new HttpEntity<>(
                         new ManufacturePropertiesWebDto(
-                                new ManufactureDimensionsWebDto(new BigDecimal("1000.0000"), new BigDecimal("1000.0000")),
-                                new ManufactureDimensionsWebDto(new BigDecimal("1000.0000"), new BigDecimal("1000.0000")),
-                                new ManufactureDimensionsWebDto(new BigDecimal("1000.0000"), new BigDecimal("1000.0000")),
-                                new ManufactureDimensionsWebDto(new BigDecimal("1000.0000"), new BigDecimal("1000.0000")),
+                                new DimensionsWebDto(new BigDecimal("1000.0000"), new BigDecimal("1000.0000")),
+                                new DimensionsWebDto(new BigDecimal("1000.0000"), new BigDecimal("1000.0000")),
+                                new DimensionsWebDto(new BigDecimal("1000.0000"), new BigDecimal("1000.0000")),
+                                new DimensionsWebDto(new BigDecimal("1000.0000"), new BigDecimal("1000.0000")),
                                 new BigDecimal("1000.0000"),
                                 new BigDecimal("1000.0000"),
                                 new BigDecimal("1000.0000")

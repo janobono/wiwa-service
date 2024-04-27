@@ -1,11 +1,11 @@
 package sk.janobono.wiwa.api.model.order.part;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-
-import java.math.BigDecimal;
+import sk.janobono.wiwa.api.model.DimensionsWebDto;
+import sk.janobono.wiwa.model.FrameType;
 
 public record PartFrameWebDto(
+        @NotNull FrameType frameType,
         @NotNull Long boardIdA1,
         @NotNull Long boardIdA2,
         @NotNull Long boardIdB1,
@@ -18,12 +18,10 @@ public record PartFrameWebDto(
         Long edgeIdB1I,
         Long edgeIdB2,
         Long edgeIdB2I,
-        @NotNull Boolean horizontal,
-        @NotNull @Min(0) BigDecimal dimensionA,
-        @NotNull @Min(0) BigDecimal dimensionB,
-        @NotNull @Min(0) BigDecimal dimensionA1,
-        @NotNull @Min(0) BigDecimal dimensionA2,
-        @NotNull @Min(0) BigDecimal dimensionB1,
-        @NotNull @Min(0) BigDecimal dimensionB2
+        @NotNull DimensionsWebDto dimensions,
+        @NotNull DimensionsWebDto dimensionsA1,
+        @NotNull DimensionsWebDto dimensionsA2,
+        @NotNull DimensionsWebDto dimensionsB1,
+        @NotNull DimensionsWebDto dimensionsB2
 ) implements PartWebDto {
 }

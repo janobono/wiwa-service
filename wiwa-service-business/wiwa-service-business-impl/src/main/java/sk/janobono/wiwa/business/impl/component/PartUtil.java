@@ -2,17 +2,20 @@ package sk.janobono.wiwa.business.impl.component;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import sk.janobono.wiwa.business.impl.model.part.CornerPosition;
-import sk.janobono.wiwa.business.model.application.ManufactureDimensionsData;
+import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.application.ManufacturePropertiesData;
 import sk.janobono.wiwa.business.model.order.OrderBoardData;
 import sk.janobono.wiwa.business.model.order.OrderEdgeData;
 import sk.janobono.wiwa.business.model.order.part.*;
 import sk.janobono.wiwa.exception.WiwaException;
+import sk.janobono.wiwa.model.FrameType;
 
 import java.math.BigDecimal;
 import java.security.InvalidParameterException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
@@ -24,210 +27,262 @@ public class PartUtil {
                          final ManufacturePropertiesData manufactureProperties) {
         switch (part) {
             case final PartBasicData partBasic -> validateBasic(partBasic, boards, edges, manufactureProperties);
-            case final PartFrameData partFrame -> validateFrame(partFrame, boards, edges, manufactureProperties);
             case final PartDuplicatedBasicData partDuplicatedBasic ->
                     validateDuplicatedBasic(partDuplicatedBasic, boards, edges, manufactureProperties);
+            case final PartFrameData partFrame -> validateFrame(partFrame, boards, edges, manufactureProperties);
             case final PartDuplicatedFrameData partDuplicatedFrame ->
                     validatePartDuplicatedFrame(partDuplicatedFrame, boards, edges, manufactureProperties);
             default -> throw new InvalidParameterException("Unsupported part type: " + part.getClass().getSimpleName());
         }
     }
 
-    public Set<Long> getBoardIds(final PartData part) {
-        return switch (part) {
-            case final PartBasicData partBasic -> getBasicBoardIds(partBasic);
-            case final PartFrameData partFrame -> getFrameBoardIds(partFrame);
-            case final PartDuplicatedBasicData partDuplicatedBasic -> getDuplicatedBasicBoardIds(partDuplicatedBasic);
-            case final PartDuplicatedFrameData partDuplicatedFrame ->
-                    getPartDuplicatedFrameBoardIds(partDuplicatedFrame);
-            default -> throw new InvalidParameterException("Unsupported part type: " + part.getClass().getSimpleName());
-        };
-    }
-
-    public Set<Long> getEdgeIds(final PartData part) {
-        return switch (part) {
-            case final PartBasicData partBasic -> getBasicEdgeIds(partBasic);
-            case final PartFrameData partFrame -> getFrameEdgeIds(partFrame);
-            case final PartDuplicatedBasicData partDuplicatedBasic -> getDuplicatedBasicEdgeIds(partDuplicatedBasic);
-            case final PartDuplicatedFrameData partDuplicatedFrame ->
-                    getPartDuplicatedFrameEdgeIds(partDuplicatedFrame);
-            default -> throw new InvalidParameterException("Unsupported part type: " + part.getClass().getSimpleName());
-        };
-    }
-
     private void validateBasic(final PartBasicData part,
                                final Map<Long, OrderBoardData> boards,
                                final Map<Long, OrderEdgeData> edges,
                                final ManufacturePropertiesData manufactureProperties) {
-        checkDimensions(part.dimensionA(), part.dimensionB(), part.boardId(), boards, manufactureProperties);
+        // Part and top board
+        checkDimensions(part.dimensions(),
+                manufactureProperties.minimalSystemDimensions(),
+                getBoardDimensions(part.boardId(), boards),
+                part.rotate());
 
-        final Map<CornerPosition, ManufactureDimensionsData> cornerDimensions = new HashMap<>();
-        Optional.ofNullable(part.cornerA1B1()).ifPresent(cornerData -> cornerDimensions.put(CornerPosition.A1B1, getCornerDimensions(cornerData)));
-        Optional.ofNullable(part.cornerA1B2()).ifPresent(cornerData -> cornerDimensions.put(CornerPosition.A1B2, getCornerDimensions(cornerData)));
-        Optional.ofNullable(part.cornerA2B1()).ifPresent(cornerData -> cornerDimensions.put(CornerPosition.A2B1, getCornerDimensions(cornerData)));
-        Optional.ofNullable(part.cornerA2B2()).ifPresent(cornerData -> cornerDimensions.put(CornerPosition.A2B2, getCornerDimensions(cornerData)));
-        checkCorners(part.dimensionA(), part.dimensionB(), cornerDimensions);
+        // Edges
+        checkEdges(boards.get(part.boardId()).thickness(),
+                new HashSet<>(part.edges().values()),
+                edges,
+                manufactureProperties.edgeWidthAppend());
 
-        checkEdges(boards.get(part.boardId()).thickness(), getEdgeIds(part), edges, manufactureProperties);
+        // Corners
+        checkCorners(part.corners(), part.dimensions());
+    }
+
+    private void validateDuplicatedBasic(final PartDuplicatedBasicData part,
+                                         final Map<Long, OrderBoardData> boards,
+                                         final Map<Long, OrderEdgeData> edges,
+                                         final ManufacturePropertiesData manufactureProperties) {
+        // Part
+        final DimensionsData min = manufactureProperties.minimalSystemDimensions()
+                .add(manufactureProperties.duplicatedBoardAppend());
+        checkMin(part.dimensions(), min, part.rotate());
+
+        // Top board
+        final DimensionsData maxBoard = getBoardDimensions(part.boardId(), boards)
+                .subtract(manufactureProperties.duplicatedBoardAppend());
+        checkMax(part.dimensions(), maxBoard, part.rotate());
+
+        // Bottom board
+        final DimensionsData maxBoardBottom = getBoardDimensions(part.boardIdBottom(), boards)
+                .subtract(manufactureProperties.duplicatedBoardAppend());
+        checkMax(part.dimensions(), maxBoardBottom, part.rotate());
+
+        // Edges
+        final BigDecimal thickness = boards.get(part.boardId()).thickness()
+                .add(boards.get(part.boardIdBottom()).thickness());
+        checkEdges(thickness,
+                new HashSet<>(part.edges().values()),
+                edges,
+                manufactureProperties.edgeWidthAppend());
+
+        // Corners
+        checkCorners(part.corners(), part.dimensions());
     }
 
     private void validateFrame(final PartFrameData part,
                                final Map<Long, OrderBoardData> boards,
                                final Map<Long, OrderEdgeData> edges,
                                final ManufacturePropertiesData manufactureProperties) {
+        // All boards thickness check
+        checkThickness(new HashSet<>(part.boards().values()), boards);
 
-       
-        // TODO
+        // Prepare dimensions
+        final DimensionsData dimensionsB1;
+        final DimensionsData dimensionsB2;
+        if (part.frameType() == FrameType.HORIZONTAL_LONG) {
+            dimensionsB1 = part.dimensionsB1().rotate();
+            dimensionsB2 = part.dimensionsB2().rotate();
+        } else {
+            dimensionsB1 = part.dimensionsB1();
+            dimensionsB2 = part.dimensionsB2();
+        }
 
+        // Part
+        if (part.frameType() == FrameType.VERTICAL) {
+            final BigDecimal x1 = part.dimensionsB1().x().add(part.dimensionsA1().x()).add(part.dimensionsB2().x());
+            final BigDecimal x2 = part.dimensionsB1().x().add(part.dimensionsA2().x()).add(part.dimensionsB2().x());
+            if (part.dimensions().x().compareTo(x1) != 0 || part.dimensions().x().compareTo(x2) != 0) {
+                throw WiwaException.ORDER_ITEM_PART_DIMENSION.exception("Dimension X is not valid");
+            }
+            if (part.dimensions().y().compareTo(part.dimensionsB1().y()) != 0 || part.dimensions().y().compareTo(part.dimensionsB2().y()) != 0) {
+                throw WiwaException.ORDER_ITEM_PART_DIMENSION.exception("Dimension Y is not valid");
+            }
+            final BigDecimal sumY = part.dimensionsA1().y().add(part.dimensionsA2().y());
+            if (part.dimensions().y().compareTo(sumY) < 0) {
+                throw WiwaException.ORDER_ITEM_PART_DIMENSION.exception("A1.y + A2.y more than Y");
+            }
+        } else {
+            if (part.dimensions().x().compareTo(part.dimensionsA1().x()) != 0 && part.dimensions().x().compareTo(part.dimensionsA2().x()) != 0) {
+                throw WiwaException.ORDER_ITEM_PART_DIMENSION.exception("Dimension X is not valid");
+            }
+            final BigDecimal sumX = part.dimensionsB1().x().add(part.dimensionsB2().x());
+            if (part.dimensions().x().compareTo(sumX) < 0) {
+                throw WiwaException.ORDER_ITEM_PART_DIMENSION.exception("B1.x + B2.x more than X");
+            }
+            final BigDecimal y1 = part.dimensionsA1().y().add(part.dimensionsB1().y()).add(part.dimensionsA2().y());
+            final BigDecimal y2 = part.dimensionsA1().y().add(part.dimensionsB2().y()).add(part.dimensionsA2().y());
+            if (part.dimensions().y().compareTo(y1) != 0 || part.dimensions().y().compareTo(y2) != 0) {
+                throw WiwaException.ORDER_ITEM_PART_DIMENSION.exception("Dimension Y is not valid");
+            }
+        }
 
-        // TODO
+        // A1 board
+        checkDimensions(part.dimensionsA1(),
+                manufactureProperties.minimalSystemDimensions(),
+                getBoardDimensions(part.boardIdA1(), boards),
+                false);
+
+        // A2 board
+        checkDimensions(part.dimensionsA2(),
+                manufactureProperties.minimalSystemDimensions(),
+                getBoardDimensions(part.boardIdA2(), boards),
+                false);
+
+        // B1 board
+        checkDimensions(dimensionsB1,
+                manufactureProperties.minimalSystemDimensions(),
+                getBoardDimensions(part.boardIdB1(), boards),
+                false);
+
+        // B2 board
+        checkDimensions(dimensionsB2,
+                manufactureProperties.minimalSystemDimensions(),
+                getBoardDimensions(part.boardIdB2(), boards),
+                false);
+
+        // Edges
+        checkEdges(boards.get(part.boardIdA1()).thickness(),
+                new HashSet<>(part.edges().values()),
+                edges,
+                manufactureProperties.edgeWidthAppend());
     }
 
-    private void validateDuplicatedBasic(final PartDuplicatedBasicData partDuplicatedBasic,
-                                         final Map<Long, OrderBoardData> boards,
-                                         final Map<Long, OrderEdgeData> edges,
-                                         final ManufacturePropertiesData manufactureProperties) {
-        // TODO
-    }
-
-    private void validatePartDuplicatedFrame(final PartDuplicatedFrameData partDuplicatedFrame,
+    private void validatePartDuplicatedFrame(final PartDuplicatedFrameData part,
                                              final Map<Long, OrderBoardData> boards,
                                              final Map<Long, OrderEdgeData> edges,
                                              final ManufacturePropertiesData manufactureProperties) {
-        // TODO
-    }
+        // Top board check + corners
+        validateBasic(PartBasicData.builder()
+                        .rotate(part.rotate())
+                        .boardId(part.boardId())
+                        .dimensions(part.dimensions().add(manufactureProperties.duplicatedBoardAppend()))
+                        .cornerA1B1(part.cornerA1B1())
+                        .cornerA1B2(part.cornerA1B2())
+                        .cornerA2B1(part.cornerA2B1())
+                        .cornerA2B2(part.cornerA2B2())
+                        .build(),
+                boards,
+                edges,
+                manufactureProperties);
 
-    private Set<Long> getBasicBoardIds(final PartBasicData partBasic) {
-        return Set.of(partBasic.boardId());
-    }
+        // Frame dimensions check
+        final Map<BoardPosition, Long> frameBoards = part.boards().entrySet().stream()
+                .filter(entry -> switch (entry.getKey()) {
+                    case BoardPosition.TOP, BoardPosition.BOTTOM -> false;
+                    default -> true;
+                })
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        if (frameBoards.isEmpty()) {
+            throw WiwaException.ORDER_ITEM_PART_BOARD.exception("Minimum one frame board is required");
+        }
+        checkThickness(new HashSet<>(frameBoards.values()), boards);
+        final BigDecimal bottomThickness = boards.get(frameBoards.values().stream().findFirst().orElse(-1L)).thickness();
 
-    private Set<Long> getFrameBoardIds(final PartFrameData partFrame) {
-        return Set.of(partFrame.boardIdA1(), partFrame.boardIdA2(), partFrame.boardIdB1(), partFrame.boardIdB2());
-    }
-
-    private Set<Long> getDuplicatedBasicBoardIds(final PartDuplicatedBasicData partDuplicatedBasic) {
-        return Set.of(partDuplicatedBasic.boardIdTop(), partDuplicatedBasic.boardIdBottom());
-    }
-
-    private Set<Long> getPartDuplicatedFrameBoardIds(final PartDuplicatedFrameData partDuplicatedFrame) {
-        final Set<Long> ids = new HashSet<>();
-        ids.add(partDuplicatedFrame.boardIdTop());
-        Optional.ofNullable(partDuplicatedFrame.boardIdA1Bottom()).ifPresent(ids::add);
-        Optional.ofNullable(partDuplicatedFrame.boardIdA2Bottom()).ifPresent(ids::add);
-        Optional.ofNullable(partDuplicatedFrame.boardIdB1Bottom()).ifPresent(ids::add);
-        Optional.ofNullable(partDuplicatedFrame.boardIdB2Bottom()).ifPresent(ids::add);
-        return ids;
-    }
-
-    private Set<Long> getBasicEdgeIds(final PartBasicData partBasic) {
-        final Set<Long> ids = new HashSet<>();
-        Optional.ofNullable(partBasic.edgeIdA1()).ifPresent(ids::add);
-        Optional.ofNullable(partBasic.edgeIdA2()).ifPresent(ids::add);
-        Optional.ofNullable(partBasic.edgeIdB1()).ifPresent(ids::add);
-        Optional.ofNullable(partBasic.edgeIdB2()).ifPresent(ids::add);
-        return ids;
-    }
-
-    private Set<Long> getFrameEdgeIds(final PartFrameData partFrame) {
-        final Set<Long> ids = new HashSet<>();
-        Optional.ofNullable(partFrame.edgeIdA1()).ifPresent(ids::add);
-        Optional.ofNullable(partFrame.edgeIdA1I()).ifPresent(ids::add);
-        Optional.ofNullable(partFrame.edgeIdA2()).ifPresent(ids::add);
-        Optional.ofNullable(partFrame.edgeIdA2I()).ifPresent(ids::add);
-        Optional.ofNullable(partFrame.edgeIdB1()).ifPresent(ids::add);
-        Optional.ofNullable(partFrame.edgeIdB1I()).ifPresent(ids::add);
-        Optional.ofNullable(partFrame.edgeIdB2()).ifPresent(ids::add);
-        Optional.ofNullable(partFrame.edgeIdB2I()).ifPresent(ids::add);
-        return ids;
-    }
-
-    private Set<Long> getDuplicatedBasicEdgeIds(final PartDuplicatedBasicData partDuplicatedBasic) {
-        final Set<Long> ids = new HashSet<>();
-        Optional.ofNullable(partDuplicatedBasic.edgeIdA1()).ifPresent(ids::add);
-        Optional.ofNullable(partDuplicatedBasic.edgeIdA2()).ifPresent(ids::add);
-        Optional.ofNullable(partDuplicatedBasic.edgeIdB1()).ifPresent(ids::add);
-        Optional.ofNullable(partDuplicatedBasic.edgeIdB2()).ifPresent(ids::add);
-        return ids;
-    }
-
-    private Set<Long> getPartDuplicatedFrameEdgeIds(final PartDuplicatedFrameData partDuplicatedFrame) {
-        final Set<Long> ids = new HashSet<>();
-        Optional.ofNullable(partDuplicatedFrame.edgeIdA1()).ifPresent(ids::add);
-        Optional.ofNullable(partDuplicatedFrame.edgeIdA1IBottom()).ifPresent(ids::add);
-        Optional.ofNullable(partDuplicatedFrame.edgeIdA2()).ifPresent(ids::add);
-        Optional.ofNullable(partDuplicatedFrame.edgeIdA2IBottom()).ifPresent(ids::add);
-        Optional.ofNullable(partDuplicatedFrame.edgeIdB1()).ifPresent(ids::add);
-        Optional.ofNullable(partDuplicatedFrame.edgeIdB1IBottom()).ifPresent(ids::add);
-        Optional.ofNullable(partDuplicatedFrame.edgeIdB2()).ifPresent(ids::add);
-        Optional.ofNullable(partDuplicatedFrame.edgeIdB2IBottom()).ifPresent(ids::add);
-        return ids;
-    }
-
-    private void checkDimensions(final BigDecimal x,
-                                 final BigDecimal y,
-                                 final long boardId,
-                                 final Map<Long, OrderBoardData> boards,
-                                 final ManufacturePropertiesData manufactureProperties) {
-        final ManufactureDimensionsData max = getMax(boardId, boards);
-        checkMax(x, y, max);
-        checkMin(x, y, manufactureProperties.minimalSystemDimensions());
-    }
-
-    private void checkMax(final BigDecimal x, final BigDecimal y, final ManufactureDimensionsData max) {
-        final boolean horizontalIsOk = x.doubleValue() <= max.x().doubleValue() && y.doubleValue() <= max.y().doubleValue();
-        final boolean verticalIsOk = x.doubleValue() <= max.y().doubleValue() && y.doubleValue() <= max.x().doubleValue();
-
-        if (horizontalIsOk || verticalIsOk) {
-            return;
+        final Map<EdgePosition, Long> edgePositions = part.edges();
+        if ((edgePositions.containsKey(EdgePosition.A1I) && !frameBoards.containsKey(BoardPosition.A1)) ||
+                (edgePositions.containsKey(EdgePosition.A2I) && !frameBoards.containsKey(BoardPosition.A2)) ||
+                (edgePositions.containsKey(EdgePosition.B1I) && !frameBoards.containsKey(BoardPosition.B1)) ||
+                (edgePositions.containsKey(EdgePosition.B2I) && !frameBoards.containsKey(BoardPosition.B2))
+        ) {
+            throw WiwaException.ORDER_ITEM_PART_EDGE.exception("Edge defined for not defined board");
         }
 
-        throw WiwaException.ORDER_ITEM_PART_INVALID.exception("Invalid dimensions [{0},{1}] maximum is {2}", x, y, max);
+        // A1
+throw new RuntimeException("Not implemented yet");
+        // A2
+
+        // B1
+
+        // B2
+
+        // EDGES
     }
 
-    private void checkMin(final BigDecimal x, final BigDecimal y, final ManufactureDimensionsData min) {
-        final boolean horizontalIsOk = x.doubleValue() >= min.x().doubleValue() && y.doubleValue() >= min.y().doubleValue();
-        final boolean verticalIsOk = x.doubleValue() >= min.y().doubleValue() && y.doubleValue() >= min.x().doubleValue();
+    private DimensionsData getBoardDimensions(final Long boardId, final Map<Long, OrderBoardData> boards) {
+        return new DimensionsData(boards.get(boardId).length(), boards.get(boardId).width());
+    }
 
-        if (horizontalIsOk || verticalIsOk) {
+    private void checkDimensions(final DimensionsData dimensions, final DimensionsData min, final DimensionsData max, final boolean rotate) {
+        checkMin(dimensions, min, rotate);
+        checkMax(dimensions, max, rotate);
+    }
+
+    private void checkMin(final DimensionsData dimensions, final DimensionsData min, final boolean rotate) {
+        if (dimensions.x().compareTo(min.x()) >= 0 && dimensions.y().compareTo(min.y()) >= 0) {
             return;
         }
-
-        throw WiwaException.ORDER_ITEM_PART_INVALID.exception("Invalid dimensions [{0},{1}] minimum is {2}", x, y, min);
-    }
-
-    private ManufactureDimensionsData getMax(final long boardId, final Map<Long, OrderBoardData> boards) {
-        return new ManufactureDimensionsData(boards.get(boardId).length(), boards.get(boardId).width());
-    }
-
-    private ManufactureDimensionsData getCornerDimensions(final PartCornerData partCorner) {
-        return switch (partCorner) {
-            case final PartCornerStraightData cornerStraight ->
-                    new ManufactureDimensionsData(cornerStraight.dimensionX(), cornerStraight.dimensionY());
-            case final PartCornerRoundedData cornerRounded ->
-                    new ManufactureDimensionsData(cornerRounded.radius(), cornerRounded.radius());
-            default ->
-                    throw new InvalidParameterException("Unsupported part corner type: " + partCorner.getClass().getSimpleName());
-        };
-    }
-
-    private void checkCorners(final BigDecimal x, final BigDecimal y, final Map<CornerPosition, ManufactureDimensionsData> cornerDimensions) {
-        if (cornerDimensions.isEmpty()) {
+        if (rotate && dimensions.x().compareTo(min.y()) >= 0 && dimensions.y().compareTo(min.x()) >= 0) {
             return;
         }
-
-        // TODO
+        throw WiwaException.ORDER_ITEM_PART_DIMENSION.exception("Invalid dimensions {0} minimum is {1}", dimensions, min);
     }
 
-    private void checkEdges(final BigDecimal thickness,
+    private void checkMax(final DimensionsData dimensions, final DimensionsData max, final boolean rotate) {
+        if (dimensions.x().compareTo(max.x()) <= 0 && dimensions.y().compareTo(max.y()) <= 0) {
+            return;
+        }
+        if (rotate && dimensions.x().compareTo(max.y()) <= 0 && dimensions.y().compareTo(max.x()) <= 0) {
+            return;
+        }
+        throw WiwaException.ORDER_ITEM_PART_DIMENSION.exception("Invalid dimensions {0} maximum is {1}", dimensions, max);
+    }
+
+    private void checkEdges(final BigDecimal partThickness,
                             final Set<Long> edgeIds,
                             final Map<Long, OrderEdgeData> edges,
-                            final ManufacturePropertiesData manufactureProperties) {
+                            final BigDecimal edgeWidthAppend) {
         for (final Long edgeId : edgeIds) {
-            if (thickness.add(manufactureProperties.edgeWidthAppend()).doubleValue() > edges.get(edgeId).width().doubleValue()) {
-                throw WiwaException.ORDER_ITEM_PART_INVALID.exception("Invalid edge width [{0}] minimum is {1}",
-                        edges.get(edgeId).width(),
-                        thickness.add(manufactureProperties.edgeWidthAppend()));
+            final BigDecimal neededWidth = partThickness.add(edgeWidthAppend);
+            final BigDecimal edgeWidth = edges.get(edgeId).width();
+            if (neededWidth.compareTo(edgeWidth) > 0) {
+                throw WiwaException.ORDER_ITEM_PART_EDGE_WIDTH.exception("Invalid edge width [{0}] minimum is {1}",
+                        edgeWidth, neededWidth);
             }
         }
+    }
+
+    private void checkCorners(final Map<CornerPosition, DimensionsData> cornerPositions, final DimensionsData dimensions) {
+        if (cornerPositions.isEmpty()) {
+            return;
+        }
+        final DimensionsData empty = new DimensionsData(BigDecimal.ZERO, BigDecimal.ZERO);
+        checkCorner(dimensions.x(), cornerPositions.getOrDefault(CornerPosition.A1B1, empty).x().add(cornerPositions.getOrDefault(CornerPosition.A1B2, empty).x()));
+        checkCorner(dimensions.x(), cornerPositions.getOrDefault(CornerPosition.A2B1, empty).x().add(cornerPositions.getOrDefault(CornerPosition.A2B2, empty).x()));
+        checkCorner(dimensions.y(), cornerPositions.getOrDefault(CornerPosition.A1B1, empty).y().add(cornerPositions.getOrDefault(CornerPosition.A2B1, empty).y()));
+        checkCorner(dimensions.y(), cornerPositions.getOrDefault(CornerPosition.A1B2, empty).y().add(cornerPositions.getOrDefault(CornerPosition.A2B2, empty).y()));
+    }
+
+    private void checkCorner(final BigDecimal max, final BigDecimal sum) {
+        if (max.compareTo(sum) < 0) {
+            throw WiwaException.ORDER_ITEM_PART_CORNER_DIMENSION.exception("Invalid corner dimensions");
+        }
+    }
+
+    private void checkThickness(final Set<Long> ids, final Map<Long, OrderBoardData> boards) {
+        if (ids.stream()
+                .map(boards::get)
+                .map(OrderBoardData::thickness)
+                .distinct().count() <= 1) {
+            return;
+        }
+        throw WiwaException.ORDER_ITEM_PART_THICKNESS.exception("Invalid board thickness");
     }
 }

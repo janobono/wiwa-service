@@ -3,8 +3,10 @@ package sk.janobono.wiwa.api.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.NullValueCheckStrategy;
+import sk.janobono.wiwa.api.model.DimensionsWebDto;
 import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
+import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.application.*;
 import sk.janobono.wiwa.business.model.captcha.CaptchaData;
 
@@ -26,7 +28,7 @@ public interface UiWebMapper {
 
     SignUpMailWebDto mapToWebDto(SignUpMailData signUpMail);
 
-    ManufactureDimensionsWebDto mapToWebDto(ManufactureDimensionsData manufactureDimensions);
+    DimensionsWebDto mapToWebDto(DimensionsData dimensions);
 
     ManufacturePropertiesWebDto mapToWebDto(ManufacturePropertiesData manufactureProperties);
 
@@ -48,7 +50,7 @@ public interface UiWebMapper {
 
     SignUpMailData mapToData(SignUpMailWebDto signUpMail);
 
-    ManufactureDimensionsData mapToData(ManufactureDimensionsWebDto manufactureDimensions);
+    DimensionsData mapToData(DimensionsWebDto dimensions);
 
     ManufacturePropertiesData mapToData(ManufacturePropertiesWebDto manufactureProperties);
 
