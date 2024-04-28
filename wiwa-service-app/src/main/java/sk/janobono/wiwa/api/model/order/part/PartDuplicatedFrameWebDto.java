@@ -20,7 +20,7 @@ public record PartDuplicatedFrameWebDto(
         Long edgeIdB1I,
         Long edgeIdB2,
         Long edgeIdB2I,
-        @NotNull DimensionsWebDto dimensions,
+        @NotNull DimensionsWebDto dimensionsTOP,
         DimensionsWebDto dimensionsA1,
         DimensionsWebDto dimensionsA2,
         DimensionsWebDto dimensionsB1,

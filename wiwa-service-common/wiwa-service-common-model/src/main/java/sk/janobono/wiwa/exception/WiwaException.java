@@ -29,12 +29,10 @@ public enum WiwaException {
     ORDER_AGREEMENTS_INVALID,
     ORDER_DELIVERY_DATE_INVALID,
     ORDER_ITEM_NOT_FOUND,
+    ORDER_ITEM_PROPERTIES,
     ORDER_ITEM_PART_BOARD,
     ORDER_ITEM_PART_EDGE,
-    ORDER_ITEM_PART_DIMENSION,
-    ORDER_ITEM_PART_THICKNESS,
-    ORDER_ITEM_PART_EDGE_WIDTH,
-    ORDER_ITEM_PART_CORNER_DIMENSION;
+    ORDER_ITEM_PART_CORNER;
 
     public ApplicationException exception(final String pattern, final Object... arguments) {
         return exception(null, pattern, arguments);

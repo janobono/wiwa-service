@@ -50,7 +50,12 @@ public interface UiWebMapper {
 
     SignUpMailData mapToData(SignUpMailWebDto signUpMail);
 
-    DimensionsData mapToData(DimensionsWebDto dimensions);
+    default DimensionsData mapToData(final DimensionsWebDto dimensions) {
+        if (dimensions == null) {
+            return null;
+        }
+        return new DimensionsData(dimensions.x(), dimensions.y());
+    }
 
     ManufacturePropertiesData mapToData(ManufacturePropertiesWebDto manufactureProperties);
 

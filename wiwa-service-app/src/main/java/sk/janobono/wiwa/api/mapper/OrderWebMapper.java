@@ -3,10 +3,13 @@ package sk.janobono.wiwa.api.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.ReportingPolicy;
+import sk.janobono.wiwa.api.model.DimensionsWebDto;
 import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.api.model.order.part.*;
 import sk.janobono.wiwa.api.model.order.summary.OrderItemSummaryWebDto;
 import sk.janobono.wiwa.api.model.order.summary.OrderSummaryWebDto;
+import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.model.order.part.*;
 import sk.janobono.wiwa.business.model.order.summary.OrderItemSummaryData;
@@ -14,7 +17,8 @@ import sk.janobono.wiwa.business.model.order.summary.OrderSummaryData;
 
 import java.security.InvalidParameterException;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface OrderWebMapper {
 
     OrderBoardWebDto mapToWebDto(OrderBoardData orderBoardData);
@@ -73,6 +77,8 @@ public interface OrderWebMapper {
 
     OrderSummaryWebDto mapToWebDto(OrderSummaryData orderSummary);
 
+    DimensionsWebDto mapToWebDto(DimensionsData dimensions);
+
     OrderCommentChangeData mapToData(OrderCommentChangeWebDto orderCommentChange);
 
     SendOrderData mapToData(SendOrderWebDto sendOrder);
@@ -120,4 +126,11 @@ public interface OrderWebMapper {
     PartCornerStraightData mapToData(PartCornerStraightWebDto partCorner);
 
     PartCornerRoundedData mapToData(PartCornerRoundedWebDto partCorner);
+
+    default DimensionsData mapToData(final DimensionsWebDto dimensions) {
+        if (dimensions == null) {
+            return null;
+        }
+        return new DimensionsData(dimensions.x(), dimensions.y());
+    }
 }

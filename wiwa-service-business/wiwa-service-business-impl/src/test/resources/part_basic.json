@@ -6,7 +6,7 @@
   "edgeIdA2": 1,
   "edgeIdB1": 1,
   "edgeIdB2": 1,
-  "dimensions": {
+  "dimensionsTOP": {
     "x": 500,
     "y": 500
   },

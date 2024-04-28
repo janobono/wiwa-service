@@ -15,7 +15,7 @@ public record PartBasicData(
         Long edgeIdA2,
         Long edgeIdB1,
         Long edgeIdB2,
-        DimensionsData dimensions,
+        DimensionsData dimensionsTOP,
         PartCornerData cornerA1B1,
         PartCornerData cornerA1B2,
         PartCornerData cornerA2B1,
@@ -23,29 +23,36 @@ public record PartBasicData(
 ) implements PartData {
 
     @Override
+    public Map<BoardPosition, DimensionsData> dimensions() {
+        final Map<BoardPosition, DimensionsData> dimensions = new HashMap<>();
+        Optional.ofNullable(dimensionsTOP).ifPresent(d -> dimensions.put(BoardPosition.TOP, d));
+        return dimensions;
+    }
+
+    @Override
     public Map<BoardPosition, Long> boards() {
         final Map<BoardPosition, Long> boards = new HashMap<>();
-        boards.put(BoardPosition.TOP, boardId);
+        Optional.ofNullable(boardId).ifPresent(id -> boards.put(BoardPosition.TOP, id));
         return boards;
     }
 
     @Override
     public Map<EdgePosition, Long> edges() {
-        final Map<EdgePosition, Long> edgePositions = new HashMap<>();
-        Optional.ofNullable(edgeIdA1).ifPresent(id -> edgePositions.put(EdgePosition.A1, id));
-        Optional.ofNullable(edgeIdA2).ifPresent(id -> edgePositions.put(EdgePosition.A2, id));
-        Optional.ofNullable(edgeIdB1).ifPresent(id -> edgePositions.put(EdgePosition.B1, id));
-        Optional.ofNullable(edgeIdB2).ifPresent(id -> edgePositions.put(EdgePosition.B2, id));
-        return edgePositions;
+        final Map<EdgePosition, Long> edges = new HashMap<>();
+        Optional.ofNullable(edgeIdA1).ifPresent(id -> edges.put(EdgePosition.A1, id));
+        Optional.ofNullable(edgeIdA2).ifPresent(id -> edges.put(EdgePosition.A2, id));
+        Optional.ofNullable(edgeIdB1).ifPresent(id -> edges.put(EdgePosition.B1, id));
+        Optional.ofNullable(edgeIdB2).ifPresent(id -> edges.put(EdgePosition.B2, id));
+        return edges;
     }
 
     @Override
     public Map<CornerPosition, DimensionsData> corners() {
-        final Map<CornerPosition, DimensionsData> cornerPositions = new HashMap<>();
-        Optional.ofNullable(cornerA1B1).ifPresent(corner -> cornerPositions.put(CornerPosition.A1B1, corner.dimensions()));
-        Optional.ofNullable(cornerA1B2).ifPresent(corner -> cornerPositions.put(CornerPosition.A1B2, corner.dimensions()));
-        Optional.ofNullable(cornerA2B1).ifPresent(corner -> cornerPositions.put(CornerPosition.A2B1, corner.dimensions()));
-        Optional.ofNullable(cornerA2B2).ifPresent(corner -> cornerPositions.put(CornerPosition.A2B2, corner.dimensions()));
-        return cornerPositions;
+        final Map<CornerPosition, DimensionsData> corners = new HashMap<>();
+        Optional.ofNullable(cornerA1B1).ifPresent(corner -> corners.put(CornerPosition.A1B1, corner.dimensions()));
+        Optional.ofNullable(cornerA1B2).ifPresent(corner -> corners.put(CornerPosition.A1B2, corner.dimensions()));
+        Optional.ofNullable(cornerA2B1).ifPresent(corner -> corners.put(CornerPosition.A2B1, corner.dimensions()));
+        Optional.ofNullable(cornerA2B2).ifPresent(corner -> corners.put(CornerPosition.A2B2, corner.dimensions()));
+        return corners;
     }
 }

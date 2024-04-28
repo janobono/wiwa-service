@@ -11,7 +11,7 @@ public record PartDuplicatedBasicWebDto(
         Long edgeIdA2,
         Long edgeIdB1,
         Long edgeIdB2,
-        @NotNull DimensionsWebDto dimensions,
+        @NotNull DimensionsWebDto dimensionsTOP,
         PartCornerWebDto cornerA1B1,
         PartCornerWebDto cornerA1B2,
         PartCornerWebDto cornerA2B1,

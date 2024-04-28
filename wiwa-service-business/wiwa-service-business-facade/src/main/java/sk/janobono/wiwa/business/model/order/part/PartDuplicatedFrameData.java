@@ -25,7 +25,7 @@ public record PartDuplicatedFrameData(
         Long edgeIdB1I,
         Long edgeIdB2,
         Long edgeIdB2I,
-        DimensionsData dimensions,
+        DimensionsData dimensionsTOP,
         DimensionsData dimensionsA1,
         DimensionsData dimensionsA2,
         DimensionsData dimensionsB1,
@@ -37,37 +37,48 @@ public record PartDuplicatedFrameData(
 ) implements PartData {
 
     @Override
+    public Map<BoardPosition, DimensionsData> dimensions() {
+        final Map<BoardPosition, DimensionsData> dimensions = new HashMap<>();
+        Optional.ofNullable(dimensionsTOP).ifPresent(d -> dimensions.put(BoardPosition.TOP, d));
+        Optional.ofNullable(dimensionsA1).ifPresent(d -> dimensions.put(BoardPosition.A1, d));
+        Optional.ofNullable(dimensionsA2).ifPresent(d -> dimensions.put(BoardPosition.A2, d));
+        Optional.ofNullable(dimensionsB1).ifPresent(d -> dimensions.put(BoardPosition.B1, d));
+        Optional.ofNullable(dimensionsB2).ifPresent(d -> dimensions.put(BoardPosition.B2, d));
+        return dimensions;
+    }
+
+    @Override
     public Map<BoardPosition, Long> boards() {
         final Map<BoardPosition, Long> boards = new HashMap<>();
-        boards.put(BoardPosition.TOP, boardId);
-        boards.put(BoardPosition.A1, boardIdA1);
-        boards.put(BoardPosition.A2, boardIdA2);
-        boards.put(BoardPosition.B1, boardIdB1);
-        boards.put(BoardPosition.B2, boardIdB2);
+        Optional.ofNullable(boardId).ifPresent(id -> boards.put(BoardPosition.TOP, id));
+        Optional.ofNullable(boardIdA1).ifPresent(id -> boards.put(BoardPosition.A1, id));
+        Optional.ofNullable(boardIdA2).ifPresent(id -> boards.put(BoardPosition.A2, id));
+        Optional.ofNullable(boardIdB1).ifPresent(id -> boards.put(BoardPosition.B1, id));
+        Optional.ofNullable(boardIdB2).ifPresent(id -> boards.put(BoardPosition.B2, id));
         return boards;
     }
 
     @Override
     public Map<EdgePosition, Long> edges() {
-        final Map<EdgePosition, Long> edgePositions = new HashMap<>();
-        Optional.ofNullable(edgeIdA1).ifPresent(id -> edgePositions.put(EdgePosition.A1, id));
-        Optional.ofNullable(edgeIdA1I).ifPresent(id -> edgePositions.put(EdgePosition.A1I, id));
-        Optional.ofNullable(edgeIdA2).ifPresent(id -> edgePositions.put(EdgePosition.A2, id));
-        Optional.ofNullable(edgeIdA2I).ifPresent(id -> edgePositions.put(EdgePosition.A2I, id));
-        Optional.ofNullable(edgeIdB1).ifPresent(id -> edgePositions.put(EdgePosition.B1, id));
-        Optional.ofNullable(edgeIdB1I).ifPresent(id -> edgePositions.put(EdgePosition.B1I, id));
-        Optional.ofNullable(edgeIdB2).ifPresent(id -> edgePositions.put(EdgePosition.B2, id));
-        Optional.ofNullable(edgeIdB2I).ifPresent(id -> edgePositions.put(EdgePosition.B2I, id));
-        return edgePositions;
+        final Map<EdgePosition, Long> edges = new HashMap<>();
+        Optional.ofNullable(edgeIdA1).ifPresent(id -> edges.put(EdgePosition.A1, id));
+        Optional.ofNullable(edgeIdA1I).ifPresent(id -> edges.put(EdgePosition.A1I, id));
+        Optional.ofNullable(edgeIdA2).ifPresent(id -> edges.put(EdgePosition.A2, id));
+        Optional.ofNullable(edgeIdA2I).ifPresent(id -> edges.put(EdgePosition.A2I, id));
+        Optional.ofNullable(edgeIdB1).ifPresent(id -> edges.put(EdgePosition.B1, id));
+        Optional.ofNullable(edgeIdB1I).ifPresent(id -> edges.put(EdgePosition.B1I, id));
+        Optional.ofNullable(edgeIdB2).ifPresent(id -> edges.put(EdgePosition.B2, id));
+        Optional.ofNullable(edgeIdB2I).ifPresent(id -> edges.put(EdgePosition.B2I, id));
+        return edges;
     }
 
     @Override
     public Map<CornerPosition, DimensionsData> corners() {
-        final Map<CornerPosition, DimensionsData> cornerPositions = new HashMap<>();
-        Optional.ofNullable(cornerA1B1).ifPresent(corner -> cornerPositions.put(CornerPosition.A1B1, corner.dimensions()));
-        Optional.ofNullable(cornerA1B2).ifPresent(corner -> cornerPositions.put(CornerPosition.A1B2, corner.dimensions()));
-        Optional.ofNullable(cornerA2B1).ifPresent(corner -> cornerPositions.put(CornerPosition.A2B1, corner.dimensions()));
-        Optional.ofNullable(cornerA2B2).ifPresent(corner -> cornerPositions.put(CornerPosition.A2B2, corner.dimensions()));
-        return cornerPositions;
+        final Map<CornerPosition, DimensionsData> corners = new HashMap<>();
+        Optional.ofNullable(cornerA1B1).ifPresent(corner -> corners.put(CornerPosition.A1B1, corner.dimensions()));
+        Optional.ofNullable(cornerA1B2).ifPresent(corner -> corners.put(CornerPosition.A1B2, corner.dimensions()));
+        Optional.ofNullable(cornerA2B1).ifPresent(corner -> corners.put(CornerPosition.A2B1, corner.dimensions()));
+        Optional.ofNullable(cornerA2B2).ifPresent(corner -> corners.put(CornerPosition.A2B2, corner.dimensions()));
+        return corners;
     }
 }

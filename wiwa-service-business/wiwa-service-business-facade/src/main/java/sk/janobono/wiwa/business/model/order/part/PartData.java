@@ -19,7 +19,7 @@ import java.util.Map;
         @JsonSubTypes.Type(value = PartDuplicatedFrameData.class, name = "DUPLICATED_FRAME")
 })
 public interface PartData {
-    DimensionsData dimensions();
+    Map<BoardPosition, DimensionsData> dimensions();
 
     Map<BoardPosition, Long> boards();
 

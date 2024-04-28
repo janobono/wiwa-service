@@ -18,7 +18,7 @@ public record PartFrameWebDto(
         Long edgeIdB1I,
         Long edgeIdB2,
         Long edgeIdB2I,
-        @NotNull DimensionsWebDto dimensions,
+        @NotNull DimensionsWebDto dimensionsTOP,
         @NotNull DimensionsWebDto dimensionsA1,
         @NotNull DimensionsWebDto dimensionsA2,
         @NotNull DimensionsWebDto dimensionsB1,
