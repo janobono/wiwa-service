@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PartUtilTest {
@@ -238,285 +237,127 @@ class PartUtilTest {
         partUtil.validate(part, boards, edges, manufactureProperties);
     }
 
+    @Test
+    void validate_whenValidData_thenParamsError() throws IOException {
+        final PartUtil partUtil = new PartUtil();
 
-//    ApplicationException applicationException = assertThrows(ApplicationException.class,
-//            () -> partUtil.validate(PartBasicData.builder()
-//                    .rotate(true)
-//                    .boardId(1L)
-//                    .dimensions(new DimensionsData(BigDecimal.valueOf(2001), BigDecimal.valueOf(1501)))
-//                    .build(), boards, edges, manufactureProperties)
-//    );
-//    assertEquals("Invalid dimensions [2,001,1,501] maximum is ManufactureDimensionsData[x=2000, y=1500]", applicationException.getMessage());
-//    assertEquals(WiwaException.ORDER_ITEM_PART_DIMENSION.name(), applicationException.getCode());
-//
-//    applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartBasicData.builder()
-//            .boardId(1L)
-//                        .dimensions(new DimensionsData(BigDecimal.valueOf(49), BigDecimal.valueOf(350)))
-//            .build(), boards, edges, manufactureProperties)
-//            );
-//    assertEquals("Invalid dimensions [49,350] minimum is ManufactureDimensionsData[x=50, y=50]", applicationException.getMessage());
-//    assertEquals(WiwaException.ORDER_ITEM_PART_DIMENSION.name(), applicationException.getCode());
-//
-//    applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartBasicData.builder()
-//            .boardId(2L)
-//                        .edgeIdA1(1L)
-//                        .dimensions(new DimensionsData(BigDecimal.valueOf(350), BigDecimal.valueOf(350)))
-//            .build(), boards, edges, manufactureProperties)
-//            );
-//    assertEquals("Invalid edge width [18] minimum is 28", applicationException.getMessage());
-//    assertEquals(WiwaException.ORDER_ITEM_PART_EDGE_WIDTH.name(), applicationException.getCode());
-//
-//    applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartBasicData.builder()
-//            .boardId(1L)
-//                        .dimensions(new DimensionsData(BigDecimal.valueOf(350), BigDecimal.valueOf(350)))
-//            .cornerA1B1(new PartCornerStraightData(new DimensionsData(BigDecimal.valueOf(351), BigDecimal.valueOf(50))))
-//            .build(), boards, edges, manufactureProperties)
-//            );
-//    assertEquals("Invalid corner dimensions", applicationException.getMessage());
-//    assertEquals(WiwaException.ORDER_ITEM_PART_CORNER_DIMENSION.name(), applicationException.getCode());
-//
-//    applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartBasicData.builder()
-//            .boardId(1L)
-//                        .dimensions(new DimensionsData(BigDecimal.valueOf(350), BigDecimal.valueOf(350)))
-//            .cornerA1B1(new PartCornerStraightData(new DimensionsData(BigDecimal.valueOf(50), BigDecimal.valueOf(351))))
-//            .build(), boards, edges, manufactureProperties)
-//            );
-//    assertEquals("Invalid corner dimensions", applicationException.getMessage());
-//    assertEquals(WiwaException.ORDER_ITEM_PART_CORNER_DIMENSION.name(), applicationException.getCode());
-//
-//    applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartBasicData.builder()
-//            .boardId(1L)
-//                        .dimensions(new DimensionsData(BigDecimal.valueOf(350), BigDecimal.valueOf(350)))
-//            .cornerA1B1(new PartCornerStraightData(new DimensionsData(BigDecimal.valueOf(176), BigDecimal.valueOf(50))))
-//            .cornerA1B2(new PartCornerStraightData(new DimensionsData(BigDecimal.valueOf(175), BigDecimal.valueOf(50))))
-//            .build(), boards, edges, manufactureProperties)
-//            );
-//    assertEquals("Invalid corner dimensions", applicationException.getMessage());
-//    assertEquals(WiwaException.ORDER_ITEM_PART_CORNER_DIMENSION.name(), applicationException.getCode());
+        PartData[] parts = objectMapper.readValue(getClass().getResource("/part_basic_parameters.json"), PartData[].class);
+        for (final PartData part : parts) {
+            final ApplicationException applicationException = assertThrows(ApplicationException.class,
+                    () -> partUtil.validate(part, boards, edges, manufactureProperties)
+            );
+            assertThat(applicationException.getCode()).isEqualTo(WiwaException.ORDER_ITEM_PROPERTIES.name());
+        }
 
-//    @Test
-//    void validatePartFrame_whenVariousBoards_thenTheseResults() {
-//        final PartUtil partUtil = new PartUtil();
-//
-//        partUtil.validate(PartFrameData.builder()
-//                .boardIdA1(1L)
-//                .boardIdA2(1L)
-//                .boardIdB1(1L)
-//                .boardIdB2(1L)
-//                .edgeIdA1(1L)
-//                .edgeIdA1I(1L)
-//                .edgeIdA2(1L)
-//                .edgeIdA2I(1L)
-//                .edgeIdB1(1L)
-//                .edgeIdB1I(1L)
-//                .edgeIdB2(1L)
-//                .edgeIdB2I(1L)
-//                .dimensions(new DimensionsData(BigDecimal.valueOf(350), BigDecimal.valueOf(350)))
-//                .dimensionsA1(new DimensionsData(BigDecimal.valueOf(350), BigDecimal.valueOf(55)))
-//                .dimensionsA2(new DimensionsData(BigDecimal.valueOf(350), BigDecimal.valueOf(65)))
-//                .dimensionsB1(new DimensionsData(BigDecimal.valueOf(55), BigDecimal.valueOf(330)))
-//                .dimensionsB2(new DimensionsData(BigDecimal.valueOf(65), BigDecimal.valueOf(330)))
-//                .build(), boards, edges, manufactureProperties);
-//
-//        ApplicationException applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartFrameData.builder()
-//                        .boardIdA1(1L)
-//                        .boardIdA2(1L)
-//                        .boardIdB1(1L)
-//                        .boardIdB2(1L)
-//                        .dimensions(new DimensionsData(BigDecimal.valueOf(2001), BigDecimal.valueOf(1501)))
-//                        .dimensionsA1(new DimensionsData(BigDecimal.valueOf(2001), BigDecimal.valueOf(49)))
-//                        .dimensionsA2(new DimensionsData(BigDecimal.valueOf(2001), BigDecimal.valueOf(65)))
-//                        .dimensionsB1(new DimensionsData(BigDecimal.valueOf(49), BigDecimal.valueOf(1501)))
-//                        .dimensionsB2(new DimensionsData(BigDecimal.valueOf(65), BigDecimal.valueOf(1501)))
-//                        .build(), boards, edges, manufactureProperties)
-//        );
-//        assertEquals("Invalid dimensions [2,001,49] maximum is ManufactureDimensionsData[x=2000, y=1500]", applicationException.getMessage());
-//        assertEquals(WiwaException.ORDER_ITEM_PART_DIMENSION.name(), applicationException.getCode());
-//
-//        applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartFrameData.builder()
-//                        .boardIdA1(1L)
-//                        .boardIdA2(1L)
-//                        .boardIdB1(1L)
-//                        .boardIdB2(1L)
-//                        .dimensionA(BigDecimal.valueOf(100))
-//                        .dimensionB(BigDecimal.valueOf(100))
-//                        .dimensionA1B(BigDecimal.valueOf(49))
-//                        .dimensionA2B(BigDecimal.valueOf(50))
-//                        .dimensionB1A(BigDecimal.valueOf(50))
-//                        .dimensionB2A(BigDecimal.valueOf(50))
-//                        .build(), boards, edges, manufactureProperties)
-//        );
-//        assertEquals("Invalid dimensions [100,49] minimum is ManufactureDimensionsData[x=50, y=50]", applicationException.getMessage());
-//        assertEquals(WiwaException.ORDER_ITEM_PART_DIMENSION.name(), applicationException.getCode());
-//
-//        applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartFrameData.builder()
-//                        .boardIdA1(1L)
-//                        .boardIdA2(2L)
-//                        .boardIdB1(1L)
-//                        .boardIdB2(1L)
-//                        .horizontal(true)
-//                        .dimensionA(BigDecimal.valueOf(100))
-//                        .dimensionB(BigDecimal.valueOf(100))
-//                        .dimensionA1B(BigDecimal.valueOf(50))
-//                        .dimensionA2B(BigDecimal.valueOf(50))
-//                        .dimensionB1A(BigDecimal.valueOf(50))
-//                        .dimensionB2A(BigDecimal.valueOf(50))
-//                        .build(), boards, edges, manufactureProperties)
-//        );
-//        assertEquals("Invalid board thickness", applicationException.getMessage());
-//        assertEquals(WiwaException.ORDER_ITEM_PART_THICKNESS.name(), applicationException.getCode());
-//    }
-//
-//    @Test
-//    void validatePartDuplicatedBasic_whenVariousBoards_thenTheseResults() {
-//        final PartUtil partUtil = new PartUtil();
-//
-//        partUtil.validate(PartDuplicatedBasicData.builder()
-//                .boardIdTop(1L)
-//                .boardIdBottom(2L)
-//                .edgeIdA1(3L)
-//                .edgeIdA2(3L)
-//                .edgeIdB1(3L)
-//                .edgeIdB2(3L)
-//                .dimensionA(BigDecimal.valueOf(350))
-//                .dimensionB(BigDecimal.valueOf(350))
-//                .cornerA1B1(new PartCornerStraightData(BigDecimal.valueOf(175), BigDecimal.valueOf(30)))
-//                .cornerA1B2(new PartCornerStraightData(BigDecimal.valueOf(175), BigDecimal.valueOf(50)))
-//                .cornerA2B1(new PartCornerRoundedData(BigDecimal.valueOf(30)))
-//                .cornerA2B2(new PartCornerRoundedData(BigDecimal.valueOf(50)))
-//                .build(), boards, edges, manufactureProperties);
-//
-//        ApplicationException applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartDuplicatedBasicData.builder()
-//                        .boardIdTop(1L)
-//                        .boardIdBottom(2L)
-//                        .dimensionA(BigDecimal.valueOf(2001))
-//                        .dimensionB(BigDecimal.valueOf(1501))
-//                        .build(), boards, edges, manufactureProperties)
-//        );
-//        assertEquals("Invalid dimensions [2,011,1,511] maximum is ManufactureDimensionsData[x=2000, y=1500]", applicationException.getMessage());
-//        assertEquals(WiwaException.ORDER_ITEM_PART_DIMENSION.name(), applicationException.getCode());
-//
-//        applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartDuplicatedBasicData.builder()
-//                        .boardIdTop(1L)
-//                        .boardIdBottom(2L)
-//                        .dimensionA(BigDecimal.valueOf(49))
-//                        .dimensionB(BigDecimal.valueOf(350))
-//                        .build(), boards, edges, manufactureProperties)
-//        );
-//        assertEquals("Invalid dimensions [49,350] minimum is ManufactureDimensionsData[x=50, y=50]", applicationException.getMessage());
-//        assertEquals(WiwaException.ORDER_ITEM_PART_DIMENSION.name(), applicationException.getCode());
-//
-//        applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartDuplicatedBasicData.builder()
-//                        .boardIdTop(1L)
-//                        .boardIdBottom(2L)
-//                        .edgeIdA1(1L)
-//                        .dimensionA(BigDecimal.valueOf(350))
-//                        .dimensionB(BigDecimal.valueOf(350))
-//                        .build(), boards, edges, manufactureProperties)
-//        );
-//        assertEquals("Invalid edge width [18] minimum is 38", applicationException.getMessage());
-//        assertEquals(WiwaException.ORDER_ITEM_PART_EDGE_WIDTH.name(), applicationException.getCode());
-//
-//        applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartDuplicatedBasicData.builder()
-//                        .boardIdTop(1L)
-//                        .boardIdBottom(2L)
-//                        .dimensionA(BigDecimal.valueOf(350))
-//                        .dimensionB(BigDecimal.valueOf(350))
-//                        .cornerA1B1(new PartCornerStraightData(BigDecimal.valueOf(351), BigDecimal.valueOf(50)))
-//                        .build(), boards, edges, manufactureProperties)
-//        );
-//        assertEquals("Invalid corner dimensions", applicationException.getMessage());
-//        assertEquals(WiwaException.ORDER_ITEM_PART_CORNER_DIMENSION.name(), applicationException.getCode());
-//
-//        applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartDuplicatedBasicData.builder()
-//                        .boardIdTop(1L)
-//                        .boardIdBottom(2L)
-//                        .dimensionA(BigDecimal.valueOf(350))
-//                        .dimensionB(BigDecimal.valueOf(350))
-//                        .cornerA1B1(new PartCornerStraightData(BigDecimal.valueOf(50), BigDecimal.valueOf(351)))
-//                        .build(), boards, edges, manufactureProperties)
-//        );
-//        assertEquals("Invalid corner dimensions", applicationException.getMessage());
-//        assertEquals(WiwaException.ORDER_ITEM_PART_CORNER_DIMENSION.name(), applicationException.getCode());
-//
-//        applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartDuplicatedBasicData.builder()
-//                        .boardIdTop(1L)
-//                        .boardIdBottom(2L)
-//                        .dimensionA(BigDecimal.valueOf(350))
-//                        .dimensionB(BigDecimal.valueOf(350))
-//                        .cornerA1B1(new PartCornerStraightData(BigDecimal.valueOf(176), BigDecimal.valueOf(50)))
-//                        .cornerA1B2(new PartCornerStraightData(BigDecimal.valueOf(175), BigDecimal.valueOf(50)))
-//                        .build(), boards, edges, manufactureProperties)
-//        );
-//        assertEquals("Invalid corner dimensions", applicationException.getMessage());
-//        assertEquals(WiwaException.ORDER_ITEM_PART_CORNER_DIMENSION.name(), applicationException.getCode());
-//    }
-//
-//    @Test
-//    void validatePartDuplicatedFrame_whenVariousBoards_thenTheseResults() {
-//        final PartUtil partUtil = new PartUtil();
-//
-//        partUtil.validate(PartDuplicatedFrameData.builder()
-//                .boardId(1L)
-//                .boardIdA1(1L)
-//                .boardIdA2(1L)
-//                .boardIdB1(1L)
-//                .boardIdB2(1L)
-//                .edgeIdA1(2L)
-//                .edgeIdA1IBottom(1L)
-//                .edgeIdA2(2L)
-//                .edgeIdA2IBottom(1L)
-//                .edgeIdB1(2L)
-//                .edgeIdB1IBottom(1L)
-//                .edgeIdB2(2L)
-//                .edgeIdB2IBottom(1L)
-//                .dimensionA(BigDecimal.valueOf(350))
-//                .dimensionB(BigDecimal.valueOf(350))
-//                .dimensionA1BottomB(BigDecimal.valueOf(50))
-//                .dimensionA2BottomB(BigDecimal.valueOf(50))
-//                .dimensionB1BottomA(BigDecimal.valueOf(50))
-//                .dimensionB2BottomA(BigDecimal.valueOf(50))
-//                .cornerA1B1(new PartCornerStraightData(BigDecimal.valueOf(30), BigDecimal.valueOf(30)))
-//                .cornerA1B2(new PartCornerStraightData(BigDecimal.valueOf(50), BigDecimal.valueOf(50)))
-//                .cornerA2B1(new PartCornerRoundedData(BigDecimal.valueOf(30)))
-//                .cornerA2B2(new PartCornerRoundedData(BigDecimal.valueOf(50)))
-//                .build(), boards, edges, manufactureProperties);
-//
-//        ApplicationException applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartDuplicatedFrameData.builder()
-//                        .boardIdTop(1L)
-//                        .boardIdA1Bottom(1L)
-//                        .dimensionA(BigDecimal.valueOf(350))
-//                        .dimensionB(BigDecimal.valueOf(350))
-//                        .dimensionA1BottomB(BigDecimal.valueOf(50))
-//                        .build(), boards, edges, manufactureProperties)
-//        );
-//        assertEquals("Invalid dimensions [2,011,1,511] maximum is ManufactureDimensionsData[x=2000, y=1500]", applicationException.getMessage());
-//        assertEquals(WiwaException.ORDER_ITEM_PART_DIMENSION.name(), applicationException.getCode());
-//
-//        applicationException = assertThrows(ApplicationException.class,
-//                () -> partUtil.validate(PartDuplicatedBasicData.builder()
-//                        .boardIdTop(1L)
-//                        .boardIdBottom(2L)
-//                        .dimensionA(BigDecimal.valueOf(49))
-//                        .dimensionB(BigDecimal.valueOf(350))
-//                        .build(), boards, edges, manufactureProperties)
-//        );
-//        assertEquals("Invalid dimensions [49,350] minimum is ManufactureDimensionsData[x=50, y=50]", applicationException.getMessage());
-//        assertEquals(WiwaException.ORDER_ITEM_PART_DIMENSION.name(), applicationException.getCode());
-//    }
+        parts = objectMapper.readValue(getClass().getResource("/part_duplicated_parameters.json"), PartData[].class);
+        for (final PartData part : parts) {
+            final ApplicationException applicationException = assertThrows(ApplicationException.class,
+                    () -> partUtil.validate(part, boards, edges, manufactureProperties)
+            );
+            assertThat(applicationException.getCode()).isEqualTo(WiwaException.ORDER_ITEM_PROPERTIES.name());
+        }
+
+        parts = objectMapper.readValue(getClass().getResource("/part_frame_parameters.json"), PartData[].class);
+        for (final PartData part : parts) {
+            final ApplicationException applicationException = assertThrows(ApplicationException.class,
+                    () -> partUtil.validate(part, boards, edges, manufactureProperties)
+            );
+            assertThat(applicationException.getCode()).isEqualTo(WiwaException.ORDER_ITEM_PROPERTIES.name());
+        }
+
+        parts = objectMapper.readValue(getClass().getResource("/part_duplicated_frame_parameters.json"), PartData[].class);
+        for (final PartData part : parts) {
+            final ApplicationException applicationException = assertThrows(ApplicationException.class,
+                    () -> partUtil.validate(part, boards, edges, manufactureProperties)
+            );
+            assertThat(applicationException.getCode()).isEqualTo(WiwaException.ORDER_ITEM_PROPERTIES.name());
+        }
+    }
+
+    @Test
+    void validate_whenValidData_thenPartBoardError() throws IOException {
+        final PartUtil partUtil = new PartUtil();
+
+        PartData[] parts = objectMapper.readValue(getClass().getResource("/part_basic_board.json"), PartData[].class);
+        for (final PartData part : parts) {
+            final ApplicationException applicationException = assertThrows(ApplicationException.class,
+                    () -> partUtil.validate(part, boards, edges, manufactureProperties)
+            );
+            assertThat(applicationException.getCode()).isEqualTo(WiwaException.ORDER_ITEM_PART_BOARD.name());
+        }
+
+        parts = objectMapper.readValue(getClass().getResource("/part_duplicated_board.json"), PartData[].class);
+        for (final PartData part : parts) {
+            final ApplicationException applicationException = assertThrows(ApplicationException.class,
+                    () -> partUtil.validate(part, boards, edges, manufactureProperties)
+            );
+            assertThat(applicationException.getCode()).isEqualTo(WiwaException.ORDER_ITEM_PART_BOARD.name());
+        }
+
+        parts = objectMapper.readValue(getClass().getResource("/part_frame_board.json"), PartData[].class);
+        for (final PartData part : parts) {
+            final ApplicationException applicationException = assertThrows(ApplicationException.class,
+                    () -> partUtil.validate(part, boards, edges, manufactureProperties)
+            );
+            assertThat(applicationException.getCode()).isEqualTo(WiwaException.ORDER_ITEM_PART_BOARD.name());
+        }
+
+        parts = objectMapper.readValue(getClass().getResource("/part_duplicated_frame_board.json"), PartData[].class);
+        for (final PartData part : parts) {
+            final ApplicationException applicationException = assertThrows(ApplicationException.class,
+                    () -> partUtil.validate(part, boards, edges, manufactureProperties)
+            );
+            assertThat(applicationException.getCode()).isEqualTo(WiwaException.ORDER_ITEM_PART_BOARD.name());
+        }
+    }
+
+    @Test
+    void validate_whenValidData_thenPartEdgeError() throws IOException {
+        final PartUtil partUtil = new PartUtil();
+
+        PartData[] parts = objectMapper.readValue(getClass().getResource("/part_basic_edge.json"), PartData[].class);
+        for (final PartData part : parts) {
+            final ApplicationException applicationException = assertThrows(ApplicationException.class,
+                    () -> partUtil.validate(part, boards, edges, manufactureProperties)
+            );
+            assertThat(applicationException.getCode()).isEqualTo(WiwaException.ORDER_ITEM_PART_EDGE.name());
+        }
+
+        parts = objectMapper.readValue(getClass().getResource("/part_duplicated_edge.json"), PartData[].class);
+        for (final PartData part : parts) {
+            final ApplicationException applicationException = assertThrows(ApplicationException.class,
+                    () -> partUtil.validate(part, boards, edges, manufactureProperties)
+            );
+            assertThat(applicationException.getCode()).isEqualTo(WiwaException.ORDER_ITEM_PART_EDGE.name());
+        }
+
+        parts = objectMapper.readValue(getClass().getResource("/part_frame_edge.json"), PartData[].class);
+        for (final PartData part : parts) {
+            final ApplicationException applicationException = assertThrows(ApplicationException.class,
+                    () -> partUtil.validate(part, boards, edges, manufactureProperties)
+            );
+            assertThat(applicationException.getCode()).isEqualTo(WiwaException.ORDER_ITEM_PART_EDGE.name());
+        }
+
+        parts = objectMapper.readValue(getClass().getResource("/part_duplicated_frame_edge.json"), PartData[].class);
+        for (final PartData part : parts) {
+            final ApplicationException applicationException = assertThrows(ApplicationException.class,
+                    () -> partUtil.validate(part, boards, edges, manufactureProperties)
+            );
+            assertThat(applicationException.getCode()).isEqualTo(WiwaException.ORDER_ITEM_PART_EDGE.name());
+        }
+    }
+
+    @Test
+    void validate_whenValidData_thenPartCornerError() throws IOException {
+        final PartUtil partUtil = new PartUtil();
+
+        final PartData[] parts = objectMapper.readValue(getClass().getResource("/part_basic_corner.json"), PartData[].class);
+        for (final PartData part : parts) {
+            final ApplicationException applicationException = assertThrows(ApplicationException.class,
+                    () -> partUtil.validate(part, boards, edges, manufactureProperties)
+            );
+            assertThat(applicationException.getCode()).isEqualTo(WiwaException.ORDER_ITEM_PART_CORNER.name());
+        }
+    }
 }

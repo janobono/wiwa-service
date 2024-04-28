@@ -103,6 +103,7 @@ public class PartUtil {
                                final Map<Long, OrderEdgeData> orderEdges,
                                final ManufacturePropertiesData manufactureProperties) {
         // Params
+        checkKeys(Set.of(BoardPosition.TOP), part.dimensions());
         final Set<BoardPosition> boardPositions = Set.of(BoardPosition.A1, BoardPosition.A2, BoardPosition.B1, BoardPosition.B2);
         checkParams(part, boardPositions, orderBoards, orderEdges);
 
@@ -140,7 +141,7 @@ public class PartUtil {
                 PartBasicData.builder()
                         .rotate(part.rotate())
                         .boardId(part.boardId())
-                        .dimensionsTOP(part.dimensionsTOP().add(manufactureProperties.duplicatedBoardAppend()))
+                        .dimensionsTOP(Optional.ofNullable(part.dimensionsTOP()).map(t -> t.add(manufactureProperties.duplicatedBoardAppend())).orElse(null))
                         .cornerA1B1(part.cornerA1B1())
                         .cornerA1B2(part.cornerA1B2())
                         .cornerA2B1(part.cornerA2B1())
@@ -192,7 +193,7 @@ public class PartUtil {
                             && (part.boards().containsKey(BoardPosition.B1) || part.boards().containsKey(BoardPosition.B2))) {
                         throw WiwaException.ORDER_ITEM_PART_EDGE.exception("Invalid edge position: " + edgePosition);
                     }
-                    yield getThickness(Set.of(BoardPosition.TOP, BoardPosition.A1), part.boards(), orderBoards);
+                    yield sumThickness(Set.of(BoardPosition.TOP, BoardPosition.A1), part.boards(), orderBoards);
                 }
                 case A1I -> {
                     if (!part.boards().containsKey(BoardPosition.A1)) {
@@ -205,7 +206,7 @@ public class PartUtil {
                             && (part.boards().containsKey(BoardPosition.B1) || part.boards().containsKey(BoardPosition.B2))) {
                         throw WiwaException.ORDER_ITEM_PART_EDGE.exception("Invalid edge position: " + edgePosition);
                     }
-                    yield getThickness(Set.of(BoardPosition.TOP, BoardPosition.A2), part.boards(), orderBoards);
+                    yield sumThickness(Set.of(BoardPosition.TOP, BoardPosition.A2), part.boards(), orderBoards);
                 }
                 case A2I -> {
                     if (!part.boards().containsKey(BoardPosition.A2)) {
@@ -218,7 +219,7 @@ public class PartUtil {
                             && (part.boards().containsKey(BoardPosition.A1) || part.boards().containsKey(BoardPosition.A2))) {
                         throw WiwaException.ORDER_ITEM_PART_EDGE.exception("Invalid edge position: " + edgePosition);
                     }
-                    yield getThickness(Set.of(BoardPosition.TOP, BoardPosition.B1), part.boards(), orderBoards);
+                    yield sumThickness(Set.of(BoardPosition.TOP, BoardPosition.B1), part.boards(), orderBoards);
                 }
                 case B1I -> {
                     if (!part.boards().containsKey(BoardPosition.B1)) {
@@ -231,7 +232,7 @@ public class PartUtil {
                             && (part.boards().containsKey(BoardPosition.A1) || part.boards().containsKey(BoardPosition.A2))) {
                         throw WiwaException.ORDER_ITEM_PART_EDGE.exception("Invalid edge position: " + edgePosition);
                     }
-                    yield getThickness(Set.of(BoardPosition.TOP, BoardPosition.B2), part.boards(), orderBoards);
+                    yield sumThickness(Set.of(BoardPosition.TOP, BoardPosition.B2), part.boards(), orderBoards);
                 }
                 case B2I -> {
                     if (!part.boards().containsKey(BoardPosition.B2)) {

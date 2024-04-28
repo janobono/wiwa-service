@@ -1,0 +1,31 @@
+[
+  {
+    "type": "FRAME",
+    "frameType": "HORIZONTAL",
+    "boardIdA1": 3,
+    "boardIdA2": 3,
+    "boardIdB1": 3,
+    "boardIdB2": 3,
+    "edgeIdA1": 1,
+    "dimensionsTOP": {
+      "x": 500,
+      "y": 500
+    },
+    "dimensionsA1": {
+      "x": 500,
+      "y": 100
+    },
+    "dimensionsA2": {
+      "x": 500,
+      "y": 100
+    },
+    "dimensionsB1": {
+      "x": 100,
+      "y": 300
+    },
+    "dimensionsB2": {
+      "x": 100,
+      "y": 300
+    }
+  }
+]

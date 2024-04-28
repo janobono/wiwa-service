@@ -1,0 +1,20 @@
+[
+  {
+    "type": "BASIC",
+    "rotate": true,
+    "boardId": 1,
+    "dimensionsTOP": {
+      "x": 2001,
+      "y": 500
+    }
+  },
+  {
+    "type": "BASIC",
+    "rotate": false,
+    "boardId": 1,
+    "dimensionsTOP": {
+      "x": 2000,
+      "y": 1501
+    }
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "type": "DUPLICATED_FRAME",
+    "frameType": "HORIZONTAL",
+    "rotate": true,
+    "boardId": 1,
+    "boardIdA1": 1,
+    "edgeIdA1": 1,
+    "edgeIdA1I": 1,
+    "dimensionsTOP": {
+      "x": 500,
+      "y": 500
+    },
+    "dimensionsA1": {
+      "x": 500,
+      "y": 100
+    }
+  }
+
+]

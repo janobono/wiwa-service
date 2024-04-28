@@ -1,0 +1,126 @@
+[
+  {
+    "type": "BASIC",
+    "rotate": false,
+    "boardId": 1,
+    "dimensionsTOP": {
+      "x": 500,
+      "y": 500
+    },
+    "cornerA1B1": {
+      "type": "STRAIGHT",
+      "dimensions": {
+        "x": 251,
+        "y": 50
+      }
+    },
+    "cornerA1B2": {
+      "type": "STRAIGHT",
+      "dimensions": {
+        "x": 250,
+        "y": 50
+      }
+    },
+    "cornerA2B1": {
+      "type": "ROUNDED",
+      "radius": 50
+    },
+    "cornerA2B2": {
+      "type": "ROUNDED",
+      "radius": 50
+    }
+  },
+  {
+    "type": "BASIC",
+    "rotate": false,
+    "boardId": 1,
+    "dimensionsTOP": {
+      "x": 500,
+      "y": 500
+    },
+    "cornerA1B1": {
+      "type": "STRAIGHT",
+      "dimensions": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    "cornerA1B2": {
+      "type": "STRAIGHT",
+      "dimensions": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    "cornerA2B1": {
+      "type": "ROUNDED",
+      "radius": 251
+    },
+    "cornerA2B2": {
+      "type": "ROUNDED",
+      "radius": 250
+    }
+  },
+  {
+    "type": "BASIC",
+    "rotate": false,
+    "boardId": 1,
+    "dimensionsTOP": {
+      "x": 500,
+      "y": 500
+    },
+    "cornerA1B1": {
+      "type": "STRAIGHT",
+      "dimensions": {
+        "x": 50,
+        "y": 251
+      }
+    },
+    "cornerA1B2": {
+      "type": "STRAIGHT",
+      "dimensions": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    "cornerA2B1": {
+      "type": "ROUNDED",
+      "radius": 250
+    },
+    "cornerA2B2": {
+      "type": "ROUNDED",
+      "radius": 50
+    }
+  },
+  {
+    "type": "BASIC",
+    "rotate": false,
+    "boardId": 1,
+    "dimensionsTOP": {
+      "x": 500,
+      "y": 500
+    },
+    "cornerA1B1": {
+      "type": "STRAIGHT",
+      "dimensions": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    "cornerA1B2": {
+      "type": "STRAIGHT",
+      "dimensions": {
+        "x": 50,
+        "y": 251
+      }
+    },
+    "cornerA2B1": {
+      "type": "ROUNDED",
+      "radius": 50
+    },
+    "cornerA2B2": {
+      "type": "ROUNDED",
+      "radius": 250
+    }
+  }
+]

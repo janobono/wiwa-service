@@ -1,0 +1,26 @@
+[
+  {
+    "type": "BASIC",
+    "rotate": false,
+    "boardId": 1
+  },
+  {
+    "type": "BASIC",
+    "rotate": false,
+    "boardId": -1,
+    "dimensionsTOP": {
+      "x": 500,
+      "y": 500
+    }
+  },
+  {
+    "type": "BASIC",
+    "rotate": false,
+    "boardId": 1,
+    "edgeIdA1": -1,
+    "dimensionsTOP": {
+      "x": 500,
+      "y": 500
+    }
+  }
+]

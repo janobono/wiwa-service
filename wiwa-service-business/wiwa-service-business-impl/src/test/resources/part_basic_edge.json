@@ -1,0 +1,12 @@
+[
+  {
+    "type": "BASIC",
+    "rotate": false,
+    "boardId": 3,
+    "edgeIdA1": 1,
+    "dimensionsTOP": {
+      "x": 500,
+      "y": 500
+    }
+  }
+]

@@ -1,0 +1,13 @@
+[
+  {
+    "type": "DUPLICATED_BASIC",
+    "rotate": true,
+    "boardId": 3,
+    "boardIdBottom": 3,
+    "edgeIdA1": 1,
+    "dimensionsTOP": {
+      "x": 500,
+      "y": 500
+    }
+  }
+]

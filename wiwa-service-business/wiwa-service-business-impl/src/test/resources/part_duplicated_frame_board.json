@@ -1,0 +1,102 @@
+[
+  {
+    "type": "DUPLICATED_FRAME",
+    "frameType": "HORIZONTAL",
+    "rotate": true,
+    "boardId": 1,
+    "boardIdA1": 1,
+    "boardIdA2": 1,
+    "boardIdB1": 1,
+    "boardIdB2": 1,
+    "dimensionsTOP": {
+      "x": 2001,
+      "y": 500
+    },
+    "dimensionsA1": {
+      "x": 500,
+      "y": 100
+    },
+    "dimensionsA2": {
+      "x": 500,
+      "y": 100
+    },
+    "dimensionsB1": {
+      "x": 100,
+      "y": 300
+    },
+    "dimensionsB2": {
+      "x": 100,
+      "y": 300
+    }
+  },
+  {
+    "type": "DUPLICATED_FRAME",
+    "frameType": "HORIZONTAL",
+    "rotate": false,
+    "boardId": 1,
+    "boardIdA1": 1,
+    "boardIdA2": 1,
+    "boardIdB1": 1,
+    "boardIdB2": 1,
+    "dimensionsTOP": {
+      "x": 500,
+      "y": 1501
+    },
+    "dimensionsA1": {
+      "x": 500,
+      "y": 100
+    },
+    "dimensionsA2": {
+      "x": 500,
+      "y": 100
+    },
+    "dimensionsB1": {
+      "x": 100,
+      "y": 300
+    },
+    "dimensionsB2": {
+      "x": 100,
+      "y": 300
+    }
+  },
+  {
+    "type": "DUPLICATED_FRAME",
+    "frameType": "HORIZONTAL",
+    "rotate": false,
+    "boardId": 1,
+    "boardIdA1": 1,
+    "boardIdB1": 1,
+    "dimensionsTOP": {
+      "x": 500,
+      "y": 500
+    },
+    "dimensionsA1": {
+      "x": 500,
+      "y": 100
+    },
+    "dimensionsB1": {
+      "x": 100,
+      "y": 399
+    }
+  },
+  {
+    "type": "DUPLICATED_FRAME",
+    "frameType": "VERTICAL",
+    "rotate": false,
+    "boardId": 1,
+    "boardIdA1": 1,
+    "boardIdB1": 1,
+    "dimensionsTOP": {
+      "x": 500,
+      "y": 500
+    },
+    "dimensionsA1": {
+      "x": 401,
+      "y": 100
+    },
+    "dimensionsB1": {
+      "x": 100,
+      "y": 500
+    }
+  }
+]
