@@ -176,10 +176,10 @@ class PartUtilTest {
     @Test
     void corners_whenVariousBoards_thenTheseResults() {
         Map<CornerPosition, DimensionsData> corners = PartBasicData.builder()
-                .cornerA1B1(new PartCornerRoundedData(BigDecimal.ZERO))
-                .cornerA1B2(new PartCornerRoundedData(BigDecimal.ONE))
-                .cornerA2B1(new PartCornerRoundedData(BigDecimal.TWO))
-                .cornerA2B2(new PartCornerRoundedData(BigDecimal.TEN))
+                .cornerA1B1(new PartCornerRoundedData(1L,BigDecimal.ZERO))
+                .cornerA1B2(new PartCornerRoundedData(1L,BigDecimal.ONE))
+                .cornerA2B1(new PartCornerRoundedData(1L,BigDecimal.TWO))
+                .cornerA2B2(new PartCornerRoundedData(1L,BigDecimal.TEN))
                 .build()
                 .corners();
         assertThat(corners.get(CornerPosition.A1B1)).isEqualTo(new DimensionsData(BigDecimal.ZERO, BigDecimal.ZERO));
@@ -194,10 +194,10 @@ class PartUtilTest {
         assertThat(corners.isEmpty()).isTrue();
 
         corners = PartDuplicatedBasicData.builder()
-                .cornerA1B1(new PartCornerRoundedData(BigDecimal.ZERO))
-                .cornerA1B2(new PartCornerRoundedData(BigDecimal.ONE))
-                .cornerA2B1(new PartCornerRoundedData(BigDecimal.TWO))
-                .cornerA2B2(new PartCornerRoundedData(BigDecimal.TEN))
+                .cornerA1B1(new PartCornerRoundedData(1L,BigDecimal.ZERO))
+                .cornerA1B2(new PartCornerRoundedData(1L,BigDecimal.ONE))
+                .cornerA2B1(new PartCornerRoundedData(1L,BigDecimal.TWO))
+                .cornerA2B2(new PartCornerRoundedData(1L,BigDecimal.TEN))
                 .build()
                 .corners();
         assertThat(corners.get(CornerPosition.A1B1)).isEqualTo(new DimensionsData(BigDecimal.ZERO, BigDecimal.ZERO));
@@ -207,10 +207,10 @@ class PartUtilTest {
         assertThat(corners.size()).isEqualTo(4);
 
         corners = PartDuplicatedFrameData.builder()
-                .cornerA1B1(new PartCornerRoundedData(BigDecimal.ZERO))
-                .cornerA1B2(new PartCornerRoundedData(BigDecimal.ONE))
-                .cornerA2B1(new PartCornerRoundedData(BigDecimal.TWO))
-                .cornerA2B2(new PartCornerRoundedData(BigDecimal.TEN))
+                .cornerA1B1(new PartCornerRoundedData(1L,BigDecimal.ZERO))
+                .cornerA1B2(new PartCornerRoundedData(1L,BigDecimal.ONE))
+                .cornerA2B1(new PartCornerRoundedData(1L,BigDecimal.TWO))
+                .cornerA2B2(new PartCornerRoundedData(1L,BigDecimal.TEN))
                 .build()
                 .corners();
         assertThat(corners.get(CornerPosition.A1B1)).isEqualTo(new DimensionsData(BigDecimal.ZERO, BigDecimal.ZERO));

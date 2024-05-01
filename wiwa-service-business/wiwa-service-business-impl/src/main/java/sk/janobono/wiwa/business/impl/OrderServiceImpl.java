@@ -5,10 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import sk.janobono.wiwa.business.impl.component.DataUtil;
-import sk.janobono.wiwa.business.impl.component.MaterialUtil;
-import sk.janobono.wiwa.business.impl.component.PartUtil;
-import sk.janobono.wiwa.business.impl.component.PriceUtil;
+import sk.janobono.wiwa.business.impl.component.*;
 import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
 import sk.janobono.wiwa.business.impl.model.mail.MailData;
 import sk.janobono.wiwa.business.impl.model.mail.MailLinkData;
@@ -29,10 +26,7 @@ import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.*;
-import sk.janobono.wiwa.dal.model.OderItemSortNumDo;
-import sk.janobono.wiwa.dal.model.OrderDeliveryDo;
-import sk.janobono.wiwa.dal.model.OrderItemInfoDo;
-import sk.janobono.wiwa.dal.model.OrderViewSearchCriteriaDo;
+import sk.janobono.wiwa.dal.model.*;
 import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.OrderStatus;
@@ -58,6 +52,7 @@ public class OrderServiceImpl implements OrderService {
     private final MaterialUtil materialUtil;
     private final PartUtil partUtil;
     private final PriceUtil priceUtil;
+    private final SummaryUtil summaryUtil;
 
     private final BoardRepository boardRepository;
     private final EdgeRepository edgeRepository;
@@ -131,9 +126,7 @@ public class OrderServiceImpl implements OrderService {
                 .orderNumber(orderNumberRepository.getNextOrderNumber(userId))
                 .weight(BigDecimal.ZERO)
                 .total(BigDecimal.ZERO)
-                .summary(dataUtil.serializeValue(OrderSummaryData.builder()
-                        // TODO
-                        .build()))
+                .summary(dataUtil.serializeValue(summaryUtil.createEmptySummary()))
                 .build());
         orderStatusRepository.save(OrderStatusDo.builder()
                 .orderId(orderDo.getId())
@@ -410,12 +403,7 @@ public class OrderServiceImpl implements OrderService {
 
         checkOrderStatus(modifierId, manager, orderViewDo);
 
-        validate(id, orderItemChange);
-
-        orderItemRepository.setOrderItemInfo(itemId, new OrderItemInfoDo(orderItemChange.name(), orderItemChange.quantity()));
-        orderItemRepository.setPart(itemId, dataUtil.serializeValue(orderItemChange.part()));
-
-        recountItemSummary(id, itemId);
+        setItem(id, itemId, orderItemChange);
 
         recountOrderSummary(id);
 
@@ -470,6 +458,26 @@ public class OrderServiceImpl implements OrderService {
         sortItems(id);
         recountOrderSummary(id);
         return getOrder(id);
+    }
+
+    private OrderDo getOrderDo(final long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
+    }
+
+    private OrderViewDo getOrderViewDo(final long id) {
+        return orderViewRepository.findById(id)
+                .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
+    }
+
+    private OrderItemDo getOrderItemDo(final long id) {
+        return orderItemRepository.findById(id)
+                .orElseThrow(() -> WiwaException.ORDER_ITEM_NOT_FOUND.exception("Order item with id {0} not found", id));
+    }
+
+    private OrderItemDo getOrderItemDo(final long orderId, final int sortNum) {
+        return orderItemRepository.findByOrderIdAndSortNum(orderId, sortNum)
+                .orElseThrow(() -> WiwaException.ORDER_ITEM_NOT_FOUND.exception("Order item with order id {0} and sort number {1} not found", orderId, sortNum));
     }
 
     private OrderViewSearchCriteriaDo mapToDo(final OrderSearchCriteriaData criteria, final BigDecimal vatRate) {
@@ -554,28 +562,8 @@ public class OrderServiceImpl implements OrderService {
                 .name(orderItemDo.getName())
                 .quantity(orderItemDo.getQuantity())
                 .part(dataUtil.parseValue(orderItemDo.getPart(), PartData.class))
-                .summary(dataUtil.parseValue(orderItemDo.getPart(), OrderItemSummaryData.class))
+                .summary(summaryUtil.toOrderItemSummary(orderItemSummaryRepository.findAllByOrderItemId(orderItemDo.getId())))
                 .build();
-    }
-
-    private OrderDo getOrderDo(final long id) {
-        return orderRepository.findById(id)
-                .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
-    }
-
-    private OrderViewDo getOrderViewDo(final long id) {
-        return orderViewRepository.findById(id)
-                .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
-    }
-
-    private OrderItemDo getOrderItemDo(final long id) {
-        return orderItemRepository.findById(id)
-                .orElseThrow(() -> WiwaException.ORDER_ITEM_NOT_FOUND.exception("Order item with id {0} not found", id));
-    }
-
-    private OrderItemDo getOrderItemDo(final long orderId, final int sortNum) {
-        return orderItemRepository.findByOrderIdAndSortNum(orderId, sortNum)
-                .orElseThrow(() -> WiwaException.ORDER_ITEM_NOT_FOUND.exception("Order item with order id {0} and sort number {1} not found", orderId, sortNum));
     }
 
     private void checkOrderStatus(final long userId, final boolean manager, final OrderViewDo orderViewDo) {
@@ -687,7 +675,7 @@ public class OrderServiceImpl implements OrderService {
         for (final Long edgeId : edgeIds) {
             edges.putIfAbsent(edgeId, edgeRepository.findById(edgeId)
                     .map(this::toOrderEdge)
-                    .orElseThrow(() -> WiwaException.BOARD_NOT_FOUND.exception("Edge with id {0} not found", edgeId))
+                    .orElseThrow(() -> WiwaException.EDGE_NOT_FOUND.exception("Edge with id {0} not found", edgeId))
             );
         }
 
@@ -702,62 +690,70 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private void recountItemSummary(long id, Long id1) {
-        // fetch item
+    private void setItem(final long id, final long itemId, final OrderItemChangeData orderItemChange) {
+        validate(id, orderItemChange);
 
-        // count summary
+        orderItemRepository.setOrderItemInfo(itemId, new OrderItemInfoDo(orderItemChange.name(), orderItemChange.quantity()));
+        orderItemRepository.setPart(itemId, dataUtil.serializeValue(orderItemChange.part()));
+
+        recountItemSummary(id, itemId);
     }
 
-    private OrderItemSummaryData countItemSummary(final long id, final OrderItemChangeData orderItemChange) {
-        // TODO
+    private Map<Long, OrderBoardData> getBoards(final List<OrderMaterialDo> materials) {
+        return materialUtil.toBoards(materials).stream()
+                .map(board -> new AbstractMap.SimpleEntry<>(board.id(), board))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
 
-//export interface SummaryBorderItem {
-//    borderId: number;
-//    length: number;
-//    price: number;
-//    stickLength: number;
-//    stickPrice: number;
-//}
+    private Map<Long, OrderEdgeData> getEdges(final List<OrderMaterialDo> materials) {
+        return materialUtil.toEdges(materials).stream()
+                .map(edge -> new AbstractMap.SimpleEntry<>(edge.id(), edge))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
 
-//export interface SummaryMaterialItem {
-//    materialId: number;
-//    itemCount: number;
-//    sawLength: number;
-//    sawPrice: number;
-//    doubleSawLength: number;
-//    doubleSawPrice: number;
-//    rawArea: number;
-//    materialCount: number;
-//    materialPrice: number;
-//    stickArea: number;
-//    stickPrice: number;
-//    borderItems: SummaryBorderItem[];
-//}
+    private void recountItemSummary(final Long id, final Long itemId) {
+        final OrderItemDo orderItem = getOrderItemDo(itemId);
 
-//export interface Summary {
-//    materialItems: SummaryMaterialItem[];
-//    materialItem: SummaryMaterialItem;
-//    borderItems: SummaryBorderItem[];
-//    borderItem: SummaryBorderItem;
-//    totalPrice: number;
-//}
-        return OrderItemSummaryData.builder().build();
+        final List<OrderMaterialDo> materials = orderMaterialRepository.findAllByOrderId(id);
+        final Map<Long, OrderBoardData> boards = getBoards(materials);
+
+        final OrderItemSummaryData orderItemSummary = summaryUtil.calculateItemSummary(
+                dataUtil.parseValue(orderItem.getPart(), PartData.class),
+                orderItem.getQuantity(),
+                boards.values().stream().collect(Collectors.toMap(OrderBoardData::id, OrderBoardData::thickness)),
+                applicationPropertyService.getManufactureProperties()
+        );
+
+        final List<OrderItemSummaryDo> orderItemSummaryList = summaryUtil.toOrderItemSummaries(itemId, orderItemSummary);
+        orderItemSummaryRepository.saveAll(itemId, orderItemSummaryList);
     }
 
     private void recountOrderItems(final long id) {
-        // reload all used materials - new values
-
-        // recount all items summary
-
-        // TODO
+        final List<OrderItemDo> items = orderItemRepository.findAllByOrderId(id);
+        for (final OrderItemDo item : items) {
+            setItem(id, item.getId(), new OrderItemChangeData(
+                    item.getName(), item.getQuantity(), dataUtil.parseValue(item.getPart(), PartData.class)
+            ));
+            recountItemSummary(id, item.getId());
+        }
     }
 
     private void recountOrderSummary(final long id) {
-        // TODO
-        // check material - remove not used
+        final List<OrderMaterialDo> materials = orderMaterialRepository.findAllByOrderId(id);
+        final Map<Long, OrderBoardData> boards = getBoards(materials);
+        final Map<Long, OrderEdgeData> edges = getEdges(materials);
 
-        // count summary
+        final OrderSummaryData orderSummary = summaryUtil.toOrderSummary(
+                boards,
+                edges,
+                applicationPropertyService.getVatRate(),
+                applicationPropertyService.getPricesForCutting(),
+                applicationPropertyService.getPriceForGluingLayer(),
+                applicationPropertyService.getPricesForGluingEdge(),
+                orderSummaryViewRepository.findAllById(id)
+        );
 
-        // save summary
+        orderRepository.setOrderTotal(id, new OrderTotalDo(orderSummary.weight(), orderSummary.total()));
+        orderRepository.setSummary(id, dataUtil.serializeValue(orderSummary));
     }
 }

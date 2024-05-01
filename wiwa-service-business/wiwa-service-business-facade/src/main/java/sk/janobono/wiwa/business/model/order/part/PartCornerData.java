@@ -14,5 +14,7 @@ import sk.janobono.wiwa.business.model.DimensionsData;
         @JsonSubTypes.Type(value = PartCornerRoundedData.class, name = "ROUNDED")
 })
 public interface PartCornerData {
+    Long edgeId();
+
     DimensionsData dimensions();
 }

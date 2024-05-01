@@ -3,5 +3,8 @@ package sk.janobono.wiwa.business.model.order.summary;
 import lombok.Builder;
 
 @Builder
-public record OrderItemSummaryData() {
+public record OrderItemSummaryData(
+        OrderItemPartSummaryData partSummary,
+        OrderItemPartSummaryData totalSummary
+) {
 }

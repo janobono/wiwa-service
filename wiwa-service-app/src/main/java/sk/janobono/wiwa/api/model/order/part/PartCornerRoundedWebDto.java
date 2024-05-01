@@ -5,5 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public record PartCornerRoundedWebDto(@NotNull @Min(0) BigDecimal radius) implements PartCornerWebDto {
+public record PartCornerRoundedWebDto(
+        Long edgeId,
+        @NotNull @Min(0) BigDecimal radius) implements PartCornerWebDto {
 }

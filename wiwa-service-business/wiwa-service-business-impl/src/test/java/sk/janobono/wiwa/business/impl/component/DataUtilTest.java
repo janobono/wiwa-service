@@ -34,10 +34,10 @@ class DataUtilTest {
                 .edgeIdB1(1L)
                 .edgeIdB2(1L)
                 .dimensionsTOP(new DimensionsData(BigDecimal.valueOf(250), BigDecimal.valueOf(400)))
-                .cornerA1B1(new PartCornerStraightData(new DimensionsData(BigDecimal.valueOf(50), BigDecimal.valueOf(30))))
-                .cornerA1B2(new PartCornerStraightData(new DimensionsData(BigDecimal.valueOf(30), BigDecimal.valueOf(50))))
-                .cornerA2B1(new PartCornerRoundedData(BigDecimal.valueOf(30)))
-                .cornerA2B2(new PartCornerRoundedData(BigDecimal.valueOf(50)))
+                .cornerA1B1(new PartCornerStraightData(1L, new DimensionsData(BigDecimal.valueOf(50), BigDecimal.valueOf(30))))
+                .cornerA1B2(new PartCornerStraightData(1L, new DimensionsData(BigDecimal.valueOf(30), BigDecimal.valueOf(50))))
+                .cornerA2B1(new PartCornerRoundedData(1L, BigDecimal.valueOf(30)))
+                .cornerA2B2(new PartCornerRoundedData(1L, BigDecimal.valueOf(50)))
                 .build();
         String value = dataUtil.serializeValue(part);
         assertThat(part).usingRecursiveComparison().isEqualTo(dataUtil.parseValue(value, PartData.class));
@@ -51,10 +51,10 @@ class DataUtilTest {
                 .edgeIdB1(3L)
                 .edgeIdB2(3L)
                 .dimensionsTOP(new DimensionsData(BigDecimal.valueOf(345), BigDecimal.valueOf(450)))
-                .cornerA1B1(new PartCornerStraightData(new DimensionsData(BigDecimal.valueOf(60), BigDecimal.valueOf(40))))
-                .cornerA1B2(new PartCornerStraightData(new DimensionsData(BigDecimal.valueOf(40), BigDecimal.valueOf(60))))
-                .cornerA2B1(new PartCornerRoundedData(BigDecimal.valueOf(30)))
-                .cornerA2B2(new PartCornerRoundedData(BigDecimal.valueOf(50)))
+                .cornerA1B1(new PartCornerStraightData(1L, new DimensionsData(BigDecimal.valueOf(60), BigDecimal.valueOf(40))))
+                .cornerA1B2(new PartCornerStraightData(1L, new DimensionsData(BigDecimal.valueOf(40), BigDecimal.valueOf(60))))
+                .cornerA2B1(new PartCornerRoundedData(1L, BigDecimal.valueOf(30)))
+                .cornerA2B2(new PartCornerRoundedData(1L, BigDecimal.valueOf(50)))
                 .build();
         value = dataUtil.serializeValue(part);
         assertThat(part).usingRecursiveComparison().isEqualTo(dataUtil.parseValue(value, PartData.class));
@@ -101,10 +101,10 @@ class DataUtilTest {
                 .dimensionsA2(new DimensionsData(BigDecimal.valueOf(350), BigDecimal.valueOf(65)))
                 .dimensionsB1(new DimensionsData(BigDecimal.valueOf(55), BigDecimal.valueOf(330)))
                 .dimensionsB2(new DimensionsData(BigDecimal.valueOf(65), BigDecimal.valueOf(330)))
-                .cornerA1B1(new PartCornerStraightData(new DimensionsData(BigDecimal.valueOf(70), BigDecimal.valueOf(50))))
-                .cornerA1B2(new PartCornerStraightData(new DimensionsData(BigDecimal.valueOf(50), BigDecimal.valueOf(70))))
-                .cornerA2B1(new PartCornerRoundedData(BigDecimal.valueOf(30)))
-                .cornerA2B2(new PartCornerRoundedData(BigDecimal.valueOf(50)))
+                .cornerA1B1(new PartCornerStraightData(1L, new DimensionsData(BigDecimal.valueOf(70), BigDecimal.valueOf(50))))
+                .cornerA1B2(new PartCornerStraightData(1L, new DimensionsData(BigDecimal.valueOf(50), BigDecimal.valueOf(70))))
+                .cornerA2B1(new PartCornerRoundedData(1L, BigDecimal.valueOf(30)))
+                .cornerA2B2(new PartCornerRoundedData(1L, BigDecimal.valueOf(50)))
                 .build();
         value = dataUtil.serializeValue(part);
         assertThat(part).usingRecursiveComparison().isEqualTo(dataUtil.parseValue(value, PartData.class));
