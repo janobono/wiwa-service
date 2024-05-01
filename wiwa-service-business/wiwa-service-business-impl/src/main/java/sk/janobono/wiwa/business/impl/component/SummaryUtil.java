@@ -2,6 +2,7 @@ package sk.janobono.wiwa.business.impl.component;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import sk.janobono.wiwa.business.impl.model.summary.EdgeLengthData;
 import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.application.ManufacturePropertiesData;
 import sk.janobono.wiwa.business.model.application.PriceForCuttingData;
@@ -9,7 +10,10 @@ import sk.janobono.wiwa.business.model.application.PriceForGluingEdgeData;
 import sk.janobono.wiwa.business.model.application.PriceForGluingLayerData;
 import sk.janobono.wiwa.business.model.order.OrderBoardData;
 import sk.janobono.wiwa.business.model.order.OrderEdgeData;
-import sk.janobono.wiwa.business.model.order.part.*;
+import sk.janobono.wiwa.business.model.order.part.BoardPosition;
+import sk.janobono.wiwa.business.model.order.part.PartData;
+import sk.janobono.wiwa.business.model.order.part.PartDuplicatedBasicData;
+import sk.janobono.wiwa.business.model.order.part.PartDuplicatedFrameData;
 import sk.janobono.wiwa.business.model.order.summary.*;
 import sk.janobono.wiwa.dal.domain.OrderItemSummaryDo;
 import sk.janobono.wiwa.dal.domain.OrderSummaryViewDo;
@@ -25,6 +29,7 @@ import java.util.stream.Collectors;
 public class SummaryUtil {
 
     private final BoardAreaCalculationUtil boardAreaCalculationUtil;
+    private final EdgeLengthCalculationUtil edgeLengthCalculationUtil;
     private final PriceUtil priceUtil;
 
     public OrderItemSummaryData calculateItemSummary(final PartData part,
@@ -96,7 +101,7 @@ public class SummaryUtil {
                                                       final ManufacturePropertiesData manufactureProperties) {
         return OrderItemPartSummaryData.builder()
                 .boardSummary(countBoardSummary(part, manufactureProperties))
-                .edgeSummary(countEdgedSummary(part, manufactureProperties))
+                .edgeSummary(countEdgeSummary(part, manufactureProperties))
                 .gluedArea(countGluedArea(part, manufactureProperties))
                 .cutSummary(countCutSummary(part, boardThickness, manufactureProperties))
                 .build();
@@ -113,58 +118,14 @@ public class SummaryUtil {
                 .toList();
     }
 
-    private List<OrderEdgeSummaryData> countEdgedSummary(final PartData part, final ManufacturePropertiesData manufactureProperties) {
-        final Map<Long, BigDecimal> edgeLengthMap = new HashMap<>();
-        final Map<Long, BigDecimal> edgeGlueLengthMap = new HashMap<>();
-        final Map<BoardPosition, DimensionsData> dimensions = part.dimensions();
+    private List<OrderEdgeSummaryData> countEdgeSummary(final PartData part, final ManufacturePropertiesData manufactureProperties) {
+        final Map<Long, EdgeLengthData> edgeLengthMap = edgeLengthCalculationUtil.calculateEdgeLength(part, manufactureProperties);
 
-        for (final Map.Entry<EdgePosition, Long> edgeEntry : part.edges().entrySet()) {
-            final Long edgeId = edgeEntry.getValue();
-            BigDecimal edgeLength = edgeLengthMap.getOrDefault(edgeId, BigDecimal.ZERO);
-            BigDecimal edgeGlueLength = edgeGlueLengthMap.getOrDefault(edgeId, BigDecimal.ZERO);
-
-            switch (edgeEntry.getKey()) {
-                case A1, A2 -> {
-                    final BigDecimal length = dimensions.get(BoardPosition.TOP).x();
-                    edgeLength = edgeLength.add(millimeterToMeter(length.add(manufactureProperties.edgeLengthAppend())));
-                    edgeGlueLength = edgeGlueLength.add(millimeterToMeter(length));
-                }
-                case B1, B2 -> {
-                    final BigDecimal length = dimensions.get(BoardPosition.TOP).y();
-                    edgeLength = edgeLength.add(millimeterToMeter(length.add(manufactureProperties.edgeLengthAppend())));
-                    edgeGlueLength = edgeGlueLength.add(millimeterToMeter(length));
-                }
-                case A1I -> {
-                    final BigDecimal length = dimensions.get(BoardPosition.A1).x();
-                    edgeLength = edgeLength.add(millimeterToMeter(length.add(manufactureProperties.edgeLengthAppend())));
-                    edgeGlueLength = edgeGlueLength.add(millimeterToMeter(length));
-                }
-                case A2I -> {
-                    final BigDecimal length = dimensions.get(BoardPosition.A2).x();
-                    edgeLength = edgeLength.add(millimeterToMeter(length.add(manufactureProperties.edgeLengthAppend())));
-                    edgeGlueLength = edgeGlueLength.add(millimeterToMeter(length));
-                }
-                case B1I -> {
-                    final BigDecimal length = dimensions.get(BoardPosition.B1).y();
-                    edgeLength = edgeLength.add(millimeterToMeter(length.add(manufactureProperties.edgeLengthAppend())));
-                    edgeGlueLength = edgeGlueLength.add(millimeterToMeter(length));
-                }
-                case B2I -> {
-                    final BigDecimal length = dimensions.get(BoardPosition.B2).y();
-                    edgeLength = edgeLength.add(millimeterToMeter(length.add(manufactureProperties.edgeLengthAppend())));
-                    edgeGlueLength = edgeGlueLength.add(millimeterToMeter(length));
-                }
-            }
-
-            edgeLengthMap.put(edgeId, edgeLength);
-            edgeGlueLengthMap.put(edgeId, edgeGlueLength);
-        }
-
-        return edgeLengthMap.keySet().stream()
-                .map(edgeId -> new OrderEdgeSummaryData(
-                        edgeId,
-                        edgeLengthMap.get(edgeId),
-                        edgeGlueLengthMap.get(edgeId)
+        return edgeLengthMap.entrySet().stream()
+                .map(entry -> new OrderEdgeSummaryData(
+                        entry.getKey(),
+                        entry.getValue().consumption(),
+                        entry.getValue().length()
                 ))
                 .toList();
     }

@@ -12,7 +12,7 @@
   },
   "cornerA1B1": {
     "type": "STRAIGHT",
-    "edgeId": 1,
+    "edgeId": 2,
     "dimensions": {
       "x": 50,
       "y": 50
@@ -20,19 +20,19 @@
   },
   "cornerA1B2": {
     "type": "STRAIGHT",
-    "edgeId": 1,
+    "edgeId": 3,
     "dimensions": {
       "x": 50,
       "y": 50
     }
   },
   "cornerA2B1": {
-    "edgeId": 1,
+    "edgeId": 4,
     "type": "ROUNDED",
     "radius": 50
   },
   "cornerA2B2": {
-    "edgeId": 1,
+    "edgeId": 5,
     "type": "ROUNDED",
     "radius": 50
   }

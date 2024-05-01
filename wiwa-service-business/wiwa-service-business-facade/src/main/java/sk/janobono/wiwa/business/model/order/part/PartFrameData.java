@@ -66,7 +66,7 @@ public record PartFrameData(
     }
 
     @Override
-    public Map<CornerPosition, DimensionsData> corners() {
+    public Map<CornerPosition, PartCornerData> corners() {
         return new HashMap<>();
     }
 }

@@ -188,7 +188,7 @@ public class PartUtil {
         final Map<EdgePosition, Long> edges = part.edges();
         for (final EdgePosition edgePosition : edges.keySet()) {
             final BigDecimal thickness = switch (edgePosition) {
-                case A1 -> {
+                case A1, A1B1, A1B2 -> {
                     if (!part.boards().containsKey(BoardPosition.A1)
                             && (part.boards().containsKey(BoardPosition.B1) || part.boards().containsKey(BoardPosition.B2))) {
                         throw WiwaException.ORDER_ITEM_PART_EDGE.exception("Invalid edge position: " + edgePosition);
@@ -201,7 +201,7 @@ public class PartUtil {
                     }
                     yield getThickness(Set.of(BoardPosition.A1), part.boards(), orderBoards);
                 }
-                case A2 -> {
+                case A2, A2B1, A2B2 -> {
                     if (!part.boards().containsKey(BoardPosition.A2)
                             && (part.boards().containsKey(BoardPosition.B1) || part.boards().containsKey(BoardPosition.B2))) {
                         throw WiwaException.ORDER_ITEM_PART_EDGE.exception("Invalid edge position: " + edgePosition);
@@ -325,20 +325,30 @@ public class PartUtil {
         }
     }
 
-    private void checkCorners(final Map<CornerPosition, DimensionsData> corners,
+    private void checkCorners(final Map<CornerPosition, PartCornerData> corners,
                               final DimensionsData dimensions) {
         if (corners.isEmpty()) {
             return;
         }
-        final DimensionsData empty = new DimensionsData(BigDecimal.ZERO, BigDecimal.ZERO);
-        checkCorner(dimensions.x(), corners.getOrDefault(CornerPosition.A1B1, empty).x()
-                .add(corners.getOrDefault(CornerPosition.A1B2, empty).x()));
-        checkCorner(dimensions.x(), corners.getOrDefault(CornerPosition.A2B1, empty).x()
-                .add(corners.getOrDefault(CornerPosition.A2B2, empty).x()));
-        checkCorner(dimensions.y(), corners.getOrDefault(CornerPosition.A1B1, empty).y()
-                .add(corners.getOrDefault(CornerPosition.A2B1, empty).y()));
-        checkCorner(dimensions.y(), corners.getOrDefault(CornerPosition.A1B2, empty).y()
-                .add(corners.getOrDefault(CornerPosition.A2B2, empty).y()));
+        final PartCornerData empty = new PartCornerData() {
+            @Override
+            public Long edgeId() {
+                return -1L;
+            }
+
+            @Override
+            public DimensionsData dimensions() {
+                return new DimensionsData(BigDecimal.ZERO, BigDecimal.ZERO);
+            }
+        };
+        checkCorner(dimensions.x(), corners.getOrDefault(CornerPosition.A1B1, empty).dimensions().x()
+                .add(corners.getOrDefault(CornerPosition.A1B2, empty).dimensions().x()));
+        checkCorner(dimensions.x(), corners.getOrDefault(CornerPosition.A2B1, empty).dimensions().x()
+                .add(corners.getOrDefault(CornerPosition.A2B2, empty).dimensions().x()));
+        checkCorner(dimensions.y(), corners.getOrDefault(CornerPosition.A1B1, empty).dimensions().y()
+                .add(corners.getOrDefault(CornerPosition.A2B1, empty).dimensions().y()));
+        checkCorner(dimensions.y(), corners.getOrDefault(CornerPosition.A1B2, empty).dimensions().y()
+                .add(corners.getOrDefault(CornerPosition.A2B2, empty).dimensions().y()));
     }
 
     private void checkCorner(final BigDecimal max, final BigDecimal sum) {

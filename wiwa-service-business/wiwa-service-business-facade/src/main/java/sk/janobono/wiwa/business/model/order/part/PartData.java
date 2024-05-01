@@ -25,5 +25,5 @@ public interface PartData {
 
     Map<EdgePosition, Long> edges();
 
-    Map<CornerPosition, DimensionsData> corners();
+    Map<CornerPosition, PartCornerData> corners();
 }

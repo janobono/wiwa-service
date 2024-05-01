@@ -18,9 +18,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
-public class BoardAreaCalculationUtil {
-
-    private static final short PRECISION = 6;
+public class BoardAreaCalculationUtil extends BaseCalculationUtil {
 
     public Map<BoardPosition, BigDecimal> calculateArea(final PartData part,
                                                         final ManufacturePropertiesData manufactureProperties) {
@@ -30,7 +28,7 @@ public class BoardAreaCalculationUtil {
                     .map(entry -> {
                         final DimensionsData boardDimensions = entry.getValue()
                                 .add(manufactureProperties.duplicatedBoardAppend().multiply(BigDecimal.TWO));
-                        return new AbstractMap.SimpleEntry<>(entry.getKey(), countArea(boardDimensions));
+                        return new AbstractMap.SimpleEntry<>(entry.getKey(), calculateArea(boardDimensions));
                     })
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             case final PartDuplicatedFrameData duplicatedFrame -> duplicatedFrame.boards().keySet().stream()
@@ -41,12 +39,12 @@ public class BoardAreaCalculationUtil {
                                 entry.getKey(),
                                 entry.getValue(),
                                 manufactureProperties);
-                        return new AbstractMap.SimpleEntry<>(entry.getKey(), countArea(boardDimensions));
+                        return new AbstractMap.SimpleEntry<>(entry.getKey(), calculateArea(boardDimensions));
                     })
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             default -> part.boards().keySet().stream()
                     .map(boardPosition -> new AbstractMap.SimpleEntry<>(boardPosition, part.dimensions().get(boardPosition)))
-                    .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), countArea(entry.getValue())))
+                    .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), calculateArea(entry.getValue())))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         };
     }
@@ -120,11 +118,7 @@ public class BoardAreaCalculationUtil {
         };
     }
 
-    private BigDecimal millimeterToMeter(final BigDecimal value) {
-        return value.divide(BigDecimal.valueOf(1000), PRECISION, RoundingMode.HALF_UP);
-    }
-
-    private BigDecimal countArea(final DimensionsData dimensions) {
+    private BigDecimal calculateArea(final DimensionsData dimensions) {
         return millimeterToMeter(dimensions.x())
                 .multiply(millimeterToMeter(dimensions.y()))
                 .setScale(PRECISION, RoundingMode.HALF_UP);

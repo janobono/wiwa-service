@@ -175,17 +175,17 @@ class PartUtilTest {
 
     @Test
     void corners_whenVariousBoards_thenTheseResults() {
-        Map<CornerPosition, DimensionsData> corners = PartBasicData.builder()
-                .cornerA1B1(new PartCornerRoundedData(1L,BigDecimal.ZERO))
-                .cornerA1B2(new PartCornerRoundedData(1L,BigDecimal.ONE))
-                .cornerA2B1(new PartCornerRoundedData(1L,BigDecimal.TWO))
-                .cornerA2B2(new PartCornerRoundedData(1L,BigDecimal.TEN))
+        Map<CornerPosition, PartCornerData> corners = PartBasicData.builder()
+                .cornerA1B1(new PartCornerRoundedData(1L, BigDecimal.ZERO))
+                .cornerA1B2(new PartCornerRoundedData(1L, BigDecimal.ONE))
+                .cornerA2B1(new PartCornerRoundedData(1L, BigDecimal.TWO))
+                .cornerA2B2(new PartCornerRoundedData(1L, BigDecimal.TEN))
                 .build()
                 .corners();
-        assertThat(corners.get(CornerPosition.A1B1)).isEqualTo(new DimensionsData(BigDecimal.ZERO, BigDecimal.ZERO));
-        assertThat(corners.get(CornerPosition.A1B2)).isEqualTo(new DimensionsData(BigDecimal.ONE, BigDecimal.ONE));
-        assertThat(corners.get(CornerPosition.A2B1)).isEqualTo(new DimensionsData(BigDecimal.TWO, BigDecimal.TWO));
-        assertThat(corners.get(CornerPosition.A2B2)).isEqualTo(new DimensionsData(BigDecimal.TEN, BigDecimal.TEN));
+        assertThat(corners.get(CornerPosition.A1B1).dimensions()).isEqualTo(new DimensionsData(BigDecimal.ZERO, BigDecimal.ZERO));
+        assertThat(corners.get(CornerPosition.A1B2).dimensions()).isEqualTo(new DimensionsData(BigDecimal.ONE, BigDecimal.ONE));
+        assertThat(corners.get(CornerPosition.A2B1).dimensions()).isEqualTo(new DimensionsData(BigDecimal.TWO, BigDecimal.TWO));
+        assertThat(corners.get(CornerPosition.A2B2).dimensions()).isEqualTo(new DimensionsData(BigDecimal.TEN, BigDecimal.TEN));
         assertThat(corners.size()).isEqualTo(4);
 
         corners = PartFrameData.builder()
@@ -194,29 +194,29 @@ class PartUtilTest {
         assertThat(corners.isEmpty()).isTrue();
 
         corners = PartDuplicatedBasicData.builder()
-                .cornerA1B1(new PartCornerRoundedData(1L,BigDecimal.ZERO))
-                .cornerA1B2(new PartCornerRoundedData(1L,BigDecimal.ONE))
-                .cornerA2B1(new PartCornerRoundedData(1L,BigDecimal.TWO))
-                .cornerA2B2(new PartCornerRoundedData(1L,BigDecimal.TEN))
+                .cornerA1B1(new PartCornerRoundedData(1L, BigDecimal.ZERO))
+                .cornerA1B2(new PartCornerRoundedData(1L, BigDecimal.ONE))
+                .cornerA2B1(new PartCornerRoundedData(1L, BigDecimal.TWO))
+                .cornerA2B2(new PartCornerRoundedData(1L, BigDecimal.TEN))
                 .build()
                 .corners();
-        assertThat(corners.get(CornerPosition.A1B1)).isEqualTo(new DimensionsData(BigDecimal.ZERO, BigDecimal.ZERO));
-        assertThat(corners.get(CornerPosition.A1B2)).isEqualTo(new DimensionsData(BigDecimal.ONE, BigDecimal.ONE));
-        assertThat(corners.get(CornerPosition.A2B1)).isEqualTo(new DimensionsData(BigDecimal.TWO, BigDecimal.TWO));
-        assertThat(corners.get(CornerPosition.A2B2)).isEqualTo(new DimensionsData(BigDecimal.TEN, BigDecimal.TEN));
+        assertThat(corners.get(CornerPosition.A1B1).dimensions()).isEqualTo(new DimensionsData(BigDecimal.ZERO, BigDecimal.ZERO));
+        assertThat(corners.get(CornerPosition.A1B2).dimensions()).isEqualTo(new DimensionsData(BigDecimal.ONE, BigDecimal.ONE));
+        assertThat(corners.get(CornerPosition.A2B1).dimensions()).isEqualTo(new DimensionsData(BigDecimal.TWO, BigDecimal.TWO));
+        assertThat(corners.get(CornerPosition.A2B2).dimensions()).isEqualTo(new DimensionsData(BigDecimal.TEN, BigDecimal.TEN));
         assertThat(corners.size()).isEqualTo(4);
 
         corners = PartDuplicatedFrameData.builder()
-                .cornerA1B1(new PartCornerRoundedData(1L,BigDecimal.ZERO))
-                .cornerA1B2(new PartCornerRoundedData(1L,BigDecimal.ONE))
-                .cornerA2B1(new PartCornerRoundedData(1L,BigDecimal.TWO))
-                .cornerA2B2(new PartCornerRoundedData(1L,BigDecimal.TEN))
+                .cornerA1B1(new PartCornerRoundedData(1L, BigDecimal.ZERO))
+                .cornerA1B2(new PartCornerRoundedData(1L, BigDecimal.ONE))
+                .cornerA2B1(new PartCornerRoundedData(1L, BigDecimal.TWO))
+                .cornerA2B2(new PartCornerRoundedData(1L, BigDecimal.TEN))
                 .build()
                 .corners();
-        assertThat(corners.get(CornerPosition.A1B1)).isEqualTo(new DimensionsData(BigDecimal.ZERO, BigDecimal.ZERO));
-        assertThat(corners.get(CornerPosition.A1B2)).isEqualTo(new DimensionsData(BigDecimal.ONE, BigDecimal.ONE));
-        assertThat(corners.get(CornerPosition.A2B1)).isEqualTo(new DimensionsData(BigDecimal.TWO, BigDecimal.TWO));
-        assertThat(corners.get(CornerPosition.A2B2)).isEqualTo(new DimensionsData(BigDecimal.TEN, BigDecimal.TEN));
+        assertThat(corners.get(CornerPosition.A1B1).dimensions()).isEqualTo(new DimensionsData(BigDecimal.ZERO, BigDecimal.ZERO));
+        assertThat(corners.get(CornerPosition.A1B2).dimensions()).isEqualTo(new DimensionsData(BigDecimal.ONE, BigDecimal.ONE));
+        assertThat(corners.get(CornerPosition.A2B1).dimensions()).isEqualTo(new DimensionsData(BigDecimal.TWO, BigDecimal.TWO));
+        assertThat(corners.get(CornerPosition.A2B2).dimensions()).isEqualTo(new DimensionsData(BigDecimal.TEN, BigDecimal.TEN));
         assertThat(corners.size()).isEqualTo(4);
     }
 

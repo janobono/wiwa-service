@@ -51,71 +51,71 @@ class BoardAreaCalculationUtilTest {
 
         assertThat(areaMap.size()).isEqualTo(1);
         assertThat(areaMap.containsKey(BoardPosition.TOP)).isTrue();
-        assertThat(areaMap.get(BoardPosition.TOP)).isEqualTo(new BigDecimal("0.250000"));
+        assertThat(areaMap.get(BoardPosition.TOP)).isEqualTo(new BigDecimal("0.250"));
     }
 
     @Test
-    void countItemSummary_whenPartDuplicatedBasic_thenTheseResults() throws IOException {
+    void calculateArea_whenPartDuplicatedBasic_thenTheseResults() throws IOException {
         final PartData part = objectMapper.readValue(getClass().getResource("/part_duplicated.json"), PartData.class);
 
         final Map<BoardPosition, BigDecimal> areaMap = boardAreaCalculationUtil.calculateArea(part, manufactureProperties);
 
         assertThat(areaMap.size()).isEqualTo(2);
         assertThat(areaMap.containsKey(BoardPosition.TOP)).isTrue();
-        assertThat(areaMap.get(BoardPosition.TOP)).isEqualTo(new BigDecimal("0.270400"));
+        assertThat(areaMap.get(BoardPosition.TOP)).isEqualTo(new BigDecimal("0.270"));
         assertThat(areaMap.containsKey(BoardPosition.BOTTOM)).isTrue();
-        assertThat(areaMap.get(BoardPosition.BOTTOM)).isEqualTo(new BigDecimal("0.270400"));
+        assertThat(areaMap.get(BoardPosition.BOTTOM)).isEqualTo(new BigDecimal("0.270"));
     }
 
     @Test
-    void countItemSummary_whenPartFrame_thenTheseResults() throws IOException {
+    void calculateArea_whenPartFrame_thenTheseResults() throws IOException {
         final PartData part = objectMapper.readValue(getClass().getResource("/part_frame.json"), PartData.class);
         final Map<BoardPosition, BigDecimal> areaMap = boardAreaCalculationUtil.calculateArea(part, manufactureProperties);
 
         assertThat(areaMap.size()).isEqualTo(4);
         assertThat(areaMap.containsKey(BoardPosition.A1)).isTrue();
-        assertThat(areaMap.get(BoardPosition.A1)).isEqualTo(new BigDecimal("0.050000"));
+        assertThat(areaMap.get(BoardPosition.A1)).isEqualTo(new BigDecimal("0.050"));
         assertThat(areaMap.containsKey(BoardPosition.A2)).isTrue();
-        assertThat(areaMap.get(BoardPosition.A2)).isEqualTo(new BigDecimal("0.050000"));
+        assertThat(areaMap.get(BoardPosition.A2)).isEqualTo(new BigDecimal("0.050"));
         assertThat(areaMap.containsKey(BoardPosition.B1)).isTrue();
-        assertThat(areaMap.get(BoardPosition.B1)).isEqualTo(new BigDecimal("0.030000"));
+        assertThat(areaMap.get(BoardPosition.B1)).isEqualTo(new BigDecimal("0.030"));
         assertThat(areaMap.containsKey(BoardPosition.B2)).isTrue();
-        assertThat(areaMap.get(BoardPosition.B2)).isEqualTo(new BigDecimal("0.030000"));
+        assertThat(areaMap.get(BoardPosition.B2)).isEqualTo(new BigDecimal("0.030"));
     }
 
     @Test
-    void countItemSummary_whenPartDuplicatedFrame_thenTheseResults() throws IOException {
+    void calculateArea_whenPartDuplicatedFrame_thenTheseResults() throws IOException {
         final PartData part = objectMapper.readValue(getClass().getResource("/part_duplicated_frame.json"), PartData.class);
         final Map<BoardPosition, BigDecimal> areaMap = boardAreaCalculationUtil.calculateArea(part, manufactureProperties);
 
         assertThat(areaMap.size()).isEqualTo(5);
         assertThat(areaMap.containsKey(BoardPosition.TOP)).isTrue();
-        assertThat(areaMap.get(BoardPosition.TOP)).isEqualTo(new BigDecimal("0.270400"));
+        assertThat(areaMap.get(BoardPosition.TOP)).isEqualTo(new BigDecimal("0.270"));
         assertThat(areaMap.containsKey(BoardPosition.A1)).isTrue();
-        assertThat(areaMap.get(BoardPosition.A1)).isEqualTo(new BigDecimal("0.057200"));
+        assertThat(areaMap.get(BoardPosition.A1)).isEqualTo(new BigDecimal("0.057"));
         assertThat(areaMap.containsKey(BoardPosition.A2)).isTrue();
-        assertThat(areaMap.get(BoardPosition.A2)).isEqualTo(new BigDecimal("0.057200"));
+        assertThat(areaMap.get(BoardPosition.A2)).isEqualTo(new BigDecimal("0.057"));
         assertThat(areaMap.containsKey(BoardPosition.B1)).isTrue();
-        assertThat(areaMap.get(BoardPosition.B1)).isEqualTo(new BigDecimal("0.033000"));
+        assertThat(areaMap.get(BoardPosition.B1)).isEqualTo(new BigDecimal("0.033"));
         assertThat(areaMap.containsKey(BoardPosition.B2)).isTrue();
-        assertThat(areaMap.get(BoardPosition.B2)).isEqualTo(new BigDecimal("0.033000"));
+        assertThat(areaMap.get(BoardPosition.B2)).isEqualTo(new BigDecimal("0.033"));
     }
 
     @Test
-    void countItemSummary_whenPartDuplicatedFrameVertical_thenTheseResults() throws IOException {
+    void calculateArea_whenPartDuplicatedFrameVertical_thenTheseResults() throws IOException {
         final PartData part = objectMapper.readValue(getClass().getResource("/part_duplicated_frame_vertical.json"), PartData.class);
         final Map<BoardPosition, BigDecimal> areaMap = boardAreaCalculationUtil.calculateArea(part, manufactureProperties);
 
         assertThat(areaMap.size()).isEqualTo(5);
         assertThat(areaMap.containsKey(BoardPosition.TOP)).isTrue();
-        assertThat(areaMap.get(BoardPosition.TOP)).isEqualTo(new BigDecimal("0.270400"));
+        assertThat(areaMap.get(BoardPosition.TOP)).isEqualTo(new BigDecimal("0.270"));
         assertThat(areaMap.containsKey(BoardPosition.A1)).isTrue();
-        assertThat(areaMap.get(BoardPosition.A1)).isEqualTo(new BigDecimal("0.033000"));
+        assertThat(areaMap.get(BoardPosition.A1)).isEqualTo(new BigDecimal("0.033"));
         assertThat(areaMap.containsKey(BoardPosition.A2)).isTrue();
-        assertThat(areaMap.get(BoardPosition.A2)).isEqualTo(new BigDecimal("0.033000"));
+        assertThat(areaMap.get(BoardPosition.A2)).isEqualTo(new BigDecimal("0.033"));
         assertThat(areaMap.containsKey(BoardPosition.B1)).isTrue();
-        assertThat(areaMap.get(BoardPosition.B1)).isEqualTo(new BigDecimal("0.057200"));
+        assertThat(areaMap.get(BoardPosition.B1)).isEqualTo(new BigDecimal("0.057"));
         assertThat(areaMap.containsKey(BoardPosition.B2)).isTrue();
-        assertThat(areaMap.get(BoardPosition.B2)).isEqualTo(new BigDecimal("0.057200"));
+        assertThat(areaMap.get(BoardPosition.B2)).isEqualTo(new BigDecimal("0.057"));
     }
 }
