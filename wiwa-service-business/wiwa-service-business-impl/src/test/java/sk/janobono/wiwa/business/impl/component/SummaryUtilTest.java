@@ -91,7 +91,11 @@ class SummaryUtilTest {
                 BigDecimal.valueOf(10)
         );
 
-        summaryUtil = new SummaryUtil(new BoardAreaCalculationUtil(), new EdgeLengthCalculationUtil(), new PriceUtil());
+        summaryUtil = new SummaryUtil(
+                new BoardAreaCalculationUtil(),
+                new CutLengthCalculationUtil(),
+                new EdgeLengthCalculationUtil(),
+                new PriceUtil());
     }
 
     @Test
