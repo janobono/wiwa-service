@@ -1,6 +1,5 @@
 package sk.janobono.wiwa.business.impl.component;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import sk.janobono.wiwa.business.impl.model.summary.EdgeLengthData;
 import sk.janobono.wiwa.business.model.DimensionsData;
@@ -8,12 +7,9 @@ import sk.janobono.wiwa.business.model.application.ManufacturePropertiesData;
 import sk.janobono.wiwa.business.model.order.part.*;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
 @Component
 public class EdgeLengthCalculationUtil extends BaseCalculationUtil {
 
@@ -63,16 +59,7 @@ public class EdgeLengthCalculationUtil extends BaseCalculationUtil {
     private EdgeLengthData calculateEdgeLength(final EdgeLengthData edgeLength,
                                                final PartCornerData partCorner,
                                                final ManufacturePropertiesData manufactureProperties) {
-        final BigDecimal augend = switch (partCorner) {
-            case final PartCornerStraightData partCornerStraight -> partCornerStraight.dimensions().x().pow(2)
-                    .add(partCornerStraight.dimensions().y().pow(2))
-                    .sqrt(new MathContext(PRECISION, RoundingMode.HALF_UP));
-            case final PartCornerRoundedData partCornerRounded -> partCornerRounded.radius()
-                    .multiply(BigDecimal.TWO)
-                    .multiply(new BigDecimal(Math.PI))
-                    .divide(BigDecimal.valueOf(4L), new MathContext(PRECISION, RoundingMode.HALF_UP));
-            default -> throw new IllegalStateException("Unexpected value: " + partCorner);
-        };
+        final BigDecimal augend = calculateCornerLength(partCorner);
 
         return new EdgeLengthData(
                 calculateLength(edgeLength, augend),

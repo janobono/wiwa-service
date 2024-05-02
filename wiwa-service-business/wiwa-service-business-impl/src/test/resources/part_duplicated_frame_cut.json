@@ -1,0 +1,52 @@
+{
+  "type": "DUPLICATED_FRAME",
+  "frameType": "HORIZONTAL",
+  "rotate": true,
+  "boardId": 1,
+  "boardIdA1": 2,
+  "boardIdA2": 2,
+  "boardIdB1": 2,
+  "boardIdB2": 2,
+  "dimensionsTOP": {
+    "x": 500,
+    "y": 500
+  },
+  "dimensionsA1": {
+    "x": 500,
+    "y": 100
+  },
+  "dimensionsA2": {
+    "x": 500,
+    "y": 100
+  },
+  "dimensionsB1": {
+    "x": 100,
+    "y": 300
+  },
+  "dimensionsB2": {
+    "x": 100,
+    "y": 300
+  },
+  "cornerA1B1": {
+    "type": "STRAIGHT",
+    "dimensions": {
+      "x": 50,
+      "y": 50
+    }
+  },
+  "cornerA1B2": {
+    "type": "STRAIGHT",
+    "dimensions": {
+      "x": 50,
+      "y": 50
+    }
+  },
+  "cornerA2B1": {
+    "type": "ROUNDED",
+    "radius": 50
+  },
+  "cornerA2B2": {
+    "type": "ROUNDED",
+    "radius": 50
+  }
+}

@@ -1,6 +1,5 @@
 package sk.janobono.wiwa.business.impl.component;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.application.ManufacturePropertiesData;
@@ -11,12 +10,10 @@ import sk.janobono.wiwa.business.model.order.part.PartDuplicatedFrameData;
 import sk.janobono.wiwa.model.FrameType;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Component
 public class BoardAreaCalculationUtil extends BaseCalculationUtil {
 
@@ -49,10 +46,10 @@ public class BoardAreaCalculationUtil extends BaseCalculationUtil {
         };
     }
 
-    private DimensionsData getDimensions(final PartDuplicatedFrameData part,
-                                         final BoardPosition boardPosition,
-                                         final DimensionsData boardDimensions,
-                                         final ManufacturePropertiesData manufactureProperties) {
+    protected DimensionsData getDimensions(final PartDuplicatedFrameData part,
+                                           final BoardPosition boardPosition,
+                                           final DimensionsData boardDimensions,
+                                           final ManufacturePropertiesData manufactureProperties) {
         return switch (boardPosition) {
             case A1, A2 -> {
                 if (part.frameType() == FrameType.VERTICAL) {
@@ -116,11 +113,5 @@ public class BoardAreaCalculationUtil extends BaseCalculationUtil {
                 }
             }
         };
-    }
-
-    private BigDecimal calculateArea(final DimensionsData dimensions) {
-        return millimeterToMeter(dimensions.x())
-                .multiply(millimeterToMeter(dimensions.y()))
-                .setScale(PRECISION, RoundingMode.HALF_UP);
     }
 }
