@@ -5,7 +5,7 @@ import sk.janobono.wiwa.business.model.order.summary.*;
 import sk.janobono.wiwa.dal.domain.OrderItemSummaryDo;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Component
@@ -21,7 +21,7 @@ public class OrderSummaryCodeMapper {
     private static final String CUT = "CUT";
 
     public List<OrderItemSummaryDo> toOrderItemSummaries(final Long itemId, final OrderItemSummaryData orderItemSummary) {
-        final List<OrderItemSummaryDo> orderItemSummaries = new ArrayList<>();
+        final List<OrderItemSummaryDo> orderItemSummaries = new LinkedList<>();
 
         orderItemSummaries.addAll(mapBoardSummaries(itemId, PART, orderItemSummary.partSummary().boardSummary()));
         orderItemSummaries.addAll(mapEdgeSummaries(itemId, PART, orderItemSummary.partSummary().edgeSummary()));
@@ -52,7 +52,7 @@ public class OrderSummaryCodeMapper {
     }
 
     private List<OrderItemSummaryDo> mapBoardSummaries(final Long itemId, final String prefix, final List<OrderItemBoardSummaryData> items) {
-        final List<OrderItemSummaryDo> orderItemSummaries = new ArrayList<>();
+        final List<OrderItemSummaryDo> orderItemSummaries = new LinkedList<>();
         for (final OrderItemBoardSummaryData orderBoardSummary : items) {
             orderItemSummaries.add(OrderItemSummaryDo.builder()
                     .orderItemId(itemId)
@@ -64,7 +64,7 @@ public class OrderSummaryCodeMapper {
     }
 
     private List<OrderItemSummaryDo> mapEdgeSummaries(final Long itemId, final String prefix, final List<OrderItemEdgeSummaryData> items) {
-        final List<OrderItemSummaryDo> orderItemSummaries = new ArrayList<>();
+        final List<OrderItemSummaryDo> orderItemSummaries = new LinkedList<>();
         for (final OrderItemEdgeSummaryData orderEdgeSummary : items) {
             orderItemSummaries.add(OrderItemSummaryDo.builder()
                     .orderItemId(itemId)
@@ -82,7 +82,7 @@ public class OrderSummaryCodeMapper {
     }
 
     private List<OrderItemSummaryDo> mapCutSummaries(final Long itemId, final String prefix, final List<OrderItemCutSummaryData> items) {
-        final List<OrderItemSummaryDo> orderItemSummaries = new ArrayList<>();
+        final List<OrderItemSummaryDo> orderItemSummaries = new LinkedList<>();
         for (final OrderItemCutSummaryData orderCutSummary : items) {
             orderItemSummaries.add(OrderItemSummaryDo.builder()
                     .orderItemId(itemId)
@@ -152,14 +152,14 @@ public class OrderSummaryCodeMapper {
     }
 
     private String createCode(final String... elements) {
-        final StringBuilder builder = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < elements.length; i++) {
-            builder.append(elements[i]);
+            sb.append(elements[i]);
             if (i < elements.length - 1) {
-                builder.append(CODE_SEPARATOR);
+                sb.append(CODE_SEPARATOR);
             }
         }
-        return builder.toString();
+        return sb.toString();
     }
 
     private String[] parseCode(final String code) {

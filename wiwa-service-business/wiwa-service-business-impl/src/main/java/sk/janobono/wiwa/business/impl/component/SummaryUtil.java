@@ -83,9 +83,16 @@ public class SummaryUtil extends BaseCalculationUtil {
                 edges,
                 vatRate,
                 pricesForCutting,
-                priceForGluingLayer.price(),
+                priceForGluingLayer,
                 pricesForGluingEdge,
-                orderSummaries
+                orderSummaryCodeMapper.toOrderItemSummary(orderSummaries.stream()
+                        .map(item -> OrderItemSummaryDo.builder()
+                                .orderItemId(-1L)
+                                .code(item.code())
+                                .amount(item.amount())
+                                .build()
+                        ).toList()
+                ).totalSummary()
         );
     }
 
@@ -95,9 +102,14 @@ public class SummaryUtil extends BaseCalculationUtil {
                 Collections.emptyList(),
                 BigDecimal.ZERO,
                 Collections.emptyList(),
-                BigDecimal.ZERO,
+                new PriceForGluingLayerData(BigDecimal.ZERO),
                 Collections.emptyList(),
-                Collections.emptyList()
+                OrderItemPartSummaryData.builder()
+                        .boardSummary(Collections.emptyList())
+                        .edgeSummary(Collections.emptyList())
+                        .gluedArea(BigDecimal.ZERO)
+                        .cutSummary(Collections.emptyList())
+                        .build()
         );
     }
 

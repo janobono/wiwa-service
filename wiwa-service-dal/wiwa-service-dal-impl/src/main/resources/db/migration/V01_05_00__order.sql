@@ -102,6 +102,7 @@ SELECT o.id,
 FROM wiwa_order o
          LEFT JOIN wiwa_order_item oi on o.id = oi.order_id
          LEFT JOIN wiwa_order_item_summary ois on oi.id = ois.order_item_id
+WHERE ois.code LIKE 'TOTAL::%'
 GROUP BY o.id, ois.code;
 
 -- INDEX

@@ -83,6 +83,14 @@ public interface OrderWebMapper {
 
     OrderSummaryWebDto mapToWebDto(OrderSummaryData orderSummary);
 
+    OrderBoardSummaryWebDto mapToWebDto(OrderBoardSummaryData orderBoardSummary);
+
+    OrderCutSummaryWebDto mapToWebDto(OrderCutSummaryData orderCutSummary);
+
+    OrderEdgeSummaryWebDto mapToWebDto(OrderEdgeSummaryData orderEdgeSummary);
+
+    OrderGlueSummaryWebDto mapToWebDto(OrderGlueSummaryData orderGlueSummary);
+
     DimensionsWebDto mapToWebDto(DimensionsData dimensions);
 
     OrderCommentChangeData mapToData(OrderCommentChangeWebDto orderCommentChange);

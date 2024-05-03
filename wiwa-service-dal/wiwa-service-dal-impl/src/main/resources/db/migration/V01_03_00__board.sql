@@ -8,7 +8,7 @@ create table wiwa_board
     name           varchar(255) collate "sk-SK-x-icu" not null,
     description    text,
     orientation    boolean                            not null,
-    weight         numeric(19, 3),
+    weight         numeric(19, 3)                     not null,
     length         numeric(19, 3)                     not null,
     width          numeric(19, 3)                     not null,
     thickness      numeric(19, 3)                     not null,

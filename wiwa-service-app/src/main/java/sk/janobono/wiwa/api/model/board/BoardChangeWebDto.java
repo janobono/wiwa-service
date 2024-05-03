@@ -14,7 +14,7 @@ public record BoardChangeWebDto(
         @NotBlank @Size(max = 255) String boardCode,
         @NotBlank @Size(max = 255) String structureCode,
         @NotNull Boolean orientation,
-        BigDecimal weight,
+        @NotNull @Min(0) BigDecimal weight,
         @NotNull @Min(0) BigDecimal length,
         @NotNull @Min(0) BigDecimal width,
         @NotNull @Min(0) BigDecimal thickness,
