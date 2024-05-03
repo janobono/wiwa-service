@@ -699,28 +699,15 @@ public class OrderServiceImpl implements OrderService {
         recountItemSummary(id, itemId);
     }
 
-    private Map<Long, OrderBoardData> getBoards(final List<OrderMaterialDo> materials) {
-        return materialUtil.toBoards(materials).stream()
-                .map(board -> new AbstractMap.SimpleEntry<>(board.id(), board))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    private Map<Long, OrderEdgeData> getEdges(final List<OrderMaterialDo> materials) {
-        return materialUtil.toEdges(materials).stream()
-                .map(edge -> new AbstractMap.SimpleEntry<>(edge.id(), edge))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
     private void recountItemSummary(final Long id, final Long itemId) {
         final OrderItemDo orderItem = getOrderItemDo(itemId);
 
         final List<OrderMaterialDo> materials = orderMaterialRepository.findAllByOrderId(id);
-        final Map<Long, OrderBoardData> boards = getBoards(materials);
 
         final OrderItemSummaryData orderItemSummary = summaryUtil.calculateItemSummary(
                 dataUtil.parseValue(orderItem.getPart(), PartData.class),
                 orderItem.getQuantity(),
-                boards.values().stream().collect(Collectors.toMap(OrderBoardData::id, OrderBoardData::thickness)),
+                materialUtil.toBoards(materials).stream().collect(Collectors.toMap(OrderBoardData::id, OrderBoardData::thickness)),
                 applicationPropertyService.getManufactureProperties()
         );
 
@@ -740,12 +727,10 @@ public class OrderServiceImpl implements OrderService {
 
     private void recountOrderSummary(final long id) {
         final List<OrderMaterialDo> materials = orderMaterialRepository.findAllByOrderId(id);
-        final Map<Long, OrderBoardData> boards = getBoards(materials);
-        final Map<Long, OrderEdgeData> edges = getEdges(materials);
 
         final OrderSummaryData orderSummary = summaryUtil.toOrderSummary(
-                boards,
-                edges,
+                materialUtil.toBoards(materials),
+                materialUtil.toEdges(materials),
                 applicationPropertyService.getVatRate(),
                 applicationPropertyService.getPricesForCutting(),
                 applicationPropertyService.getPriceForGluingLayer(),

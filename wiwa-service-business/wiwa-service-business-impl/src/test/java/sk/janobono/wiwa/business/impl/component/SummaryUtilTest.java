@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.application.ManufacturePropertiesData;
 import sk.janobono.wiwa.business.model.order.OrderBoardData;
-import sk.janobono.wiwa.business.model.order.OrderEdgeData;
 import sk.janobono.wiwa.business.model.order.part.PartData;
 import sk.janobono.wiwa.business.model.order.summary.OrderItemSummaryData;
 import sk.janobono.wiwa.dal.domain.OrderItemSummaryDo;
@@ -26,7 +25,6 @@ class SummaryUtilTest {
     private ObjectMapper objectMapper;
 
     private Map<Long, OrderBoardData> boards;
-    private Map<Long, OrderEdgeData> edges;
     private ManufacturePropertiesData manufactureProperties;
 
     private SummaryUtil summaryUtil;
@@ -46,42 +44,6 @@ class SummaryUtilTest {
                         .width(BigDecimal.valueOf(1500))
                         .thickness(BigDecimal.valueOf(10))
                         .price(BigDecimal.valueOf(100))
-                        .build(),
-                2L, OrderBoardData.builder()
-                        .id(2L)
-                        .orientation(false)
-                        .weight(new BigDecimal("17.2"))
-                        .length(BigDecimal.valueOf(2000))
-                        .width(BigDecimal.valueOf(1500))
-                        .thickness(BigDecimal.valueOf(20))
-                        .price(BigDecimal.valueOf(110))
-                        .build(),
-                3L, OrderBoardData.builder()
-                        .id(3L)
-                        .orientation(false)
-                        .weight(new BigDecimal("19.2"))
-                        .length(BigDecimal.valueOf(2000))
-                        .width(BigDecimal.valueOf(1500))
-                        .thickness(BigDecimal.valueOf(30))
-                        .price(BigDecimal.valueOf(120))
-                        .build()
-        );
-
-        edges = Map.of(
-                1L, OrderEdgeData.builder()
-                        .weight(new BigDecimal("0.1"))
-                        .width(BigDecimal.valueOf(18))
-                        .price(BigDecimal.valueOf(100))
-                        .build(),
-                2L, OrderEdgeData.builder()
-                        .weight(new BigDecimal("0.15"))
-                        .width(BigDecimal.valueOf(28))
-                        .price(BigDecimal.valueOf(110))
-                        .build(),
-                3L, OrderEdgeData.builder()
-                        .weight(new BigDecimal("0.19"))
-                        .width(BigDecimal.valueOf(38))
-                        .price(BigDecimal.valueOf(120))
                         .build()
         );
 
@@ -99,7 +61,8 @@ class SummaryUtilTest {
                 new BoardAreaCalculationUtil(),
                 new CutLengthCalculationUtil(),
                 new EdgeLengthCalculationUtil(),
-                new PriceUtil());
+                new OrderSummaryCalculationUtil(new PriceUtil()),
+                new OrderSummaryCodeMapper());
     }
 
     @Test
