@@ -7,9 +7,9 @@ import java.util.List;
 
 @Builder
 public record OrderItemPartSummaryData(
-        List<OrderBoardSummaryData> boardSummary,
-        List<OrderEdgeSummaryData> edgeSummary,
+        List<OrderItemBoardSummaryData> boardSummary,
+        List<OrderItemEdgeSummaryData> edgeSummary,
         BigDecimal gluedArea,
-        List<OrderCutSummaryData> cutSummary
+        List<OrderItemCutSummaryData> cutSummary
 ) {
 }

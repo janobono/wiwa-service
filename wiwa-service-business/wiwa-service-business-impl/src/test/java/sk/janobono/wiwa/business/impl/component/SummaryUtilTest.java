@@ -11,11 +11,15 @@ import sk.janobono.wiwa.business.model.order.OrderBoardData;
 import sk.janobono.wiwa.business.model.order.OrderEdgeData;
 import sk.janobono.wiwa.business.model.order.part.PartData;
 import sk.janobono.wiwa.business.model.order.summary.OrderItemSummaryData;
+import sk.janobono.wiwa.dal.domain.OrderItemSummaryDo;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class SummaryUtilTest {
 
@@ -99,37 +103,15 @@ class SummaryUtilTest {
     }
 
     @Test
-    void countItemSummary_whenPartBasic_thenTheseResults() throws IOException {
+    void calculateItemSummary_whenPartBasic_thenTheseResults() throws IOException {
         final PartData part = objectMapper.readValue(getClass().getResource("/part_basic.json"), PartData.class);
         final OrderItemSummaryData orderItemSummary = summaryUtil.calculateItemSummary(part,
                 1,
                 boards.values().stream().collect(Collectors.toMap(OrderBoardData::id, OrderBoardData::thickness)),
                 manufactureProperties);
 
-        System.out.println(orderItemSummary);
-        // TODO
+        final List<OrderItemSummaryDo> items = summaryUtil.toOrderItemSummaries(1L, orderItemSummary);
 
+        assertThat(orderItemSummary).usingRecursiveComparison().isEqualTo(summaryUtil.toOrderItemSummary(items));
     }
-
-    @Test
-    void countItemSummary_whenPartDuplicatedBasic_thenTheseResults() throws IOException {
-        final PartData part = objectMapper.readValue(getClass().getResource("/part_duplicated.json"), PartData.class);
-        // TODO
-
-    }
-
-    @Test
-    void countItemSummary_whenPartFrame_thenTheseResults() throws IOException {
-        final PartData part = objectMapper.readValue(getClass().getResource("/part_frame.json"), PartData.class);
-        // TODO
-
-    }
-
-    @Test
-    void countItemSummary_whenPartDuplicatedFrame_thenTheseResults() throws IOException {
-        final PartData part = objectMapper.readValue(getClass().getResource("/part_duplicated_frame.json"), PartData.class);
-        // TODO
-
-    }
-
 }
