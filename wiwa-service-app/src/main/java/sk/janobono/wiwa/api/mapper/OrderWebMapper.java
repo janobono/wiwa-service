@@ -7,13 +7,11 @@ import org.mapstruct.ReportingPolicy;
 import sk.janobono.wiwa.api.model.DimensionsWebDto;
 import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.api.model.order.part.*;
-import sk.janobono.wiwa.api.model.order.summary.OrderItemSummaryWebDto;
-import sk.janobono.wiwa.api.model.order.summary.OrderSummaryWebDto;
+import sk.janobono.wiwa.api.model.order.summary.*;
 import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.model.order.part.*;
-import sk.janobono.wiwa.business.model.order.summary.OrderItemSummaryData;
-import sk.janobono.wiwa.business.model.order.summary.OrderSummaryData;
+import sk.janobono.wiwa.business.model.order.summary.*;
 
 import java.security.InvalidParameterException;
 
@@ -74,6 +72,14 @@ public interface OrderWebMapper {
     PartCornerRoundedWebDto mapToWebDto(PartCornerRoundedData partCorner);
 
     OrderItemSummaryWebDto mapToWebDto(OrderItemSummaryData orderItemSummary);
+
+    OrderItemPartSummaryWebDto mapToWebDto(OrderItemPartSummaryData orderItemPartSummary);
+
+    OrderItemBoardSummaryWebDto mapToWebDto(OrderItemBoardSummaryData orderItemBoardSummary);
+
+    OrderItemCutSummaryWebDto mapToWebDto(OrderItemCutSummaryData orderItemCutSummary);
+
+    OrderItemEdgeSummaryWebDto mapToWebDto(OrderItemEdgeSummaryData orderItemEdgeSummary);
 
     OrderSummaryWebDto mapToWebDto(OrderSummaryData orderSummary);
 
