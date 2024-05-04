@@ -88,9 +88,9 @@ public class OrderSummaryCalculationUtil extends BaseCalculationUtil {
                 .findFirst()
                 .orElseThrow();
 
-        final BigDecimal rawArea = calculateArea(new DimensionsData(board.length(), board.width()));
+        final BigDecimal boardArea = calculateArea(new DimensionsData(board.length(), board.width()));
 
-        final BigDecimal boardsCount = calculateBoardsCount(rawArea, item.area());
+        final BigDecimal boardsCount = calculateBoardsCount(boardArea, item.area());
 
         final BigDecimal price = calculatePrice(boardsCount, board.price());
 
@@ -98,7 +98,7 @@ public class OrderSummaryCalculationUtil extends BaseCalculationUtil {
                 .id(item.id())
                 .area(item.area())
                 .boardsCount(boardsCount)
-                .weight(calculateWeight(rawArea, item.area(), board.weight()))
+                .weight(calculateWeight(boardArea, item.area(), board.weight()))
                 .price(price)
                 .vatPrice(priceUtil.countVatValue(price, vatRate))
                 .build();
@@ -163,21 +163,22 @@ public class OrderSummaryCalculationUtil extends BaseCalculationUtil {
                 .build();
     }
 
-    private BigDecimal calculateBoardsCount(final BigDecimal rawArea, final BigDecimal area) {
+    private BigDecimal calculateBoardsCount(final BigDecimal boardArea, final BigDecimal area) {
         if (area.compareTo(BigDecimal.ZERO) <= 0) {
             return BigDecimal.ZERO;
         }
-        return rawArea
+        return area
                 .multiply(BigDecimal.valueOf(1.2))
-                .divide(area, new MathContext(0, RoundingMode.HALF_UP));
+                .divide(boardArea, RoundingMode.HALF_UP)
+                .setScale(0, RoundingMode.UP);
     }
 
-    private BigDecimal calculateWeight(final BigDecimal rawArea, final BigDecimal area, final BigDecimal weight) {
+    private BigDecimal calculateWeight(final BigDecimal boardArea, final BigDecimal area, final BigDecimal weight) {
         if (area.compareTo(BigDecimal.ZERO) <= 0) {
             return BigDecimal.ZERO;
         }
-        return rawArea
-                .divide(area, RoundingMode.HALF_UP)
+        return area
+                .divide(boardArea, new MathContext(PRECISION, RoundingMode.HALF_UP))
                 .multiply(weight)
                 .setScale(PRECISION, RoundingMode.HALF_UP);
     }
