@@ -693,7 +693,7 @@ public class OrderServiceImpl implements OrderService {
     private void setItem(final long id, final long itemId, final OrderItemChangeData orderItemChange) {
         validate(id, orderItemChange);
 
-        orderItemRepository.setOrderItemInfo(itemId, new OrderItemInfoDo(orderItemChange.name(), orderItemChange.quantity()));
+        orderItemRepository.setOrderItemInfo(itemId, new OrderItemInfoDo(orderItemChange.name(), orderItemChange.description(), orderItemChange.quantity()));
         orderItemRepository.setPart(itemId, dataUtil.serializeValue(orderItemChange.part()));
 
         recountItemSummary(id, itemId);
@@ -719,7 +719,7 @@ public class OrderServiceImpl implements OrderService {
         final List<OrderItemDo> items = orderItemRepository.findAllByOrderId(id);
         for (final OrderItemDo item : items) {
             setItem(id, item.getId(), new OrderItemChangeData(
-                    item.getName(), item.getQuantity(), dataUtil.parseValue(item.getPart(), PartData.class)
+                    item.getName(), item.getDescription(), item.getQuantity(), dataUtil.parseValue(item.getPart(), PartData.class)
             ));
             recountItemSummary(id, item.getId());
         }

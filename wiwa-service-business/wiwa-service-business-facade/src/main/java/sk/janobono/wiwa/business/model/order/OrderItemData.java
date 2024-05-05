@@ -9,6 +9,7 @@ public record OrderItemData(
         Long id,
         Integer sortNum,
         String name,
+        String description,
         Integer quantity,
         PartData part,
         OrderItemSummaryData summary

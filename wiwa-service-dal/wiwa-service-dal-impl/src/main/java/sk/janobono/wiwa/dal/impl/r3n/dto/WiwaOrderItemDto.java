@@ -5,6 +5,7 @@ public record WiwaOrderItemDto(
         Long orderId,
         Integer sortNum,
         String name,
+        String description,
         Integer quantity,
         String part
 ) {
@@ -15,6 +16,7 @@ public record WiwaOrderItemDto(
                 wiwaOrderItemDto.orderId,
                 wiwaOrderItemDto.sortNum,
                 wiwaOrderItemDto.name,
+                wiwaOrderItemDto.description,
                 wiwaOrderItemDto.quantity,
                 wiwaOrderItemDto.part
         };
@@ -26,8 +28,9 @@ public record WiwaOrderItemDto(
                 (Long) array[1],
                 (Integer) array[2],
                 (String) array[3],
-                (Integer) array[4],
-                (String) array[5]
+                (String) array[4],
+                (Integer) array[5],
+                (String) array[6]
         );
     }
 }

@@ -7,6 +7,7 @@ public record OrderItemWebDto(
         Long id,
         Integer sortNum,
         String name,
+        String description,
         Integer quantity,
         PartWebDto part,
         OrderItemSummaryWebDto summary

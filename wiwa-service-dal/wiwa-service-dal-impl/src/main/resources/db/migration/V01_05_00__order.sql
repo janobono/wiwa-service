@@ -44,13 +44,14 @@ create table wiwa_order_contact
 
 create table wiwa_order_item
 (
-    id       bigserial primary key,
-    order_id bigint       not null references wiwa_order (id) on delete cascade,
-    sort_num integer      not null,
-    name     varchar(255) not null,
-    quantity integer      not null,
-    part     text         not null,
-    summary  text         not null
+    id          bigserial primary key,
+    order_id    bigint       not null references wiwa_order (id) on delete cascade,
+    sort_num    integer      not null,
+    name        varchar(255) not null,
+    description varchar(255),
+    quantity    integer      not null,
+    part        text         not null,
+    summary     text         not null
 );
 
 create table wiwa_order_item_summary
@@ -90,7 +91,7 @@ SELECT o.id,
                  FROM wiwa_order_status
                  WHERE wiwa_order_status.order_id = o.id
                  ORDER BY wiwa_order_status.created DESC
-                 LIMIT 1), 'NEW') as status,
+                LIMIT 1), 'NEW') as status,
        o.weight,
        o.total
 FROM wiwa_order o;

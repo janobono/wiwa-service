@@ -12,6 +12,7 @@ public enum MetaColumnWiwaOrderItem {
     ORDER_ID("order_id", DataType.LONG),
     SORT_NUM("sort_num", DataType.INTEGER),
     NAME("name", DataType.STRING),
+    DESCRIPTION("description", DataType.STRING),
     QUANTITY("quantity", DataType.INTEGER),
     PART("part", DataType.STRING);
 

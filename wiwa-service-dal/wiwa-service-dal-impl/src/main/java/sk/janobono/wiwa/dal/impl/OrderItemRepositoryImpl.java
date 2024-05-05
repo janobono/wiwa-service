@@ -173,6 +173,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
             sqlBuilder.update(connection,
                     Query.UPDATE(MetaTable.WIWA_ORDER_ITEM.table())
                             .SET(MetaColumnWiwaOrderItem.NAME.column(), orderItemInfo.name())
+                            .SET(MetaColumnWiwaOrderItem.DESCRIPTION.column(), orderItemInfo.description())
                             .SET(MetaColumnWiwaOrderItem.QUANTITY.column(), orderItemInfo.quantity())
                             .WHERE(MetaColumnWiwaOrderItem.ID.column(), Condition.EQUALS, id)
             );
