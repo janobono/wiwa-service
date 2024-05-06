@@ -2,6 +2,10 @@ package sk.janobono.wiwa.business.impl.component;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import sk.janobono.wiwa.business.impl.component.part.PartBasicUtil;
+import sk.janobono.wiwa.business.impl.component.part.PartDuplicatedBasicUtil;
+import sk.janobono.wiwa.business.impl.component.part.PartDuplicatedFrameUtil;
+import sk.janobono.wiwa.business.impl.component.part.PartFrameUtil;
 import sk.janobono.wiwa.business.impl.model.summary.EdgeLengthData;
 import sk.janobono.wiwa.business.model.application.ManufacturePropertiesData;
 import sk.janobono.wiwa.business.model.application.PriceForCuttingData;
@@ -9,14 +13,13 @@ import sk.janobono.wiwa.business.model.application.PriceForGluingEdgeData;
 import sk.janobono.wiwa.business.model.application.PriceForGluingLayerData;
 import sk.janobono.wiwa.business.model.order.OrderBoardData;
 import sk.janobono.wiwa.business.model.order.OrderEdgeData;
-import sk.janobono.wiwa.business.model.order.part.PartData;
-import sk.janobono.wiwa.business.model.order.part.PartDuplicatedBasicData;
-import sk.janobono.wiwa.business.model.order.part.PartDuplicatedFrameData;
+import sk.janobono.wiwa.business.model.order.part.*;
 import sk.janobono.wiwa.business.model.order.summary.*;
 import sk.janobono.wiwa.dal.domain.OrderItemSummaryDo;
 import sk.janobono.wiwa.dal.domain.OrderSummaryViewDo;
 
 import java.math.BigDecimal;
+import java.security.InvalidParameterException;
 import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.List;
@@ -27,9 +30,6 @@ import java.util.stream.Collectors;
 @Component
 public class SummaryUtil extends BaseCalculationUtil {
 
-    private final BoardAreaCalculationUtil boardAreaCalculationUtil;
-    private final CutLengthCalculationUtil cutLengthCalculationUtil;
-    private final EdgeLengthCalculationUtil edgeLengthCalculationUtil;
     private final OrderSummaryCalculationUtil orderSummaryCalculationUtil;
     private final OrderSummaryCodeMapper orderSummaryCodeMapper;
 
@@ -125,7 +125,17 @@ public class SummaryUtil extends BaseCalculationUtil {
     }
 
     private List<OrderItemBoardSummaryData> calculateBoardSummary(final PartData part, final ManufacturePropertiesData manufactureProperties) {
-        final Map<Long, BigDecimal> boardAreaMap = boardAreaCalculationUtil.calculateArea(part, manufactureProperties)
+        final Map<Long, BigDecimal> boardAreaMap = (switch (part) {
+            case final PartBasicData partBasicData ->
+                    new PartBasicUtil().calculateBoardArea(partBasicData, manufactureProperties);
+            case final PartFrameData partFrameData ->
+                    new PartFrameUtil().calculateBoardArea(partFrameData, manufactureProperties);
+            case final PartDuplicatedBasicData partDuplicatedBasicData ->
+                    new PartDuplicatedBasicUtil().calculateBoardArea(partDuplicatedBasicData, manufactureProperties);
+            case final PartDuplicatedFrameData partDuplicatedFrameData ->
+                    new PartDuplicatedFrameUtil().calculateBoardArea(partDuplicatedFrameData, manufactureProperties);
+            default -> throw new InvalidParameterException("Unsupported part type: " + part.getClass().getSimpleName());
+        })
                 .entrySet().stream()
                 .map(entry -> new AbstractMap.SimpleEntry<>(part.boards().get(entry.getKey()), entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, BigDecimal::add));
@@ -136,7 +146,17 @@ public class SummaryUtil extends BaseCalculationUtil {
     }
 
     private List<OrderItemEdgeSummaryData> calculateEdgeSummary(final PartData part, final ManufacturePropertiesData manufactureProperties) {
-        final Map<Long, EdgeLengthData> edgeLengthMap = edgeLengthCalculationUtil.calculateEdgeLength(part, manufactureProperties);
+        final Map<Long, EdgeLengthData> edgeLengthMap = switch (part) {
+            case final PartBasicData partBasicData ->
+                    new PartBasicUtil().calculateEdgeLength(partBasicData, manufactureProperties);
+            case final PartFrameData partFrameData ->
+                    new PartFrameUtil().calculateEdgeLength(partFrameData, manufactureProperties);
+            case final PartDuplicatedBasicData partDuplicatedBasicData ->
+                    new PartDuplicatedBasicUtil().calculateEdgeLength(partDuplicatedBasicData, manufactureProperties);
+            case final PartDuplicatedFrameData partDuplicatedFrameData ->
+                    new PartDuplicatedFrameUtil().calculateEdgeLength(partDuplicatedFrameData, manufactureProperties);
+            default -> throw new InvalidParameterException("Unsupported part type: " + part.getClass().getSimpleName());
+        };
 
         return edgeLengthMap.entrySet().stream()
                 .map(entry -> new OrderItemEdgeSummaryData(
@@ -154,7 +174,7 @@ public class SummaryUtil extends BaseCalculationUtil {
                             .add(manufactureProperties.duplicatedBoardAppend().multiply(BigDecimal.TWO))
             );
             case final PartDuplicatedFrameData duplicatedFrame ->
-                    boardAreaCalculationUtil.calculateArea(duplicatedFrame, manufactureProperties)
+                    new PartDuplicatedFrameUtil().calculateBoardArea(duplicatedFrame, manufactureProperties)
                             .entrySet().stream()
                             .filter(entry -> switch (entry.getKey()) {
                                 case A1, A2, B1, B2 -> true;
@@ -169,8 +189,18 @@ public class SummaryUtil extends BaseCalculationUtil {
     private List<OrderItemCutSummaryData> calculateCutSummary(final PartData part,
                                                               final Map<Long, BigDecimal> boardThickness,
                                                               final ManufacturePropertiesData manufactureProperties) {
-        final Map<BigDecimal, BigDecimal> cutLenghtMap = cutLengthCalculationUtil
-                .calculateBoardCutLength(part, boardThickness, manufactureProperties);
+        final Map<BigDecimal, BigDecimal> cutLenghtMap = switch (part) {
+            case final PartBasicData partBasicData ->
+                    new PartBasicUtil().calculateCutLength(partBasicData, boardThickness, manufactureProperties);
+            case final PartFrameData partFrameData ->
+                    new PartFrameUtil().calculateCutLength(partFrameData, boardThickness, manufactureProperties);
+            case final PartDuplicatedBasicData partDuplicatedBasicData ->
+                    new PartDuplicatedBasicUtil().calculateCutLength(partDuplicatedBasicData, boardThickness, manufactureProperties);
+            case final PartDuplicatedFrameData partDuplicatedFrameData ->
+                    new PartDuplicatedFrameUtil().calculateCutLength(partDuplicatedFrameData, boardThickness, manufactureProperties);
+            default -> throw new InvalidParameterException("Unsupported part type: " + part.getClass().getSimpleName());
+        };
+
         return cutLenghtMap.entrySet().stream()
                 .map(entry -> new OrderItemCutSummaryData(entry.getKey(), entry.getValue()))
                 .toList();

@@ -72,9 +72,6 @@ class SummaryUtilTest {
         );
 
         summaryUtil = new SummaryUtil(
-                new BoardAreaCalculationUtil(),
-                new CutLengthCalculationUtil(),
-                new EdgeLengthCalculationUtil(),
                 new OrderSummaryCalculationUtil(new PriceUtil()),
                 new OrderSummaryCodeMapper());
     }

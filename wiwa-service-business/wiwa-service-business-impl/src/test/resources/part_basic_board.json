@@ -1,7 +1,7 @@
 [
   {
     "type": "BASIC",
-    "rotate": true,
+    "orientation": true,
     "boardId": 1,
     "dimensionsTOP": {
       "x": 2001,
@@ -10,7 +10,7 @@
   },
   {
     "type": "BASIC",
-    "rotate": false,
+    "orientation": false,
     "boardId": 1,
     "dimensionsTOP": {
       "x": 2000,

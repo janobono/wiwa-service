@@ -6,9 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.impl.util.PropertyUtilService;
 import sk.janobono.wiwa.business.model.application.*;
+import sk.janobono.wiwa.business.model.board.BoardCategoryData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.config.JwtConfigProperties;
+import sk.janobono.wiwa.dal.repository.CodeListRepository;
+import sk.janobono.wiwa.exception.WiwaException;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -38,6 +41,8 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     private static final String ORDER_COMMENT_MAIL = "ORDER_COMMENT_MAIL";
     private static final String ORDER_SEND_MAIL = "ORDER_SEND_MAIL";
     private static final String ORDER_STATUS_MAIL = "ORDER_STATUS_MAIL";
+    private static final String CSV_PROPERTIES = "CSV_PROPERTIES";
+    private static final String BOARD_MATERIAL_CATEGORY = "BOARD_MATERIAL_CATEGORY";
 
     private final ObjectMapper objectMapper;
 
@@ -45,6 +50,8 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     private final JwtConfigProperties jwtConfigProperties;
 
     private final PropertyUtilService propertyUtilService;
+
+    private final CodeListRepository codeListRepository;
 
     @Override
     public ApplicationPropertiesData getApplicationProperties() {
@@ -431,5 +438,46 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
             }
         }, ORDER_STATUS_MAIL, orderStatusMail);
         return orderStatusMail;
+    }
+
+    @Override
+    public CSVPropertiesData getCSVProperties() {
+        return propertyUtilService.getProperty(v -> {
+            try {
+                return objectMapper.readValue(v, CSVPropertiesData.class);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, CSV_PROPERTIES);
+    }
+
+    @Override
+    public CSVPropertiesData setCSVProperties(final CSVPropertiesData csvProperties) {
+        propertyUtilService.setProperty(data -> {
+            try {
+                return objectMapper.writeValueAsString(data);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, CSV_PROPERTIES, csvProperties);
+        return csvProperties;
+    }
+
+    @Override
+    public BoardCategoryData getBoardMaterialCategory() {
+        final long categoryId = Long.parseLong(propertyUtilService.getProperty(BOARD_MATERIAL_CATEGORY));
+
+        return codeListRepository.findById(categoryId)
+                .map(codeListDo -> new BoardCategoryData(codeListDo.getId(), codeListDo.getCode(), codeListDo.getName()))
+                .orElseGet(() -> new BoardCategoryData(categoryId, "NOT FOUND", "NOT FOUND"));
+    }
+
+    @Override
+    public BoardCategoryData setBoardMaterialCategory(final long categoryId) {
+        if (!codeListRepository.existsById(categoryId)) {
+            throw WiwaException.CODE_LIST_NOT_FOUND.exception("Category does not exist");
+        }
+        propertyUtilService.setProperty(BOARD_MATERIAL_CATEGORY, Long.toString(categoryId));
+        return getBoardMaterialCategory();
     }
 }

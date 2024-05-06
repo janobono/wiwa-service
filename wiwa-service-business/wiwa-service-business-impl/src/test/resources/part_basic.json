@@ -1,6 +1,6 @@
 {
   "type": "BASIC",
-  "rotate": false,
+  "orientation": false,
   "boardId": 1,
   "edgeIdA1": 1,
   "edgeIdA2": 1,

@@ -1,6 +1,7 @@
 package sk.janobono.wiwa.business.service;
 
 import sk.janobono.wiwa.business.model.application.*;
+import sk.janobono.wiwa.business.model.board.BoardCategoryData;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -88,4 +89,12 @@ public interface ApplicationPropertyService {
     OrderStatusMailData getOrderStatusMail();
 
     OrderStatusMailData setOrderStatusMail(OrderStatusMailData orderStatusMail);
+
+    CSVPropertiesData getCSVProperties();
+
+    CSVPropertiesData setCSVProperties(CSVPropertiesData csvProperties);
+
+    BoardCategoryData getBoardMaterialCategory();
+
+    BoardCategoryData setBoardMaterialCategory(final long categoryId);
 }

@@ -1,7 +1,7 @@
 {
   "type": "DUPLICATED_FRAME",
   "frameType": "HORIZONTAL",
-  "rotate": true,
+  "orientation": true,
   "boardId": 1,
   "boardIdA1": 2,
   "boardIdA2": 2,

@@ -5,7 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import sk.janobono.wiwa.business.impl.component.*;
+import sk.janobono.wiwa.business.impl.component.DataUtil;
+import sk.janobono.wiwa.business.impl.component.MaterialUtil;
+import sk.janobono.wiwa.business.impl.component.PriceUtil;
+import sk.janobono.wiwa.business.impl.component.SummaryUtil;
+import sk.janobono.wiwa.business.impl.component.part.PartBasicUtil;
+import sk.janobono.wiwa.business.impl.component.part.PartDuplicatedBasicUtil;
+import sk.janobono.wiwa.business.impl.component.part.PartDuplicatedFrameUtil;
+import sk.janobono.wiwa.business.impl.component.part.PartFrameUtil;
 import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
 import sk.janobono.wiwa.business.impl.model.mail.MailData;
 import sk.janobono.wiwa.business.impl.model.mail.MailLinkData;
@@ -19,7 +26,7 @@ import sk.janobono.wiwa.business.model.application.OrderCommentMailData;
 import sk.janobono.wiwa.business.model.application.OrderSendMailData;
 import sk.janobono.wiwa.business.model.application.OrderStatusMailData;
 import sk.janobono.wiwa.business.model.order.*;
-import sk.janobono.wiwa.business.model.order.part.PartData;
+import sk.janobono.wiwa.business.model.order.part.*;
 import sk.janobono.wiwa.business.model.order.summary.OrderItemSummaryData;
 import sk.janobono.wiwa.business.model.order.summary.OrderSummaryData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
@@ -35,6 +42,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.InvalidParameterException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,7 +58,6 @@ public class OrderServiceImpl implements OrderService {
 
     private final DataUtil dataUtil;
     private final MaterialUtil materialUtil;
-    private final PartUtil partUtil;
     private final PriceUtil priceUtil;
     private final SummaryUtil summaryUtil;
 
@@ -386,6 +393,7 @@ public class OrderServiceImpl implements OrderService {
                 .orderId(id)
                 .sortNum(orderItemRepository.countByOrderId(id))
                 .name(orderItemChange.name())
+                .description(orderItemChange.description())
                 .quantity(orderItemChange.quantity())
                 .part(dataUtil.serializeValue(orderItemChange.part()))
                 .build());
@@ -679,7 +687,18 @@ public class OrderServiceImpl implements OrderService {
             );
         }
 
-        partUtil.validate(orderItemChange.part(), boards, edges, applicationPropertyService.getManufactureProperties());
+        switch (orderItemChange.part()) {
+            case final PartBasicData partBasicData ->
+                    new PartBasicUtil().validate(partBasicData, boards, edges, applicationPropertyService.getManufactureProperties());
+            case final PartFrameData partFrameData ->
+                    new PartFrameUtil().validate(partFrameData, boards, edges, applicationPropertyService.getManufactureProperties());
+            case final PartDuplicatedBasicData partDuplicatedBasicData ->
+                    new PartDuplicatedBasicUtil().validate(partDuplicatedBasicData, boards, edges, applicationPropertyService.getManufactureProperties());
+            case final PartDuplicatedFrameData partDuplicatedFrameData ->
+                    new PartDuplicatedFrameUtil().validate(partDuplicatedFrameData, boards, edges, applicationPropertyService.getManufactureProperties());
+            default ->
+                    throw new InvalidParameterException("Unsupported part type: " + orderItemChange.part().getClass().getSimpleName());
+        }
 
         for (final OrderBoardData board : boards.values()) {
             orderMaterialRepository.save(materialUtil.toMaterial(orderId, board));
@@ -693,7 +712,10 @@ public class OrderServiceImpl implements OrderService {
     private void setItem(final long id, final long itemId, final OrderItemChangeData orderItemChange) {
         validate(id, orderItemChange);
 
-        orderItemRepository.setOrderItemInfo(itemId, new OrderItemInfoDo(orderItemChange.name(), orderItemChange.description(), orderItemChange.quantity()));
+        orderItemRepository.setOrderItemInfo(itemId, new OrderItemInfoDo(
+                orderItemChange.name(),
+                orderItemChange.description(),
+                orderItemChange.quantity()));
         orderItemRepository.setPart(itemId, dataUtil.serializeValue(orderItemChange.part()));
 
         recountItemSummary(id, itemId);
@@ -719,7 +741,10 @@ public class OrderServiceImpl implements OrderService {
         final List<OrderItemDo> items = orderItemRepository.findAllByOrderId(id);
         for (final OrderItemDo item : items) {
             setItem(id, item.getId(), new OrderItemChangeData(
-                    item.getName(), item.getDescription(), item.getQuantity(), dataUtil.parseValue(item.getPart(), PartData.class)
+                    item.getName(),
+                    item.getDescription(),
+                    item.getQuantity(),
+                    dataUtil.parseValue(item.getPart(), PartData.class)
             ));
             recountItemSummary(id, item.getId());
         }

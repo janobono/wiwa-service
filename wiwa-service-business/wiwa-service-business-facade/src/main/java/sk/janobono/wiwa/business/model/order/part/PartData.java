@@ -4,6 +4,9 @@ package sk.janobono.wiwa.business.model.order.part;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import sk.janobono.wiwa.business.model.DimensionsData;
+import sk.janobono.wiwa.model.BoardPosition;
+import sk.janobono.wiwa.model.CornerPosition;
+import sk.janobono.wiwa.model.EdgePosition;
 
 import java.util.Map;
 

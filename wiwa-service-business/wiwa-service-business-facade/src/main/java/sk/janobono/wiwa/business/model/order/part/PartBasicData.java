@@ -2,6 +2,9 @@ package sk.janobono.wiwa.business.model.order.part;
 
 import lombok.Builder;
 import sk.janobono.wiwa.business.model.DimensionsData;
+import sk.janobono.wiwa.model.BoardPosition;
+import sk.janobono.wiwa.model.CornerPosition;
+import sk.janobono.wiwa.model.EdgePosition;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +12,7 @@ import java.util.Optional;
 
 @Builder
 public record PartBasicData(
-        Boolean rotate,
+        Boolean orientation,
         Long boardId,
         Long edgeIdA1,
         Long edgeIdA2,

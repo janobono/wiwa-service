@@ -1,6 +1,6 @@
 {
   "type": "DUPLICATED_BASIC",
-  "rotate": true,
+  "orientation": true,
   "boardId": 1,
   "boardIdBottom": 2,
   "edgeIdA1": 3,

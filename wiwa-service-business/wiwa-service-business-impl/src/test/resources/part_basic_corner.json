@@ -1,7 +1,7 @@
 [
   {
     "type": "BASIC",
-    "rotate": false,
+    "orientation": false,
     "boardId": 1,
     "dimensionsTOP": {
       "x": 500,
@@ -32,7 +32,7 @@
   },
   {
     "type": "BASIC",
-    "rotate": false,
+    "orientation": false,
     "boardId": 1,
     "dimensionsTOP": {
       "x": 500,
@@ -63,7 +63,7 @@
   },
   {
     "type": "BASIC",
-    "rotate": false,
+    "orientation": false,
     "boardId": 1,
     "dimensionsTOP": {
       "x": 500,
@@ -94,7 +94,7 @@
   },
   {
     "type": "BASIC",
-    "rotate": false,
+    "orientation": false,
     "boardId": 1,
     "dimensionsTOP": {
       "x": 500,

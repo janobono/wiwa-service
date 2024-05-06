@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
+import sk.janobono.wiwa.api.model.board.BoardCategoryWebDto;
 import sk.janobono.wiwa.api.service.ConfigApiService;
 
 import java.math.BigDecimal;
@@ -217,5 +218,29 @@ public class ConfigController {
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public OrderStatusMailWebDto setOrderStatusMail(@Valid @RequestBody final OrderStatusMailWebDto orderStatusMail) {
         return configApiService.setOrderStatusMail(orderStatusMail);
+    }
+
+    @GetMapping(value = "/csv-properties")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public CSVPropertiesWebDto getCSVProperties() {
+        return configApiService.getCSVProperties();
+    }
+
+    @PostMapping(value = "/csv-properties")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public CSVPropertiesWebDto setCSVProperties(@Valid @RequestBody final CSVPropertiesWebDto csvProperties) {
+        return configApiService.setCSVProperties(csvProperties);
+    }
+
+    @GetMapping(value = "/board-material-category")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public BoardCategoryWebDto getBoardMaterialCategory() {
+        return configApiService.getBoardMaterialCategory();
+    }
+
+    @PostMapping(value = "/board-material-category")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public BoardCategoryWebDto setBoardMaterialCategory(@Valid @RequestBody final SingleValueBodyWebDto<Long> categoryId) {
+        return configApiService.setBoardMaterialCategory(categoryId.value());
     }
 }

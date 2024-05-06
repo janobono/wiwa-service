@@ -6,9 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.api.mapper.ApplicationImageWebMapper;
+import sk.janobono.wiwa.api.mapper.BoardWebMapper;
 import sk.janobono.wiwa.api.mapper.UiWebMapper;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
+import sk.janobono.wiwa.api.model.board.BoardCategoryWebDto;
 import sk.janobono.wiwa.business.service.ApplicationImageService;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 
@@ -23,6 +25,7 @@ public class ConfigApiService {
     private final ApplicationPropertyService applicationPropertyService;
     private final ApplicationImageWebMapper applicationImageWebMapper;
     private final UiWebMapper uiWebMapper;
+    private final BoardWebMapper boardWebMapper;
 
     public Page<ApplicationImageInfoWebDto> getApplicationImages(final Pageable pageable) {
         return applicationImageService.getApplicationImages(pageable)
@@ -163,5 +166,21 @@ public class ConfigApiService {
 
     public OrderStatusMailWebDto setOrderStatusMail(final OrderStatusMailWebDto orderStatusMail) {
         return uiWebMapper.mapToWebDto(applicationPropertyService.setOrderStatusMail(uiWebMapper.mapToData(orderStatusMail)));
+    }
+
+    public CSVPropertiesWebDto getCSVProperties() {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getCSVProperties());
+    }
+
+    public CSVPropertiesWebDto setCSVProperties(final CSVPropertiesWebDto csvProperties) {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.setCSVProperties(uiWebMapper.mapToData(csvProperties)));
+    }
+
+    public BoardCategoryWebDto getBoardMaterialCategory() {
+        return boardWebMapper.mapToWebDto(applicationPropertyService.getBoardMaterialCategory());
+    }
+
+    public BoardCategoryWebDto setBoardMaterialCategory(final long categoryId) {
+        return boardWebMapper.mapToWebDto(applicationPropertyService.setBoardMaterialCategory(categoryId));
     }
 }

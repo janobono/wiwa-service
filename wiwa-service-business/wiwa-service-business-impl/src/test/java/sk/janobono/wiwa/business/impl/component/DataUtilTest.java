@@ -27,7 +27,7 @@ class DataUtilTest {
     @Test
     void partChangeDataTest() {
         PartData part = PartBasicData.builder()
-                .rotate(true)
+                .orientation(true)
                 .boardId(1L)
                 .edgeIdA1(1L)
                 .edgeIdA2(1L)
@@ -43,7 +43,7 @@ class DataUtilTest {
         assertThat(part).usingRecursiveComparison().isEqualTo(dataUtil.parseValue(value, PartData.class));
 
         part = PartDuplicatedBasicData.builder()
-                .rotate(true)
+                .orientation(true)
                 .boardId(1L)
                 .boardIdBottom(2L)
                 .edgeIdA1(3L)
@@ -82,7 +82,7 @@ class DataUtilTest {
         assertThat(part).usingRecursiveComparison().isEqualTo(dataUtil.parseValue(value, PartData.class));
 
         part = PartDuplicatedFrameData.builder()
-                .rotate(true)
+                .orientation(true)
                 .boardId(1L)
                 .boardIdA1(1L)
                 .boardIdA2(1L)

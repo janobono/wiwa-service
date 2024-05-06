@@ -1,7 +1,7 @@
 [
   {
     "type": "DUPLICATED_BASIC",
-    "rotate": true,
+    "orientation": true,
     "boardId": -1,
     "boardIdBottom": 2,
     "dimensionsTOP": {
@@ -11,7 +11,7 @@
   },
   {
     "type": "DUPLICATED_BASIC",
-    "rotate": true,
+    "orientation": true,
     "boardId": 1,
     "boardIdBottom": -1,
     "dimensionsTOP": {
@@ -21,7 +21,7 @@
   },
   {
     "type": "DUPLICATED_BASIC",
-    "rotate": true,
+    "orientation": true,
     "boardId": 1,
     "boardIdBottom": 2,
     "edgeIdA1": -1,
@@ -32,7 +32,7 @@
   },
   {
     "type": "DUPLICATED_BASIC",
-    "rotate": true,
+    "orientation": true,
     "boardId": 1,
     "boardIdBottom": 2
   }

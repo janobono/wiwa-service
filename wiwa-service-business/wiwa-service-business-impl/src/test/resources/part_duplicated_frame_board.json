@@ -2,7 +2,7 @@
   {
     "type": "DUPLICATED_FRAME",
     "frameType": "HORIZONTAL",
-    "rotate": true,
+    "orientation": true,
     "boardId": 1,
     "boardIdA1": 1,
     "boardIdA2": 1,
@@ -32,7 +32,7 @@
   {
     "type": "DUPLICATED_FRAME",
     "frameType": "HORIZONTAL",
-    "rotate": false,
+    "orientation": false,
     "boardId": 1,
     "boardIdA1": 1,
     "boardIdA2": 1,
@@ -62,7 +62,7 @@
   {
     "type": "DUPLICATED_FRAME",
     "frameType": "HORIZONTAL",
-    "rotate": false,
+    "orientation": false,
     "boardId": 1,
     "boardIdA1": 1,
     "boardIdB1": 1,
@@ -82,7 +82,7 @@
   {
     "type": "DUPLICATED_FRAME",
     "frameType": "VERTICAL",
-    "rotate": false,
+    "orientation": false,
     "boardId": 1,
     "boardIdA1": 1,
     "boardIdB1": 1,

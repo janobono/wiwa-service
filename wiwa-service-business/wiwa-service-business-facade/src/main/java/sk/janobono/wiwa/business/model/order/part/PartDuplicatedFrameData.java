@@ -2,6 +2,9 @@ package sk.janobono.wiwa.business.model.order.part;
 
 import lombok.Builder;
 import sk.janobono.wiwa.business.model.DimensionsData;
+import sk.janobono.wiwa.model.BoardPosition;
+import sk.janobono.wiwa.model.CornerPosition;
+import sk.janobono.wiwa.model.EdgePosition;
 import sk.janobono.wiwa.model.FrameType;
 
 import java.util.HashMap;
@@ -11,7 +14,7 @@ import java.util.Optional;
 @Builder
 public record PartDuplicatedFrameData(
         FrameType frameType,
-        Boolean rotate,
+        Boolean orientation,
         Long boardId,
         Long boardIdA1,
         Long boardIdA2,
