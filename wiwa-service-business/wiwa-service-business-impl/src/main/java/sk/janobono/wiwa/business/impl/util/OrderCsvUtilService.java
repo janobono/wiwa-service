@@ -70,7 +70,7 @@ public class OrderCsvUtilService {
             final Path path = Files.createTempFile("wiwa", ".csv");
             try (final PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(path.toFile(), true)))) {
                 printLine(writer, csvProperties, Arrays.stream(CSVColumn.values())
-                        .map(key -> new AbstractMap.SimpleEntry<>(key, csvProperties.columns().getOrDefault(key, key.name())))
+                        .map(key -> new AbstractMap.SimpleEntry<>(key, addQuotes(csvProperties.columns().getOrDefault(key, key.name()))))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
                 );
                 for (final OrderItemDo item : items) {
@@ -145,6 +145,7 @@ public class OrderCsvUtilService {
                         CSVColumn.EDGE_B2, part.edgeIdB2()
                 ),
                 true,
+                true,
                 data
         );
         printLine(writer, csvProperties, data);
@@ -179,6 +180,7 @@ public class OrderCsvUtilService {
                         CSVColumn.EDGE_B2, part.edgeIdB2()
                 ),
                 true,
+                true,
                 data
         );
         printLine(writer, csvProperties, data);
@@ -197,6 +199,7 @@ public class OrderCsvUtilService {
                 part.orientation(),
                 Map.of(),
                 false,
+                false,
                 data
         );
         printLine(writer, csvProperties, data);
@@ -213,7 +216,7 @@ public class OrderCsvUtilService {
         final Map<BoardPosition, DimensionsData> boardDimensions = new PartFrameUtil().calculateBoardDimensions(part, manufactureProperties);
         rotateFrame(part.frameType(), boardDimensions);
 
-        boardDimensions.forEach((key, value) -> {
+        boardDimensions.keySet().stream().sorted().forEach(key -> {
             final Map<CSVColumn, String> data = new HashMap<>();
 
             addPart(csvProperties,
@@ -227,6 +230,7 @@ public class OrderCsvUtilService {
                     boardDimensions.get(key),
                     false,
                     frameBoardEdges(part, key),
+                    false,
                     key == BoardPosition.A1,
                     data
             );
@@ -265,15 +269,16 @@ public class OrderCsvUtilService {
                         CSVColumn.EDGE_B2, part.edgeIdB2()
                 ),
                 true,
+                true,
                 data
         );
         printLine(writer, csvProperties, data);
 
         // BOTTOM
-        boardDimensions.entrySet().stream().filter(entry -> entry.getKey() != BoardPosition.TOP).forEach(entry -> {
+        boardDimensions.keySet().stream().filter(key -> key != BoardPosition.TOP).sorted().forEach(key -> {
             data.clear();
 
-            final Map<CSVColumn, Long> frameBoardEdges = switch (entry.getKey()) {
+            final Map<CSVColumn, Long> frameBoardEdges = switch (key) {
                 case A1 -> Map.of(
                         CSVColumn.EDGE_A2, part.edgeIdA1I()
                 );
@@ -286,7 +291,7 @@ public class OrderCsvUtilService {
                 case B2 -> Map.of(
                         CSVColumn.EDGE_B1, part.edgeIdB2I()
                 );
-                default -> throw new InvalidParameterException("Unsupported board position: " + entry.getKey());
+                default -> throw new InvalidParameterException("Unsupported board position: " + key);
             };
 
             addPart(csvProperties,
@@ -296,10 +301,11 @@ public class OrderCsvUtilService {
                     item,
                     part,
                     csvProperties.nameDuplicatedFrameFormat(),
-                    entry.getKey(),
-                    boardDimensions.get(entry.getKey()),
+                    key,
+                    boardDimensions.get(key),
                     false,
                     frameBoardEdges,
+                    false,
                     false,
                     data
             );
@@ -384,6 +390,7 @@ public class OrderCsvUtilService {
                          final DimensionsData dimensions,
                          final boolean orientation,
                          final Map<CSVColumn, Long> partEdges,
+                         final boolean corners,
                          final boolean description,
                          final Map<CSVColumn, String> data
     ) {
@@ -406,7 +413,9 @@ public class OrderCsvUtilService {
         // EDGES
         addEdges(csvProperties, edges, partEdges, data);
         // CORNERS
-        addCorners(csvProperties, edges, part, data);
+        if (corners) {
+            addCorners(csvProperties, edges, part, data);
+        }
         // DESCRIPTION
         if (description) {
             data.put(CSVColumn.DESCRIPTION, addQuotes(item.getDescription()));
@@ -527,7 +536,7 @@ public class OrderCsvUtilService {
                     partCornerStraightData.dimensions().x().intValue(),
                     partCornerStraightData.dimensions().y().intValue()
             );
-            case final PartCornerRoundedData partCornerRoundedData -> csvProperties.cornerStraightFormat().formatted(
+            case final PartCornerRoundedData partCornerRoundedData -> csvProperties.cornerRoundedFormat().formatted(
                     csvProperties.corners().getOrDefault(position, position.name()),
                     partCornerRoundedData.radius().intValue()
             );
@@ -564,7 +573,9 @@ public class OrderCsvUtilService {
         String s = Arrays.stream(CSVColumn.values())
                 .map(key -> data.getOrDefault(key, ""))
                 .map(scDf::toDf)
-                .reduce("", (s1, s2) -> s1 + csvProperties.separator() + s2);
+                .map(r -> r == null ? "" : r)
+                .reduce("", (s1, s2) -> s1 + csvProperties.separator() + s2)
+                .substring(1);
 
         for (final String regex : csvProperties.replacements().keySet()) {
             s = s.replaceAll(regex, csvProperties.replacements().get(regex));
