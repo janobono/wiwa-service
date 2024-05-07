@@ -4,6 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.impl.component.DataUtil;
 import sk.janobono.wiwa.business.impl.component.MaterialUtil;
+import sk.janobono.wiwa.business.impl.component.part.PartDuplicatedBasicUtil;
+import sk.janobono.wiwa.business.impl.component.part.PartDuplicatedFrameUtil;
+import sk.janobono.wiwa.business.impl.component.part.PartFrameUtil;
+import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.application.CSVPropertiesData;
 import sk.janobono.wiwa.business.model.application.ManufacturePropertiesData;
 import sk.janobono.wiwa.business.model.board.BoardCategoryData;
@@ -21,17 +25,19 @@ import sk.janobono.wiwa.dal.repository.OrderItemRepository;
 import sk.janobono.wiwa.dal.repository.OrderMaterialRepository;
 import sk.janobono.wiwa.model.BoardPosition;
 import sk.janobono.wiwa.model.CSVColumn;
+import sk.janobono.wiwa.model.CornerPosition;
+import sk.janobono.wiwa.model.FrameType;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.InvalidParameterException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -63,7 +69,10 @@ public class OrderCsvUtilService {
         try {
             final Path path = Files.createTempFile("wiwa", ".csv");
             try (final PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(path.toFile(), true)))) {
-                printHeader(writer, csvProperties);
+                printLine(writer, csvProperties, Arrays.stream(CSVColumn.values())
+                        .map(key -> new AbstractMap.SimpleEntry<>(key, csvProperties.columns().getOrDefault(key, key.name())))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                );
                 for (final OrderItemDo item : items) {
                     printItem(writer, manufactureProperties, csvProperties, boards, edges, materialNames, item);
                 }
@@ -90,16 +99,6 @@ public class OrderCsvUtilService {
         return result;
     }
 
-    private void printHeader(final PrintWriter writer, final CSVPropertiesData csvProperties) {
-        writer.println(
-                Arrays.stream(CSVColumn.values())
-                        .map(col -> csvProperties.columns().getOrDefault(col, col.name()))
-                        .map(this::normalize)
-                        .map(this::putIntoQuotes)
-                        .reduce("", (s1, s2) -> s1 + csvProperties.separator() + s2)
-        );
-    }
-
     private void printItem(final PrintWriter writer,
                            final ManufacturePropertiesData manufactureProperties,
                            final CSVPropertiesData csvProperties,
@@ -110,7 +109,7 @@ public class OrderCsvUtilService {
         final PartData part = dataUtil.parseValue(item.getPart(), PartData.class);
         switch (part) {
             case final PartBasicData partBasic ->
-                    printBasic(writer, manufactureProperties, csvProperties, boards, edges, materialNames, item, partBasic);
+                    printBasic(writer, csvProperties, boards, edges, materialNames, item, partBasic);
             case final PartDuplicatedBasicData partDuplicatedBasic ->
                     printDuplicatedBasic(writer, manufactureProperties, csvProperties, boards, edges, materialNames, item, partDuplicatedBasic);
             case final PartFrameData partFrame ->
@@ -121,91 +120,34 @@ public class OrderCsvUtilService {
         }
     }
 
-//"P.C";"NAZOV_DIELCA";"MATERIAL";"DEKOR";"ROZMER_A";"ROZMER_B";"MNOZSTVO";"SMER_VLAKIEN";"HRUBKA";"ROZMER_A_1_hrana";"ROZMER_A_2_hrana";"ROZMER_B_1_hrana";"ROZMER_B_2_hrana";"POZNAMKA"
-//"1";"basic";"Laminovane_DTD_KASTAMONU";"D102_PS30_Bezova";"100";"100";"1";"0";"18";"N160B_22x08";"N160B_22x08";"N160B_22x08";"N160B_22x08";""
-//"2";"duplicated_ZDV._200x200_mm_2_ks_";"Laminovane_DTD_KASTAMONU";"D102_PS30_Bezova";"220";"220";"4";"0";"18";"N160B_42x2";"N160B_42x2";"N160B_42x2";"N160B_42x2";""
-//"3";"duplicated_frame_ZDV._vlys_500x500_mm_3_ks_";"Laminovane_DTD_KASTAMONU";"D102_PS30_Bezova";"520";"520";"3";"0";"18";"N160B_42x2";"N160B_42x2";"N160B_42x2";"N160B_42x2";""
-//"3_A1";"duplicated_frame_ZDV._vlys_A_1_500x500_mm_3_ks_";"Laminovane_DTD_KASTAMONU";"D102_PS30_Bezova";"520";"110";"3";"0";"18";"";"";"";"";""
-//"3_A2";"duplicated_frame_ZDV._vlys_A_2_500x500_mm_3_ks_";"Laminovane_DTD_KASTAMONU";"D102_PS30_Bezova";"520";"110";"3";"0";"18";"";"";"";"";""
-//"3_B1";"duplicated_frame_ZDV._vlys_B_1_500x500_mm_3_ks_";"Laminovane_DTD_KASTAMONU";"D102_PS30_Bezova";"110";"300";"3";"0";"18";"";"";"";"";""
-//"3_B2";"duplicated_frame_ZDV._vlys_B_2_500x500_mm_3_ks_";"Laminovane_DTD_KASTAMONU";"D102_PS30_Bezova";"110";"300";"3";"0";"18";"";"";"";"";""
-
     private void printBasic(final PrintWriter writer,
-                            final ManufacturePropertiesData manufactureProperties,
                             final CSVPropertiesData csvProperties,
                             final List<OrderBoardData> boards,
                             final List<OrderEdgeData> edges,
                             final Map<Long, String> materialNames,
                             final OrderItemDo item,
-                            final PartBasicData partBasic) {
-        final List<String> line = new ArrayList<>();
-        // NUMBER
-//        line.add(getNumber(csvProperties, item, BoardPosition.TOP));
-        // NAME
-
-        // MATERIAL
-
-        // DECOR
-
-        // X_DIMENSION
-
-        // Y_DIMENSION
-
-        // QUANTITY
-
-        // ORIENTATION
-
-        // THICKNESS
-
-        // EDGE_A1
-
-        // EDGE_A2
-
-        // EDGE_B1
-
-        // EDGE_B2
-
-        // CORNER_A1B1
-
-        // CORNER_A1B2
-
-        // CORNER_A2B1
-
-        // CORNER_A2B2
-
-        // DESCRIPTION
-
-
-
-//        // NUMBER
-//        line.add(getNumber(item));
-//        // NAME
-//        line.add(putIntoQuotes(normalize(getName(csvProperties.nameBasicFormat(), item.getName(), BoardPosition.TOP, partBasic, item.getQuantity()))));
-//        // MATERIAL
-//        line.add(getMaterial(materialNames, partBasic.boardId()));
-//        // CODES
-//        line.add(getCodes(boards, partBasic.boardId()));
-//        // X_DIMENSION
-//        line.add(toString(partBasic.dimensionsTOP().x()));
-//        // Y_DIMENSION
-//        line.add(toString(partBasic.dimensionsTOP().y()));
-//        // QUANTITY
-//        line.add(toString(item.getQuantity()));
-//        // ORIENTATION
-//        line.add(toString(item.getOrientation()));
-//        // THICKNESS
-//        line.add(getThickness(boards, partBasic.boardId()));
-//        // EDGE_A1
-//        line.add(getBorderText(item.borderIds[0]));
-//        // EDGE_A2
-//        line.add(getBorderText(item.borderIds[0]));
-//        // EDGE_B1
-//        line.add(getBorderText(item.borderIds[0]));
-//        // EDGE_B2
-//        line.add(getBorderText(item.borderIds[0]));
-//        // DESCRIPTION
-//        line.add(normalize(item.getDescription()));
-//        printLine(writer, csvProperties.separator(), line);
+                            final PartBasicData part) {
+        final Map<CSVColumn, String> data = new HashMap<>();
+        addPart(csvProperties,
+                boards,
+                edges,
+                materialNames,
+                item,
+                part,
+                csvProperties.nameBasicFormat(),
+                BoardPosition.TOP,
+                part.dimensionsTOP(),
+                part.orientation(),
+                Map.of(
+                        CSVColumn.EDGE_A1, part.edgeIdA1(),
+                        CSVColumn.EDGE_A2, part.edgeIdA2(),
+                        CSVColumn.EDGE_B1, part.edgeIdB1(),
+                        CSVColumn.EDGE_B2, part.edgeIdB2()
+                ),
+                true,
+                data
+        );
+        printLine(writer, csvProperties, data);
     }
 
     private void printDuplicatedBasic(final PrintWriter writer,
@@ -213,10 +155,51 @@ public class OrderCsvUtilService {
                                       final CSVPropertiesData csvProperties,
                                       final List<OrderBoardData> boards,
                                       final List<OrderEdgeData> edges,
-                                      final Map<Long, String> producerNames,
+                                      final Map<Long, String> materialNames,
                                       final OrderItemDo item,
-                                      final PartDuplicatedBasicData partDuplicatedBasic) {
-// TODO
+                                      final PartDuplicatedBasicData part) {
+        final Map<BoardPosition, DimensionsData> boardDimensions = new PartDuplicatedBasicUtil().calculateBoardDimensions(part, manufactureProperties);
+
+        // TOP
+        final Map<CSVColumn, String> data = new HashMap<>();
+        addPart(csvProperties,
+                boards,
+                edges,
+                materialNames,
+                item,
+                part,
+                csvProperties.nameDuplicatedBasicFormat(),
+                BoardPosition.TOP,
+                boardDimensions.get(BoardPosition.TOP),
+                part.orientation(),
+                Map.of(
+                        CSVColumn.EDGE_A1, part.edgeIdA1(),
+                        CSVColumn.EDGE_A2, part.edgeIdA2(),
+                        CSVColumn.EDGE_B1, part.edgeIdB1(),
+                        CSVColumn.EDGE_B2, part.edgeIdB2()
+                ),
+                true,
+                data
+        );
+        printLine(writer, csvProperties, data);
+        data.clear();
+
+        // BOTTOM
+        addPart(csvProperties,
+                boards,
+                edges,
+                materialNames,
+                item,
+                part,
+                csvProperties.nameDuplicatedBasicFormat(),
+                BoardPosition.BOTTOM,
+                boardDimensions.get(BoardPosition.BOTTOM),
+                part.orientation(),
+                Map.of(),
+                false,
+                data
+        );
+        printLine(writer, csvProperties, data);
     }
 
     private void printFrame(final PrintWriter writer,
@@ -224,10 +207,32 @@ public class OrderCsvUtilService {
                             final CSVPropertiesData csvProperties,
                             final List<OrderBoardData> boards,
                             final List<OrderEdgeData> edges,
-                            final Map<Long, String> producerNames,
+                            final Map<Long, String> materialNames,
                             final OrderItemDo item,
-                            final PartFrameData partFrame) {
-        // TODO
+                            final PartFrameData part) {
+        final Map<BoardPosition, DimensionsData> boardDimensions = new PartFrameUtil().calculateBoardDimensions(part, manufactureProperties);
+        rotateFrame(part.frameType(), boardDimensions);
+
+        boardDimensions.forEach((key, value) -> {
+            final Map<CSVColumn, String> data = new HashMap<>();
+
+            addPart(csvProperties,
+                    boards,
+                    edges,
+                    materialNames,
+                    item,
+                    part,
+                    csvProperties.nameFrameFormat(),
+                    key,
+                    boardDimensions.get(key),
+                    false,
+                    frameBoardEdges(part, key),
+                    key == BoardPosition.A1,
+                    data
+            );
+
+            printLine(writer, csvProperties, data);
+        });
     }
 
     private void printPartDuplicatedFrame(final PrintWriter writer,
@@ -235,51 +240,315 @@ public class OrderCsvUtilService {
                                           final CSVPropertiesData csvProperties,
                                           final List<OrderBoardData> boards,
                                           final List<OrderEdgeData> edges,
-                                          final Map<Long, String> producerNames,
+                                          final Map<Long, String> materialNames,
                                           final OrderItemDo item,
-                                          final PartDuplicatedFrameData partDuplicatedFrame) {
-        // TODO
+                                          final PartDuplicatedFrameData part) {
+        final Map<BoardPosition, DimensionsData> boardDimensions = new PartDuplicatedFrameUtil().calculateBoardDimensions(part, manufactureProperties);
+        rotateFrame(part.frameType(), boardDimensions);
 
+        // TOP
+        final Map<CSVColumn, String> data = new HashMap<>();
+        addPart(csvProperties,
+                boards,
+                edges,
+                materialNames,
+                item,
+                part,
+                csvProperties.nameDuplicatedFrameFormat(),
+                BoardPosition.TOP,
+                boardDimensions.get(BoardPosition.TOP),
+                part.orientation(),
+                Map.of(
+                        CSVColumn.EDGE_A1, part.edgeIdA1(),
+                        CSVColumn.EDGE_A2, part.edgeIdA2(),
+                        CSVColumn.EDGE_B1, part.edgeIdB1(),
+                        CSVColumn.EDGE_B2, part.edgeIdB2()
+                ),
+                true,
+                data
+        );
+        printLine(writer, csvProperties, data);
+
+        // BOTTOM
+        boardDimensions.entrySet().stream().filter(entry -> entry.getKey() != BoardPosition.TOP).forEach(entry -> {
+            data.clear();
+
+            final Map<CSVColumn, Long> frameBoardEdges = switch (entry.getKey()) {
+                case A1 -> Map.of(
+                        CSVColumn.EDGE_A2, part.edgeIdA1I()
+                );
+                case A2 -> Map.of(
+                        CSVColumn.EDGE_A1, part.edgeIdA2I()
+                );
+                case B1 -> Map.of(
+                        CSVColumn.EDGE_B2, part.edgeIdB1I()
+                );
+                case B2 -> Map.of(
+                        CSVColumn.EDGE_B1, part.edgeIdB2I()
+                );
+                default -> throw new InvalidParameterException("Unsupported board position: " + entry.getKey());
+            };
+
+            addPart(csvProperties,
+                    boards,
+                    edges,
+                    materialNames,
+                    item,
+                    part,
+                    csvProperties.nameDuplicatedFrameFormat(),
+                    entry.getKey(),
+                    boardDimensions.get(entry.getKey()),
+                    false,
+                    frameBoardEdges,
+                    false,
+                    data
+            );
+
+            printLine(writer, csvProperties, data);
+        });
     }
 
-//    private String getName(final String format,
-//                           final String itemName,
-//                           final BoardPosition position,
-//                           final PartData part,
-//                           final Integer quantity){
-//        return format.formatted(
-//                itemName,
-//        );
-//        // %s (basic %s - %s x %s mm - %s p)
-//    }
+    private void rotateFrame(final FrameType frameType, final Map<BoardPosition, DimensionsData> boardDimensions) {
+        switch (frameType) {
+            case HORIZONTAL_LONG -> {
+                boardDimensions.put(BoardPosition.B1, boardDimensions.get(BoardPosition.B1).rotate());
+                boardDimensions.put(BoardPosition.B2, boardDimensions.get(BoardPosition.B2).rotate());
+            }
+            case HORIZONTAL_SHORT -> {
+                boardDimensions.put(BoardPosition.A1, boardDimensions.get(BoardPosition.A1).rotate());
+                boardDimensions.put(BoardPosition.A2, boardDimensions.get(BoardPosition.A2).rotate());
+            }
+        }
+    }
 
-    private String getNumber(final OrderItemDo item) {
-        return Integer.toString(item.getSortNum() + 1);
+    private Map<CSVColumn, Long> frameBoardEdges(final PartFrameData part, final BoardPosition position) {
+        if (part.frameType() == FrameType.VERTICAL) {
+            return switch (position) {
+                case A1 -> Map.of(
+                        CSVColumn.EDGE_A1, part.edgeIdA1(),
+                        CSVColumn.EDGE_A2, part.edgeIdA1I()
+                );
+                case A2 -> Map.of(
+                        CSVColumn.EDGE_A1, part.edgeIdA2I(),
+                        CSVColumn.EDGE_A2, part.edgeIdA2()
+                );
+                case B1 -> Map.of(
+                        CSVColumn.EDGE_A1, part.edgeIdA1(),
+                        CSVColumn.EDGE_A2, part.edgeIdA2(),
+                        CSVColumn.EDGE_B1, part.edgeIdB1(),
+                        CSVColumn.EDGE_B2, part.edgeIdB1I()
+                );
+                case B2 -> Map.of(
+                        CSVColumn.EDGE_A1, part.edgeIdA1(),
+                        CSVColumn.EDGE_A2, part.edgeIdA2(),
+                        CSVColumn.EDGE_B1, part.edgeIdB2I(),
+                        CSVColumn.EDGE_B2, part.edgeIdB2()
+                );
+                default -> throw new InvalidParameterException("Unsupported board position: " + position);
+            };
+        } else {
+            return switch (position) {
+                case A1 -> Map.of(
+                        CSVColumn.EDGE_A1, part.edgeIdA1(),
+                        CSVColumn.EDGE_A2, part.edgeIdA1I(),
+                        CSVColumn.EDGE_B1, part.edgeIdB1(),
+                        CSVColumn.EDGE_B2, part.edgeIdB2()
+                );
+                case A2 -> Map.of(
+                        CSVColumn.EDGE_A1, part.edgeIdA2I(),
+                        CSVColumn.EDGE_A2, part.edgeIdA2(),
+                        CSVColumn.EDGE_B1, part.edgeIdB1(),
+                        CSVColumn.EDGE_B2, part.edgeIdB2()
+                );
+                case B1 -> Map.of(
+                        CSVColumn.EDGE_B1, part.edgeIdB1(),
+                        CSVColumn.EDGE_B2, part.edgeIdB1I()
+                );
+                case B2 -> Map.of(
+                        CSVColumn.EDGE_B1, part.edgeIdB2I(),
+                        CSVColumn.EDGE_B2, part.edgeIdB2()
+                );
+                default -> throw new InvalidParameterException("Unsupported board position: " + position);
+            };
+        }
+    }
+
+    private void addPart(final CSVPropertiesData csvProperties,
+                         final List<OrderBoardData> boards,
+                         final List<OrderEdgeData> edges,
+                         final Map<Long, String> materialNames,
+                         final OrderItemDo item,
+                         final PartData part,
+                         final String nameFormat,
+                         final BoardPosition position,
+                         final DimensionsData dimensions,
+                         final boolean orientation,
+                         final Map<CSVColumn, Long> partEdges,
+                         final boolean description,
+                         final Map<CSVColumn, String> data
+    ) {
+        // NUMBER
+        addNumber(csvProperties, item, position, data);
+        // NAME
+        addName(csvProperties, nameFormat, item, position, part.dimensions().get(position), data);
+        // MATERIAL
+        data.put(CSVColumn.MATERIAL, getMaterial(materialNames, part.boards().get(position)));
+        // DECOR
+        data.put(CSVColumn.DECOR, getDecor(boards, part.boards().get(position)));
+        // DIMENSIONS
+        addDimensions(dimensions, data);
+        // QUANTITY
+        data.put(CSVColumn.QUANTITY, toString(item.getQuantity()));
+        // ORIENTATION
+        data.put(CSVColumn.ORIENTATION, toString(orientation));
+        // THICKNESS
+        data.put(CSVColumn.THICKNESS, getThickness(boards, part.boards().get(position)));
+        // EDGES
+        addEdges(csvProperties, edges, partEdges, data);
+        // CORNERS
+        addCorners(csvProperties, edges, part, data);
+        // DESCRIPTION
+        if (description) {
+            data.put(CSVColumn.DESCRIPTION, addQuotes(item.getDescription()));
+        }
+    }
+
+    private void addNumber(final CSVPropertiesData csvProperties,
+                           final OrderItemDo item,
+                           final BoardPosition position,
+                           final Map<CSVColumn, String> data) {
+        data.put(CSVColumn.NUMBER,
+                getNumber(csvProperties.numberFormat(), item.getSortNum() + 1, getPositionName(csvProperties, position)));
+    }
+
+    private void addName(final CSVPropertiesData csvProperties,
+                         final String format,
+                         final OrderItemDo item,
+                         final BoardPosition position,
+                         final DimensionsData dimensions,
+                         final Map<CSVColumn, String> data
+    ) {
+        data.put(CSVColumn.NAME, getName(
+                format,
+                item.getName(),
+                getPositionName(csvProperties, position),
+                dimensions,
+                item.getQuantity()
+        ));
+    }
+
+    private void addDimensions(final DimensionsData dimensions, final Map<CSVColumn, String> data) {
+        // X_DIMENSION
+        data.put(CSVColumn.X_DIMENSION, toString(dimensions.x().intValue()));
+        // Y_DIMENSION
+        data.put(CSVColumn.Y_DIMENSION, toString(dimensions.y().intValue()));
+    }
+
+    private void addEdges(final CSVPropertiesData csvProperties,
+                          final List<OrderEdgeData> edges,
+                          final Map<CSVColumn, Long> partEdges,
+                          final Map<CSVColumn, String> data) {
+        partEdges.forEach((key, value) -> data.put(key, getEdge(csvProperties.edgeFormat(), edges, value)));
+    }
+
+    private void addCorners(final CSVPropertiesData csvProperties, final List<OrderEdgeData> edges, final PartData part, final Map<CSVColumn, String> data) {
+        part.corners().forEach((key, value) -> {
+            data.put(switch (key) {
+                        case A1B1 -> CSVColumn.CORNER_A1B1;
+                        case A1B2 -> CSVColumn.CORNER_A1B2;
+                        case A2B1 -> CSVColumn.CORNER_A2B1;
+                        case A2B2 -> CSVColumn.CORNER_A2B2;
+                    },
+                    getCorner(csvProperties, edges, key, value)
+            );
+        });
+    }
+
+    private String getNumber(final String format, final int num, final String positionName) {
+        return addQuotes(format.formatted(num, positionName));
+    }
+
+    private String getName(final String format,
+                           final String itemName,
+                           final String positionName,
+                           final DimensionsData partDimensions,
+                           final Integer quantity) {
+        return addQuotes(format.formatted(itemName, positionName, partDimensions.x().intValue(), partDimensions.y().intValue(), quantity));
     }
 
     private String getMaterial(final Map<Long, String> materialNames, final long boardId) {
-        return putIntoQuotes(normalize(materialNames.get(boardId)));
-    }
-//
-//    private String getCodes(final List<OrderBoardData> boards, final PartData part, final) {
-//        final OrderBoardData board = findBoard(boards, boardId);
-//        return putIntoQuotes(normalize(board.boardCode() + "_" + board.structureCode() + "_" + board.name()));
-//    }
-//
-//    private String getThickness(final List<OrderBoardData> boards, final long boardId) {
-//        final OrderBoardData board = findBoard(boards, boardId);
-//        return toString(board.thickness());
-//    }
-
-    private String normalize(final String s) {
-        return Optional.ofNullable(s)
-                .map(scDf::toDf)
-                .orElse("")
-                .replaceAll("<.*?>", "")
-                .replaceAll("\\s+", "_");
+        return addQuotes(materialNames.getOrDefault(boardId, MATERIAL_NOT_FOUND));
     }
 
-    private String putIntoQuotes(final String s) {
+    private String getDecor(final List<OrderBoardData> boards, final long boardId) {
+        final Optional<OrderBoardData> board = findBoard(boards, boardId);
+        return addQuotes(board.map(OrderBoardData::boardCode).orElse(BOARD_NOT_FOUND) + " " +
+                board.map(OrderBoardData::structureCode).orElse(BOARD_NOT_FOUND) + " " +
+                board.map(OrderBoardData::name).orElse(BOARD_NOT_FOUND)
+        );
+    }
+
+    private String getThickness(final List<OrderBoardData> boards, final long boardId) {
+        final Optional<OrderBoardData> board = findBoard(boards, boardId);
+        return board.map(OrderBoardData::thickness).map(BigDecimal::intValue).map(this::toString).orElse("");
+    }
+
+    private String getEdge(final String format, final List<OrderEdgeData> edges, final Long edgeId) {
+        return addQuotes(edgeString(format, edges, edgeId));
+    }
+
+    private String edgeString(final String format, final List<OrderEdgeData> edges, final Long edgeId) {
+        if (edgeId == null) {
+            return "";
+        }
+        final Optional<OrderEdgeData> edge = findEdge(edges, edgeId);
+        return format.formatted(
+                edge.map(OrderEdgeData::code).orElse(EDGE_NOT_FOUND),
+                edge.map(OrderEdgeData::width).map(BigDecimal::intValue).orElse(0),
+                edge.map(OrderEdgeData::thickness).map(BigDecimal::doubleValue).orElse(0d)
+        );
+    }
+
+    private String getCorner(final CSVPropertiesData csvProperties,
+                             final List<OrderEdgeData> edges,
+                             final CornerPosition position,
+                             final PartCornerData partCorner) {
+        if (partCorner == null) {
+            return addQuotes("");
+        }
+
+        return addQuotes(cornerString(csvProperties, position, partCorner) + " " + edgeString(csvProperties.edgeFormat(), edges, partCorner.edgeId()));
+    }
+
+    private String cornerString(final CSVPropertiesData csvProperties, final CornerPosition position, final PartCornerData partCorner) {
+        return switch (partCorner) {
+            case final PartCornerStraightData partCornerStraightData -> csvProperties.cornerStraightFormat().formatted(
+                    csvProperties.corners().getOrDefault(position, position.name()),
+                    partCornerStraightData.dimensions().x().intValue(),
+                    partCornerStraightData.dimensions().y().intValue()
+            );
+            case final PartCornerRoundedData partCornerRoundedData -> csvProperties.cornerStraightFormat().formatted(
+                    csvProperties.corners().getOrDefault(position, position.name()),
+                    partCornerRoundedData.radius().intValue()
+            );
+            default ->
+                    throw new InvalidParameterException("Unsupported part corner type: " + partCorner.getClass().getSimpleName());
+        };
+    }
+
+    private Optional<OrderBoardData> findBoard(final List<OrderBoardData> boards, final long boardId) {
+        return boards.stream().filter(board -> board.id().equals(boardId)).findFirst();
+    }
+
+    private Optional<OrderEdgeData> findEdge(final List<OrderEdgeData> edges, final long edgeId) {
+        return edges.stream().filter(edge -> edge.id().equals(edgeId)).findFirst();
+    }
+
+    private String getPositionName(final CSVPropertiesData csvProperties, final BoardPosition position) {
+        return csvProperties.boards().getOrDefault(position, position.name());
+    }
+
+    private String addQuotes(final String s) {
         return Optional.ofNullable(s).map(d -> "\"" + d + "\"").orElse("\"\"");
     }
 
@@ -291,20 +560,16 @@ public class OrderCsvUtilService {
         return Optional.ofNullable(i).map(Object::toString).orElse("0");
     }
 
-    private String toString(final BigDecimal b) {
-        return Optional.ofNullable(b)
-                .map(v -> v.setScale(0, RoundingMode.HALF_UP))
-                .map(BigDecimal::toPlainString)
-                .orElse("0");
-    }
+    private void printLine(final PrintWriter writer, final CSVPropertiesData csvProperties, final Map<CSVColumn, String> data) {
+        String s = Arrays.stream(CSVColumn.values())
+                .map(key -> data.getOrDefault(key, ""))
+                .map(scDf::toDf)
+                .reduce("", (s1, s2) -> s1 + csvProperties.separator() + s2);
 
-    private void printLine(final PrintWriter writer, final String separator, final List<String> line) {
-        writer.println(line.stream().reduce("", (s1, s2) -> s1 + separator + s2));
-    }
+        for (final String regex : csvProperties.replacements().keySet()) {
+            s = s.replaceAll(regex, csvProperties.replacements().get(regex));
+        }
 
-    private Optional<OrderBoardData> findBoard(final List<OrderBoardData> boards, final long id) {
-        return boards.stream()
-                .filter(b -> b.id() == id)
-                .findFirst();
+        writer.println(s);
     }
 }

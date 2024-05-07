@@ -373,6 +373,10 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('OR
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('CSV_PROPERTIES', e'{
 "separator":";",
+"replacements":{
+"<.*?>":"",
+"\\s+":"_"
+},
 "columns":{
 "NUMBER":"NUMBER",
 "NAME":"NAME",
@@ -421,11 +425,14 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('CS
 "A2B1":"A2B1",
 "A2B2":"A2B2"
 },
-"numberFormat":"%s %s",
-"nameBasicFormat":"%s (basic %s - %s x %s mm - %s p)",
-"nameFrameFormat":"%s (frame %s - %s x %s mm - %s p)",
-"nameDuplicatedBasicFormat":"%s (duplicated basic %s - %s x %s mm - %s p)",
-"nameDuplicatedFrameFormat":"%s (duplicated frame %s - %s x %s mm - %s p)"
+"numberFormat":"%d %s",
+"nameBasicFormat":"%s (basic %s - %d x %d mm - %d p)",
+"nameFrameFormat":"%s (frame %s - %d x %d mm - %d p)",
+"nameDuplicatedBasicFormat":"%s (duplicated basic %s - %d x %d mm - %d p)",
+"nameDuplicatedFrameFormat":"%s (duplicated frame %s - %d x %d mm - %d p)"
+"edgeFormat":"%s %dx%f",
+"cornerStraightFormat":"%s %dx%d",
+"cornerRoundedFormat":"%s r%d"
 }');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ( 'BOARD_MATERIAL_CATEGORY', '-1');

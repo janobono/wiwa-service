@@ -9,6 +9,7 @@ import java.util.Map;
 
 public record CSVPropertiesData(
         String separator,
+        Map<String, String> replacements,
         Map<CSVColumn, String> columns,
         Map<BoardPosition, String> boards,
         Map<EdgePosition, String> edges,
@@ -17,6 +18,9 @@ public record CSVPropertiesData(
         String nameBasicFormat,
         String nameFrameFormat,
         String nameDuplicatedBasicFormat,
-        String nameDuplicatedFrameFormat
+        String nameDuplicatedFrameFormat,
+        String edgeFormat,
+        String cornerStraightFormat,
+        String cornerRoundedFormat
 ) {
 }
