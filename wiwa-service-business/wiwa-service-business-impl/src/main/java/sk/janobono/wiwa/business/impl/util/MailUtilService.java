@@ -15,7 +15,6 @@ import org.thymeleaf.context.IContext;
 import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
 import sk.janobono.wiwa.business.impl.model.mail.MailData;
 import sk.janobono.wiwa.business.impl.model.mail.MailLinkData;
-import sk.janobono.wiwa.business.impl.model.mail.MailTemplate;
 
 import java.util.Collection;
 import java.util.Map;
@@ -61,7 +60,7 @@ public class MailUtilService {
                 });
 
                 messageHelper.setSubject(mail.subject());
-                messageHelper.setText(format(mail.template(), mail.content()), mail.template().getHtml());
+                messageHelper.setText(format(mail.content()), true);
 
                 Optional.ofNullable(mail.attachments()).map(Map::entrySet).stream().flatMap(Collection::stream).forEach(attachment -> {
                     try {
@@ -83,8 +82,8 @@ public class MailUtilService {
         }
     }
 
-    private String format(final MailTemplate template, final MailContentData mailBaseContent) {
-        return templateEngine.process(template.getTemplate(), getContext(mailBaseContent));
+    private String format(final MailContentData mailBaseContent) {
+        return templateEngine.process("MailTemplate", getContext(mailBaseContent));
     }
 
     private IContext getContext(final MailContentData mailBaseContent) {

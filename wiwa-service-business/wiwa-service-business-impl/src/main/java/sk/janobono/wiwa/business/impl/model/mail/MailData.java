@@ -13,7 +13,6 @@ public record MailData(
         List<String> recipients,
         List<String> cc,
         String subject,
-        MailTemplate template,
         MailContentData content,
         Map<String, File> attachments
 ) {

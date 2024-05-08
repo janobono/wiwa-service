@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
 import sk.janobono.wiwa.business.impl.model.mail.MailData;
 import sk.janobono.wiwa.business.impl.model.mail.MailLinkData;
-import sk.janobono.wiwa.business.impl.model.mail.MailTemplate;
 import sk.janobono.wiwa.business.impl.util.MailUtilService;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
 import sk.janobono.wiwa.business.model.application.ResetPasswordMailData;
@@ -237,7 +236,6 @@ public class AuthServiceImpl implements AuthService {
                 .from(commonConfigProperties.mail())
                 .recipients(List.of(user.getEmail()))
                 .subject(resetPasswordMail.subject())
-                .template(MailTemplate.BASE)
                 .content(MailContentData.builder()
                         .title(resetPasswordMail.title())
                         .lines(List.of(
@@ -269,7 +267,6 @@ public class AuthServiceImpl implements AuthService {
                 .from(commonConfigProperties.mail())
                 .recipients(List.of(user.getEmail()))
                 .subject(signUpMail.subject())
-                .template(MailTemplate.BASE)
                 .content(MailContentData.builder()
                         .title(signUpMail.title())
                         .lines(List.of(signUpMail.message()))

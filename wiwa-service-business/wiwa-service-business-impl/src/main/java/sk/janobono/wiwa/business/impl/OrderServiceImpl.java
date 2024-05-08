@@ -16,7 +16,6 @@ import sk.janobono.wiwa.business.impl.component.part.PartFrameUtil;
 import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
 import sk.janobono.wiwa.business.impl.model.mail.MailData;
 import sk.janobono.wiwa.business.impl.model.mail.MailLinkData;
-import sk.janobono.wiwa.business.impl.model.mail.MailTemplate;
 import sk.janobono.wiwa.business.impl.util.MailUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderCsvUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderPdfUtilService;
@@ -165,8 +164,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public byte[] getPdf(final long id) {
-        final OrderViewDo orderViewDo = getOrderViewDo(id);
-        final Path pdf = orderPdfUtilService.generatePdf(orderViewDo);
+        final Path pdf = orderPdfUtilService.generatePdf(getOrder(id));
         try {
             return Files.readAllBytes(pdf);
         } catch (final IOException e) {
@@ -233,7 +231,16 @@ public class OrderServiceImpl implements OrderService {
                 .taxId(sendOrder.contact().taxId())
                 .build());
 
-        final Path pdf = orderPdfUtilService.generatePdf(orderViewDo);
+        orderStatusRepository.save(OrderStatusDo.builder()
+                .orderId(id)
+                .userId(modifierId)
+                .created(LocalDateTime.now())
+                .status(OrderStatus.SENT)
+                .build());
+
+        final OrderData order = getOrder(id);
+
+        final Path pdf = orderPdfUtilService.generatePdf(order);
 
         final OrderSendMailData orderSendMail = applicationPropertyService.getOrderSendMail();
         mailUtilService.sendEmail(MailData.builder()
@@ -241,7 +248,6 @@ public class OrderServiceImpl implements OrderService {
                 .recipients(getEmails(owner, orderContact))
                 .cc(List.of(commonConfigProperties.ordersMail()))
                 .subject(orderSendMail.subject().formatted(orderViewDo.orderNumber()))
-                .template(MailTemplate.BASE)
                 .content(MailContentData.builder()
                         .title(orderSendMail.title().formatted(orderViewDo.orderNumber()))
                         .lines(List.of(orderSendMail.message()))
@@ -256,14 +262,7 @@ public class OrderServiceImpl implements OrderService {
                 ))
                 .build());
 
-        orderStatusRepository.save(OrderStatusDo.builder()
-                .orderId(id)
-                .userId(modifierId)
-                .created(LocalDateTime.now())
-                .status(OrderStatus.SENT)
-                .build());
-
-        return getOrder(id);
+        return order;
     }
 
     @Override
@@ -282,13 +281,21 @@ public class OrderServiceImpl implements OrderService {
         final MailData.MailDataBuilder mailDataBuilder = MailData.builder();
         mailDataBuilder.from(commonConfigProperties.mail())
                 .recipients(getEmails(owner, orderContactRepository.findByOrderId(id).orElse(null)))
-                .cc(List.of(commonConfigProperties.ordersMail()))
-                .template(MailTemplate.BASE);
+                .cc(List.of(commonConfigProperties.ordersMail()));
 
         final MailLinkData mailLink = MailLinkData.builder()
                 .href(getOrderUrl(id))
                 .text(orderStatusMail.link())
                 .build();
+
+        orderStatusRepository.save(OrderStatusDo.builder()
+                .orderId(id)
+                .userId(modifierId)
+                .created(LocalDateTime.now())
+                .status(orderStatusChange.newStatus())
+                .build());
+
+        final OrderData order = getOrder(id);
 
         if (orderStatusChange.notifyUser()) {
             switch (orderStatusChange.newStatus()) {
@@ -301,7 +308,7 @@ public class OrderServiceImpl implements OrderService {
                             .build());
                     break;
                 case READY:
-                    final Path pdf = orderPdfUtilService.generatePdf(orderViewDo);
+                    final Path pdf = orderPdfUtilService.generatePdf(order);
                     mailDataBuilder.subject(orderStatusMail.readySubject().formatted(orderViewDo.orderNumber()));
                     mailDataBuilder.content(MailContentData.builder()
                             .title(orderStatusMail.readyTitle().formatted(orderViewDo.orderNumber()))
@@ -331,17 +338,9 @@ public class OrderServiceImpl implements OrderService {
                     break;
             }
         }
-
         mailUtilService.sendEmail(mailDataBuilder.build());
 
-        orderStatusRepository.save(OrderStatusDo.builder()
-                .orderId(id)
-                .userId(modifierId)
-                .created(LocalDateTime.now())
-                .status(orderStatusChange.newStatus())
-                .build());
-
-        return getOrder(id);
+        return order;
     }
 
     @Override
@@ -363,7 +362,6 @@ public class OrderServiceImpl implements OrderService {
                 .recipients(getEmails(owner, orderContactRepository.findByOrderId(id).orElse(null)))
                 .cc(List.of(commonConfigProperties.ordersMail()))
                 .subject(orderCommentMail.subject().formatted(orderViewDo.orderNumber()))
-                .template(MailTemplate.BASE)
                 .content(MailContentData.builder()
                         .title(orderCommentMail.title().formatted(orderViewDo.orderNumber()))
                         .lines(List.of(
