@@ -97,4 +97,8 @@ public interface ApplicationPropertyService {
     BoardCategoryData getBoardMaterialCategory();
 
     BoardCategoryData setBoardMaterialCategory(final long categoryId);
+
+    PDFPropertiesData getPDFProperties();
+
+    PDFPropertiesData setPDFProperties(PDFPropertiesData pdfProperties);
 }

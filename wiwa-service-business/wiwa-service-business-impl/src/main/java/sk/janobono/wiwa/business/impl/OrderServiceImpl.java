@@ -43,7 +43,6 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.InvalidParameterException;
-import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -241,10 +240,10 @@ public class OrderServiceImpl implements OrderService {
                 .from(commonConfigProperties.mail())
                 .recipients(getEmails(owner, orderContact))
                 .cc(List.of(commonConfigProperties.ordersMail()))
-                .subject(MessageFormat.format(orderSendMail.subject(), orderViewDo.orderNumber()))
+                .subject(orderSendMail.subject().formatted(orderViewDo.orderNumber()))
                 .template(MailTemplate.BASE)
                 .content(MailContentData.builder()
-                        .title(MessageFormat.format(orderSendMail.title(), orderViewDo.orderNumber()))
+                        .title(orderSendMail.title().formatted(orderViewDo.orderNumber()))
                         .lines(List.of(orderSendMail.message()))
                         .mailLink(MailLinkData.builder()
                                 .href(getOrderUrl(id))
@@ -252,7 +251,7 @@ public class OrderServiceImpl implements OrderService {
                                 .build())
                         .build())
                 .attachments(Map.of(
-                        MessageFormat.format(orderSendMail.attachment(), orderViewDo.orderNumber()),
+                        orderSendMail.attachment().formatted(orderViewDo.orderNumber()),
                         pdf.toFile()
                 ))
                 .build());
@@ -294,38 +293,38 @@ public class OrderServiceImpl implements OrderService {
         if (orderStatusChange.notifyUser()) {
             switch (orderStatusChange.newStatus()) {
                 case IN_PRODUCTION:
-                    mailDataBuilder.subject(MessageFormat.format(orderStatusMail.productionSubject(), orderViewDo.orderNumber()));
+                    mailDataBuilder.subject(orderStatusMail.productionSubject().formatted(orderViewDo.orderNumber()));
                     mailDataBuilder.content(MailContentData.builder()
-                            .title(MessageFormat.format(orderStatusMail.productionTitle(), orderViewDo.orderNumber()))
+                            .title(orderStatusMail.productionTitle().formatted(orderViewDo.orderNumber()))
                             .lines(List.of(orderStatusMail.productionMessage()))
                             .mailLink(mailLink)
                             .build());
                     break;
                 case READY:
                     final Path pdf = orderPdfUtilService.generatePdf(orderViewDo);
-                    mailDataBuilder.subject(MessageFormat.format(orderStatusMail.readySubject(), orderViewDo.orderNumber()));
+                    mailDataBuilder.subject(orderStatusMail.readySubject().formatted(orderViewDo.orderNumber()));
                     mailDataBuilder.content(MailContentData.builder()
-                            .title(MessageFormat.format(orderStatusMail.readyTitle(), orderViewDo.orderNumber()))
+                            .title(orderStatusMail.readyTitle().formatted(orderViewDo.orderNumber()))
                             .lines(List.of(orderStatusMail.readyMessage()))
                             .mailLink(mailLink)
                             .build());
                     mailDataBuilder.attachments(Map.of(
-                            MessageFormat.format(orderStatusMail.attachment(), orderViewDo.orderNumber()),
+                            orderStatusMail.attachment().formatted(orderViewDo.orderNumber()),
                             pdf.toFile()
                     ));
                     break;
                 case FINISHED:
-                    mailDataBuilder.subject(MessageFormat.format(orderStatusMail.finishedSubject(), orderViewDo.orderNumber()));
+                    mailDataBuilder.subject(orderStatusMail.finishedSubject().formatted(orderViewDo.orderNumber()));
                     mailDataBuilder.content(MailContentData.builder()
-                            .title(MessageFormat.format(orderStatusMail.finishedTitle(), orderViewDo.orderNumber()))
+                            .title(orderStatusMail.finishedTitle().formatted(orderViewDo.orderNumber()))
                             .lines(List.of(orderStatusMail.finishedMessage()))
                             .mailLink(mailLink)
                             .build());
                     break;
                 case CANCELLED:
-                    mailDataBuilder.subject(MessageFormat.format(orderStatusMail.cancelledSubject(), orderViewDo.orderNumber()));
+                    mailDataBuilder.subject(orderStatusMail.cancelledSubject().formatted(orderViewDo.orderNumber()));
                     mailDataBuilder.content(MailContentData.builder()
-                            .title(MessageFormat.format(orderStatusMail.cancelledTitle(), orderViewDo.orderNumber()))
+                            .title(orderStatusMail.cancelledTitle().formatted(orderViewDo.orderNumber()))
                             .lines(List.of(orderStatusMail.cancelledMessage()))
                             .mailLink(mailLink)
                             .build());
@@ -363,10 +362,10 @@ public class OrderServiceImpl implements OrderService {
                 .from(commonConfigProperties.mail())
                 .recipients(getEmails(owner, orderContactRepository.findByOrderId(id).orElse(null)))
                 .cc(List.of(commonConfigProperties.ordersMail()))
-                .subject(MessageFormat.format(orderCommentMail.subject(), orderViewDo.orderNumber()))
+                .subject(orderCommentMail.subject().formatted(orderViewDo.orderNumber()))
                 .template(MailTemplate.BASE)
                 .content(MailContentData.builder()
-                        .title(MessageFormat.format(orderCommentMail.title(), orderViewDo.orderNumber()))
+                        .title(orderCommentMail.title().formatted(orderViewDo.orderNumber()))
                         .lines(List.of(
                                 orderCommentMail.message(),
                                 orderCommentChange.comment()

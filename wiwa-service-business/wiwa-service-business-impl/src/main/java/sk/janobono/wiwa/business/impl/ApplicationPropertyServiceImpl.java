@@ -43,6 +43,7 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     private static final String ORDER_STATUS_MAIL = "ORDER_STATUS_MAIL";
     private static final String CSV_PROPERTIES = "CSV_PROPERTIES";
     private static final String BOARD_MATERIAL_CATEGORY = "BOARD_MATERIAL_CATEGORY";
+    private static final String PDF_PROPERTIES = "PDF_PROPERTIES";
 
     private final ObjectMapper objectMapper;
 
@@ -479,5 +480,28 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
         }
         propertyUtilService.setProperty(BOARD_MATERIAL_CATEGORY, Long.toString(categoryId));
         return getBoardMaterialCategory();
+    }
+
+    @Override
+    public PDFPropertiesData getPDFProperties() {
+        return propertyUtilService.getProperty(v -> {
+            try {
+                return objectMapper.readValue(v, PDFPropertiesData.class);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, PDF_PROPERTIES);
+    }
+
+    @Override
+    public PDFPropertiesData setPDFProperties(final PDFPropertiesData pdfProperties) {
+        propertyUtilService.setProperty(data -> {
+            try {
+                return objectMapper.writeValueAsString(data);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, PDF_PROPERTIES, pdfProperties);
+        return pdfProperties;
     }
 }

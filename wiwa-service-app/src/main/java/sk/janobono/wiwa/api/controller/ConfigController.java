@@ -243,4 +243,16 @@ public class ConfigController {
     public BoardCategoryWebDto setBoardMaterialCategory(@Valid @RequestBody final SingleValueBodyWebDto<Long> categoryId) {
         return configApiService.setBoardMaterialCategory(categoryId.value());
     }
+
+    @GetMapping(value = "/pdf-properties")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public PDFPropertiesWebDto getPDFProperties() {
+        return configApiService.getPDFProperties();
+    }
+
+    @PostMapping(value = "/pdf-properties")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public PDFPropertiesWebDto setPDFProperties(@Valid @RequestBody final PDFPropertiesWebDto pdfProperties) {
+        return configApiService.setPDFProperties(pdfProperties);
+    }
 }

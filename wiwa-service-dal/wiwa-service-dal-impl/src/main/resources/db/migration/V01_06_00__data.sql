@@ -209,7 +209,7 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('RE
 "subject":"Password activation",
 "title":"Password activation",
 "message":"We have generated a new password for you. Please do not reply to this message.",
-"passwordMessage":"New password: {0}",
+"passwordMessage":"New password: %s",
 "link":"Click to activate the password."
 }');
 
@@ -340,35 +340,35 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('FR
 ]');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('ORDER_COMMENT_MAIL', e'{
-"subject":"Order comment - order No.{0}",
-"title":"Order comment - order No.{0}",
+"subject":"Order comment - order No.%03d",
+"title":"Order comment - order No.%03d",
 "message":"New comment was added. Please do not reply to this message.",
 "link":"Click to see order details."
 }');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('ORDER_SEND_MAIL', e'{
-"subject":"Order send - order No.{0}",
-"title":"Order send - order No.{0}",
+"subject":"Order send - order No.%03d",
+"title":"Order send - order No.%03d",
 "message":"Order was send. Please do not reply to this message.",
 "link":"Click to see order details.",
-"attachment":"detail{0}.pdf"
+"attachment":"detail%03d.pdf"
 }');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('ORDER_STATUS_MAIL', e'{
-"productionSubject":"Order in production - order No.{0}",
-"productionTitle":"Order in production - order No.{0}",
+"productionSubject":"Order in production - order No.%03d",
+"productionTitle":"Order in production - order No.%03d",
 "productionMessage":"Your order is in production. Please do not reply to this message.",
-"readySubject":"Order is ready for pickup - order No.{0}",
-"readyTitle":"Order is ready for pickup - order No.{0}",
+"readySubject":"Order is ready for pickup - order No.%03d",
+"readyTitle":"Order is ready for pickup - order No.%03d",
 "readyMessage":"Your order is ready for pickup. Please do not reply to this message.",
-"finishedSubject":"Thank you - order No.{0}",
-"finishedTitle":"Thank you - order No.{0}",
+"finishedSubject":"Thank you - order No.%03d",
+"finishedTitle":"Thank you - order No.%03d",
 "finishedMessage":"Thank you for your order. Please do not reply to this message.",
-"cancelledSubject":"Order cancelled - order No.{0}",
-"cancelledTitle":"Order cancelled - order No.{0}",
+"cancelledSubject":"Order cancelled - order No.%03d",
+"cancelledTitle":"Order cancelled - order No.%03d",
 "cancelledMessage":"We are sorry, but we had to cancel your order. Please do not reply to this message.",
 "link":"Click to see order details.",
-"attachment":"detail{0}.pdf"
+"attachment":"detail%03d.pdf"
 }');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('CSV_PROPERTIES', e'{
@@ -436,3 +436,7 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('CS
 }');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ( 'BOARD_MATERIAL_CATEGORY', '-1');
+
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PDF_PROPERTIES', e'{
+"titleFormat":"Order no.%d"
+}');

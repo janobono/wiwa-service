@@ -66,8 +66,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
+            <groupId>com.ironsoftware</groupId>
+            <artifactId>ironpdf</artifactId>
         </dependency>
 
         <!-- Test -->

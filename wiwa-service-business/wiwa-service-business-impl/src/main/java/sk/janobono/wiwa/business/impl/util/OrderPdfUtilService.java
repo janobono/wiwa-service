@@ -1,6 +1,6 @@
 package sk.janobono.wiwa.business.impl.util;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
+import com.ironsoftware.ironpdf.*;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.dal.domain.OrderViewDo;
 
@@ -12,12 +12,16 @@ import java.nio.file.Path;
 public class OrderPdfUtilService {
 
     public Path generatePdf(final OrderViewDo orderViewDo) {
-        try (final PDDocument doc = new PDDocument()) {
+        try (final PdfDocument pdfDocument = PdfDocument.renderHtmlAsPdf("<h1> ~Hello World~ </h1> Made with IronPDF!")){
+
+
+
+
 
             // TODO
 
             final Path path = Files.createTempFile("wiwa", ".pdf");
-            doc.save(path.toFile());
+            pdfDocument.saveAs(path);
             return path;
         } catch (final IOException e) {
             throw new RuntimeException(e);

@@ -29,7 +29,6 @@ import sk.janobono.wiwa.model.User;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -243,10 +242,9 @@ public class AuthServiceImpl implements AuthService {
                         .title(resetPasswordMail.title())
                         .lines(List.of(
                                 resetPasswordMail.message(),
-                                MessageFormat.format(
-                                        resetPasswordMail.passwordMessage(),
-                                        data.get(AuthTokenKey.NEW_PASSWORD.name())
-                                )))
+                                resetPasswordMail.passwordMessage()
+                                        .formatted(data.get(AuthTokenKey.NEW_PASSWORD.name())
+                                        )))
                         .mailLink(MailLinkData.builder()
                                 .href(getTokenUrl(commonConfigProperties.webUrl(), commonConfigProperties.confirmPath(), token))
                                 .text(resetPasswordMail.link())

@@ -183,4 +183,12 @@ public class ConfigApiService {
     public BoardCategoryWebDto setBoardMaterialCategory(final long categoryId) {
         return boardWebMapper.mapToWebDto(applicationPropertyService.setBoardMaterialCategory(categoryId));
     }
+
+    public PDFPropertiesWebDto getPDFProperties() {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getPDFProperties());
+    }
+
+    public PDFPropertiesWebDto setPDFProperties(final PDFPropertiesWebDto pdfProperties) {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.setPDFProperties(uiWebMapper.mapToData(pdfProperties)));
+    }
 }
