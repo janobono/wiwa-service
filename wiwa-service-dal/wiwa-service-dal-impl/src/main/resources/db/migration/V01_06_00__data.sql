@@ -30,7 +30,7 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('CO
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('UNITS', e'[
 {"id":"MILLIMETER","value":"mm"},
 {"id":"METER","value":"m"},
-{"id":"SQUARE_METER","value":"m2"},
+{"id":"SQUARE_METER","value":"㎡"},
 {"id":"KILOGRAM","value":"kg"},
 {"id":"PIECE","value":"p"}
 ]');
@@ -438,5 +438,11 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('CS
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ( 'BOARD_MATERIAL_CATEGORY', '-1');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PDF_PROPERTIES', e'{
-"titleFormat":"Order no.%d"
+"titleFormat":"Order no.%d",
+"packageType":{
+"NO_PACKAGE":"NO_PACKAGE",
+"NO_PACKAGE_WITH_REMAINS":"NO_PACKAGE_WITH_REMAINS",
+"PACKAGE":"PACKAGE",
+"PACKAGE_WITH_REMAINS":"PACKAGE_WITH_REMAINS"
+}
 }');

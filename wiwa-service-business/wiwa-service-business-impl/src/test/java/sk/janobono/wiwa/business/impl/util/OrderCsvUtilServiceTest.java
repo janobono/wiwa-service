@@ -19,10 +19,8 @@ import sk.janobono.wiwa.business.model.order.OrderEdgeData;
 import sk.janobono.wiwa.business.model.order.part.PartData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.component.ScDf;
-import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.domain.OrderItemDo;
 import sk.janobono.wiwa.dal.domain.OrderViewDo;
-import sk.janobono.wiwa.dal.repository.BoardCodeListItemRepository;
 import sk.janobono.wiwa.dal.repository.OrderItemRepository;
 import sk.janobono.wiwa.dal.repository.OrderMaterialRepository;
 import sk.janobono.wiwa.model.OrderPackageType;
@@ -48,9 +46,6 @@ class OrderCsvUtilServiceTest {
     private OrderCsvUtilService orderCsvUtilService;
 
     @Mock
-    private BoardCodeListItemRepository boardCodeListItemRepository;
-
-    @Mock
     private OrderItemRepository orderItemRepository;
 
     @Mock
@@ -58,6 +53,9 @@ class OrderCsvUtilServiceTest {
 
     @Mock
     private ApplicationPropertyService applicationPropertyService;
+
+    @Mock
+    private MaterialUtilService materialUtilService;
 
     private DataUtil dataUtil;
 
@@ -76,10 +74,10 @@ class OrderCsvUtilServiceTest {
                 new ScDf(),
                 dataUtil,
                 materialUtil,
-                boardCodeListItemRepository,
                 orderItemRepository,
                 orderMaterialRepository,
-                applicationPropertyService
+                applicationPropertyService,
+                materialUtilService
         );
 
         Mockito.when(applicationPropertyService.getManufactureProperties()).thenReturn(
@@ -135,13 +133,14 @@ class OrderCsvUtilServiceTest {
                 new BoardCategoryData(1L, "code", "name")
         );
 
-        Mockito.when(boardCodeListItemRepository.findByBoardId(Mockito.anyLong())).thenReturn(
-                List.of(CodeListItemDo.builder()
-                        .id(1L)
-                        .codeListId(1L)
-                        .value("material1")
-                        .build())
+        Mockito.when(materialUtilService.getMaterialNames(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(
+                Map.of(1L, "material1", 2L, "material2")
         );
+
+        Mockito.when(materialUtilService.findBoard(Mockito.any(), Mockito.anyLong())).thenCallRealMethod();
+        Mockito.when(materialUtilService.findEdge(Mockito.any(), Mockito.anyLong())).thenCallRealMethod();
+        Mockito.when(materialUtilService.getDecor(Mockito.any(), Mockito.anyLong(), Mockito.anyString())).thenCallRealMethod();
+        Mockito.when(materialUtilService.getEdge(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenCallRealMethod();
     }
 
     @Test
@@ -224,8 +223,8 @@ class OrderCsvUtilServiceTest {
 
             assertThat(csv).isEqualTo("""
                     "NUMBER";"NAME";"MATERIAL";"DECOR";"X_DIMENSION";"Y_DIMENSION";"QUANTITY";"ORIENTATION";"THICKNESS";"EDGE_A1";"EDGE_A2";"EDGE_B1";"EDGE_B2";"CORNER_A1B1";"CORNER_A1B2";"CORNER_A2B1";"CORNER_A2B2";"DESCRIPTION"
-                    "1_TOP";"basic_(duplicated_basic_TOP-500x500mm-1p)";"material1";"b1_s1_n1";520;520;1;1;10;"e3_38x2.0";"e3_38x2.0";"e3_38x2.0";"e3_38x2.0";"A1B1_50x50_";"A1B2_50x50_";"A2B1_r50_";"A2B2_r50_";"test_basic_part"
-                    "1_BOTTOM";"basic_(duplicated_basic_BOTTOM-500x500mm-1p)";"material1";"b2_s2_n2";520;520;1;1;20;;;;;;;;;
+                    "1_TOP";"basic_(duplicated_basic_TOP-500x500mm-1p)";"material1";"b1_s1_n1";520;520;1;1;10;"e3_38x2.0";"e3_38x2.0";"e3_38x2.0";"e3_38x2.0";"A1B1_50x50";"A1B2_50x50";"A2B1_r50";"A2B2_r50";"test_basic_part"
+                    "1_BOTTOM";"basic_(duplicated_basic_BOTTOM-500x500mm-1p)";"material2";"b2_s2_n2";520;520;1;1;20;;;;;;;;;
                     """);
 
         } finally {
@@ -318,7 +317,7 @@ class OrderCsvUtilServiceTest {
 
             assertThat(csv).isEqualTo("""
                     "NUMBER";"NAME";"MATERIAL";"DECOR";"X_DIMENSION";"Y_DIMENSION";"QUANTITY";"ORIENTATION";"THICKNESS";"EDGE_A1";"EDGE_A2";"EDGE_B1";"EDGE_B2";"CORNER_A1B1";"CORNER_A1B2";"CORNER_A2B1";"CORNER_A2B2";"DESCRIPTION"
-                    "1_TOP";"duplicated_frame_(duplicated_frame_TOP-500x500mm-1p)";"material1";"b1_s1_n1";520;520;1;1;10;"e2_28x1.0";"e2_28x1.0";"e2_28x1.0";"e2_28x1.0";"A1B1_50x50_";"A1B2_50x50_";"A2B1_r50_";"A2B2_r50_";"test_duplicated_frame_part"
+                    "1_TOP";"duplicated_frame_(duplicated_frame_TOP-500x500mm-1p)";"material1";"b1_s1_n1";520;520;1;1;10;"e2_28x1.0";"e2_28x1.0";"e2_28x1.0";"e2_28x1.0";"A1B1_50x50";"A1B2_50x50";"A2B1_r50";"A2B2_r50";"test_duplicated_frame_part"
                     "1_A1";"duplicated_frame_(duplicated_frame_A1-500x100mm-1p)";"material1";"b1_s1_n1";520;110;1;0;10;;"e1_18x0.8";;;;;;;
                     "1_A2";"duplicated_frame_(duplicated_frame_A2-500x100mm-1p)";"material1";"b1_s1_n1";520;110;1;0;10;"e1_18x0.8";;;;;;;;
                     "1_B1";"duplicated_frame_(duplicated_frame_B1-100x300mm-1p)";"material1";"b1_s1_n1";110;300;1;0;10;;;;"e1_18x0.8";;;;;

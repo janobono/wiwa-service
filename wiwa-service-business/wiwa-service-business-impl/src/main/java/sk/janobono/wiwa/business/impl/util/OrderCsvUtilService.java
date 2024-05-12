@@ -10,17 +10,14 @@ import sk.janobono.wiwa.business.impl.component.part.PartFrameUtil;
 import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.application.CSVPropertiesData;
 import sk.janobono.wiwa.business.model.application.ManufacturePropertiesData;
-import sk.janobono.wiwa.business.model.board.BoardCategoryData;
 import sk.janobono.wiwa.business.model.order.OrderBoardData;
 import sk.janobono.wiwa.business.model.order.OrderEdgeData;
 import sk.janobono.wiwa.business.model.order.part.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.component.ScDf;
-import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.domain.OrderItemDo;
 import sk.janobono.wiwa.dal.domain.OrderMaterialDo;
 import sk.janobono.wiwa.dal.domain.OrderViewDo;
-import sk.janobono.wiwa.dal.repository.BoardCodeListItemRepository;
 import sk.janobono.wiwa.dal.repository.OrderItemRepository;
 import sk.janobono.wiwa.dal.repository.OrderMaterialRepository;
 import sk.janobono.wiwa.model.BoardPosition;
@@ -51,18 +48,18 @@ public class OrderCsvUtilService {
     private final DataUtil dataUtil;
     private final MaterialUtil materialUtil;
 
-    private final BoardCodeListItemRepository boardCodeListItemRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderMaterialRepository orderMaterialRepository;
 
     private final ApplicationPropertyService applicationPropertyService;
+    private final MaterialUtilService materialUtilService;
 
     public Path generateCsv(final OrderViewDo orderViewDo) {
         final ManufacturePropertiesData manufactureProperties = applicationPropertyService.getManufactureProperties();
         final CSVPropertiesData csvProperties = applicationPropertyService.getCSVProperties();
         final List<OrderMaterialDo> materials = orderMaterialRepository.findAllByOrderId(orderViewDo.id());
         final List<OrderBoardData> boards = materialUtil.toBoards(materials);
-        final Map<Long, String> materialNames = getMaterialNames(boards, applicationPropertyService.getBoardMaterialCategory());
+        final Map<Long, String> materialNames = materialUtilService.getMaterialNames(boards, applicationPropertyService.getBoardMaterialCategory(), MATERIAL_NOT_FOUND);
         final List<OrderEdgeData> edges = materialUtil.toEdges(materials);
         final List<OrderItemDo> items = orderItemRepository.findAllByOrderId(orderViewDo.id());
 
@@ -82,21 +79,6 @@ public class OrderCsvUtilService {
         } catch (final IOException e) {
             throw new RuntimeException("Line write error.", e);
         }
-    }
-
-    private Map<Long, String> getMaterialNames(final List<OrderBoardData> boards, final BoardCategoryData boardMaterialCategory) {
-        final Map<Long, String> result = new HashMap<>();
-
-        for (final OrderBoardData board : boards) {
-            final String value = boardCodeListItemRepository.findByBoardId(board.id()).stream()
-                    .filter(cat -> Objects.equals(cat.getCodeListId(), boardMaterialCategory.id()))
-                    .findFirst()
-                    .map(CodeListItemDo::getValue)
-                    .orElse(MATERIAL_NOT_FOUND);
-            result.put(board.id(), value);
-        }
-
-        return result;
     }
 
     private void printItem(final PrintWriter writer,
@@ -490,32 +472,16 @@ public class OrderCsvUtilService {
     }
 
     private String getDecor(final List<OrderBoardData> boards, final long boardId) {
-        final Optional<OrderBoardData> board = findBoard(boards, boardId);
-        return addQuotes(board.map(OrderBoardData::boardCode).orElse(BOARD_NOT_FOUND) + " " +
-                board.map(OrderBoardData::structureCode).orElse(BOARD_NOT_FOUND) + " " +
-                board.map(OrderBoardData::name).orElse(BOARD_NOT_FOUND)
-        );
+        return addQuotes(materialUtilService.getDecor(boards, boardId, BOARD_NOT_FOUND));
     }
 
     private String getThickness(final List<OrderBoardData> boards, final long boardId) {
-        final Optional<OrderBoardData> board = findBoard(boards, boardId);
+        final Optional<OrderBoardData> board = materialUtilService.findBoard(boards, boardId);
         return board.map(OrderBoardData::thickness).map(BigDecimal::intValue).map(this::toString).orElse("");
     }
 
     private String getEdge(final String format, final List<OrderEdgeData> edges, final Long edgeId) {
-        return addQuotes(edgeString(format, edges, edgeId));
-    }
-
-    private String edgeString(final String format, final List<OrderEdgeData> edges, final Long edgeId) {
-        if (edgeId == null) {
-            return "";
-        }
-        final Optional<OrderEdgeData> edge = findEdge(edges, edgeId);
-        return format.formatted(
-                edge.map(OrderEdgeData::code).orElse(EDGE_NOT_FOUND),
-                edge.map(OrderEdgeData::width).map(BigDecimal::intValue).orElse(0),
-                edge.map(OrderEdgeData::thickness).map(BigDecimal::doubleValue).orElse(0d)
-        );
+        return addQuotes(materialUtilService.getEdge(format, edges, edgeId, EDGE_NOT_FOUND));
     }
 
     private String getCorner(final CSVPropertiesData csvProperties,
@@ -526,7 +492,13 @@ public class OrderCsvUtilService {
             return addQuotes("");
         }
 
-        return addQuotes(cornerString(csvProperties, position, partCorner) + " " + edgeString(csvProperties.edgeFormat(), edges, partCorner.edgeId()));
+        final String cornerString = cornerString(csvProperties, position, partCorner);
+        final String edgeString = materialUtilService.getEdge(csvProperties.edgeFormat(), edges, partCorner.edgeId(), EDGE_NOT_FOUND);
+
+        if (edgeString.isBlank()) {
+            return addQuotes(cornerString);
+        }
+        return addQuotes(cornerString + " " + edgeString);
     }
 
     private String cornerString(final CSVPropertiesData csvProperties, final CornerPosition position, final PartCornerData partCorner) {
@@ -543,14 +515,6 @@ public class OrderCsvUtilService {
             default ->
                     throw new InvalidParameterException("Unsupported part corner type: " + partCorner.getClass().getSimpleName());
         };
-    }
-
-    private Optional<OrderBoardData> findBoard(final List<OrderBoardData> boards, final long boardId) {
-        return boards.stream().filter(board -> board.id().equals(boardId)).findFirst();
-    }
-
-    private Optional<OrderEdgeData> findEdge(final List<OrderEdgeData> edges, final long edgeId) {
-        return edges.stream().filter(edge -> edge.id().equals(edgeId)).findFirst();
     }
 
     private String getPositionName(final CSVPropertiesData csvProperties, final BoardPosition position) {
