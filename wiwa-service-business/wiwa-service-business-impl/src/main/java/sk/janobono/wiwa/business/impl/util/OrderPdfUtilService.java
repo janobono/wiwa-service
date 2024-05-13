@@ -12,6 +12,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import sk.janobono.wiwa.business.impl.model.pdf.*;
 import sk.janobono.wiwa.business.model.application.PDFPropertiesData;
 import sk.janobono.wiwa.business.model.application.UnitData;
+import sk.janobono.wiwa.business.model.order.OrderContactData;
 import sk.janobono.wiwa.business.model.order.OrderData;
 import sk.janobono.wiwa.business.model.order.OrderUserData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
@@ -96,6 +97,7 @@ public class OrderPdfUtilService {
 
         return PdfContentData.builder()
                 .title(formatted(PDFFormat.TITLE, pdfProperties, formatted(PDFFormat.ORDER_NUMBER, pdfProperties, order.orderNumber())))
+
                 .creator(formatToPdf(order.creator()))
                 .created(DATE_TIME_FORMAT.format(order.created()))
                 .orderNumber(formatted(PDFFormat.ORDER_NUMBER, pdfProperties, order.orderNumber()))
@@ -104,7 +106,19 @@ public class OrderPdfUtilService {
                         ? pdfProperties.packageType().getOrDefault(OrderPackageType.NO_PACKAGE, OrderPackageType.NO_PACKAGE.name())
                         : pdfProperties.packageType().getOrDefault(order.packageType(), order.packageType().name()))
 
-                .orderContact(order.contact())
+                .orderContact(Optional.ofNullable(order.contact()).orElseGet(() -> OrderContactData.builder()
+                                .name("")
+                                .street("")
+                                .zipCode("")
+                                .city("")
+                                .state("")
+                                .phone("")
+                                .email("")
+                                .businessId("")
+                                .taxId("")
+                                .build()
+                        )
+                )
 
                 .summary(orderToPdfSummary(pdfProperties, units, materialNames, order))
 
@@ -135,7 +149,7 @@ public class OrderPdfUtilService {
                         .material(materialNames.getOrDefault(item.id(), pdfProperties.content().get(PdfContent.MATERIAL_NOT_FOUND)))
                         .name(materialUtilService.getDecor(order.boards(), item.id(), pdfProperties.content().get(PdfContent.BOARD_NOT_FOUND)))
                         .area(unitSquareMeter(pdfProperties, units, item.area()))
-                        .boardsCount(intP(pdfProperties, units, item.boardsCount()))
+                        .boardsCount(unitPiece(pdfProperties, units, item.boardsCount()))
                         .weight(unitKilogram(pdfProperties, units, item.weight()))
                         .price(price(pdfProperties, item.price()))
                         .vatPrice(price(pdfProperties, item.vatPrice()))
@@ -151,7 +165,7 @@ public class OrderPdfUtilService {
                         .name(materialUtilService.getEdge(pdfProperties.format().get(PDFFormat.EDGE_FORMAT), order.edges(), item.id(),
                                 pdfProperties.content().get(PdfContent.EDGE_NOT_FOUND)))
                         .length(unitMeter(pdfProperties, units, item.length()))
-                        .glueLength(unitSquareMeter(pdfProperties, units, item.glueLength()))
+                        .glueLength(unitMeter(pdfProperties, units, item.glueLength()))
                         .weight(unitKilogram(pdfProperties, units, item.weight()))
                         .edgePrice(price(pdfProperties, item.edgePrice()))
                         .edgeVatPrice(price(pdfProperties, item.edgeVatPrice()))
@@ -213,11 +227,11 @@ public class OrderPdfUtilService {
         return units.stream().filter(u -> u.id() == unit).findFirst().map(UnitData::value).orElse(unit.name());
     }
 
-    private String intP(final PDFPropertiesData pdfProperties, final List<UnitData> units, final BigDecimal value) {
+    private String unitPiece(final PDFPropertiesData pdfProperties, final List<UnitData> units, final BigDecimal value) {
         return formatted(
                 PDFFormat.INTEGER,
                 pdfProperties,
-                Optional.ofNullable(value).orElse(BigDecimal.ZERO),
+                Optional.ofNullable(value).map(BigDecimal::intValue).orElse(0),
                 getUnit(Unit.PIECE, units)
         );
     }
@@ -242,9 +256,9 @@ public class OrderPdfUtilService {
 
     private String unitMillimeter(final PDFPropertiesData pdfProperties, final List<UnitData> units, final BigDecimal value) {
         return formatted(
-                PDFFormat.UNIT,
+                PDFFormat.INTEGER,
                 pdfProperties,
-                Optional.ofNullable(value).orElse(BigDecimal.ZERO),
+                Optional.ofNullable(value).map(BigDecimal::intValue).orElse(0),
                 getUnit(Unit.MILLIMETER, units)
         );
     }

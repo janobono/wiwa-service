@@ -1,7 +1,9 @@
 package sk.janobono.wiwa.business.impl.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -13,15 +15,15 @@ import org.thymeleaf.templatemode.TemplateMode;
 import sk.janobono.wiwa.business.impl.model.pdf.PdfContentData;
 import sk.janobono.wiwa.business.model.application.PDFPropertiesData;
 import sk.janobono.wiwa.business.model.application.UnitData;
-import sk.janobono.wiwa.business.model.order.OrderContactData;
-import sk.janobono.wiwa.business.model.order.OrderData;
-import sk.janobono.wiwa.business.model.order.OrderUserData;
-import sk.janobono.wiwa.business.model.order.summary.OrderGlueSummaryData;
-import sk.janobono.wiwa.business.model.order.summary.OrderSummaryData;
+import sk.janobono.wiwa.business.model.order.*;
+import sk.janobono.wiwa.business.model.order.summary.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
-import sk.janobono.wiwa.model.*;
+import sk.janobono.wiwa.model.Currency;
+import sk.janobono.wiwa.model.OrderPackageType;
+import sk.janobono.wiwa.model.Unit;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -44,32 +46,16 @@ class OrderPdfUtilServiceTest {
     private OrderData order;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
 
-        Mockito.when(applicationPropertyService.getPDFProperties()).thenReturn(
-                new PDFPropertiesData(
-                        Map.of(
-                                PDFFormat.TITLE, "Order No.%s",
-                                PDFFormat.ORDER_NUMBER, "%03d",
-                                PDFFormat.INTEGER, "%d %s",
-                                PDFFormat.UNIT, "%.3f %s",
-                                PDFFormat.PRICE, "%.2f %s",
-                                PDFFormat.EDGE_FORMAT, "%s %dx%.1f"
-                        ),
-                        Map.of(
-                                PdfContent.MATERIAL_NOT_FOUND, "Material not found",
-                                PdfContent.BOARD_NOT_FOUND, "Board not found",
-                                PdfContent.EDGE_NOT_FOUND, "Edge not found"
-                        ),
-                        Map.of(
-                                OrderPackageType.NO_PACKAGE, "NO_PACKAGE",
-                                OrderPackageType.NO_PACKAGE_WITH_REMAINS, "NO_PACKAGE_WITH_REMAINS",
-                                OrderPackageType.PACKAGE, "PACKAGE",
-                                OrderPackageType.PACKAGE_WITH_REMAINS, "PACKAGE_WITH_REMAINS"
-                        )
-                )
-        );
+        final ObjectMapper objectMapper = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .build();
+
+        final PDFPropertiesData pdfPropertiesData = objectMapper.readValue(getClass().getResource("/PDFProperties.json"), PDFPropertiesData.class);
+
+        Mockito.when(applicationPropertyService.getPDFProperties()).thenReturn(pdfPropertiesData);
 
         Mockito.when(applicationPropertyService.getUnits()).thenReturn(
                 List.of(
@@ -84,6 +70,10 @@ class OrderPdfUtilServiceTest {
         Mockito.when(materialUtilService.getMaterialNames(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(
                 Map.of(1L, "material1")
         );
+        Mockito.when(materialUtilService.findBoard(Mockito.any(), Mockito.anyLong())).thenCallRealMethod();
+        Mockito.when(materialUtilService.findEdge(Mockito.any(), Mockito.anyLong())).thenCallRealMethod();
+        Mockito.when(materialUtilService.getDecor(Mockito.any(), Mockito.anyLong(), Mockito.anyString())).thenCallRealMethod();
+        Mockito.when(materialUtilService.getEdge(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenCallRealMethod();
 
         final SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
         templateResolver.setApplicationContext(new StaticApplicationContext());
@@ -139,19 +129,76 @@ class OrderPdfUtilServiceTest {
                         .taxId("T001001")
                         .build())
 
+                .boards(List.of(
+                        OrderBoardData.builder()
+                                .id(1L)
+                                .code("code")
+                                .name("name")
+                                .boardCode("b-code")
+                                .structureCode("s-code")
+                                .orientation(false)
+                                .weight(BigDecimal.valueOf(1))
+                                .length(BigDecimal.valueOf(2000))
+                                .width(BigDecimal.valueOf(1500))
+                                .thickness(BigDecimal.valueOf(10))
+                                .price(BigDecimal.valueOf(100))
+                                .build()
+                ))
+
+                .edges(List.of(
+                        OrderEdgeData.builder()
+                                .id(1L)
+                                .code("code")
+                                .name("name")
+                                .weight(BigDecimal.valueOf(0.23))
+                                .width(BigDecimal.valueOf(19))
+                                .thickness(BigDecimal.valueOf(0.8))
+                                .price(BigDecimal.valueOf(100))
+                                .build()
+                ))
+
                 .summary(OrderSummaryData.builder()
-                        .boardSummary(List.of())
-                        .edgeSummary(List.of())
+                        .boardSummary(List.of(
+                                OrderBoardSummaryData.builder()
+                                        .id(1L)
+                                        .area(BigDecimal.valueOf(4.3))
+                                        .boardsCount(BigDecimal.TWO)
+                                        .weight(BigDecimal.valueOf(10.24))
+                                        .price(BigDecimal.valueOf(100.000))
+                                        .vatPrice(BigDecimal.valueOf(120.000))
+                                        .build()
+                        ))
+                        .edgeSummary(List.of(
+                                OrderEdgeSummaryData.builder()
+                                        .id(1L)
+                                        .length(BigDecimal.valueOf(4.2))
+                                        .glueLength(BigDecimal.valueOf(3.8))
+                                        .weight(BigDecimal.valueOf(0.83))
+                                        .edgePrice(BigDecimal.valueOf(12.12))
+                                        .edgeVatPrice(BigDecimal.valueOf(15.15))
+                                        .gluePrice(BigDecimal.valueOf(7.54))
+                                        .glueVatPrice(BigDecimal.valueOf(8.56))
+                                        .build()
+                        ))
                         .glueSummary(OrderGlueSummaryData.builder()
                                 .area(BigDecimal.valueOf(4.35))
                                 .price(BigDecimal.valueOf(100.000))
                                 .vatPrice(BigDecimal.valueOf(120.000))
                                 .build())
-                        .cutSummary(List.of())
+                        .cutSummary(List.of(
+                                OrderCutSummaryData.builder()
+                                        .thickness(BigDecimal.valueOf(10.0))
+                                        .amount(BigDecimal.valueOf(6.7))
+                                        .price(BigDecimal.valueOf(2.68))
+                                        .vatPrice(BigDecimal.valueOf(3.03))
+                                        .build()
+                        ))
                         .weight(BigDecimal.valueOf(123.123))
                         .total(BigDecimal.valueOf(100.000))
                         .vatTotal(BigDecimal.valueOf(120.000))
                         .build())
+
+
                 // TODO
                 .build();
     }
@@ -180,12 +227,40 @@ class OrderPdfUtilServiceTest {
 
         assertThat(pdfContentData.summary()).isNotNull();
 
+        assertThat(pdfContentData.summary().boardSummary().size()).isEqualTo(1);
+        assertThat(pdfContentData.summary().boardSummary().get(0).material()).isEqualTo("material1");
+        assertThat(pdfContentData.summary().boardSummary().get(0).name()).isEqualTo("b-code s-code name");
+        assertThat(pdfContentData.summary().boardSummary().get(0).area()).isEqualTo("4.300 ㎡");
+        assertThat(pdfContentData.summary().boardSummary().get(0).boardsCount()).isEqualTo("2 p");
+        assertThat(pdfContentData.summary().boardSummary().get(0).weight()).isEqualTo("10.240 kg");
+        assertThat(pdfContentData.summary().boardSummary().get(0).price()).isEqualTo("100.00 €");
+        assertThat(pdfContentData.summary().boardSummary().get(0).vatPrice()).isEqualTo("120.00 €");
+
+        assertThat(pdfContentData.summary().edgeSummary().size()).isEqualTo(1);
+        assertThat(pdfContentData.summary().edgeSummary().get(0).name()).isEqualTo("code 19x0.8");
+        assertThat(pdfContentData.summary().edgeSummary().get(0).length()).isEqualTo("4.200 m");
+        assertThat(pdfContentData.summary().edgeSummary().get(0).glueLength()).isEqualTo("3.800 m");
+        assertThat(pdfContentData.summary().edgeSummary().get(0).weight()).isEqualTo("0.830 kg");
+        assertThat(pdfContentData.summary().edgeSummary().get(0).edgePrice()).isEqualTo("12.12 €");
+        assertThat(pdfContentData.summary().edgeSummary().get(0).edgeVatPrice()).isEqualTo("15.15 €");
+        assertThat(pdfContentData.summary().edgeSummary().get(0).gluePrice()).isEqualTo("7.54 €");
+        assertThat(pdfContentData.summary().edgeSummary().get(0).glueVatPrice()).isEqualTo("8.56 €");
+
+        assertThat(pdfContentData.summary().glueSummary().area()).isEqualTo("4.350 ㎡");
+        assertThat(pdfContentData.summary().glueSummary().price()).isEqualTo("100.00 €");
+        assertThat(pdfContentData.summary().glueSummary().vatPrice()).isEqualTo("120.00 €");
+
+        assertThat(pdfContentData.summary().cutSummary().size()).isEqualTo(1);
+        assertThat(pdfContentData.summary().cutSummary().get(0).thickness()).isEqualTo("10 mm");
+        assertThat(pdfContentData.summary().cutSummary().get(0).amount()).isEqualTo("6.700 m");
+        assertThat(pdfContentData.summary().cutSummary().get(0).price()).isEqualTo("2.68 €");
+        assertThat(pdfContentData.summary().cutSummary().get(0).vatPrice()).isEqualTo("3.03 €");
+
         assertThat(pdfContentData.summary().weight()).isEqualTo("123.123 kg");
         assertThat(pdfContentData.summary().total()).isEqualTo("100.00 €");
         assertThat(pdfContentData.summary().vatTotal()).isEqualTo("120.00 €");
     }
 
-    @Disabled
     @Test
     void generatePdf_whenOrder_thenTheseResults() {
         Path data = null;

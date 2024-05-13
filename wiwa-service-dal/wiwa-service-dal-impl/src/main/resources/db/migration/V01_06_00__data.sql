@@ -438,7 +438,19 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('CS
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ( 'BOARD_MATERIAL_CATEGORY', '-1');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PDF_PROPERTIES', e'{
-"titleFormat":"Order no.%d",
+"format":{
+"TITLE":"Order No.%s",
+"ORDER_NUMBER":"%03d",
+"INTEGER":"%d %s",
+"UNIT":"%.3f %s",
+"PRICE":"%.2f %s",
+"EDGE_FORMAT":"%s %dx%.1f"
+},
+"content":{
+"MATERIAL_NOT_FOUND":"Material not found",
+"BOARD_NOT_FOUND":"Board not found",
+"EDGE_NOT_FOUND":"Edge not found"
+},
 "packageType":{
 "NO_PACKAGE":"NO_PACKAGE",
 "NO_PACKAGE_WITH_REMAINS":"NO_PACKAGE_WITH_REMAINS",
