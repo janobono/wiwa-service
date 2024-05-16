@@ -41,9 +41,8 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     private static final String ORDER_COMMENT_MAIL = "ORDER_COMMENT_MAIL";
     private static final String ORDER_SEND_MAIL = "ORDER_SEND_MAIL";
     private static final String ORDER_STATUS_MAIL = "ORDER_STATUS_MAIL";
-    private static final String CSV_PROPERTIES = "CSV_PROPERTIES";
     private static final String BOARD_MATERIAL_CATEGORY = "BOARD_MATERIAL_CATEGORY";
-    private static final String PDF_PROPERTIES = "PDF_PROPERTIES";
+    private static final String ORDER_PROPERTIES = "ORDER_PROPERTIES";
 
     private final ObjectMapper objectMapper;
 
@@ -442,29 +441,6 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     }
 
     @Override
-    public CSVPropertiesData getCSVProperties() {
-        return propertyUtilService.getProperty(v -> {
-            try {
-                return objectMapper.readValue(v, CSVPropertiesData.class);
-            } catch (final JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }, CSV_PROPERTIES);
-    }
-
-    @Override
-    public CSVPropertiesData setCSVProperties(final CSVPropertiesData csvProperties) {
-        propertyUtilService.setProperty(data -> {
-            try {
-                return objectMapper.writeValueAsString(data);
-            } catch (final JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }, CSV_PROPERTIES, csvProperties);
-        return csvProperties;
-    }
-
-    @Override
     public BoardCategoryData getBoardMaterialCategory() {
         final long categoryId = Long.parseLong(propertyUtilService.getProperty(BOARD_MATERIAL_CATEGORY));
 
@@ -483,25 +459,25 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     }
 
     @Override
-    public PDFPropertiesData getPDFProperties() {
+    public OrderPropertiesData getOrderProperties() {
         return propertyUtilService.getProperty(v -> {
             try {
-                return objectMapper.readValue(v, PDFPropertiesData.class);
+                return objectMapper.readValue(v, OrderPropertiesData.class);
             } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-        }, PDF_PROPERTIES);
+        }, ORDER_PROPERTIES);
     }
 
     @Override
-    public PDFPropertiesData setPDFProperties(final PDFPropertiesData pdfProperties) {
+    public OrderPropertiesData setOrderProperties(final OrderPropertiesData orderProperties) {
         propertyUtilService.setProperty(data -> {
             try {
                 return objectMapper.writeValueAsString(data);
             } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-        }, PDF_PROPERTIES, pdfProperties);
-        return pdfProperties;
+        }, ORDER_PROPERTIES, orderProperties);
+        return orderProperties;
     }
 }

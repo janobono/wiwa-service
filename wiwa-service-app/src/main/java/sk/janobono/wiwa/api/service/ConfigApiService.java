@@ -168,14 +168,6 @@ public class ConfigApiService {
         return uiWebMapper.mapToWebDto(applicationPropertyService.setOrderStatusMail(uiWebMapper.mapToData(orderStatusMail)));
     }
 
-    public CSVPropertiesWebDto getCSVProperties() {
-        return uiWebMapper.mapToWebDto(applicationPropertyService.getCSVProperties());
-    }
-
-    public CSVPropertiesWebDto setCSVProperties(final CSVPropertiesWebDto csvProperties) {
-        return uiWebMapper.mapToWebDto(applicationPropertyService.setCSVProperties(uiWebMapper.mapToData(csvProperties)));
-    }
-
     public BoardCategoryWebDto getBoardMaterialCategory() {
         return boardWebMapper.mapToWebDto(applicationPropertyService.getBoardMaterialCategory());
     }
@@ -184,11 +176,7 @@ public class ConfigApiService {
         return boardWebMapper.mapToWebDto(applicationPropertyService.setBoardMaterialCategory(categoryId));
     }
 
-    public PDFPropertiesWebDto getPDFProperties() {
-        return uiWebMapper.mapToWebDto(applicationPropertyService.getPDFProperties());
-    }
-
-    public PDFPropertiesWebDto setPDFProperties(final PDFPropertiesWebDto pdfProperties) {
-        return uiWebMapper.mapToWebDto(applicationPropertyService.setPDFProperties(uiWebMapper.mapToData(pdfProperties)));
+    public OrderPropertiesWebDto setOrderProperties(final OrderPropertiesWebDto orderProperties) {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.setOrderProperties(uiWebMapper.mapToData(orderProperties)));
     }
 }

@@ -7,6 +7,7 @@ import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.model.BoardPosition;
 import sk.janobono.wiwa.model.CornerPosition;
 import sk.janobono.wiwa.model.EdgePosition;
+import sk.janobono.wiwa.model.PartType;
 
 import java.util.Map;
 
@@ -16,10 +17,10 @@ import java.util.Map;
         defaultImpl = PartBasicData.class
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = PartBasicData.class, name = "BASIC"),
-        @JsonSubTypes.Type(value = PartFrameData.class, name = "FRAME"),
-        @JsonSubTypes.Type(value = PartDuplicatedBasicData.class, name = "DUPLICATED_BASIC"),
-        @JsonSubTypes.Type(value = PartDuplicatedFrameData.class, name = "DUPLICATED_FRAME")
+        @JsonSubTypes.Type(value = PartBasicData.class, name = PartType.BASIC),
+        @JsonSubTypes.Type(value = PartFrameData.class, name = PartType.FRAME),
+        @JsonSubTypes.Type(value = PartDuplicatedBasicData.class, name = PartType.DUPLICATED_BASIC),
+        @JsonSubTypes.Type(value = PartDuplicatedFrameData.class, name = PartType.DUPLICATED_FRAME)
 })
 public interface PartData {
     Map<BoardPosition, DimensionsData> dimensions();

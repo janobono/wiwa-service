@@ -11,8 +11,8 @@ import org.mockito.MockitoAnnotations;
 import sk.janobono.wiwa.business.impl.component.DataUtil;
 import sk.janobono.wiwa.business.impl.component.MaterialUtil;
 import sk.janobono.wiwa.business.model.DimensionsData;
-import sk.janobono.wiwa.business.model.application.CSVPropertiesData;
 import sk.janobono.wiwa.business.model.application.ManufacturePropertiesData;
+import sk.janobono.wiwa.business.model.application.OrderPropertiesData;
 import sk.janobono.wiwa.business.model.board.BoardCategoryData;
 import sk.janobono.wiwa.business.model.order.OrderBoardData;
 import sk.janobono.wiwa.business.model.order.OrderEdgeData;
@@ -23,6 +23,8 @@ import sk.janobono.wiwa.dal.domain.OrderItemDo;
 import sk.janobono.wiwa.dal.domain.OrderViewDo;
 import sk.janobono.wiwa.dal.repository.OrderItemRepository;
 import sk.janobono.wiwa.dal.repository.OrderMaterialRepository;
+import sk.janobono.wiwa.model.OrderContent;
+import sk.janobono.wiwa.model.OrderFormat;
 import sk.janobono.wiwa.model.OrderPackageType;
 import sk.janobono.wiwa.model.OrderStatus;
 
@@ -92,22 +94,32 @@ class OrderCsvUtilServiceTest {
                 )
         );
 
-        Mockito.when(applicationPropertyService.getCSVProperties()).thenReturn(
-                new CSVPropertiesData(
+        Mockito.when(applicationPropertyService.getOrderProperties()).thenReturn(
+                new OrderPropertiesData(
+                        new HashMap<>(),
+                        new HashMap<>(),
+                        new HashMap<>(),
+                        new HashMap<>() {{
+                            put(OrderFormat.CSV_NUMBER, "%d %s");
+                            put(OrderFormat.CSV_BASIC, "%s (basic %s-%dx%dmm-%dp)");
+                            put(OrderFormat.CSV_FRAME, "%s (frame %s-%dx%dmm-%dp)");
+                            put(OrderFormat.CSV_DUPLICATED_BASIC, "%s (duplicated basic %s-%dx%dmm-%dp)");
+                            put(OrderFormat.CSV_DUPLICATED_FRAME, "%s (duplicated frame %s-%dx%dmm-%dp)");
+                            put(OrderFormat.CSV_EDGE, "%s %dx%.1f");
+                            put(OrderFormat.CSV_CORNER_STRAIGHT, "%s %dx%d");
+                            put(OrderFormat.CSV_CORNER_ROUNDED, "%s r%d");
+                        }},
+                        new HashMap<>() {{
+                            put(OrderContent.MATERIAL_NOT_FOUND, "Material not found");
+                            put(OrderContent.BOARD_NOT_FOUND, "Board not found");
+                            put(OrderContent.EDGE_NOT_FOUND, "Edge not found");
+                        }},
+                        new HashMap<>(),
                         ";",
                         Map.of("<.*?>", "", "\\s+", "_"),
                         new HashMap<>(),
-                        new HashMap<>(),
-                        new HashMap<>(),
-                        new HashMap<>(),
-                        "%d %s",
-                        "%s (basic %s-%dx%dmm-%dp)",
-                        "%s (frame %s-%dx%dmm-%dp)",
-                        "%s (duplicated basic %s-%dx%dmm-%dp)",
-                        "%s (duplicated frame %s-%dx%dmm-%dp)",
-                        "%s %dx%.1f",
-                        "%s %dx%d",
-                        "%s r%d"
+                        800,
+                        18
                 )
         );
 

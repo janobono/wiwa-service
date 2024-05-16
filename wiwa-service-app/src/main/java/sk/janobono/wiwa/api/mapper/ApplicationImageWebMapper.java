@@ -2,10 +2,12 @@ package sk.janobono.wiwa.api.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import sk.janobono.wiwa.api.model.application.ApplicationImageInfoWebDto;
 import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
+import sk.janobono.wiwa.api.model.application.ApplicationImageInfoWebDto;
+import sk.janobono.wiwa.api.model.order.OrderItemPartImageWebDto;
 import sk.janobono.wiwa.business.model.application.ApplicationImageData;
 import sk.janobono.wiwa.business.model.application.ApplicationImageInfoData;
+import sk.janobono.wiwa.business.model.order.OrderItemPartImageData;
 import sk.janobono.wiwa.component.ImageUtil;
 
 @RequiredArgsConstructor
@@ -19,6 +21,13 @@ public class ApplicationImageWebMapper {
                 applicationImageInfo.fileName(),
                 applicationImageInfo.fileType(),
                 imageUtil.toThumbnail(applicationImageInfo.fileType(), applicationImageInfo.thumbnail())
+        );
+    }
+
+    public OrderItemPartImageWebDto mapToWebDto(final OrderItemPartImageData orderItemPartImageData) {
+        return new OrderItemPartImageWebDto(
+                orderItemPartImageData.boardPosition(),
+                imageUtil.toThumbnail(orderItemPartImageData.mimeType(), orderItemPartImageData.image())
         );
     }
 

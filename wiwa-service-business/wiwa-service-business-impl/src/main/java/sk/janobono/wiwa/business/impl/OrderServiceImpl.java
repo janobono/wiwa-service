@@ -9,6 +9,10 @@ import sk.janobono.wiwa.business.impl.component.DataUtil;
 import sk.janobono.wiwa.business.impl.component.MaterialUtil;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.business.impl.component.SummaryUtil;
+import sk.janobono.wiwa.business.impl.component.image.PartBasicImageUtil;
+import sk.janobono.wiwa.business.impl.component.image.PartDuplicatedBasicImageUtil;
+import sk.janobono.wiwa.business.impl.component.image.PartDuplicatedFrameImageUtil;
+import sk.janobono.wiwa.business.impl.component.image.PartFrameImageUtil;
 import sk.janobono.wiwa.business.impl.component.part.PartBasicUtil;
 import sk.janobono.wiwa.business.impl.component.part.PartDuplicatedBasicUtil;
 import sk.janobono.wiwa.business.impl.component.part.PartDuplicatedFrameUtil;
@@ -20,10 +24,7 @@ import sk.janobono.wiwa.business.impl.util.MailUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderCsvUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderPdfUtilService;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
-import sk.janobono.wiwa.business.model.application.FreeDayData;
-import sk.janobono.wiwa.business.model.application.OrderCommentMailData;
-import sk.janobono.wiwa.business.model.application.OrderSendMailData;
-import sk.janobono.wiwa.business.model.application.OrderStatusMailData;
+import sk.janobono.wiwa.business.model.application.*;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.model.order.part.*;
 import sk.janobono.wiwa.business.model.order.summary.OrderItemSummaryData;
@@ -456,6 +457,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<OrderItemPartImageData> getItemImages(final long id, final long itemId) {
+        final OrderItemDo orderItemDo = getOrderItemDo(itemId);
+        final PartData part = dataUtil.parseValue(orderItemDo.getPart(), PartData.class);
+
+        return switch (part) {
+            case final PartBasicData partBasicData -> new PartBasicImageUtil().generateImages(partBasicData);
+            case final PartFrameData partFrameData -> new PartFrameImageUtil().generateImages(partFrameData);
+            case final PartDuplicatedBasicData partDuplicatedBasicData ->
+                    new PartDuplicatedBasicImageUtil().generateImages(partDuplicatedBasicData);
+            case final PartDuplicatedFrameData partDuplicatedFrameData ->
+                    new PartDuplicatedFrameImageUtil().generateImages(partDuplicatedFrameData);
+            default -> throw new InvalidParameterException("Unsupported part type: " + part.getClass().getSimpleName());
+        };
+    }
+
+    @Override
     public OrderData deleteItem(final long id, final long itemId, final long modifierId, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
         checkOrderStatus(modifierId, manager, orderViewDo);
@@ -718,7 +735,7 @@ public class OrderServiceImpl implements OrderService {
         recountItemSummary(id, itemId);
     }
 
-    private void recountItemSummary(final Long id, final Long itemId) {
+    private void recountItemSummary(final long id, final long itemId) {
         final OrderItemDo orderItem = getOrderItemDo(itemId);
 
         final List<OrderMaterialDo> materials = orderMaterialRepository.findAllByOrderId(id);

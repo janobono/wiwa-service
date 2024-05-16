@@ -20,12 +20,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
 import sk.janobono.wiwa.api.model.order.*;
-import sk.janobono.wiwa.api.model.order.OrderItemChangeWebDto;
 import sk.janobono.wiwa.api.service.OrderApiService;
 import sk.janobono.wiwa.model.OrderStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -147,6 +147,11 @@ public class OrderController {
     @DeleteMapping("/{id}/item/{itemId}")
     public OrderWebDto deleteItem(@PathVariable("id") final long id, @PathVariable("itemId") final long itemId) {
         return orderApiService.deleteItem(id, itemId);
+    }
+
+    @GetMapping("/{id}/item/{itemId}/images")
+    public List<OrderItemPartImageWebDto> getItemImages(@PathVariable("id") final long id, @PathVariable("itemId") final long itemId) {
+        return orderApiService.getItemImages(id, itemId);
     }
 
     @DeleteMapping("/{id}")

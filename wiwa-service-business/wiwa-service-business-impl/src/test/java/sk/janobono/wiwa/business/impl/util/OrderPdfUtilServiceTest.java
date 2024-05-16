@@ -13,21 +13,19 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import sk.janobono.wiwa.business.impl.model.pdf.PdfContentData;
-import sk.janobono.wiwa.business.model.application.PDFPropertiesData;
+import sk.janobono.wiwa.business.model.application.OrderPropertiesData;
 import sk.janobono.wiwa.business.model.application.UnitData;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.model.order.summary.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
-import sk.janobono.wiwa.model.Currency;
-import sk.janobono.wiwa.model.OrderPackageType;
-import sk.janobono.wiwa.model.Unit;
+import sk.janobono.wiwa.model.*;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,16 +44,82 @@ class OrderPdfUtilServiceTest {
     private OrderData order;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
 
         final ObjectMapper objectMapper = JsonMapper.builder()
                 .addModule(new JavaTimeModule())
                 .build();
 
-        final PDFPropertiesData pdfPropertiesData = objectMapper.readValue(getClass().getResource("/PDFProperties.json"), PDFPropertiesData.class);
-
-        Mockito.when(applicationPropertyService.getPDFProperties()).thenReturn(pdfPropertiesData);
+        Mockito.when(applicationPropertyService.getOrderProperties()).thenReturn(
+                new OrderPropertiesData(
+                        new HashMap<>(),
+                        new HashMap<>(),
+                        new HashMap<>(),
+                        new HashMap<>() {{
+                            put(OrderFormat.PDF_TITLE, "Order No.%s");
+                            put(OrderFormat.PDF_ORDER_NUMBER, "%03d");
+                            put(OrderFormat.PDF_INTEGER, "%d %s");
+                            put(OrderFormat.PDF_UNIT, "%.3f %s");
+                            put(OrderFormat.PDF_PRICE, "%.2f %s");
+                            put(OrderFormat.PDF_EDGE, "%s %dx%.1f");
+                        }},
+                        new HashMap<>() {{
+                            put(OrderContent.MATERIAL_NOT_FOUND, "Material not found");
+                            put(OrderContent.BOARD_NOT_FOUND, "Board not found");
+                            put(OrderContent.EDGE_NOT_FOUND, "Edge not found");
+                            put(OrderContent.CREATOR, "creator:");
+                            put(OrderContent.CREATED, "created:");
+                            put(OrderContent.ORDER_NUMBER, "order number:");
+                            put(OrderContent.DELIVERY_DATE, "delivery date:");
+                            put(OrderContent.PACKAGE_TYPE, "package type:");
+                            put(OrderContent.CONTACT_INFO, "Contact info");
+                            put(OrderContent.NAME, "name");
+                            put(OrderContent.STREET, "street");
+                            put(OrderContent.ZIP_CODE, "zip code");
+                            put(OrderContent.CITY, "city");
+                            put(OrderContent.STATE, "state");
+                            put(OrderContent.PHONE, "phone");
+                            put(OrderContent.EMAIL, "email");
+                            put(OrderContent.BUSINESS_ID, "business id");
+                            put(OrderContent.TAX_ID, "tax id");
+                            put(OrderContent.ORDER_SUMMARY, "Order summary");
+                            put(OrderContent.BOARD_SUMMARY, "Board consumption");
+                            put(OrderContent.BOARD_SUMMARY_AREA, "area");
+                            put(OrderContent.BOARD_SUMMARY_COUNT, "board count");
+                            put(OrderContent.BOARD_SUMMARY_WEIGHT, "weight");
+                            put(OrderContent.BOARD_SUMMARY_PRICE, "price");
+                            put(OrderContent.BOARD_SUMMARY_VAT_PRICE, "vat price");
+                            put(OrderContent.EDGE_SUMMARY, "Edge consumption");
+                            put(OrderContent.EDGE_SUMMARY_LENGTH, "length");
+                            put(OrderContent.EDGE_SUMMARY_GLUE_LENGTH, "glue length");
+                            put(OrderContent.EDGE_SUMMARY_EDGE_PRICE, "edge price");
+                            put(OrderContent.EDGE_SUMMARY_EDGE_VAT_PRICE, "edge vat price");
+                            put(OrderContent.EDGE_SUMMARY_GLUE_PRICE, "glue price");
+                            put(OrderContent.EDGE_SUMMARY_GLUE_VAT_PRICE, "glue vat price");
+                            put(OrderContent.GLUE_SUMMARY, "Glue area");
+                            put(OrderContent.GLUE_SUMMARY_AREA, "area");
+                            put(OrderContent.GLUE_SUMMARY_PRICE, "price");
+                            put(OrderContent.GLUE_SUMMARY_VAT_PRICE, "vat price");
+                            put(OrderContent.CUT_SUMMARY, "Formatting");
+                            put(OrderContent.CUT_SUMMARY_THICKNESS, "thickness");
+                            put(OrderContent.CUT_SUMMARY_AMOUNT, "amount");
+                            put(OrderContent.CUT_SUMMARY_PRICE, "price");
+                            put(OrderContent.CUT_SUMMARY_VAT_PRICE, "vat price");
+                            put(OrderContent.TOTAL_SUMMARY, "Total");
+                            put(OrderContent.TOTAL_SUMMARY_WEIGHT, "weight");
+                            put(OrderContent.TOTAL_SUMMARY_PRICE, "price");
+                            put(OrderContent.TOTAL_SUMMARY_VAT_PRICE, "vat price");
+                            put(OrderContent.PARTS_LIST, "Part list");
+                        }},
+                        new HashMap<>(),
+                        ";",
+                        Map.of("<.*?>", "", "\\s+", "_"),
+                        new HashMap<>(),
+                        800,
+                        18
+                )
+        );
 
         Mockito.when(applicationPropertyService.getUnits()).thenReturn(
                 List.of(
@@ -205,7 +269,7 @@ class OrderPdfUtilServiceTest {
 
     @Test
     void orderToPdfContent_whenOrder_thenTheseResults() {
-        final PdfContentData pdfContentData = orderPdfUtilService.orderToPdfContent(applicationPropertyService.getPDFProperties(), order);
+        final PdfContentData pdfContentData = orderPdfUtilService.orderToPdfContent(applicationPropertyService.getOrderProperties(), order);
 
         assertThat(pdfContentData.title()).isEqualTo("Order No.001");
         assertThat(pdfContentData.creator()).isEqualTo("mr. Jimbo Tester");

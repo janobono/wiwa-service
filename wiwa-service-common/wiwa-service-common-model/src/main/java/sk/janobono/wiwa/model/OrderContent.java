@@ -1,6 +1,6 @@
 package sk.janobono.wiwa.model;
 
-public enum PdfContent {
+public enum OrderContent {
     MATERIAL_NOT_FOUND, BOARD_NOT_FOUND, EDGE_NOT_FOUND,
     CREATOR, CREATED, ORDER_NUMBER, DELIVERY_DATE, PACKAGE_TYPE,
     CONTACT_INFO, NAME, STREET, ZIP_CODE, CITY, STATE, PHONE, EMAIL, BUSINESS_ID, TAX_ID,

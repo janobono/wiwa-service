@@ -371,32 +371,9 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('OR
 "attachment":"detail%03d.pdf"
 }');
 
-INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('CSV_PROPERTIES', e'{
-"separator":";",
-"replacements":{
-"<.*?>":"",
-"\\s+":"_"
-},
-"columns":{
-"NUMBER":"NUMBER",
-"NAME":"NAME",
-"MATERIAL":"MATERIAL",
-"DECOR":"DECOR",
-"X_DIMENSION":"DIMENSION A",
-"Y_DIMENSION":"DIMENSION B",
-"QUANTITY":"QUANTITY",
-"ORIENTATION":"FIBER DIRECTION",
-"THICKNESS":"THICKNESS",
-"EDGE_A1":"EDGE A1",
-"EDGE_A2":"EDGE A2",
-"EDGE_B1":"EDGE B1",
-"EDGE_B2":"EDGE B2",
-"CORNER_A1B1":"CORNER A1B1",
-"CORNER_A1B2":"CORNER A1B2",
-"CORNER_A2B1":"CORNER A2B1",
-"CORNER_A2B2":"CORNER A2B2",
-"DESCRIPTION":"DESCRIPTION"
-},
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ( 'BOARD_MATERIAL_CATEGORY', '-1');
+
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('ORDER_PROPERTIES', e'{
 "boards":{
 "TOP":"TOP",
 "BOTTOM":"BOTTOM",
@@ -425,26 +402,21 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('CS
 "A2B1":"A2B1",
 "A2B2":"A2B2"
 },
-"numberFormat":"%d %s",
-"nameBasicFormat":"%s (basic %s - %d x %d mm - %d p)",
-"nameFrameFormat":"%s (frame %s - %d x %d mm - %d p)",
-"nameDuplicatedBasicFormat":"%s (duplicated basic %s - %d x %d mm - %d p)",
-"nameDuplicatedFrameFormat":"%s (duplicated frame %s - %d x %d mm - %d p)"
-"edgeFormat":"%s %dx%f",
-"cornerStraightFormat":"%s %dx%d",
-"cornerRoundedFormat":"%s r%d"
-}');
-
-INSERT INTO wiwa_application_property (property_key, property_value) VALUES ( 'BOARD_MATERIAL_CATEGORY', '-1');
-
-INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PDF_PROPERTIES', e'{
 "format":{
-"TITLE":"Order No.%s",
-"ORDER_NUMBER":"%03d",
-"INTEGER":"%d %s",
-"UNIT":"%.3f %s",
-"PRICE":"%.2f %s",
-"EDGE_FORMAT":"%s %dx%.1f"
+"CSV_NUMBER":"%d %s",
+"CSV_BASIC":"%s (basic %s - %d x %d mm - %d p)",
+"CSV_FRAME":"%s (frame %s - %d x %d mm - %d p)",
+"CSV_DUPLICATED_BASIC":"%s (duplicated basic %s - %d x %d mm - %d p)",
+"CSV_DUPLICATED_FRAME":"%s (duplicated frame %s - %d x %d mm - %d p)"
+"CSV_EDGE":"%s %dx%f",
+"CSV_CORNER_STRAIGHT":"%s %dx%d",
+"CSV_CORNER_ROUNDED":"%s r%d",
+"PDF_TITLE":"Order No.%s",
+"PDF_ORDER_NUMBER":"%03d",
+"PDF_INTEGER":"%d %s",
+"PDF_UNIT":"%.3f %s",
+"PDF_PRICE":"%.2f %s",
+"PDF_EDGE":"%s %dx%.1f"
 },
 "content":{
 "MATERIAL_NOT_FOUND":"Material not found",
@@ -456,5 +428,32 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('PD
 "NO_PACKAGE_WITH_REMAINS":"NO_PACKAGE_WITH_REMAINS",
 "PACKAGE":"PACKAGE",
 "PACKAGE_WITH_REMAINS":"PACKAGE_WITH_REMAINS"
-}
+},
+"csvSeparator":";",
+"csvReplacements":{
+"<.*?>":"",
+"\\s+":"_"
+},
+"csvColumns":{
+"NUMBER":"NUMBER",
+"NAME":"NAME",
+"MATERIAL":"MATERIAL",
+"DECOR":"DECOR",
+"X_DIMENSION":"DIMENSION A",
+"Y_DIMENSION":"DIMENSION B",
+"QUANTITY":"QUANTITY",
+"ORIENTATION":"FIBER DIRECTION",
+"THICKNESS":"THICKNESS",
+"EDGE_A1":"EDGE A1",
+"EDGE_A2":"EDGE A2",
+"EDGE_B1":"EDGE B1",
+"EDGE_B2":"EDGE B2",
+"CORNER_A1B1":"CORNER A1B1",
+"CORNER_A1B2":"CORNER A1B2",
+"CORNER_A2B1":"CORNER A2B1",
+"CORNER_A2B2":"CORNER A2B2",
+"DESCRIPTION":"DESCRIPTION"
+},
+"partImageSize":800,
+"fontSize":18
 }');

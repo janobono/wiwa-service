@@ -220,18 +220,6 @@ public class ConfigController {
         return configApiService.setOrderStatusMail(orderStatusMail);
     }
 
-    @GetMapping(value = "/csv-properties")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CSVPropertiesWebDto getCSVProperties() {
-        return configApiService.getCSVProperties();
-    }
-
-    @PostMapping(value = "/csv-properties")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public CSVPropertiesWebDto setCSVProperties(@Valid @RequestBody final CSVPropertiesWebDto csvProperties) {
-        return configApiService.setCSVProperties(csvProperties);
-    }
-
     @GetMapping(value = "/board-material-category")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public BoardCategoryWebDto getBoardMaterialCategory() {
@@ -244,15 +232,9 @@ public class ConfigController {
         return configApiService.setBoardMaterialCategory(categoryId.value());
     }
 
-    @GetMapping(value = "/pdf-properties")
+    @PostMapping(value = "/order-properties")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public PDFPropertiesWebDto getPDFProperties() {
-        return configApiService.getPDFProperties();
-    }
-
-    @PostMapping(value = "/pdf-properties")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public PDFPropertiesWebDto setPDFProperties(@Valid @RequestBody final PDFPropertiesWebDto pdfProperties) {
-        return configApiService.setPDFProperties(pdfProperties);
+    public OrderPropertiesWebDto setOrderProperties(@Valid @RequestBody final OrderPropertiesWebDto orderProperties) {
+        return configApiService.setOrderProperties(orderProperties);
     }
 }

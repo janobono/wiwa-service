@@ -3,7 +3,8 @@ package sk.janobono.wiwa.business.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import sk.janobono.wiwa.business.model.order.*;
-import sk.janobono.wiwa.business.model.order.OrderItemChangeData;
+
+import java.util.List;
 
 public interface OrderService {
 
@@ -40,6 +41,8 @@ public interface OrderService {
     OrderData moveUpItem(long id, long itemId, long modifierId, boolean manager);
 
     OrderData moveDownItem(long id, long itemId, long modifierId, boolean manager);
+
+    List<OrderItemPartImageData> getItemImages(long id, long itemId);
 
     OrderData deleteItem(long id, long itemId, long modifierId, boolean manager);
 }

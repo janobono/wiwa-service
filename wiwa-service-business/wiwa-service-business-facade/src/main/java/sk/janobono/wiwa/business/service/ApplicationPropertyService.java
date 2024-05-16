@@ -90,15 +90,11 @@ public interface ApplicationPropertyService {
 
     OrderStatusMailData setOrderStatusMail(OrderStatusMailData orderStatusMail);
 
-    CSVPropertiesData getCSVProperties();
-
-    CSVPropertiesData setCSVProperties(CSVPropertiesData csvProperties);
-
     BoardCategoryData getBoardMaterialCategory();
 
     BoardCategoryData setBoardMaterialCategory(final long categoryId);
 
-    PDFPropertiesData getPDFProperties();
+    OrderPropertiesData getOrderProperties();
 
-    PDFPropertiesData setPDFProperties(PDFPropertiesData pdfProperties);
+    OrderPropertiesData setOrderProperties(OrderPropertiesData orderProperties);
 }

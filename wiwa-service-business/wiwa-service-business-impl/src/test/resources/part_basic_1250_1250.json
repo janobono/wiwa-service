@@ -1,0 +1,39 @@
+{
+  "type": "BASIC",
+  "orientation": false,
+  "boardId": 1,
+  "edgeIdA1": 1,
+  "edgeIdA2": 1,
+  "edgeIdB1": 1,
+  "edgeIdB2": 1,
+  "dimensionsTOP": {
+    "x": 1250,
+    "y": 1250
+  },
+  "cornerA1B1": {
+    "type": "STRAIGHT",
+    "edgeId": 1,
+    "dimensions": {
+      "x": 50,
+      "y": 50
+    }
+  },
+  "cornerA1B2": {
+    "type": "STRAIGHT",
+    "edgeId": 1,
+    "dimensions": {
+      "x": 50,
+      "y": 50
+    }
+  },
+  "cornerA2B1": {
+    "edgeId": 1,
+    "type": "ROUNDED",
+    "radius": 50
+  },
+  "cornerA2B2": {
+    "edgeId": 1,
+    "type": "ROUNDED",
+    "radius": 50
+  }
+}

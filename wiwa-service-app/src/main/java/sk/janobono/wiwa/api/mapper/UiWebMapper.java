@@ -46,9 +46,7 @@ public interface UiWebMapper {
 
     OrderStatusMailWebDto mapToWebDto(OrderStatusMailData orderStatusMail);
 
-    CSVPropertiesWebDto mapToWebDto(CSVPropertiesData csvProperties);
-
-    PDFPropertiesWebDto mapToWebDto(PDFPropertiesData pdfProperties);
+    OrderPropertiesWebDto mapToWebDto(OrderPropertiesData orderProperties);
 
     ResetPasswordMailData mapToData(ResetPasswordMailWebDto resetPasswordMail);
 
@@ -77,7 +75,5 @@ public interface UiWebMapper {
 
     OrderStatusMailData mapToData(OrderStatusMailWebDto orderStatusMail);
 
-    CSVPropertiesData mapToData(CSVPropertiesWebDto csvProperties);
-
-    PDFPropertiesData mapToData(PDFPropertiesWebDto pdfProperties);
+    OrderPropertiesData mapToData(OrderPropertiesWebDto orderProperties);
 }

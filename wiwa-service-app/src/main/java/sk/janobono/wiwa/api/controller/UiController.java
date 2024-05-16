@@ -124,4 +124,9 @@ public class UiController {
     public List<FreeDayWebDto> getFreeDays() {
         return uiApiService.getFreeDays();
     }
+
+    @GetMapping(value = "/order-properties")
+    public OrderPropertiesWebDto getOrderProperties() {
+        return uiApiService.getOrderProperties();
+    }
 }

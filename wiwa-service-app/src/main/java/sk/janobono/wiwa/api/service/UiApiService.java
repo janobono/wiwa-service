@@ -91,4 +91,8 @@ public class UiApiService {
     public List<FreeDayWebDto> getFreeDays() {
         return applicationPropertyService.getFreeDays().stream().map(uiWebMapper::mapToWebDto).toList();
     }
+
+    public OrderPropertiesWebDto getOrderProperties() {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getOrderProperties());
+    }
 }
