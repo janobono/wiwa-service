@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
 import sk.janobono.wiwa.api.model.application.ApplicationImageInfoWebDto;
-import sk.janobono.wiwa.api.model.order.OrderItemPartImageWebDto;
+import sk.janobono.wiwa.api.model.order.OrderItemImageWebDto;
 import sk.janobono.wiwa.business.model.application.ApplicationImageData;
 import sk.janobono.wiwa.business.model.application.ApplicationImageInfoData;
-import sk.janobono.wiwa.business.model.order.OrderItemPartImageData;
+import sk.janobono.wiwa.business.model.order.OrderItemImageData;
 import sk.janobono.wiwa.component.ImageUtil;
 
 @RequiredArgsConstructor
@@ -24,10 +24,10 @@ public class ApplicationImageWebMapper {
         );
     }
 
-    public OrderItemPartImageWebDto mapToWebDto(final OrderItemPartImageData orderItemPartImageData) {
-        return new OrderItemPartImageWebDto(
-                orderItemPartImageData.boardPosition(),
-                imageUtil.toThumbnail(orderItemPartImageData.mimeType(), orderItemPartImageData.image())
+    public OrderItemImageWebDto mapToWebDto(final OrderItemImageData orderItemImage) {
+        return new OrderItemImageWebDto(
+                orderItemImage.itemImage(),
+                imageUtil.toThumbnail(orderItemImage.mimeType(), orderItemImage.image())
         );
     }
 

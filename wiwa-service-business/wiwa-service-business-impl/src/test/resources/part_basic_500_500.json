@@ -11,20 +11,14 @@
     "y": 500
   },
   "cornerA1B1": {
-    "type": "STRAIGHT",
     "edgeId": 1,
-    "dimensions": {
-      "x": 50,
-      "y": 50
-    }
+    "type": "ROUNDED",
+    "radius": 200
   },
   "cornerA1B2": {
-    "type": "STRAIGHT",
     "edgeId": 1,
-    "dimensions": {
-      "x": 50,
-      "y": 50
-    }
+    "type": "ROUNDED",
+    "radius": 75
   },
   "cornerA2B1": {
     "edgeId": 1,

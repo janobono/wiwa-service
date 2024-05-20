@@ -8,6 +8,7 @@ import sk.janobono.wiwa.model.*;
 import java.util.Map;
 
 public record OrderPropertiesWebDto(
+        @NotNull Map<BoardDimension, String> dimensions,
         @NotNull Map<BoardPosition, String> boards,
         @NotNull Map<EdgePosition, String> edges,
         @NotNull Map<CornerPosition, String> corners,

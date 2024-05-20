@@ -34,7 +34,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -96,30 +95,29 @@ class OrderCsvUtilServiceTest {
 
         Mockito.when(applicationPropertyService.getOrderProperties()).thenReturn(
                 new OrderPropertiesData(
-                        new HashMap<>(),
-                        new HashMap<>(),
-                        new HashMap<>(),
-                        new HashMap<>() {{
-                            put(OrderFormat.CSV_NUMBER, "%d %s");
-                            put(OrderFormat.CSV_BASIC, "%s (basic %s-%dx%dmm-%dp)");
-                            put(OrderFormat.CSV_FRAME, "%s (frame %s-%dx%dmm-%dp)");
-                            put(OrderFormat.CSV_DUPLICATED_BASIC, "%s (duplicated basic %s-%dx%dmm-%dp)");
-                            put(OrderFormat.CSV_DUPLICATED_FRAME, "%s (duplicated frame %s-%dx%dmm-%dp)");
-                            put(OrderFormat.CSV_EDGE, "%s %dx%.1f");
-                            put(OrderFormat.CSV_CORNER_STRAIGHT, "%s %dx%d");
-                            put(OrderFormat.CSV_CORNER_ROUNDED, "%s r%d");
-                        }},
-                        new HashMap<>() {{
-                            put(OrderContent.MATERIAL_NOT_FOUND, "Material not found");
-                            put(OrderContent.BOARD_NOT_FOUND, "Board not found");
-                            put(OrderContent.EDGE_NOT_FOUND, "Edge not found");
-                        }},
-                        new HashMap<>(),
+                        Map.of(),
+                        Map.of(),
+                        Map.of(),
+                        Map.of(),
+                        Map.of(
+                                OrderFormat.CSV_NUMBER, "%d %s",
+                                OrderFormat.CSV_BASIC, "%s (basic %s-%dx%dmm-%dp)",
+                                OrderFormat.CSV_FRAME, "%s (frame %s-%dx%dmm-%dp)",
+                                OrderFormat.CSV_DUPLICATED_BASIC, "%s (duplicated basic %s-%dx%dmm-%dp)",
+                                OrderFormat.CSV_DUPLICATED_FRAME, "%s (duplicated frame %s-%dx%dmm-%dp)",
+                                OrderFormat.CSV_EDGE, "%s %dx%.1f",
+                                OrderFormat.CSV_CORNER_STRAIGHT, "%s %dx%d",
+                                OrderFormat.CSV_CORNER_ROUNDED, "%s r%d"
+                        ),
+                        Map.of(
+                                OrderContent.MATERIAL_NOT_FOUND, "Material not found",
+                                OrderContent.BOARD_NOT_FOUND, "Board not found",
+                                OrderContent.EDGE_NOT_FOUND, "Edge not found"
+                        ),
+                        Map.of(),
                         ";",
                         Map.of("<.*?>", "", "\\s+", "_"),
-                        new HashMap<>(),
-                        800,
-                        18
+                        Map.of()
                 )
         );
 

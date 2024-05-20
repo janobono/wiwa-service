@@ -150,7 +150,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}/item/{itemId}/images")
-    public List<OrderItemPartImageWebDto> getItemImages(@PathVariable("id") final long id, @PathVariable("itemId") final long itemId) {
+    public List<OrderItemImageWebDto> getItemImages(@PathVariable("id") final long id, @PathVariable("itemId") final long itemId) {
         return orderApiService.getItemImages(id, itemId);
     }
 

@@ -42,7 +42,7 @@ public interface OrderService {
 
     OrderData moveDownItem(long id, long itemId, long modifierId, boolean manager);
 
-    List<OrderItemPartImageData> getItemImages(long id, long itemId);
+    List<OrderItemImageData> getItemImages(long id, long itemId);
 
     OrderData deleteItem(long id, long itemId, long modifierId, boolean manager);
 }

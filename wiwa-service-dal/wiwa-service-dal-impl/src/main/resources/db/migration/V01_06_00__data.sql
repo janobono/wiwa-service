@@ -374,6 +374,10 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('OR
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ( 'BOARD_MATERIAL_CATEGORY', '-1');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('ORDER_PROPERTIES', e'{
+"dimensions":{
+"X":"A",
+"Y":"B"
+},
 "boards":{
 "TOP":"TOP",
 "BOTTOM":"BOTTOM",
@@ -453,7 +457,5 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('OR
 "CORNER_A2B1":"CORNER A2B1",
 "CORNER_A2B2":"CORNER A2B2",
 "DESCRIPTION":"DESCRIPTION"
-},
-"partImageSize":800,
-"fontSize":18
+}
 }');

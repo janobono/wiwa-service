@@ -457,17 +457,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderItemPartImageData> getItemImages(final long id, final long itemId) {
+    public List<OrderItemImageData> getItemImages(final long id, final long itemId) {
         final OrderItemDo orderItemDo = getOrderItemDo(itemId);
         final PartData part = dataUtil.parseValue(orderItemDo.getPart(), PartData.class);
+        final OrderPropertiesData orderProperties = applicationPropertyService.getOrderProperties();
 
         return switch (part) {
-            case final PartBasicData partBasicData -> new PartBasicImageUtil().generateImages(partBasicData);
-            case final PartFrameData partFrameData -> new PartFrameImageUtil().generateImages(partFrameData);
+            case final PartBasicData partBasicData ->
+                    new PartBasicImageUtil().generateImages(orderProperties, partBasicData);
+            case final PartFrameData partFrameData ->
+                    new PartFrameImageUtil().generateImages(orderProperties, partFrameData);
             case final PartDuplicatedBasicData partDuplicatedBasicData ->
-                    new PartDuplicatedBasicImageUtil().generateImages(partDuplicatedBasicData);
+                    new PartDuplicatedBasicImageUtil().generateImages(orderProperties, partDuplicatedBasicData);
             case final PartDuplicatedFrameData partDuplicatedFrameData ->
-                    new PartDuplicatedFrameImageUtil().generateImages(partDuplicatedFrameData);
+                    new PartDuplicatedFrameImageUtil().generateImages(orderProperties, partDuplicatedFrameData);
             default -> throw new InvalidParameterException("Unsupported part type: " + part.getClass().getSimpleName());
         };
     }

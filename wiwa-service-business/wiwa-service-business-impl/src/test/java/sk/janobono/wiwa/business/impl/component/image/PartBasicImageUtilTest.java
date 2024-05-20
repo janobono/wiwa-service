@@ -6,11 +6,19 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import sk.janobono.wiwa.business.model.application.OrderPropertiesData;
+import sk.janobono.wiwa.business.model.order.OrderItemImageData;
 import sk.janobono.wiwa.business.model.order.part.PartBasicData;
+import sk.janobono.wiwa.model.BoardDimension;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class PartBasicImageUtilTest {
 
@@ -31,6 +39,28 @@ class PartBasicImageUtilTest {
     @ValueSource(ints = {250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250})
     void generateImages_whenValidData_thenTheseResults(final int size) throws IOException {
         final PartBasicData part = objectMapper.readValue(getClass().getResource("/part_basic_%d_%d.json".formatted(size, size)), PartBasicData.class);
-//        Files.write(Path.of("./target").resolve("basic_%d.png".formatted(size)), partBasicImageUtil.generateImage(part).data());
+
+        final List<OrderItemImageData> images = partBasicImageUtil.generateImages(
+                new OrderPropertiesData(
+                        Map.of(),
+                        Map.of(),
+                        Map.of(),
+                        Map.of(),
+                        Map.of(),
+                        Map.of(),
+                        Map.of(),
+                        "",
+                        Map.of(),
+                        Map.of()
+                ),
+                part
+        );
+
+        assertThat(images.size()).isEqualTo(1);
+
+        for (final OrderItemImageData item : images) {
+            Files.write(Path.of("./target").resolve("basic_%s_%d.png".formatted(item.itemImage().name(), size)),
+                    item.image());
+        }
     }
 }

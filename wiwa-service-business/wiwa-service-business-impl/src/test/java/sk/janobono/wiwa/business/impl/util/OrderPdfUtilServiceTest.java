@@ -1,8 +1,5 @@
 package sk.janobono.wiwa.business.impl.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -47,23 +44,20 @@ class OrderPdfUtilServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        final ObjectMapper objectMapper = JsonMapper.builder()
-                .addModule(new JavaTimeModule())
-                .build();
-
         Mockito.when(applicationPropertyService.getOrderProperties()).thenReturn(
                 new OrderPropertiesData(
-                        new HashMap<>(),
-                        new HashMap<>(),
-                        new HashMap<>(),
-                        new HashMap<>() {{
-                            put(OrderFormat.PDF_TITLE, "Order No.%s");
-                            put(OrderFormat.PDF_ORDER_NUMBER, "%03d");
-                            put(OrderFormat.PDF_INTEGER, "%d %s");
-                            put(OrderFormat.PDF_UNIT, "%.3f %s");
-                            put(OrderFormat.PDF_PRICE, "%.2f %s");
-                            put(OrderFormat.PDF_EDGE, "%s %dx%.1f");
-                        }},
+                        Map.of(),
+                        Map.of(),
+                        Map.of(),
+                        Map.of(),
+                        Map.of(
+                                OrderFormat.PDF_TITLE, "Order No.%s",
+                                OrderFormat.PDF_ORDER_NUMBER, "%03d",
+                                OrderFormat.PDF_INTEGER, "%d %s",
+                                OrderFormat.PDF_UNIT, "%.3f %s",
+                                OrderFormat.PDF_PRICE, "%.2f %s",
+                                OrderFormat.PDF_EDGE, "%s %dx%.1f"
+                        ),
                         new HashMap<>() {{
                             put(OrderContent.MATERIAL_NOT_FOUND, "Material not found");
                             put(OrderContent.BOARD_NOT_FOUND, "Board not found");
@@ -112,12 +106,10 @@ class OrderPdfUtilServiceTest {
                             put(OrderContent.TOTAL_SUMMARY_VAT_PRICE, "vat price");
                             put(OrderContent.PARTS_LIST, "Part list");
                         }},
-                        new HashMap<>(),
+                        Map.of(),
                         ";",
                         Map.of("<.*?>", "", "\\s+", "_"),
-                        new HashMap<>(),
-                        800,
-                        18
+                        Map.of()
                 )
         );
 
@@ -292,33 +284,33 @@ class OrderPdfUtilServiceTest {
         assertThat(pdfContentData.summary()).isNotNull();
 
         assertThat(pdfContentData.summary().boardSummary().size()).isEqualTo(1);
-        assertThat(pdfContentData.summary().boardSummary().get(0).material()).isEqualTo("material1");
-        assertThat(pdfContentData.summary().boardSummary().get(0).name()).isEqualTo("b-code s-code name");
-        assertThat(pdfContentData.summary().boardSummary().get(0).area()).isEqualTo("4.300 ㎡");
-        assertThat(pdfContentData.summary().boardSummary().get(0).boardsCount()).isEqualTo("2 p");
-        assertThat(pdfContentData.summary().boardSummary().get(0).weight()).isEqualTo("10.240 kg");
-        assertThat(pdfContentData.summary().boardSummary().get(0).price()).isEqualTo("100.00 €");
-        assertThat(pdfContentData.summary().boardSummary().get(0).vatPrice()).isEqualTo("120.00 €");
+        assertThat(pdfContentData.summary().boardSummary().getFirst().material()).isEqualTo("material1");
+        assertThat(pdfContentData.summary().boardSummary().getFirst().name()).isEqualTo("b-code s-code name");
+        assertThat(pdfContentData.summary().boardSummary().getFirst().area()).isEqualTo("4.300 ㎡");
+        assertThat(pdfContentData.summary().boardSummary().getFirst().boardsCount()).isEqualTo("2 p");
+        assertThat(pdfContentData.summary().boardSummary().getFirst().weight()).isEqualTo("10.240 kg");
+        assertThat(pdfContentData.summary().boardSummary().getFirst().price()).isEqualTo("100.00 €");
+        assertThat(pdfContentData.summary().boardSummary().getFirst().vatPrice()).isEqualTo("120.00 €");
 
         assertThat(pdfContentData.summary().edgeSummary().size()).isEqualTo(1);
-        assertThat(pdfContentData.summary().edgeSummary().get(0).name()).isEqualTo("code 19x0.8");
-        assertThat(pdfContentData.summary().edgeSummary().get(0).length()).isEqualTo("4.200 m");
-        assertThat(pdfContentData.summary().edgeSummary().get(0).glueLength()).isEqualTo("3.800 m");
-        assertThat(pdfContentData.summary().edgeSummary().get(0).weight()).isEqualTo("0.830 kg");
-        assertThat(pdfContentData.summary().edgeSummary().get(0).edgePrice()).isEqualTo("12.12 €");
-        assertThat(pdfContentData.summary().edgeSummary().get(0).edgeVatPrice()).isEqualTo("15.15 €");
-        assertThat(pdfContentData.summary().edgeSummary().get(0).gluePrice()).isEqualTo("7.54 €");
-        assertThat(pdfContentData.summary().edgeSummary().get(0).glueVatPrice()).isEqualTo("8.56 €");
+        assertThat(pdfContentData.summary().edgeSummary().getFirst().name()).isEqualTo("code 19x0.8");
+        assertThat(pdfContentData.summary().edgeSummary().getFirst().length()).isEqualTo("4.200 m");
+        assertThat(pdfContentData.summary().edgeSummary().getFirst().glueLength()).isEqualTo("3.800 m");
+        assertThat(pdfContentData.summary().edgeSummary().getFirst().weight()).isEqualTo("0.830 kg");
+        assertThat(pdfContentData.summary().edgeSummary().getFirst().edgePrice()).isEqualTo("12.12 €");
+        assertThat(pdfContentData.summary().edgeSummary().getFirst().edgeVatPrice()).isEqualTo("15.15 €");
+        assertThat(pdfContentData.summary().edgeSummary().getFirst().gluePrice()).isEqualTo("7.54 €");
+        assertThat(pdfContentData.summary().edgeSummary().getFirst().glueVatPrice()).isEqualTo("8.56 €");
 
         assertThat(pdfContentData.summary().glueSummary().area()).isEqualTo("4.350 ㎡");
         assertThat(pdfContentData.summary().glueSummary().price()).isEqualTo("100.00 €");
         assertThat(pdfContentData.summary().glueSummary().vatPrice()).isEqualTo("120.00 €");
 
         assertThat(pdfContentData.summary().cutSummary().size()).isEqualTo(1);
-        assertThat(pdfContentData.summary().cutSummary().get(0).thickness()).isEqualTo("10 mm");
-        assertThat(pdfContentData.summary().cutSummary().get(0).amount()).isEqualTo("6.700 m");
-        assertThat(pdfContentData.summary().cutSummary().get(0).price()).isEqualTo("2.68 €");
-        assertThat(pdfContentData.summary().cutSummary().get(0).vatPrice()).isEqualTo("3.03 €");
+        assertThat(pdfContentData.summary().cutSummary().getFirst().thickness()).isEqualTo("10 mm");
+        assertThat(pdfContentData.summary().cutSummary().getFirst().amount()).isEqualTo("6.700 m");
+        assertThat(pdfContentData.summary().cutSummary().getFirst().price()).isEqualTo("2.68 €");
+        assertThat(pdfContentData.summary().cutSummary().getFirst().vatPrice()).isEqualTo("3.03 €");
 
         assertThat(pdfContentData.summary().weight()).isEqualTo("123.123 kg");
         assertThat(pdfContentData.summary().total()).isEqualTo("100.00 €");

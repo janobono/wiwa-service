@@ -140,7 +140,7 @@ public class OrderApiService {
         return orderWebMapper.mapToWebDto(orderService.moveDownItem(id, itemId, user.id(), isManager(user)));
     }
 
-    public List<OrderItemPartImageWebDto> getItemImages(final long id, final long itemId) {
+    public List<OrderItemImageWebDto> getItemImages(final long id, final long itemId) {
         checkEmployeeAccess(id);
         return orderService.getItemImages(id, itemId).stream().map(applicationImageWebMapper::mapToWebDto).toList();
     }

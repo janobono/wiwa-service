@@ -27,13 +27,19 @@
     }
   },
   "cornerA2B1": {
+    "type": "STRAIGHT",
     "edgeId": 1,
-    "type": "ROUNDED",
-    "radius": 50
+    "dimensions": {
+      "x": 50,
+      "y": 50
+    }
   },
   "cornerA2B2": {
+    "type": "STRAIGHT",
     "edgeId": 1,
-    "type": "ROUNDED",
-    "radius": 50
+    "dimensions": {
+      "x": 50,
+      "y": 50
+    }
   }
 }
