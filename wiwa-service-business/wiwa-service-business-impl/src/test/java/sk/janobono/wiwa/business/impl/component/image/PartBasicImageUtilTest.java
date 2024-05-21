@@ -9,12 +9,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 import sk.janobono.wiwa.business.model.application.OrderPropertiesData;
 import sk.janobono.wiwa.business.model.order.OrderItemImageData;
 import sk.janobono.wiwa.business.model.order.part.PartBasicData;
-import sk.janobono.wiwa.model.BoardDimension;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +54,7 @@ class PartBasicImageUtilTest {
                 part
         );
 
-        assertThat(images.size()).isEqualTo(1);
+        assertThat(images.size()).isEqualTo(2);
 
         for (final OrderItemImageData item : images) {
             Files.write(Path.of("./target").resolve("basic_%s_%d.png".formatted(item.itemImage().name(), size)),

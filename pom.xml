@@ -35,10 +35,9 @@
             </dependency>
             <dependency>
                 <groupId>org.xhtmlrenderer</groupId>
-                <artifactId>flying-saucer-pdf-openpdf</artifactId>
+                <artifactId>flying-saucer-pdf</artifactId>
                 <version>9.4.0</version>
             </dependency>
-
             <dependency>
                 <groupId>com.auth0</groupId>
                 <artifactId>java-jwt</artifactId>

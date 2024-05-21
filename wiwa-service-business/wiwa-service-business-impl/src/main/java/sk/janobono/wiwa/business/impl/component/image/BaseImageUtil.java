@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 abstract class BaseImageUtil<P extends PartData> {
 
@@ -54,7 +56,11 @@ abstract class BaseImageUtil<P extends PartData> {
     protected BufferedImage createPartImage(final DimensionsData dimensions) {
         final int x = dimensions.x().intValue();
         final int y = dimensions.y().intValue();
-        return new BufferedImage(x + 2 * FRAME, y + 2 * FRAME, BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage image = new BufferedImage(x + 2 * FRAME, y + 2 * FRAME, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g2d = image.createGraphics();
+        g2d.setColor(Color.WHITE);
+        g2d.fill(new Rectangle2D.Double(0, 0, x + 2 * FRAME, y + 2 * FRAME));
+        return image;
     }
 
     protected Graphics2D createGraphics(final BufferedImage image) {
@@ -72,15 +78,13 @@ abstract class BaseImageUtil<P extends PartData> {
     }
 
     protected void drawPart(final Graphics2D g2d, final DimensionsData dimensions) {
-        final int x = dimensions.x().intValue();
-        final int y = dimensions.y().intValue();
+        drawPart(g2d, new DimensionsData(BigDecimal.valueOf(FRAME), BigDecimal.valueOf(FRAME)), dimensions);
+    }
 
-        g2d.setColor(Color.WHITE);
-        g2d.fill(new Rectangle2D.Double(0, 0, x + 2 * FRAME, y + 2 * FRAME));
-
+    protected void drawPart(final Graphics2D g2d, final DimensionsData p1, final DimensionsData p2) {
         g2d.setColor(Color.BLACK);
         g2d.setStroke(new BasicStroke(PART_LINE_WIDTH));
-        g2d.draw(new Rectangle2D.Double(FRAME, FRAME, x, y));
+        g2d.draw(new Rectangle2D.Double(p1.x().intValue(), p1.y().intValue(), p2.x().intValue(), p2.y().intValue()));
     }
 
     protected void writeDimension(final Graphics2D g2d,
@@ -122,36 +126,34 @@ abstract class BaseImageUtil<P extends PartData> {
 
         final BigDecimal line = BigDecimal.valueOf(PART_LINE_WIDTH).divide(BigDecimal.valueOf(4), RoundingMode.HALF_UP);
 
-        g2d.setColor(Color.RED);
-        g2d.setStroke(new BasicStroke(EDGE_LINE_WIDTH));
+        final BigDecimal frame = BigDecimal.valueOf(FRAME - line.intValue());
+        final BigDecimal xFrame = BigDecimal.valueOf(x + FRAME + line.intValue());
+        final BigDecimal yFrame = BigDecimal.valueOf(y + FRAME + line.intValue());
+
+        final DimensionsData pFrame = new DimensionsData(frame, frame);
+        final DimensionsData pXFrame = new DimensionsData(xFrame, frame);
+        final DimensionsData pYFrame = new DimensionsData(frame, yFrame);
+        final DimensionsData pXYFrame = new DimensionsData(xFrame, yFrame);
 
         switch (edgePosition) {
-            case A1 -> g2d.draw(new Line2D.Double(
-                    FRAME - line.intValue(),
-                    FRAME - line.intValue(),
-                    x + FRAME + line.intValue(),
-                    FRAME - line.intValue())
-            );
-            case A2 -> g2d.draw(new Line2D.Double(
-                    FRAME - line.intValue(),
-                    y + FRAME + line.intValue(),
-                    x + FRAME + line.intValue(),
-                    y + FRAME + line.intValue())
-            );
-            case B1 -> g2d.draw(new Line2D.Double(
-                    FRAME - line.intValue(),
-                    FRAME - line.intValue(),
-                    FRAME - line.intValue(),
-                    y + FRAME + line.intValue())
-            );
-            case B2 -> g2d.draw(new Line2D.Double(
-                    x + FRAME + line.intValue(),
-                    FRAME - line.intValue(),
-                    x + FRAME + line.intValue(),
-                    y + FRAME + line.intValue())
-            );
+            case A1 -> drawEdge(g2d, pFrame, pXFrame);
+            case A2 -> drawEdge(g2d, pYFrame, pXYFrame);
+            case B1 -> drawEdge(g2d, pFrame, pYFrame);
+            case B2 -> drawEdge(g2d, pXFrame, pXYFrame);
         }
+
         writeEdge(g2d, edgePosition, dimensions, orderProperties);
+    }
+
+    protected void drawEdge(final Graphics2D g2d, final DimensionsData p1, final DimensionsData p2) {
+        g2d.setColor(Color.RED);
+        g2d.setStroke(new BasicStroke(EDGE_LINE_WIDTH));
+        g2d.draw(new Line2D.Double(
+                p1.x().intValue(),
+                p1.y().intValue(),
+                p2.x().intValue(),
+                p2.y().intValue()
+        ));
     }
 
     protected void writeEdge(final Graphics2D g2d,
@@ -203,8 +205,13 @@ abstract class BaseImageUtil<P extends PartData> {
         };
 
         if (textPosition != null) {
-            g2d.drawString(text, textPosition.x().intValue(), textPosition.y().intValue());
+            writeEdge(g2d, text, textPosition);
         }
+    }
+
+    protected void writeEdge(final Graphics2D g2d, final String text, final DimensionsData textPosition) {
+        g2d.setColor(Color.RED);
+        g2d.drawString(text, textPosition.x().intValue(), textPosition.y().intValue());
     }
 
     protected void drawCorner(final Graphics2D g2d,
@@ -240,14 +247,8 @@ abstract class BaseImageUtil<P extends PartData> {
         final BigDecimal frameTextY = BigDecimal.valueOf(FRAME).subtract(ascent.divide(BigDecimal.TWO, RoundingMode.HALF_UP));
 
         final DimensionsData textPosition = switch (cornerPosition) {
-            case A1B1 -> new DimensionsData(
-                    frameTextX,
-                    frameTextY
-            );
-            case A1B2 -> new DimensionsData(
-                    dimensions.x().add(textWidth),
-                    frameTextY
-            );
+            case A1B1 -> new DimensionsData(frameTextX, frameTextY);
+            case A1B2 -> new DimensionsData(dimensions.x().add(textWidth), frameTextY);
             case A2B1 -> new DimensionsData(
                     frameTextX,
                     BigDecimal.valueOf(FRAME)
@@ -268,38 +269,17 @@ abstract class BaseImageUtil<P extends PartData> {
         }
     }
 
-    protected DimensionsData getCornerPosition(final DimensionsData dimensions,
-                                               final CornerPosition cornerPosition) {
+    protected DimensionsData getCornerPosition(final DimensionsData dimensions, final CornerPosition cornerPosition) {
         final BigDecimal line = BigDecimal.valueOf(PART_LINE_WIDTH).divide(BigDecimal.TWO, RoundingMode.HALF_UP);
+        final BigDecimal frame = BigDecimal.valueOf(FRAME).subtract(line);
+        final BigDecimal frameX = BigDecimal.valueOf(FRAME).add(dimensions.x()).add(line);
+        final BigDecimal frameY = BigDecimal.valueOf(FRAME).add(dimensions.y()).add(line);
+
         return switch (cornerPosition) {
-            case A1B1 -> new DimensionsData(
-                    BigDecimal.valueOf(FRAME)
-                            .subtract(line),
-                    BigDecimal.valueOf(FRAME)
-                            .subtract(line)
-            );
-            case A1B2 -> new DimensionsData(
-                    BigDecimal.valueOf(FRAME)
-                            .add(dimensions.x())
-                            .add(line),
-                    BigDecimal.valueOf(FRAME)
-                            .subtract(line)
-            );
-            case A2B1 -> new DimensionsData(
-                    BigDecimal.valueOf(FRAME)
-                            .subtract(line),
-                    BigDecimal.valueOf(FRAME)
-                            .add(dimensions.y())
-                            .add(line)
-            );
-            case A2B2 -> new DimensionsData(
-                    BigDecimal.valueOf(FRAME)
-                            .add(dimensions.x())
-                            .add(line),
-                    BigDecimal.valueOf(FRAME)
-                            .add(dimensions.y())
-                            .add(line)
-            );
+            case A1B1 -> new DimensionsData(frame, frame);
+            case A1B2 -> new DimensionsData(frameX, frame);
+            case A2B1 -> new DimensionsData(frame, frameY);
+            case A2B2 -> new DimensionsData(frameX, frameY);
         };
     }
 
@@ -529,5 +509,34 @@ abstract class BaseImageUtil<P extends PartData> {
                 cornerRounded.radius().multiply(BigDecimal.valueOf(2)).intValue(),
                 270,
                 90);
+    }
+
+    protected OrderItemImageData generateFullImage(final OrderPropertiesData orderProperties,
+                                                   final DimensionsData dimensions,
+                                                   final Set<EdgePosition> edges,
+                                                   final Map<CornerPosition, PartCornerData> corners) {
+        final BufferedImage image = createPartImage(dimensions);
+        final Graphics2D g2d = createGraphics(image);
+        drawPart(g2d, dimensions);
+        writeDimension(g2d, BoardDimension.X, dimensions, orderProperties);
+        writeDimension(g2d, BoardDimension.Y, dimensions, orderProperties);
+        for (final EdgePosition edgePosition : edges) {
+            drawEdge(g2d, dimensions, edgePosition, orderProperties);
+        }
+        corners.forEach((key, value) -> {
+            drawCorner(g2d, dimensions, key, value, orderProperties);
+        });
+        return toOrderItemPartImage(ItemImage.FULL, image);
+    }
+
+    protected OrderItemImageData generateSubImage(final ItemImage itemImage,
+                                                  final OrderPropertiesData orderProperties,
+                                                  final DimensionsData dimensions) {
+        final BufferedImage image = createPartImage(dimensions);
+        final Graphics2D g2d = createGraphics(image);
+        drawPart(g2d, dimensions);
+        writeDimension(g2d, BoardDimension.X, dimensions, orderProperties);
+        writeDimension(g2d, BoardDimension.Y, dimensions, orderProperties);
+        return toOrderItemPartImage(itemImage, image);
     }
 }
