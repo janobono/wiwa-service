@@ -15,6 +15,7 @@ import sk.janobono.wiwa.model.ItemImage;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -28,10 +29,11 @@ import java.util.Set;
 
 abstract class BaseImageUtil<P extends PartData> {
 
-    protected static final int FRAME = 100;
+    protected static final int FRAME = 75;
     protected static final int FONT_SIZE = 32;
     protected static final int PART_LINE_WIDTH = 12;
     protected static final int EDGE_LINE_WIDTH = 6;
+    protected static final int TEXT_MARGIN = 5;
 
     public abstract List<OrderItemImageData> generateImages(final OrderPropertiesData orderProperties, final P part);
 
@@ -87,29 +89,57 @@ abstract class BaseImageUtil<P extends PartData> {
         g2d.draw(new Rectangle2D.Double(p1.x().intValue(), p1.y().intValue(), p2.x().intValue(), p2.y().intValue()));
     }
 
+    protected BigDecimal getTextWidth(final Graphics2D g2d, final String text) {
+        final FontMetrics fontMetrics = g2d.getFontMetrics();
+        return BigDecimal.valueOf(fontMetrics.stringWidth(text));
+    }
+
+    protected BigDecimal getTextHeight(final Graphics2D g2d, final String text) {
+        final FontMetrics fontMetrics = g2d.getFontMetrics();
+        return BigDecimal.valueOf(getFont().createGlyphVector(fontMetrics.getFontRenderContext(), text).getVisualBounds().getHeight());
+    }
+
     protected DimensionsData getDimensionTextPosition(final Graphics2D g2d,
                                                       final BoardDimension boardDimension,
                                                       final DimensionsData dimensions,
                                                       final String text) {
-        final FontMetrics fontMetrics = g2d.getFontMetrics();
-        final BigDecimal textWidth = BigDecimal.valueOf(fontMetrics.stringWidth(text));
-        final BigDecimal ascent = BigDecimal.valueOf(fontMetrics.getAscent());
+        final BigDecimal textWidth = getTextWidth(g2d, text);
+        final BigDecimal textHeight = getTextHeight(g2d, text);
+
         return switch (boardDimension) {
             case X -> new DimensionsData(
                     dimensions.x()
                             .add(BigDecimal.valueOf(2 * FRAME))
                             .divide(BigDecimal.TWO, RoundingMode.HALF_UP)
                             .subtract(textWidth.divide(BigDecimal.TWO, RoundingMode.HALF_UP)),
-                    BigDecimal.valueOf(fontMetrics.getMaxAscent())
+                    textHeight
+                            .add(BigDecimal.valueOf(TEXT_MARGIN))
             );
             case Y -> new DimensionsData(
-                    textWidth.divide(BigDecimal.TWO, RoundingMode.HALF_UP),
+                    textHeight
+                            .add(BigDecimal.valueOf(TEXT_MARGIN)),
                     dimensions.y()
                             .add(BigDecimal.valueOf(2 * FRAME))
                             .divide(BigDecimal.TWO, RoundingMode.HALF_UP)
-                            .add(ascent.divide(BigDecimal.TWO, RoundingMode.HALF_UP))
+                            .add(textWidth.divide(BigDecimal.TWO, RoundingMode.HALF_UP))
             );
         };
+    }
+
+    protected void writeText(final Graphics2D g2d, final String text, final DimensionsData dimensions, final boolean rotate) {
+        final AffineTransform defaultAt = g2d.getTransform();
+        final int x, y;
+        if (rotate) {
+            final AffineTransform at = AffineTransform.getQuadrantRotateInstance(3);
+            g2d.setTransform(at);
+            x = -dimensions.y().intValue();
+            y = dimensions.x().intValue();
+        } else {
+            x = dimensions.x().intValue();
+            y = dimensions.y().intValue();
+        }
+        g2d.drawString(text, x, y);
+        g2d.setTransform(defaultAt);
     }
 
     protected void writeDimension(final Graphics2D g2d,
@@ -119,13 +149,12 @@ abstract class BaseImageUtil<P extends PartData> {
     ) {
         final String text = orderProperties.dimensions().getOrDefault(boardDimension, boardDimension.name());
         final DimensionsData textPosition = getDimensionTextPosition(g2d, boardDimension, dimensions, text);
-        g2d.drawString(text, textPosition.x().intValue(), textPosition.y().intValue());
+        writeText(g2d, text, textPosition, boardDimension == BoardDimension.Y);
     }
 
     protected void drawEdge(final Graphics2D g2d,
                             final DimensionsData dimensions,
-                            final EdgePosition edgePosition,
-                            final OrderPropertiesData orderProperties) {
+                            final EdgePosition edgePosition) {
         final int x = dimensions.x().intValue();
         final int y = dimensions.y().intValue();
 
@@ -146,8 +175,6 @@ abstract class BaseImageUtil<P extends PartData> {
             case B1 -> drawEdge(g2d, pFrame, pYFrame);
             case B2 -> drawEdge(g2d, pXFrame, pXYFrame);
         }
-
-        writeEdge(g2d, edgePosition, dimensions, orderProperties);
     }
 
     protected void drawEdge(final Graphics2D g2d, final DimensionsData p1, final DimensionsData p2) {
@@ -171,23 +198,27 @@ abstract class BaseImageUtil<P extends PartData> {
             case A1 -> new DimensionsData(
                     textXPosition.x(),
                     textXPosition.y()
-                            .add(BigDecimal.valueOf(FRAME).divide(BigDecimal.TWO, RoundingMode.HALF_UP))
+                            .add(getTextHeight(g2d, text))
+                            .add(BigDecimal.valueOf(TEXT_MARGIN))
             );
             case A2 -> new DimensionsData(
                     textXPosition.x(),
                     textXPosition.y()
                             .add(BigDecimal.valueOf(FRAME))
-                            .add(BigDecimal.valueOf(PART_LINE_WIDTH))
                             .add(dimensions.y())
+                            .add(getTextHeight(g2d, text))
             );
             case B1 -> new DimensionsData(
-                    BigDecimal.valueOf(FRAME).divide(BigDecimal.TWO, RoundingMode.HALF_UP),
+                    textYPosition.x()
+                            .add(getTextHeight(g2d, text))
+                            .add(BigDecimal.valueOf(TEXT_MARGIN)),
                     textYPosition.y()
             );
             case B2 -> new DimensionsData(
-                    dimensions.x()
+                    textYPosition.x()
                             .add(BigDecimal.valueOf(FRAME))
-                            .add(BigDecimal.valueOf(PART_LINE_WIDTH)),
+                            .add(dimensions.x())
+                            .add(getTextHeight(g2d, text)),
                     textYPosition.y()
             );
             default -> null;
@@ -199,16 +230,26 @@ abstract class BaseImageUtil<P extends PartData> {
                              final DimensionsData dimensions,
                              final OrderPropertiesData orderProperties
     ) {
-        final String text = orderProperties.edges().getOrDefault(edgePosition, edgePosition.name());
+        writeEdge(g2d, edgePosition, dimensions, orderProperties.edges().getOrDefault(edgePosition, edgePosition.name()));
+    }
+
+    protected void writeEdge(final Graphics2D g2d,
+                             final EdgePosition edgePosition,
+                             final DimensionsData dimensions,
+                             final String text
+    ) {
         final DimensionsData textPosition = getEdgeTextPosition(g2d, edgePosition, dimensions, text);
         if (textPosition != null) {
-            writeEdge(g2d, text, textPosition);
+            writeEdge(g2d, text, textPosition, switch (edgePosition) {
+                case B1, B2 -> true;
+                default -> false;
+            });
         }
     }
 
-    protected void writeEdge(final Graphics2D g2d, final String text, final DimensionsData textPosition) {
+    protected void writeEdge(final Graphics2D g2d, final String text, final DimensionsData textPosition, final boolean rotate) {
         g2d.setColor(Color.RED);
-        g2d.drawString(text, textPosition.x().intValue(), textPosition.y().intValue());
+        writeText(g2d, text, textPosition, rotate);
     }
 
     protected void drawCorner(final Graphics2D g2d,
@@ -236,26 +277,36 @@ abstract class BaseImageUtil<P extends PartData> {
                                                    final DimensionsData dimensions,
                                                    final String text) {
         return switch (cornerPosition) {
-            case A1B1 -> {
-                final DimensionsData edgeA1 = getEdgeTextPosition(g2d, EdgePosition.A1, dimensions, text);
-                final DimensionsData edgeB1 = getEdgeTextPosition(g2d, EdgePosition.B1, dimensions, text);
-                yield new DimensionsData(edgeB1.x(), edgeA1.y());
-            }
-            case A1B2 -> {
-                final DimensionsData edgeA1 = getEdgeTextPosition(g2d, EdgePosition.A1, dimensions, text);
-                final DimensionsData edgeB2 = getEdgeTextPosition(g2d, EdgePosition.B2, dimensions, text);
-                yield new DimensionsData(edgeB2.x(), edgeA1.y());
-            }
-            case A2B1 -> {
-                final DimensionsData edgeA2 = getEdgeTextPosition(g2d, EdgePosition.A2, dimensions, text);
-                final DimensionsData edgeB1 = getEdgeTextPosition(g2d, EdgePosition.B1, dimensions, text);
-                yield new DimensionsData(edgeB1.x(), edgeA2.y());
-            }
-            case A2B2 -> {
-                final DimensionsData edgeA2 = getEdgeTextPosition(g2d, EdgePosition.A2, dimensions, text);
-                final DimensionsData edgeB2 = getEdgeTextPosition(g2d, EdgePosition.B2, dimensions, text);
-                yield new DimensionsData(edgeB2.x(), edgeA2.y());
-            }
+            case A1B1 -> new DimensionsData(
+                    BigDecimal.valueOf(FRAME),
+                    BigDecimal.valueOf(FRAME)
+                            .subtract(getTextHeight(g2d, text))
+            );
+            case A1B2 -> new DimensionsData(
+                    BigDecimal.valueOf(FRAME)
+                            .add(dimensions.x())
+                            .subtract(getTextWidth(g2d, text)),
+                    BigDecimal.valueOf(FRAME)
+                            .subtract(getTextHeight(g2d, text))
+            );
+            case A2B1 -> new DimensionsData(
+                    BigDecimal.valueOf(FRAME),
+                    BigDecimal.valueOf(FRAME)
+                            .add(dimensions.y())
+                            .add(getTextHeight(g2d, text))
+                            .add(BigDecimal.valueOf(TEXT_MARGIN))
+                            .add(BigDecimal.valueOf(PART_LINE_WIDTH))
+            );
+            case A2B2 -> new DimensionsData(
+                    BigDecimal.valueOf(FRAME)
+                            .add(dimensions.x())
+                            .subtract(getTextWidth(g2d, text)),
+                    BigDecimal.valueOf(FRAME)
+                            .add(dimensions.y())
+                            .add(getTextHeight(g2d, text))
+                            .add(BigDecimal.valueOf(TEXT_MARGIN))
+                            .add(BigDecimal.valueOf(PART_LINE_WIDTH))
+            );
         };
     }
 
@@ -522,7 +573,8 @@ abstract class BaseImageUtil<P extends PartData> {
         writeDimension(g2d, BoardDimension.X, dimensions, orderProperties);
         writeDimension(g2d, BoardDimension.Y, dimensions, orderProperties);
         for (final EdgePosition edgePosition : edges) {
-            drawEdge(g2d, dimensions, edgePosition, orderProperties);
+            drawEdge(g2d, dimensions, edgePosition);
+            writeEdge(g2d, edgePosition, dimensions, orderProperties);
         }
         corners.forEach((key, value) -> {
             drawCorner(g2d, dimensions, key, value, orderProperties);

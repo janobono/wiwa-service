@@ -41,7 +41,8 @@ public class PartFrameImageUtil extends BaseImageUtil<PartFrameData> {
         writeDimension(g2d, BoardDimension.Y, part.dimensionsTOP(), orderProperties);
 
         for (final EdgePosition edgePosition : part.edges().keySet()) {
-            drawEdge(g2d, part.dimensionsTOP(), edgePosition, orderProperties);
+            drawEdge(g2d, part.dimensionsTOP(), edgePosition);
+            writeEdge(g2d, edgePosition, part.dimensionsTOP(), orderProperties);
         }
         drawInnerEdges(part, g2d, orderProperties);
 
@@ -98,15 +99,14 @@ public class PartFrameImageUtil extends BaseImageUtil<PartFrameData> {
                     drawEdge(g2d, a1b1, a1b2);
                     final String text = orderProperties.edges().getOrDefault(edgePosition, edgePosition.name());
                     final DimensionsData dimXPosition = getDimensionTextPosition(g2d, BoardDimension.X, part.dimensionsTOP(), text);
-                    final DimensionsData edgeA1Position = getEdgeTextPosition(g2d, EdgePosition.A1, part.dimensionsTOP(), text);
                     final DimensionsData textPosition = new DimensionsData(
                             dimXPosition.x(),
                             BigDecimal.valueOf(FRAME)
                                     .add(part.dimensionsA1().y())
-                                    .add(edgeA1Position.y().subtract(dimXPosition.y()))
-                                    .subtract(BigDecimal.valueOf(PART_LINE_WIDTH))
+                                    .add(getTextHeight(g2d, text))
+                                    .add(BigDecimal.valueOf(PART_LINE_WIDTH))
                     );
-                    writeEdge(g2d, text, textPosition);
+                    writeEdge(g2d, text, textPosition, false);
                 }
                 case A2I -> {
                     drawEdge(g2d, a2b1, a2b2);
@@ -119,7 +119,7 @@ public class PartFrameImageUtil extends BaseImageUtil<PartFrameData> {
                                     .subtract(part.dimensionsA2().y())
                                     .subtract(BigDecimal.valueOf(PART_LINE_WIDTH))
                     );
-                    writeEdge(g2d, text, textPosition);
+                    writeEdge(g2d, text, textPosition, false);
                 }
                 case B1I -> {
                     drawEdge(g2d, a1b1, a2b1);
@@ -128,22 +128,24 @@ public class PartFrameImageUtil extends BaseImageUtil<PartFrameData> {
                     final DimensionsData textPosition = new DimensionsData(
                             BigDecimal.valueOf(FRAME)
                                     .add(part.dimensionsB1().x())
+                                    .add(getTextHeight(g2d, text))
                                     .add(BigDecimal.valueOf(PART_LINE_WIDTH)),
                             dimYPosition.y()
                     );
-                    writeEdge(g2d, text, textPosition);
+                    writeEdge(g2d, text, textPosition, true);
                 }
                 case B2I -> {
                     drawEdge(g2d, a1b2, a2b2);
                     final String text = orderProperties.edges().getOrDefault(edgePosition, edgePosition.name());
                     final DimensionsData dimYPosition = getDimensionTextPosition(g2d, BoardDimension.Y, part.dimensionsTOP(), text);
                     final DimensionsData textPosition = new DimensionsData(
-                            part.dimensionsTOP().x()
+                            BigDecimal.valueOf(FRAME)
+                                    .add(part.dimensionsTOP().x())
                                     .subtract(part.dimensionsB2().x())
-                                    .add(BigDecimal.valueOf(PART_LINE_WIDTH)),
+                                    .subtract(BigDecimal.valueOf(PART_LINE_WIDTH)),
                             dimYPosition.y()
                     );
-                    writeEdge(g2d, text, textPosition);
+                    writeEdge(g2d, text, textPosition, true);
                 }
             }
         }

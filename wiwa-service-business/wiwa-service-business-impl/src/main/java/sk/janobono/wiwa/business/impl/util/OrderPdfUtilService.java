@@ -122,6 +122,8 @@ public class OrderPdfUtilService {
 
                 .summary(orderToPdfSummary(orderProperties, units, materialNames, order))
 
+                .items(orderToPdfItems(orderProperties, units, materialNames, order))
+
                 .build();
     }
 
@@ -283,5 +285,13 @@ public class OrderPdfUtilService {
 
     private String formatted(final OrderFormat format, final OrderPropertiesData orderProperties, final Object... args) {
         return orderProperties.format().get(format).formatted(args);
+    }
+
+    private List<PdfItemData> orderToPdfItems(final OrderPropertiesData orderProperties,
+                                              final List<UnitData> units,
+                                              final Map<Long, String> materialNames,
+                                              final OrderData order) {
+        // TODO
+        return List.of();
     }
 }

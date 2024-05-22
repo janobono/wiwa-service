@@ -8,7 +8,18 @@ public record PdfItemData(
         String name,
         String description,
         String quantity,
-        String type
+        String image,
+        String dimX,
+        String dimY,
+        String edgeA1,
+        String edgeA2,
+        String edgeB1,
+        String edgeB2,
+        String cornerA1B1,
+        String cornerA1B2,
+        String cornerA2B1,
+        String cornerA2B2
+
 
 
 ) {
