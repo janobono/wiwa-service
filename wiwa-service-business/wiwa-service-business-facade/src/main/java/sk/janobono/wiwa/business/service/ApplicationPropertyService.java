@@ -46,6 +46,10 @@ public interface ApplicationPropertyService {
 
     String setGdprInfo(String gdprInfo);
 
+    String getOrderInfo();
+
+    String setOrderInfo(String orderInfo);
+
     String getWorkingHours();
 
     String setWorkingHours(String workingHours);

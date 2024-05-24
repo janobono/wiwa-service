@@ -72,6 +72,10 @@ public class ConfigApiService {
         return new SingleValueBodyWebDto<>(applicationPropertyService.setGdprInfo(singleValueBody.value()));
     }
 
+    public SingleValueBodyWebDto<String> setOrderInfo(final SingleValueBodyWebDto<String> singleValueBody) {
+        return new SingleValueBodyWebDto<>(applicationPropertyService.setOrderInfo(singleValueBody.value()));
+    }
+
     public SingleValueBodyWebDto<String> setWorkingHours(final SingleValueBodyWebDto<String> singleValueBody) {
         return new SingleValueBodyWebDto<>(applicationPropertyService.setWorkingHours(singleValueBody.value()));
     }

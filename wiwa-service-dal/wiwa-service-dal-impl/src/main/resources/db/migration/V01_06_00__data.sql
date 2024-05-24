@@ -37,152 +37,108 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('UN
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ( 'VAT_RATE', '20');
 
-INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('BUSINESS_CONDITIONS', e'# Blandita flumine sic ultimus aquis Clyton amores
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('BUSINESS_CONDITIONS', e'# H1
+## H2
+### H3
 
-## Alis bella
+**bold text**
 
-Lorem markdownum irasci ullum litis Circaea nec, alba modo. Praemia exserere
-damno per in suo firmatque sub Ceycis Erecthida ripa: et auget; haberet!
-[Petisti](http://ingentiaut.com/) nec Ianthen omnia. Habentia movente erat!
-Noctis insequitur mollibus.
+*italicized text*
 
-Pars templa sub sitientes Libycas. Nec artus, armataque *clamorque* tibi. Orat
-caelo, semianimesque Macareus hoc pascua modo cingebant et. Undae fata capillos
-et lateri solent, **ignibus**: Medea.
+> blockquote
 
-## Vetus quaesitisque ignes
+1. First item
+2. Second item
+3. Third item
 
-Movensque repetitum inania ordine ad **quae**: et natum protinus convicia
-superat Venus. Motis sub. Mota cornu unda; mox succinctis in illa
-[oenea](http://togaque.io/) hunc se potentia ab iram corpus armos. Insistere
-*materiem* corpora, sustulit, cum per aperto oracula ornata et ante captare:
-eris. Inhumata ut **egregius**, subire nil, in sunt enituntur poteram caelestia
-vetitum rex quae mortalibus stricto.
+- First item
+- Second item
+- Third item
 
-Oeclides fugientibus factaque has primus laudare Cauno sine caputque neque,
-passa orbam, et. Potest Athenae coniugis *quoque* pharetraque quaerit fontes?
+`code`
 
-## Quoque atque
+---
+![alt text](image.jpg)
 
-Opus clamant Asterien exspirat serpentis posita Noctisque, silvas patet. Non
-ramis, abstulerunt vade, [fecit et
-fila](http://www.est-rotisque.com/spargit-novena) invectae, et ignarus semina
-superi delapsa sarisa! Valet Haec, patres et suos terris vidisset movere
-medicamine probes iusta Numitorque?
-
-> Amplexa sonus *nec*, altis non iugum vixque vident, edere. Salve non tollens!
-> Ipsumque est saltu mutando **guttae totidemque remos** de ducat digitos muris
-> congestaque ad quod. Nobilium saepe praesuta colubris mensura, mediis regia.
-> Nomina fuit, et incidere aethera instabilesque idem.
-
-## Hospite perdite
-
-Conubia dolor versabat, et alba, circumdatus cumque inopes; peremptum.
-[Opacas](http://www.verum-virgo.io/) caelo sacra hosti Cyclopum notavit, ad
-carmina, videam qua illas coniugium, aethere, timebat.
-
-Ab inpiger parens in, vel nolet fuerat
-[patre](http://at.net/iussit-vacuus.html), quae. Quorum cum, imbres motu chordas
-noctis, in rex super modo quae devolvunt Alcmenae: generi Medea. Sua liber,
-captus ab iam de dis iterumque aliquis, te.
-
-Et tenent conchas latos; totum est uno cogitis faciendus pedes. Arma *fiunt
-illa* ripae veniunt sortita apes iuvenale simul. Te altera Iovis traxisse manus
-fruticumque esse, tibi dixit mediis et ridet! Depressitque visum ostendit
-sacerdotis digitis cursu refugitque animoque. Ossa et tanta sensi factos subito
-instat, et **dixit vocavit digitis**.
+[more...](https://www.markdownguide.org/cheat-sheet/)
 ');
 
-INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('COOKIES_INFO', e'# Gravis deque nostra vires inhibere et umbris
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('COOKIES_INFO', e'# H1
+## H2
+### H3
 
-## Trepidum et acceptaque meis substrictaque tamen
+**bold text**
 
-Lorem markdownum parari sibilat contraria rumpunt quoque tumulo longius
-[utque](http://www.sineuno.net/), sua, et sed marmoreis timor, quoque temptata.
-Uno letum Alba nubibus promptu, nec premens invita meque iterumque sedatis?
-Iactantem flexum, nec Phlegethontide *siderea mutat crepitantis* laborant:
-soceri demissus spatium murice in **fertur quam edidit** nomina. Fuit culpa
-natalis cum; crines **coniciunt lacrimans** volucres pulmone terra dolis forma,
-recessit.
+*italicized text*
 
-Paelex par orbam Stygias *tenentis*; nantemque redito subita relictis. Pinum
-inquit Oedipodioniae pius corporeusque lenius: posset capillis **Actoriden tuque
-quamvis** dividuae mella saxo pingue. In qua guttura cum rima corpore sonuit
-Thaumantias inter contendere medias.
+> blockquote
 
-## Etsi natura
+1. First item
+2. Second item
+3. Third item
 
-Acmon devicto est faucibus atque concidere in velum mox glandes nocet Venerem,
-fuerim Nelei. Nisi haec *per cunctis deosque* in variari sublatus emittunt;
-haut! Agris oscula. Adhuc fuga ipsa **corpora puer est** tamen utrumque singula
-nulla, aspicit. Omnia Europa dentes.
+- First item
+- Second item
+- Third item
 
-- Corpora exierant testataque tamen
-- Ense ista
-- Optare et petenti nodis hosti perpetimur cum
-- Boum hosti longis aurea tangit cui
-- Est ungues et ignoscere nervo
-- Si ille draconibus pellor
+`code`
 
-## Corpore Perrhaebum Hector
+---
+![alt text](image.jpg)
 
-Enim et quondam meritique Laestrygonis petunt Cydoneasque mordebat sedendo
-Paean, iactarique os donis non utero commune Numam ne repetens. Ademptae eburno,
-quibus proximus triste sororem posse, adesse sed foret simile favillam timorem.
-A ora nec vultus est, tibi induco pectus pars tendentemque eratis. Ausa caelum,
-tuas ista heros.
-
-1. Stridores tamen
-2. Nepotum divulsaque satis
-3. Similis et et Mycenae nostri
-4. Orbe per idque posuere
-5. Quod collo dictis seminaque haec dixit accipite
-
-Potes ne nequiquam anum, vos **magna** parva res [habet
-adfata](http://protinusme.org/deerat-ipsum) corpore refugit omnia pro, intravit,
-fuit pugnat. Amissamque morari natura licet, et est natis **morando neque**;
-lenta non pater alta, *tum*, heu satis? Illo ursa dederint insula.
+[more...](https://www.markdownguide.org/cheat-sheet/)
 ');
 
-INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('GDPR_INFO', e'# Est studiisque habet
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('GDPR_INFO', e'# H1
+## H2
+### H3
 
-## Phaethonteos Simois scelus conpositas corpora caestibus demptos
+**bold text**
 
-Lorem markdownum inpius. Pylius parem urbes, et trabesque est auro: denique
-reserato circa ut merito: mei reor et. Numerabilis rapidas lumine perque
-Alcyonen in canos, vitae responderat ubi mei, ait nempe fecitque terruit,
-finire. Illa vultus latentis taedia.
+*italicized text*
 
-> Quas tum cogit scinditur, potentia caluere vicem, monte urbes quaeque quod
-> caelestia matura imis adit abominor serpens? Dare *per*, fuga, mei atque
-> obortae pectora facitis dentemque, Pandione. Axis etiam et nulloque artes.
+> blockquote
 
-Ille *aspera*: a fuerat tellus dubitat ambo colla studiis tenenti: regna tabo
-cupidine me modo tendere. Ego et Iuno, pedibusque dixit convexi et heros!
+1. First item
+2. Second item
+3. Third item
 
-## Locutus est velleris in novat autumnos scire
+- First item
+- Second item
+- Third item
 
-Dixit illa nostraque nisi in Phoebe nec Zancle vult marmoreis dulcique. Opus
-foedere abrepti fila certe Melampus tollere, saxo [adhuc
-remissos](http://essetquem.net/sunt-coepi), ait aut canitie. Molimine Tantalis
-coepto ut tumere ista [nostro](http://abstulit-fortunae.net/), ab de perdidimus
-Caras videbor quodcunque tenet. Inquit cavis quod illa **dextera** Oileos
-stolidarum infantem unam, neque inritamenta caput melior fragmina.
+`code`
 
-> Favus **horrentia** induruit illa leonibus vulnera adesse. Dote in
-> [ipsa](http://tacito.io/). Velleris fraterque velocior primo; ignes cum belli
-> dimittere fulvis foeda exstructos?
+---
+![alt text](image.jpg)
 
-Adsumptumque avellit *parte contulerat*: non: [Cycnus aeterna
-Tydides](http://has-ut.org/porrigitur.html)? Salve vates fecit *sceptro
-solebant* mercede saltem **ardent**, nec dea Iphinoum. Revincta deos est
-Thisbaeas anus nec, ego humum nec **recondidit umbra**; nox nota mandat. Parte
-illo lapidoso arboribus auctore aventi freta Pactolides custodes dicitur omnes;
-libidine veteres eripuit bimari. Nec adest.
+[more...](https://www.markdownguide.org/cheat-sheet/)
+');
 
-Mentes iunxisse animo *habet* nec, per Quirini ademit petat ictu corpora doctam
-spatiis. Legebant perdite. Non nec venientis presserat equorum, spatium ergo
-[vulgata](http://et.org/), in, concita. Conchae notavi.
+INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('ORDER_INFO', e'# H1
+## H2
+### H3
+
+**bold text**
+
+*italicized text*
+
+> blockquote
+
+1. First item
+2. Second item
+3. Third item
+
+- First item
+- Second item
+- Third item
+
+`code`
+
+---
+![alt text](image.jpg)
+
+[more...](https://www.markdownguide.org/cheat-sheet/)
 ');
 
 INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('WORKING_HOURS', e'### Opening hours
@@ -411,7 +367,7 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('OR
 "CSV_BASIC":"%s (basic %s - %d x %d mm - %d p)",
 "CSV_FRAME":"%s (frame %s - %d x %d mm - %d p)",
 "CSV_DUPLICATED_BASIC":"%s (duplicated basic %s - %d x %d mm - %d p)",
-"CSV_DUPLICATED_FRAME":"%s (duplicated frame %s - %d x %d mm - %d p)"
+"CSV_DUPLICATED_FRAME":"%s (duplicated frame %s - %d x %d mm - %d p)",
 "CSV_EDGE":"%s %dx%f",
 "CSV_CORNER_STRAIGHT":"%s %dx%d",
 "CSV_CORNER_ROUNDED":"%s r%d",
@@ -420,7 +376,9 @@ INSERT INTO wiwa_application_property (property_key, property_value) VALUES ('OR
 "PDF_INTEGER":"%d %s",
 "PDF_UNIT":"%.3f %s",
 "PDF_PRICE":"%.2f %s",
-"PDF_EDGE":"%s %dx%.1f"
+"PDF_EDGE":"%s %dx%.1f",
+"PDF_CORNER_STRAIGHT":"%d %s x %d %s",
+"PDF_CORNER_ROUNDED":"r %d %s"
 },
 "content":{
 "MATERIAL_NOT_FOUND":"Material not found",

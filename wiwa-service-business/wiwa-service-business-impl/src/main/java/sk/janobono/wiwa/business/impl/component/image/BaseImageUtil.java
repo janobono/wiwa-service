@@ -4,10 +4,7 @@ import org.springframework.http.MediaType;
 import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.application.OrderPropertiesData;
 import sk.janobono.wiwa.business.model.order.OrderItemImageData;
-import sk.janobono.wiwa.business.model.order.part.PartCornerData;
-import sk.janobono.wiwa.business.model.order.part.PartCornerRoundedData;
-import sk.janobono.wiwa.business.model.order.part.PartCornerStraightData;
-import sk.janobono.wiwa.business.model.order.part.PartData;
+import sk.janobono.wiwa.business.model.order.part.*;
 import sk.janobono.wiwa.model.BoardDimension;
 import sk.janobono.wiwa.model.CornerPosition;
 import sk.janobono.wiwa.model.EdgePosition;
@@ -23,11 +20,26 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-abstract class BaseImageUtil<P extends PartData> {
+public abstract class BaseImageUtil<P extends PartData> {
+
+    public static List<OrderItemImageData> partImages(final OrderPropertiesData orderProperties, final PartData part) {
+        return switch (part) {
+            case final PartBasicData partBasicData ->
+                    new PartBasicImageUtil().generateImages(orderProperties, partBasicData);
+            case final PartFrameData partFrameData ->
+                    new PartFrameImageUtil().generateImages(orderProperties, partFrameData);
+            case final PartDuplicatedBasicData partDuplicatedBasicData ->
+                    new PartDuplicatedBasicImageUtil().generateImages(orderProperties, partDuplicatedBasicData);
+            case final PartDuplicatedFrameData partDuplicatedFrameData ->
+                    new PartDuplicatedFrameImageUtil().generateImages(orderProperties, partDuplicatedFrameData);
+            default -> throw new InvalidParameterException("Unsupported part type: " + part.getClass().getSimpleName());
+        };
+    }
 
     protected static final int FRAME = 75;
     protected static final int FONT_SIZE = 32;

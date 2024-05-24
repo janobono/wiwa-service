@@ -41,7 +41,7 @@ public class ImageUtil {
         return new ByteArrayResource(data);
     }
 
-    public String toThumbnail(final String fileType, final byte[] data) {
+    public String toBase64(final String fileType, final byte[] data) {
         return MessageFormat.format("data:{0};base64,{1}", fileType, Base64.getEncoder().encodeToString(data));
     }
 

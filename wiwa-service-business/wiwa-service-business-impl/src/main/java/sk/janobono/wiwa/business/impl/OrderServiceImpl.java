@@ -9,10 +9,7 @@ import sk.janobono.wiwa.business.impl.component.DataUtil;
 import sk.janobono.wiwa.business.impl.component.MaterialUtil;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.business.impl.component.SummaryUtil;
-import sk.janobono.wiwa.business.impl.component.image.PartBasicImageUtil;
-import sk.janobono.wiwa.business.impl.component.image.PartDuplicatedBasicImageUtil;
-import sk.janobono.wiwa.business.impl.component.image.PartDuplicatedFrameImageUtil;
-import sk.janobono.wiwa.business.impl.component.image.PartFrameImageUtil;
+import sk.janobono.wiwa.business.impl.component.image.BaseImageUtil;
 import sk.janobono.wiwa.business.impl.component.part.PartBasicUtil;
 import sk.janobono.wiwa.business.impl.component.part.PartDuplicatedBasicUtil;
 import sk.janobono.wiwa.business.impl.component.part.PartDuplicatedFrameUtil;
@@ -461,18 +458,7 @@ public class OrderServiceImpl implements OrderService {
         final OrderItemDo orderItemDo = getOrderItemDo(itemId);
         final PartData part = dataUtil.parseValue(orderItemDo.getPart(), PartData.class);
         final OrderPropertiesData orderProperties = applicationPropertyService.getOrderProperties();
-
-        return switch (part) {
-            case final PartBasicData partBasicData ->
-                    new PartBasicImageUtil().generateImages(orderProperties, partBasicData);
-            case final PartFrameData partFrameData ->
-                    new PartFrameImageUtil().generateImages(orderProperties, partFrameData);
-            case final PartDuplicatedBasicData partDuplicatedBasicData ->
-                    new PartDuplicatedBasicImageUtil().generateImages(orderProperties, partDuplicatedBasicData);
-            case final PartDuplicatedFrameData partDuplicatedFrameData ->
-                    new PartDuplicatedFrameImageUtil().generateImages(orderProperties, partDuplicatedFrameData);
-            default -> throw new InvalidParameterException("Unsupported part type: " + part.getClass().getSimpleName());
-        };
+        return BaseImageUtil.partImages(orderProperties, part);
     }
 
     @Override

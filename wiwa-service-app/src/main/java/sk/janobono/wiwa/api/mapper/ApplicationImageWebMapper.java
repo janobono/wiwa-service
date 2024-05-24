@@ -20,14 +20,14 @@ public class ApplicationImageWebMapper {
         return new ApplicationImageInfoWebDto(
                 applicationImageInfo.fileName(),
                 applicationImageInfo.fileType(),
-                imageUtil.toThumbnail(applicationImageInfo.fileType(), applicationImageInfo.thumbnail())
+                imageUtil.toBase64(applicationImageInfo.fileType(), applicationImageInfo.thumbnail())
         );
     }
 
     public OrderItemImageWebDto mapToWebDto(final OrderItemImageData orderItemImage) {
         return new OrderItemImageWebDto(
                 orderItemImage.itemImage(),
-                imageUtil.toThumbnail(orderItemImage.mimeType(), orderItemImage.image())
+                imageUtil.toBase64(orderItemImage.mimeType(), orderItemImage.image())
         );
     }
 

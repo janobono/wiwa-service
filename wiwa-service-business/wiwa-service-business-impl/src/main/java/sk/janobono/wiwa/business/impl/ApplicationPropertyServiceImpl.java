@@ -30,6 +30,7 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     private static final String BUSINESS_CONDITIONS = "BUSINESS_CONDITIONS";
     private static final String COOKIES_INFO = "COOKIES_INFO";
     private static final String GDPR_INFO = "GDPR_INFO";
+    private static final String ORDER_INFO = "ORDER_INFO";
     private static final String WORKING_HOURS = "WORKING_HOURS";
     private static final String SIGN_UP_MAIL = "SIGN_UP_MAIL";
     private static final String RESET_PASSWORD_MAIL = "RESET_PASSWORD_MAIL";
@@ -197,6 +198,17 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     public String setGdprInfo(final String gdprInfo) {
         propertyUtilService.setProperty(GDPR_INFO, gdprInfo);
         return gdprInfo;
+    }
+
+    @Override
+    public String getOrderInfo() {
+        return propertyUtilService.getProperty(ORDER_INFO);
+    }
+
+    @Override
+    public String setOrderInfo(final String orderInfo) {
+        propertyUtilService.setProperty(ORDER_INFO, orderInfo);
+        return orderInfo;
     }
 
     @Override

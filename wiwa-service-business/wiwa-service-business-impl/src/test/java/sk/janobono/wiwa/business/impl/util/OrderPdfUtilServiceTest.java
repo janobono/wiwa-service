@@ -15,6 +15,7 @@ import sk.janobono.wiwa.business.model.application.UnitData;
 import sk.janobono.wiwa.business.model.order.*;
 import sk.janobono.wiwa.business.model.order.summary.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
+import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.model.*;
 
@@ -56,7 +57,9 @@ class OrderPdfUtilServiceTest {
                                 OrderFormat.PDF_INTEGER, "%d %s",
                                 OrderFormat.PDF_UNIT, "%.3f %s",
                                 OrderFormat.PDF_PRICE, "%.2f %s",
-                                OrderFormat.PDF_EDGE, "%s %dx%.1f"
+                                OrderFormat.PDF_EDGE, "%s %dx%.1f",
+                                OrderFormat.PDF_CORNER_STRAIGHT, "%d %s x %d %s",
+                                OrderFormat.PDF_CORNER_ROUNDED, "r %d %s"
                         ),
                         new HashMap<>() {{
                             put(OrderContent.MATERIAL_NOT_FOUND, "Material not found");
@@ -157,6 +160,7 @@ class OrderPdfUtilServiceTest {
                         new Currency("EUR", "€")
                 ),
                 templateEngine,
+                new ImageUtil(),
                 applicationPropertyService,
                 materialUtilService
         );
@@ -254,7 +258,7 @@ class OrderPdfUtilServiceTest {
                         .vatTotal(BigDecimal.valueOf(120.000))
                         .build())
 
-
+                .items(List.of())
                 // TODO
                 .build();
     }

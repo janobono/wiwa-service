@@ -76,6 +76,10 @@ public class UiApiService {
         return new SingleValueBodyWebDto<>(applicationPropertyService.getGdprInfo());
     }
 
+    public SingleValueBodyWebDto<String> getOrderInfo() {
+        return new SingleValueBodyWebDto<>(applicationPropertyService.getOrderInfo());
+    }
+
     public SingleValueBodyWebDto<String> getWorkingHours() {
         return new SingleValueBodyWebDto<>(applicationPropertyService.getWorkingHours());
     }

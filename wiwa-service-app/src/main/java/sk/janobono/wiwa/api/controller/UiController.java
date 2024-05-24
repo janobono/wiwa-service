@@ -78,6 +78,11 @@ public class UiController {
         return uiApiService.getGdprInfo();
     }
 
+    @GetMapping(value = "/order-info")
+    public SingleValueBodyWebDto<String> getOrderInfo() {
+        return uiApiService.getOrderInfo();
+    }
+
     @GetMapping(value = "/working-hours")
     public SingleValueBodyWebDto<String> getWorkingHours() {
         return uiApiService.getWorkingHours();

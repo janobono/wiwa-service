@@ -9,18 +9,18 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
+import sk.janobono.wiwa.business.impl.component.image.BaseImageUtil;
 import sk.janobono.wiwa.business.impl.model.pdf.*;
 import sk.janobono.wiwa.business.model.application.OrderPropertiesData;
 import sk.janobono.wiwa.business.model.application.UnitData;
-import sk.janobono.wiwa.business.model.order.OrderContactData;
-import sk.janobono.wiwa.business.model.order.OrderData;
-import sk.janobono.wiwa.business.model.order.OrderUserData;
+import sk.janobono.wiwa.business.model.order.*;
+import sk.janobono.wiwa.business.model.order.part.PartCornerData;
+import sk.janobono.wiwa.business.model.order.part.PartCornerRoundedData;
+import sk.janobono.wiwa.business.model.order.part.PartCornerStraightData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
+import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
-import sk.janobono.wiwa.model.OrderContent;
-import sk.janobono.wiwa.model.OrderFormat;
-import sk.janobono.wiwa.model.OrderPackageType;
-import sk.janobono.wiwa.model.Unit;
+import sk.janobono.wiwa.model.*;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.InvalidParameterException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,8 @@ public class OrderPdfUtilService {
     private final CommonConfigProperties commonConfigProperties;
 
     private final TemplateEngine templateEngine;
+
+    private final ImageUtil imageUtil;
 
     private final ApplicationPropertyService applicationPropertyService;
 
@@ -291,7 +294,89 @@ public class OrderPdfUtilService {
                                               final List<UnitData> units,
                                               final Map<Long, String> materialNames,
                                               final OrderData order) {
-        // TODO
-        return List.of();
+        return order.items().stream()
+                .map(item -> {
+                    final List<OrderItemImageData> itemImages = BaseImageUtil.partImages(orderProperties, item.part());
+
+                    return PdfItemData.builder()
+                            .partNum(item.sortNum().toString())
+                            .name(item.name())
+                            .dimX(unitMillimeter(orderProperties, units, item.part().dimensions().get(BoardPosition.TOP).x()))
+                            .dimY(unitMillimeter(orderProperties, units, item.part().dimensions().get(BoardPosition.TOP).y()))
+                            .quantity(unitPiece(orderProperties, units, BigDecimal.valueOf(item.quantity())))
+                            .description(item.description())
+                            .image(getImage(ItemImage.FULL, itemImages))
+                            .boards(toBoards(orderProperties, units, materialNames, order, item, itemImages))
+                            .edges(toEdges(orderProperties, order, item))
+                            .corners(toCorners(orderProperties, units, item))
+                            .build();
+                })
+                .toList();
+    }
+
+    private String getImage(final ItemImage itemImage, final List<OrderItemImageData> itemImages) {
+        return itemImages.stream().filter(image -> image.itemImage() == itemImage).findFirst()
+                .map(image -> imageUtil.toBase64(image.mimeType(), image.image()))
+                .orElse(null);
+    }
+
+    private List<PdfItemBoardData> toBoards(final OrderPropertiesData orderProperties,
+                                            final List<UnitData> units,
+                                            final Map<Long, String> materialNames,
+                                            final OrderData order,
+                                            final OrderItemData item,
+                                            final List<OrderItemImageData> itemImages) {
+        return item.part().boards().entrySet().stream()
+                .map(entry -> PdfItemBoardData.builder()
+                        .position(orderProperties.boards().getOrDefault(entry.getKey(), entry.getKey().name()))
+                        .material(materialNames.getOrDefault(entry.getValue(), orderProperties.content().get(OrderContent.MATERIAL_NOT_FOUND)))
+                        .name(materialUtilService.getDecor(order.boards(), entry.getValue(), orderProperties.content().get(OrderContent.BOARD_NOT_FOUND)))
+                        .dimX(unitMillimeter(orderProperties, units, item.part().dimensions().get(entry.getKey()).x()))
+                        .dimY(unitMillimeter(orderProperties, units, item.part().dimensions().get(entry.getKey()).y()))
+                        .image(getImage(ItemImage.valueOf(entry.getKey().name()), itemImages))
+                        .build()
+                ).toList();
+    }
+
+    private List<PdfItemEdgeData> toEdges(final OrderPropertiesData orderProperties,
+                                          final OrderData order,
+                                          final OrderItemData item) {
+        return item.part().edges().entrySet().stream()
+                .map(entry -> new PdfItemEdgeData(
+                        orderProperties.edges().getOrDefault(entry.getKey(), entry.getKey().name()),
+                        materialUtilService.getEdge(orderProperties.format().get(OrderFormat.PDF_EDGE), order.edges(), entry.getValue(),
+                                orderProperties.content().get(OrderContent.EDGE_NOT_FOUND))
+                ))
+                .toList();
+    }
+
+    private List<PdfItemCornerData> toCorners(final OrderPropertiesData orderProperties,
+                                              final List<UnitData> units,
+                                              final OrderItemData item) {
+        return item.part().corners().entrySet().stream()
+                .map(entry -> new PdfItemCornerData(
+                        orderProperties.corners().getOrDefault(entry.getKey(), entry.getKey().name()),
+                        toCornerName(orderProperties, units, entry.getValue())
+                ))
+                .toList();
+    }
+
+    private String toCornerName(final OrderPropertiesData orderProperties, final List<UnitData> units, final PartCornerData partCorner) {
+        return switch (partCorner) {
+            case final PartCornerStraightData partCornerStraightData ->
+                    orderProperties.format().get(OrderFormat.PDF_CORNER_STRAIGHT).formatted(
+                            partCornerStraightData.dimensions().x().intValue(),
+                            getUnit(Unit.MILLIMETER, units),
+                            partCornerStraightData.dimensions().y().intValue(),
+                            getUnit(Unit.MILLIMETER, units)
+                    );
+            case final PartCornerRoundedData partCornerRoundedData ->
+                    orderProperties.format().get(OrderFormat.PDF_CORNER_ROUNDED).formatted(
+                            partCornerRoundedData.radius().intValue(),
+                            getUnit(Unit.MILLIMETER, units)
+                    );
+            default ->
+                    throw new InvalidParameterException("Unsupported part corner type: " + partCorner.getClass().getSimpleName());
+        };
     }
 }

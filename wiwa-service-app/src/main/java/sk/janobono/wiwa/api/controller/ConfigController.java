@@ -88,6 +88,12 @@ public class ConfigController {
         return configApiService.setGdprInfo(singleValueBody);
     }
 
+    @PostMapping(value = "/order-info")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public SingleValueBodyWebDto<String> setOrderInfo(@Valid @RequestBody final SingleValueBodyWebDto<String> singleValueBody) {
+        return configApiService.setOrderInfo(singleValueBody);
+    }
+
     @PostMapping(value = "/working-hours")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public SingleValueBodyWebDto<String> setWorkingHours(@Valid @RequestBody final SingleValueBodyWebDto<String> singleValueBody) {
