@@ -19,7 +19,7 @@ import sk.janobono.wiwa.business.impl.model.mail.MailData;
 import sk.janobono.wiwa.business.impl.model.mail.MailLinkData;
 import sk.janobono.wiwa.business.impl.util.MailUtilService;
 import sk.janobono.wiwa.business.impl.util.OrderCsvUtilService;
-import sk.janobono.wiwa.business.impl.util.OrderPdfUtilService;
+import sk.janobono.wiwa.business.impl.util.OrderHtmlUtilService;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
 import sk.janobono.wiwa.business.model.application.*;
 import sk.janobono.wiwa.business.model.order.*;
@@ -35,6 +35,7 @@ import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.OrderStatus;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -72,10 +73,11 @@ public class OrderServiceImpl implements OrderService {
 
     private final MailUtilService mailUtilService;
     private final OrderCsvUtilService orderCsvUtilService;
-    private final OrderPdfUtilService orderPdfUtilService;
+    private final OrderHtmlUtilService orderPdfUtilService;
     private final UserUtilService userUtilService;
 
     private final ApplicationPropertyService applicationPropertyService;
+    private final OrderHtmlUtilService orderHtmlUtilService;
 
     @Override
     public Page<OrderData> getOrders(final OrderSearchCriteriaData criteria, final Pageable pageable) {
@@ -161,38 +163,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public byte[] getPdf(final long id) {
-        final Path pdf = orderPdfUtilService.generatePdf(getOrder(id));
-        try {
-            return Files.readAllBytes(pdf);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (pdf != null) {
-                final boolean deleted = pdf.toFile().delete();
-                if (!deleted) {
-                    log.warn("Pdf wasn't deleted {}", pdf);
-                }
-            }
-        }
+    public String getHtml(final long id) {
+        return orderPdfUtilService.generateHtml(getOrder(id));
     }
 
     @Override
-    public byte[] getCsv(final long id) {
+    public String getCsv(final long id) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
-        final Path csv = orderCsvUtilService.generateCsv(orderViewDo);
-        try {
-            return Files.readAllBytes(csv);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (csv != null) {
-                final boolean deleted = csv.toFile().delete();
-                if (!deleted) {
-                    log.warn("Csv wasn't deleted {}", csv);
-                }
-            }
-        }
+        return orderCsvUtilService.generateCsv(orderViewDo);
     }
 
     @Override
@@ -238,8 +216,6 @@ public class OrderServiceImpl implements OrderService {
 
         final OrderData order = getOrder(id);
 
-        final Path pdf = orderPdfUtilService.generatePdf(order);
-
         final OrderSendMailData orderSendMail = applicationPropertyService.getOrderSendMail();
         mailUtilService.sendEmail(MailData.builder()
                 .from(commonConfigProperties.mail())
@@ -256,7 +232,7 @@ public class OrderServiceImpl implements OrderService {
                         .build())
                 .attachments(Map.of(
                         orderSendMail.attachment().formatted(orderViewDo.orderNumber()),
-                        pdf.toFile()
+                        toHtmlFile(orderHtmlUtilService.generateHtml(order))
                 ))
                 .build());
 
@@ -306,7 +282,6 @@ public class OrderServiceImpl implements OrderService {
                             .build());
                     break;
                 case READY:
-                    final Path pdf = orderPdfUtilService.generatePdf(order);
                     mailDataBuilder.subject(orderStatusMail.readySubject().formatted(orderViewDo.orderNumber()));
                     mailDataBuilder.content(MailContentData.builder()
                             .title(orderStatusMail.readyTitle().formatted(orderViewDo.orderNumber()))
@@ -315,7 +290,7 @@ public class OrderServiceImpl implements OrderService {
                             .build());
                     mailDataBuilder.attachments(Map.of(
                             orderStatusMail.attachment().formatted(orderViewDo.orderNumber()),
-                            pdf.toFile()
+                            toHtmlFile(orderHtmlUtilService.generateHtml(order))
                     ));
                     break;
                 case FINISHED:
@@ -768,5 +743,15 @@ public class OrderServiceImpl implements OrderService {
 
         orderRepository.setOrderTotal(id, new OrderTotalDo(orderSummary.weight(), orderSummary.total()));
         orderRepository.setSummary(id, dataUtil.serializeValue(orderSummary));
+    }
+
+    private File toHtmlFile(final String html) {
+        try {
+            final Path path = Files.createTempFile("Order", ".html");
+            Files.write(path, html.getBytes());
+            return path.toFile();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

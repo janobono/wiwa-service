@@ -23,12 +23,9 @@ import sk.janobono.wiwa.dal.repository.OrderMaterialRepository;
 import sk.janobono.wiwa.model.*;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,7 +48,7 @@ public class OrderCsvUtilService {
     private final ApplicationPropertyService applicationPropertyService;
     private final MaterialUtilService materialUtilService;
 
-    public Path generateCsv(final OrderViewDo orderViewDo) {
+    public String generateCsv(final OrderViewDo orderViewDo) {
         final ManufacturePropertiesData manufactureProperties = applicationPropertyService.getManufactureProperties();
         final OrderPropertiesData orderProperties = applicationPropertyService.getOrderProperties();
         final List<OrderMaterialDo> materials = orderMaterialRepository.findAllByOrderId(orderViewDo.id());
@@ -60,22 +57,19 @@ public class OrderCsvUtilService {
         final List<OrderEdgeData> edges = materialUtil.toEdges(materials);
         final List<OrderItemDo> items = orderItemRepository.findAllByOrderId(orderViewDo.id());
 
-        try {
-            final Path path = Files.createTempFile("wiwa", ".csv");
-            try (final PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(path.toFile(), true)))) {
-                printLine(writer, orderProperties, Arrays.stream(CSVColumn.values())
-                        .map(key -> new AbstractMap.SimpleEntry<>(key, addQuotes(orderProperties.csvColumns().getOrDefault(key, key.name()))))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                );
-                for (final OrderItemDo item : items) {
-                    printItem(writer, manufactureProperties, orderProperties, boards, edges, materialNames, item);
-                }
-                writer.flush();
+        final StringWriter stringWriter = new StringWriter();
+        try (final PrintWriter writer = new PrintWriter(new BufferedWriter(stringWriter))) {
+            printLine(writer, orderProperties, Arrays.stream(CSVColumn.values())
+                    .map(key -> new AbstractMap.SimpleEntry<>(key, addQuotes(orderProperties.csvColumns().getOrDefault(key, key.name()))))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+            );
+            for (final OrderItemDo item : items) {
+                printItem(writer, manufactureProperties, orderProperties, boards, edges, materialNames, item);
             }
-            return path;
-        } catch (final IOException e) {
-            throw new RuntimeException("Line write error.", e);
+            writer.flush();
+
         }
+        return stringWriter.toString();
     }
 
     private void printItem(final PrintWriter writer,

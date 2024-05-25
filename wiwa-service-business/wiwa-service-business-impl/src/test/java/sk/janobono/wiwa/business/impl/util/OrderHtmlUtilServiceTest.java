@@ -10,16 +10,20 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import sk.janobono.wiwa.business.impl.model.pdf.PdfContentData;
+import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.application.OrderPropertiesData;
 import sk.janobono.wiwa.business.model.application.UnitData;
 import sk.janobono.wiwa.business.model.order.*;
+import sk.janobono.wiwa.business.model.order.part.*;
 import sk.janobono.wiwa.business.model.order.summary.*;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.component.ImageUtil;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.model.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +33,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class OrderPdfUtilServiceTest {
+class OrderHtmlUtilServiceTest {
 
     @Mock
     private ApplicationPropertyService applicationPropertyService;
@@ -37,7 +41,7 @@ class OrderPdfUtilServiceTest {
     @Mock
     private MaterialUtilService materialUtilService;
 
-    private OrderPdfUtilService orderPdfUtilService;
+    private OrderHtmlUtilService orderPdfUtilService;
 
     private OrderData order;
 
@@ -82,12 +86,15 @@ class OrderPdfUtilServiceTest {
                             put(OrderContent.TAX_ID, "tax id");
                             put(OrderContent.ORDER_SUMMARY, "Order summary");
                             put(OrderContent.BOARD_SUMMARY, "Board consumption");
+                            put(OrderContent.BOARD_SUMMARY_MATERIAL, "material");
+                            put(OrderContent.BOARD_SUMMARY_NAME, "name");
                             put(OrderContent.BOARD_SUMMARY_AREA, "area");
                             put(OrderContent.BOARD_SUMMARY_COUNT, "board count");
                             put(OrderContent.BOARD_SUMMARY_WEIGHT, "weight");
                             put(OrderContent.BOARD_SUMMARY_PRICE, "price");
                             put(OrderContent.BOARD_SUMMARY_VAT_PRICE, "vat price");
                             put(OrderContent.EDGE_SUMMARY, "Edge consumption");
+                            put(OrderContent.EDGE_SUMMARY_NAME, "name");
                             put(OrderContent.EDGE_SUMMARY_LENGTH, "length");
                             put(OrderContent.EDGE_SUMMARY_GLUE_LENGTH, "glue length");
                             put(OrderContent.EDGE_SUMMARY_EDGE_PRICE, "edge price");
@@ -108,6 +115,16 @@ class OrderPdfUtilServiceTest {
                             put(OrderContent.TOTAL_SUMMARY_PRICE, "price");
                             put(OrderContent.TOTAL_SUMMARY_VAT_PRICE, "vat price");
                             put(OrderContent.PARTS_LIST, "Part list");
+                            put(OrderContent.PARTS_LIST_NAME, "name");
+                            put(OrderContent.PARTS_LIST_NUMBER, "part number");
+                            put(OrderContent.PARTS_LIST_X, "x");
+                            put(OrderContent.PARTS_LIST_Y, "y");
+                            put(OrderContent.PARTS_LIST_QUANTITY, "quantity");
+                            put(OrderContent.PARTS_LIST_DESCRIPTION, "description");
+                            put(OrderContent.PARTS_LIST_EDGES, "edges");
+                            put(OrderContent.PARTS_LIST_CORNERS, "corners");
+                            put(OrderContent.PARTS_LIST_BOARDS, "boards");
+                            put(OrderContent.PARTS_LIST_POSITION, "position");
                         }},
                         Map.of(),
                         ";",
@@ -144,7 +161,7 @@ class OrderPdfUtilServiceTest {
         templateEngine.setEnableSpringELCompiler(true);
         templateEngine.setTemplateResolver(templateResolver);
 
-        orderPdfUtilService = new OrderPdfUtilService(
+        orderPdfUtilService = new OrderHtmlUtilService(
                 new CommonConfigProperties(
                         "en_EN",
                         "Wiwa",
@@ -258,9 +275,160 @@ class OrderPdfUtilServiceTest {
                         .vatTotal(BigDecimal.valueOf(120.000))
                         .build())
 
-                .items(List.of())
-                // TODO
-                .build();
+                .items(List.of(OrderItemData.builder()
+                                .id(1L)
+                                .sortNum(0)
+                                .name("test0")
+                                .description("test part 0")
+                                .quantity(1)
+                                .part(PartBasicData.builder()
+                                        .orientation(true)
+                                        .boardId(1L)
+                                        .edgeIdA1(1L)
+                                        .edgeIdA2(1L)
+                                        .edgeIdB1(1L)
+                                        .edgeIdB2(1L)
+                                        .dimensionsTOP(new DimensionsData(BigDecimal.valueOf(250), BigDecimal.valueOf(250)))
+                                        .cornerA1B1(new PartCornerStraightData(1L, new DimensionsData(BigDecimal.valueOf(80), BigDecimal.valueOf(100))))
+                                        .cornerA1B2(new PartCornerStraightData(1L, new DimensionsData(BigDecimal.valueOf(75), BigDecimal.valueOf(75))))
+                                        .cornerA2B1(new PartCornerRoundedData(1L, BigDecimal.valueOf(100)))
+                                        .cornerA2B2(new PartCornerRoundedData(1L, BigDecimal.valueOf(90)))
+                                        .build())
+                                .summary(OrderItemSummaryData.builder()
+                                        .partSummary(OrderItemPartSummaryData.builder()
+                                                .boardSummary(List.of())
+                                                .edgeSummary(List.of())
+                                                .gluedArea(BigDecimal.ZERO)
+                                                .cutSummary(List.of())
+                                                .build())
+                                        .totalSummary(OrderItemPartSummaryData.builder()
+                                                .boardSummary(List.of())
+                                                .edgeSummary(List.of())
+                                                .gluedArea(BigDecimal.ZERO)
+                                                .cutSummary(List.of())
+                                                .build())
+                                        .build()
+                                ).build(),
+                        OrderItemData.builder()
+                                .id(2L)
+                                .sortNum(1)
+                                .name("test1")
+                                .description("test part 1")
+                                .quantity(1)
+                                .part(PartDuplicatedBasicData.builder()
+                                        .orientation(true)
+                                        .boardId(1L)
+                                        .boardIdBottom(1L)
+                                        .edgeIdA1(1L)
+                                        .edgeIdA2(1L)
+                                        .edgeIdB1(1L)
+                                        .edgeIdB2(1L)
+                                        .dimensionsTOP(new DimensionsData(BigDecimal.valueOf(300), BigDecimal.valueOf(300)))
+                                        .cornerA1B1(new PartCornerStraightData(1L, new DimensionsData(BigDecimal.valueOf(85), BigDecimal.valueOf(100))))
+                                        .cornerA1B2(new PartCornerStraightData(1L, new DimensionsData(BigDecimal.valueOf(75), BigDecimal.valueOf(80))))
+                                        .cornerA2B1(new PartCornerRoundedData(1L, BigDecimal.valueOf(100)))
+                                        .cornerA2B2(new PartCornerRoundedData(1L, BigDecimal.valueOf(90)))
+                                        .build())
+                                .summary(OrderItemSummaryData.builder()
+                                        .partSummary(OrderItemPartSummaryData.builder()
+                                                .boardSummary(List.of())
+                                                .edgeSummary(List.of())
+                                                .gluedArea(BigDecimal.ZERO)
+                                                .cutSummary(List.of())
+                                                .build())
+                                        .totalSummary(OrderItemPartSummaryData.builder()
+                                                .boardSummary(List.of())
+                                                .edgeSummary(List.of())
+                                                .gluedArea(BigDecimal.ZERO)
+                                                .cutSummary(List.of())
+                                                .build())
+                                        .build()
+                                ).build(),
+                        OrderItemData.builder()
+                                .id(3L)
+                                .sortNum(2)
+                                .name("test2")
+                                .description("test part 2")
+                                .quantity(1)
+                                .part(PartFrameData.builder()
+                                        .frameType(FrameType.HORIZONTAL)
+                                        .boardIdA1(1L)
+                                        .boardIdA2(1L)
+                                        .boardIdB1(1L)
+                                        .boardIdB2(1L)
+                                        .edgeIdA1(1L)
+                                        .edgeIdA1I(1L)
+                                        .edgeIdA2(1L)
+                                        .edgeIdA2I(1L)
+                                        .edgeIdB1(1L)
+                                        .edgeIdB1I(1L)
+                                        .edgeIdB2(1L)
+                                        .edgeIdB2I(1L)
+                                        .dimensionsTOP(new DimensionsData(BigDecimal.valueOf(600), BigDecimal.valueOf(600)))
+                                        .dimensionsA1(new DimensionsData(BigDecimal.valueOf(600), BigDecimal.valueOf(100)))
+                                        .dimensionsA2(new DimensionsData(BigDecimal.valueOf(600), BigDecimal.valueOf(100)))
+                                        .dimensionsB1(new DimensionsData(BigDecimal.valueOf(100), BigDecimal.valueOf(400)))
+                                        .dimensionsB2(new DimensionsData(BigDecimal.valueOf(100), BigDecimal.valueOf(400)))
+                                        .build())
+                                .summary(OrderItemSummaryData.builder()
+                                        .partSummary(OrderItemPartSummaryData.builder()
+                                                .boardSummary(List.of())
+                                                .edgeSummary(List.of())
+                                                .gluedArea(BigDecimal.ZERO)
+                                                .cutSummary(List.of())
+                                                .build())
+                                        .totalSummary(OrderItemPartSummaryData.builder()
+                                                .boardSummary(List.of())
+                                                .edgeSummary(List.of())
+                                                .gluedArea(BigDecimal.ZERO)
+                                                .cutSummary(List.of())
+                                                .build())
+                                        .build()
+                                ).build(),
+                        OrderItemData.builder()
+                                .id(4L)
+                                .sortNum(3)
+                                .name("test3")
+                                .description("test part 3")
+                                .quantity(1)
+                                .part(PartDuplicatedFrameData.builder()
+                                        .frameType(FrameType.HORIZONTAL)
+                                        .orientation(true)
+                                        .boardId(1L)
+                                        .boardIdA1(1L)
+                                        .boardIdA2(1L)
+                                        .boardIdB1(1L)
+                                        .boardIdB2(1L)
+                                        .edgeIdA1(1L)
+                                        .edgeIdA1I(1L)
+                                        .edgeIdA2(1L)
+                                        .edgeIdA2I(1L)
+                                        .edgeIdB1(1L)
+                                        .edgeIdB1I(1L)
+                                        .edgeIdB2(1L)
+                                        .edgeIdB2I(1L)
+                                        .dimensionsTOP(new DimensionsData(BigDecimal.valueOf(600), BigDecimal.valueOf(600)))
+                                        .dimensionsA1(new DimensionsData(BigDecimal.valueOf(600), BigDecimal.valueOf(100)))
+                                        .dimensionsA2(new DimensionsData(BigDecimal.valueOf(600), BigDecimal.valueOf(100)))
+                                        .dimensionsB1(new DimensionsData(BigDecimal.valueOf(100), BigDecimal.valueOf(400)))
+                                        .dimensionsB2(new DimensionsData(BigDecimal.valueOf(100), BigDecimal.valueOf(400)))
+                                        .build())
+                                .summary(OrderItemSummaryData.builder()
+                                        .partSummary(OrderItemPartSummaryData.builder()
+                                                .boardSummary(List.of())
+                                                .edgeSummary(List.of())
+                                                .gluedArea(BigDecimal.ZERO)
+                                                .cutSummary(List.of())
+                                                .build())
+                                        .totalSummary(OrderItemPartSummaryData.builder()
+                                                .boardSummary(List.of())
+                                                .edgeSummary(List.of())
+                                                .gluedArea(BigDecimal.ZERO)
+                                                .cutSummary(List.of())
+                                                .build())
+                                        .build()
+                                ).build()
+                )).build();
     }
 
     @Test
@@ -319,17 +487,52 @@ class OrderPdfUtilServiceTest {
         assertThat(pdfContentData.summary().weight()).isEqualTo("123.123 kg");
         assertThat(pdfContentData.summary().total()).isEqualTo("100.00 €");
         assertThat(pdfContentData.summary().vatTotal()).isEqualTo("120.00 €");
+
+        assertThat(pdfContentData.items().size()).isEqualTo(4);
+        assertThat(pdfContentData.items().getFirst().partNum()).isEqualTo("1");
+        assertThat(pdfContentData.items().getFirst().name()).isEqualTo("test0");
+        assertThat(pdfContentData.items().getFirst().dimX()).isEqualTo("250 mm");
+        assertThat(pdfContentData.items().getFirst().dimY()).isEqualTo("250 mm");
+        assertThat(pdfContentData.items().getFirst().quantity()).isEqualTo("1 p");
+        assertThat(pdfContentData.items().getFirst().description()).isEqualTo("test part 0");
+        assertThat(pdfContentData.items().getFirst().image().startsWith("data:image/png;base64,")).isTrue();
+        assertThat(pdfContentData.items().getFirst().boards().size()).isEqualTo(1);
+        assertThat(pdfContentData.items().getFirst().boards().getFirst().position()).isEqualTo("TOP");
+        assertThat(pdfContentData.items().getFirst().boards().getFirst().material()).isEqualTo("material1");
+        assertThat(pdfContentData.items().getFirst().boards().getFirst().name()).isEqualTo("b-code s-code name");
+        assertThat(pdfContentData.items().getFirst().boards().getFirst().dimX()).isEqualTo("250 mm");
+        assertThat(pdfContentData.items().getFirst().boards().getFirst().dimY()).isEqualTo("250 mm");
+        assertThat(pdfContentData.items().getFirst().boards().getFirst().image().startsWith("data:image/png;base64,")).isTrue();
+        assertThat(pdfContentData.items().getFirst().edges().size()).isEqualTo(8);
+        assertThat(pdfContentData.items().getFirst().edges().getFirst().position()).isEqualTo("A1");
+        assertThat(pdfContentData.items().getFirst().edges().getFirst().name()).isEqualTo("code 19x0.8");
+        assertThat(pdfContentData.items().getFirst().edges().get(1).position()).isEqualTo("A2");
+        assertThat(pdfContentData.items().getFirst().edges().get(1).name()).isEqualTo("code 19x0.8");
+        assertThat(pdfContentData.items().getFirst().edges().get(2).position()).isEqualTo("B1");
+        assertThat(pdfContentData.items().getFirst().edges().get(2).name()).isEqualTo("code 19x0.8");
+        assertThat(pdfContentData.items().getFirst().edges().get(3).position()).isEqualTo("B2");
+        assertThat(pdfContentData.items().getFirst().edges().get(3).name()).isEqualTo("code 19x0.8");
+        assertThat(pdfContentData.items().getFirst().edges().get(4).position()).isEqualTo("A1B1");
+        assertThat(pdfContentData.items().getFirst().edges().get(4).name()).isEqualTo("code 19x0.8");
+        assertThat(pdfContentData.items().getFirst().edges().get(5).position()).isEqualTo("A1B2");
+        assertThat(pdfContentData.items().getFirst().edges().get(5).name()).isEqualTo("code 19x0.8");
+        assertThat(pdfContentData.items().getFirst().edges().get(6).position()).isEqualTo("A2B1");
+        assertThat(pdfContentData.items().getFirst().edges().get(6).name()).isEqualTo("code 19x0.8");
+        assertThat(pdfContentData.items().getFirst().edges().getLast().position()).isEqualTo("A2B2");
+        assertThat(pdfContentData.items().getFirst().edges().getLast().name()).isEqualTo("code 19x0.8");
+        assertThat(pdfContentData.items().getFirst().corners().size()).isEqualTo(4);
+        assertThat(pdfContentData.items().getFirst().corners().getFirst().position()).isEqualTo("A1B1");
+        assertThat(pdfContentData.items().getFirst().corners().getFirst().name()).isEqualTo("80 mm x 100 mm");
+        assertThat(pdfContentData.items().getFirst().corners().get(1).position()).isEqualTo("A1B2");
+        assertThat(pdfContentData.items().getFirst().corners().get(1).name()).isEqualTo("75 mm x 75 mm");
+        assertThat(pdfContentData.items().getFirst().corners().get(2).position()).isEqualTo("A2B1");
+        assertThat(pdfContentData.items().getFirst().corners().get(2).name()).isEqualTo("r 100 mm");
+        assertThat(pdfContentData.items().getFirst().corners().getLast().position()).isEqualTo("A2B2");
+        assertThat(pdfContentData.items().getFirst().corners().getLast().name()).isEqualTo("r 90 mm");
     }
 
     @Test
-    void generatePdf_whenOrder_thenTheseResults() {
-        Path data = null;
-        try {
-            data = orderPdfUtilService.generatePdf(order);
-        } finally {
-            if (data != null) {
-                data.toFile().delete();
-            }
-        }
+    void generateHtml_whenOrder_thenTheseResults() throws IOException {
+        Files.write(Path.of("./target").resolve("order.html"), orderPdfUtilService.generateHtml(order).getBytes());
     }
 }

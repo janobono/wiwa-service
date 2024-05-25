@@ -30,8 +30,6 @@ import sk.janobono.wiwa.model.OrderStatus;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -169,33 +167,22 @@ class OrderCsvUtilServiceTest {
                         .build())
         );
 
-        Path data = null;
+        final String csv = orderCsvUtilService.generateCsv(new OrderViewDo(
+                1L,
+                1L,
+                LocalDateTime.now(),
+                1L,
+                LocalDate.now(),
+                OrderPackageType.NO_PACKAGE,
+                OrderStatus.FINISHED,
+                BigDecimal.TEN,
+                BigDecimal.TEN
+        ));
 
-        try {
-            data = orderCsvUtilService.generateCsv(new OrderViewDo(
-                    1L,
-                    1L,
-                    LocalDateTime.now(),
-                    1L,
-                    LocalDate.now(),
-                    OrderPackageType.NO_PACKAGE,
-                    OrderStatus.FINISHED,
-                    BigDecimal.TEN,
-                    BigDecimal.TEN
-            ));
-
-            final String csv = new String(Files.readAllBytes(data));
-
-            assertThat(csv).isEqualTo("""
-                    "NUMBER";"NAME";"MATERIAL";"DECOR";"X_DIMENSION";"Y_DIMENSION";"QUANTITY";"ORIENTATION";"THICKNESS";"EDGE_A1";"EDGE_A2";"EDGE_B1";"EDGE_B2";"CORNER_A1B1";"CORNER_A1B2";"CORNER_A2B1";"CORNER_A2B2";"DESCRIPTION"
-                    "1_TOP";"basic_(basic_TOP-500x500mm-1p)";"material1";"b1_s1_n1";500;500;1;0;10;"e1_18x0.8";"e1_18x0.8";"e1_18x0.8";"e1_18x0.8";"A1B1_50x50_e1_18x0.8";"A1B2_50x50_e1_18x0.8";"A2B1_r50_e1_18x0.8";"A2B2_r50_e1_18x0.8";"test_basic_part"
-                    """);
-
-        } finally {
-            if (data != null) {
-                data.toFile().delete();
-            }
-        }
+        assertThat(csv).isEqualTo("""
+                "NUMBER";"NAME";"MATERIAL";"DECOR";"X_DIMENSION";"Y_DIMENSION";"QUANTITY";"ORIENTATION";"THICKNESS";"EDGE_A1";"EDGE_A2";"EDGE_B1";"EDGE_B2";"CORNER_A1B1";"CORNER_A1B2";"CORNER_A2B1";"CORNER_A2B2";"DESCRIPTION"
+                "1_TOP";"basic_(basic_TOP-500x500mm-1p)";"material1";"b1_s1_n1";500;500;1;0;10;"e1_18x0.8";"e1_18x0.8";"e1_18x0.8";"e1_18x0.8";"A1B1_50x50_e1_18x0.8";"A1B2_50x50_e1_18x0.8";"A2B1_r50_e1_18x0.8";"A2B2_r50_e1_18x0.8";"test_basic_part"
+                """);
     }
 
     @Test
@@ -214,34 +201,23 @@ class OrderCsvUtilServiceTest {
                         .build())
         );
 
-        Path data = null;
+        final String csv = orderCsvUtilService.generateCsv(new OrderViewDo(
+                1L,
+                1L,
+                LocalDateTime.now(),
+                1L,
+                LocalDate.now(),
+                OrderPackageType.NO_PACKAGE,
+                OrderStatus.FINISHED,
+                BigDecimal.TEN,
+                BigDecimal.TEN
+        ));
 
-        try {
-            data = orderCsvUtilService.generateCsv(new OrderViewDo(
-                    1L,
-                    1L,
-                    LocalDateTime.now(),
-                    1L,
-                    LocalDate.now(),
-                    OrderPackageType.NO_PACKAGE,
-                    OrderStatus.FINISHED,
-                    BigDecimal.TEN,
-                    BigDecimal.TEN
-            ));
-
-            final String csv = new String(Files.readAllBytes(data));
-
-            assertThat(csv).isEqualTo("""
-                    "NUMBER";"NAME";"MATERIAL";"DECOR";"X_DIMENSION";"Y_DIMENSION";"QUANTITY";"ORIENTATION";"THICKNESS";"EDGE_A1";"EDGE_A2";"EDGE_B1";"EDGE_B2";"CORNER_A1B1";"CORNER_A1B2";"CORNER_A2B1";"CORNER_A2B2";"DESCRIPTION"
-                    "1_TOP";"basic_(duplicated_basic_TOP-500x500mm-1p)";"material1";"b1_s1_n1";520;520;1;1;10;"e3_38x2.0";"e3_38x2.0";"e3_38x2.0";"e3_38x2.0";"A1B1_50x50";"A1B2_50x50";"A2B1_r50";"A2B2_r50";"test_basic_part"
-                    "1_BOTTOM";"basic_(duplicated_basic_BOTTOM-500x500mm-1p)";"material2";"b2_s2_n2";520;520;1;1;20;;;;;;;;;
-                    """);
-
-        } finally {
-            if (data != null) {
-                data.toFile().delete();
-            }
-        }
+        assertThat(csv).isEqualTo("""
+                "NUMBER";"NAME";"MATERIAL";"DECOR";"X_DIMENSION";"Y_DIMENSION";"QUANTITY";"ORIENTATION";"THICKNESS";"EDGE_A1";"EDGE_A2";"EDGE_B1";"EDGE_B2";"CORNER_A1B1";"CORNER_A1B2";"CORNER_A2B1";"CORNER_A2B2";"DESCRIPTION"
+                "1_TOP";"basic_(duplicated_basic_TOP-500x500mm-1p)";"material1";"b1_s1_n1";520;520;1;1;10;"e3_38x2.0";"e3_38x2.0";"e3_38x2.0";"e3_38x2.0";"A1B1_50x50";"A1B2_50x50";"A2B1_r50";"A2B2_r50";"test_basic_part"
+                "1_BOTTOM";"basic_(duplicated_basic_BOTTOM-500x500mm-1p)";"material2";"b2_s2_n2";520;520;1;1;20;;;;;;;;;
+                """);
     }
 
     @Test
@@ -260,36 +236,26 @@ class OrderCsvUtilServiceTest {
                         .build())
         );
 
-        Path data = null;
 
-        try {
-            data = orderCsvUtilService.generateCsv(new OrderViewDo(
-                    1L,
-                    1L,
-                    LocalDateTime.now(),
-                    1L,
-                    LocalDate.now(),
-                    OrderPackageType.NO_PACKAGE,
-                    OrderStatus.FINISHED,
-                    BigDecimal.TEN,
-                    BigDecimal.TEN
-            ));
+        final String csv = orderCsvUtilService.generateCsv(new OrderViewDo(
+                1L,
+                1L,
+                LocalDateTime.now(),
+                1L,
+                LocalDate.now(),
+                OrderPackageType.NO_PACKAGE,
+                OrderStatus.FINISHED,
+                BigDecimal.TEN,
+                BigDecimal.TEN
+        ));
 
-            final String csv = new String(Files.readAllBytes(data));
-
-            assertThat(csv).isEqualTo("""
-                    "NUMBER";"NAME";"MATERIAL";"DECOR";"X_DIMENSION";"Y_DIMENSION";"QUANTITY";"ORIENTATION";"THICKNESS";"EDGE_A1";"EDGE_A2";"EDGE_B1";"EDGE_B2";"CORNER_A1B1";"CORNER_A1B2";"CORNER_A2B1";"CORNER_A2B2";"DESCRIPTION"
-                    "1_A1";"frame_(frame_A1-500x100mm-1p)";"material1";"b1_s1_n1";500;100;1;0;10;"e1_18x0.8";"e1_18x0.8";"e1_18x0.8";"e1_18x0.8";;;;;"test_frame_part"
-                    "1_A2";"frame_(frame_A2-500x100mm-1p)";"material1";"b1_s1_n1";500;100;1;0;10;"e1_18x0.8";"e1_18x0.8";"e1_18x0.8";"e1_18x0.8";;;;;
-                    "1_B1";"frame_(frame_B1-100x300mm-1p)";"material1";"b1_s1_n1";100;300;1;0;10;;;"e1_18x0.8";"e1_18x0.8";;;;;
-                    "1_B2";"frame_(frame_B2-100x300mm-1p)";"material1";"b1_s1_n1";100;300;1;0;10;;;"e1_18x0.8";"e1_18x0.8";;;;;
-                    """);
-
-        } finally {
-            if (data != null) {
-                data.toFile().delete();
-            }
-        }
+        assertThat(csv).isEqualTo("""
+                "NUMBER";"NAME";"MATERIAL";"DECOR";"X_DIMENSION";"Y_DIMENSION";"QUANTITY";"ORIENTATION";"THICKNESS";"EDGE_A1";"EDGE_A2";"EDGE_B1";"EDGE_B2";"CORNER_A1B1";"CORNER_A1B2";"CORNER_A2B1";"CORNER_A2B2";"DESCRIPTION"
+                "1_A1";"frame_(frame_A1-500x100mm-1p)";"material1";"b1_s1_n1";500;100;1;0;10;"e1_18x0.8";"e1_18x0.8";"e1_18x0.8";"e1_18x0.8";;;;;"test_frame_part"
+                "1_A2";"frame_(frame_A2-500x100mm-1p)";"material1";"b1_s1_n1";500;100;1;0;10;"e1_18x0.8";"e1_18x0.8";"e1_18x0.8";"e1_18x0.8";;;;;
+                "1_B1";"frame_(frame_B1-100x300mm-1p)";"material1";"b1_s1_n1";100;300;1;0;10;;;"e1_18x0.8";"e1_18x0.8";;;;;
+                "1_B2";"frame_(frame_B2-100x300mm-1p)";"material1";"b1_s1_n1";100;300;1;0;10;;;"e1_18x0.8";"e1_18x0.8";;;;;
+                """);
     }
 
     @Test
@@ -308,36 +274,25 @@ class OrderCsvUtilServiceTest {
                         .build())
         );
 
-        Path data = null;
+        final String csv = orderCsvUtilService.generateCsv(new OrderViewDo(
+                1L,
+                1L,
+                LocalDateTime.now(),
+                1L,
+                LocalDate.now(),
+                OrderPackageType.NO_PACKAGE,
+                OrderStatus.FINISHED,
+                BigDecimal.TEN,
+                BigDecimal.TEN
+        ));
 
-        try {
-            data = orderCsvUtilService.generateCsv(new OrderViewDo(
-                    1L,
-                    1L,
-                    LocalDateTime.now(),
-                    1L,
-                    LocalDate.now(),
-                    OrderPackageType.NO_PACKAGE,
-                    OrderStatus.FINISHED,
-                    BigDecimal.TEN,
-                    BigDecimal.TEN
-            ));
-
-            final String csv = new String(Files.readAllBytes(data));
-
-            assertThat(csv).isEqualTo("""
-                    "NUMBER";"NAME";"MATERIAL";"DECOR";"X_DIMENSION";"Y_DIMENSION";"QUANTITY";"ORIENTATION";"THICKNESS";"EDGE_A1";"EDGE_A2";"EDGE_B1";"EDGE_B2";"CORNER_A1B1";"CORNER_A1B2";"CORNER_A2B1";"CORNER_A2B2";"DESCRIPTION"
-                    "1_TOP";"duplicated_frame_(duplicated_frame_TOP-500x500mm-1p)";"material1";"b1_s1_n1";520;520;1;1;10;"e2_28x1.0";"e2_28x1.0";"e2_28x1.0";"e2_28x1.0";"A1B1_50x50";"A1B2_50x50";"A2B1_r50";"A2B2_r50";"test_duplicated_frame_part"
-                    "1_A1";"duplicated_frame_(duplicated_frame_A1-500x100mm-1p)";"material1";"b1_s1_n1";520;110;1;0;10;;"e1_18x0.8";;;;;;;
-                    "1_A2";"duplicated_frame_(duplicated_frame_A2-500x100mm-1p)";"material1";"b1_s1_n1";520;110;1;0;10;"e1_18x0.8";;;;;;;;
-                    "1_B1";"duplicated_frame_(duplicated_frame_B1-100x300mm-1p)";"material1";"b1_s1_n1";110;300;1;0;10;;;;"e1_18x0.8";;;;;
-                    "1_B2";"duplicated_frame_(duplicated_frame_B2-100x300mm-1p)";"material1";"b1_s1_n1";110;300;1;0;10;;;"e1_18x0.8";;;;;;
-                    """);
-
-        } finally {
-            if (data != null) {
-                data.toFile().delete();
-            }
-        }
+        assertThat(csv).isEqualTo("""
+                "NUMBER";"NAME";"MATERIAL";"DECOR";"X_DIMENSION";"Y_DIMENSION";"QUANTITY";"ORIENTATION";"THICKNESS";"EDGE_A1";"EDGE_A2";"EDGE_B1";"EDGE_B2";"CORNER_A1B1";"CORNER_A1B2";"CORNER_A2B1";"CORNER_A2B2";"DESCRIPTION"
+                "1_TOP";"duplicated_frame_(duplicated_frame_TOP-500x500mm-1p)";"material1";"b1_s1_n1";520;520;1;1;10;"e2_28x1.0";"e2_28x1.0";"e2_28x1.0";"e2_28x1.0";"A1B1_50x50";"A1B2_50x50";"A2B1_r50";"A2B2_r50";"test_duplicated_frame_part"
+                "1_A1";"duplicated_frame_(duplicated_frame_A1-500x100mm-1p)";"material1";"b1_s1_n1";520;110;1;0;10;;"e1_18x0.8";;;;;;;
+                "1_A2";"duplicated_frame_(duplicated_frame_A2-500x100mm-1p)";"material1";"b1_s1_n1";520;110;1;0;10;"e1_18x0.8";;;;;;;;
+                "1_B1";"duplicated_frame_(duplicated_frame_B1-100x300mm-1p)";"material1";"b1_s1_n1";110;300;1;0;10;;;;"e1_18x0.8";;;;;
+                "1_B2";"duplicated_frame_(duplicated_frame_B2-100x300mm-1p)";"material1";"b1_s1_n1";110;300;1;0;10;;;"e1_18x0.8";;;;;;
+                """);
     }
 }

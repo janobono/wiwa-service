@@ -67,8 +67,11 @@
         }
 
         .w3-image {
-            max-width: 100%;
-            height: auto
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            max-height: 500px;
+            max-width: 20%;
         }
 
         img {
@@ -85,11 +88,6 @@
             padding: 0.01em 16px
         }
 
-        .w3-panel {
-            margin-top: 16px;
-            margin-bottom: 16px
-        }
-
         .w3-bold {
             font-weight: bolder !important;
         }
@@ -98,100 +96,12 @@
             font-size: 10px !important
         }
 
-        .w3-small {
-            font-size: 12px !important
-        }
-
-        .w3-medium {
-            font-size: 15px !important
-        }
-
-        .w3-large {
-            font-size: 18px !important
-        }
-
         .w3-left-align {
             text-align: left !important
         }
 
-        .w3-right-align {
-            text-align: right !important
-        }
-
         .w3-center {
             text-align: center !important
-        }
-
-        .w3-justify {
-            text-align: justify !important
-        }
-
-        .w3-display-container {
-            position: relative
-        }
-
-        .w3-display-topleft {
-            position: absolute;
-            left: 0;
-            top: 0
-        }
-
-        .w3-display-topright {
-            position: absolute;
-            right: 0;
-            top: 0
-        }
-
-        .w3-display-bottomleft {
-            position: absolute;
-            left: 0;
-            bottom: 0
-        }
-
-        .w3-display-bottomright {
-            position: absolute;
-            right: 0;
-            bottom: 0
-        }
-
-        .w3-display-middle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            -ms-transform: translate(-50%, -50%)
-        }
-
-        .w3-display-left {
-            position: absolute;
-            top: 50%;
-            left: 0%;
-            transform: translate(0%, -50%);
-            -ms-transform: translate(-0%, -50%)
-        }
-
-        .w3-display-right {
-            position: absolute;
-            top: 50%;
-            right: 0%;
-            transform: translate(0%, -50%);
-            -ms-transform: translate(0%, -50%)
-        }
-
-        .w3-display-topmiddle {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            transform: translate(-50%, 0%);
-            -ms-transform: translate(-50%, 0%)
-        }
-
-        .w3-display-bottommiddle {
-            position: absolute;
-            left: 50%;
-            bottom: 0;
-            transform: translate(-50%, 0%);
-            -ms-transform: translate(-50%, 0%)
         }
 
         .w3-margin {
@@ -200,76 +110,6 @@
 
         .w3-margin-top {
             margin-top: 16px !important
-        }
-
-        .w3-margin-bottom {
-            margin-bottom: 16px !important
-        }
-
-        .w3-margin-left {
-            margin-left: 16px !important
-        }
-
-        .w3-margin-right {
-            margin-right: 16px !important
-        }
-
-        .w3-padding-small {
-            padding: 4px 8px !important
-        }
-
-        .w3-padding {
-            padding: 8px 16px !important
-        }
-
-        .w3-padding-large {
-            padding: 12px 24px !important
-        }
-
-        .w3-padding-16 {
-            padding-top: 16px !important;
-            padding-bottom: 16px !important
-        }
-
-        .w3-padding-24 {
-            padding-top: 24px !important;
-            padding-bottom: 24px !important
-        }
-
-        .w3-padding-32 {
-            padding-top: 32px !important;
-            padding-bottom: 32px !important
-        }
-
-        .w3-padding-48 {
-            padding-top: 48px !important;
-            padding-bottom: 48px !important
-        }
-
-        .w3-padding-64 {
-            padding-top: 64px !important;
-            padding-bottom: 64px !important
-        }
-
-        .w3-padding-top-64 {
-            padding-top: 64px !important
-        }
-
-        .w3-padding-top-48 {
-            padding-top: 48px !important
-        }
-
-        .w3-padding-top-32 {
-            padding-top: 32px !important
-        }
-
-        .w3-padding-top-24 {
-            padding-top: 24px !important
-        }
-
-        .w3-teal {
-            color: #fff !important;
-            background-color: #009688 !important
         }
     </style>
 </head>
@@ -315,382 +155,518 @@
         </div>
     </header>
 
-    <section class="w3-container w3-margin">
-        <h2
-                class="w3-center"
-                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CONTACT_INFO)}"
-        >Contact info</h2>
+    <main>
+        <section class="w3-container w3-margin">
+            <h2
+                    class="w3-center"
+                    th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CONTACT_INFO)}"
+            >Contact info</h2>
 
-        <table class="w3-table w3-striped">
-            <tr>
-                <td
-                        class="w3-bold"
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).NAME)}"
-                >name
-                </td>
-                <td
-                        th:text="${pdfContent.orderContact().name()}"
-                >Mr. Wood Pecker
-                </td>
-            </tr>
-            <tr>
-                <td
-                        class="w3-bold"
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).STREET)}"
-                >street
-                </td>
-                <td
-                        th:text="${pdfContent.orderContact().street()}"
-                >Oak alley 12
-                </td>
-            </tr>
-            <tr>
-                <td
-                        class="w3-bold"
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).ZIP_CODE)}"
-                >zip code
-                </td>
-                <td
-                        th:text="${pdfContent.orderContact().zipCode()}"
-                >000 00
-                </td>
-            </tr>
-            <tr>
-                <td
-                        class="w3-bold"
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CITY)}"
-                >city
-                </td>
-                <td
-                        th:text="${pdfContent.orderContact().city()}"
-                >Wooden
-                </td>
-            </tr>
-            <tr>
-                <td
-                        class="w3-bold"
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).STATE)}"
-                >state
-                </td>
-                <td
-                        th:text="${pdfContent.orderContact().state()}"
-                >Forestland
-                </td>
-            </tr>
-            <tr>
-                <td
-                        class="w3-bold"
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PHONE)}"
-                >phone
-                </td>
-                <td
-                        th:text="${pdfContent.orderContact().phone()}"
-                >0905 505 505
-                </td>
-            </tr>
-            <tr>
-                <td
-                        class="w3-bold"
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EMAIL)}"
-                >email
-                </td>
-                <td
-                        th:text="${pdfContent.orderContact().email()}"
-                >wood.pecker@sekvoi.tree
-                </td>
-            </tr>
-            <tr>
-                <td
-                        class="w3-bold"
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BUSINESS_ID)}"
-                >business id
-                </td>
-                <td
-                        th:text="${pdfContent.orderContact().businessId()}"
-                >B001001
-                </td>
-            </tr>
-            <tr>
-                <td
-                        class="w3-bold"
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).TAX_ID)}"
-                >tax id
-                </td>
-                <td
-                        th:text="${pdfContent.orderContact().taxId()}"
-                >T001001
-                </td>
-            </tr>
-        </table>
-    </section>
-
-    <section class="w3-container w3-margin">
-        <h2
-                class="w3-center"
-                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).ORDER_SUMMARY)}"
-        >Order summary</h2>
-
-        <h3
-                class="w3-margin-top"
-                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY)}"
-        >Board consumption</h3>
-        <div th:each="item : ${pdfContent.summary().boardSummary()}">
             <table class="w3-table w3-striped">
                 <tr>
                     <td
-                            colspan="2"
-                            th:text="${item.material()}"
-                    >material1
+                            class="w3-bold"
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).NAME)}"
+                    >name
                     </td>
                     <td
-                            colspan="3"
-                            th:text="${item.name()}"
-                    >b-code s-code name
+                            th:text="${pdfContent.orderContact().name()}"
+                    >Mr. Wood Pecker
                     </td>
                 </tr>
                 <tr>
                     <td
-                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_AREA)}"
+                            class="w3-bold"
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).STREET)}"
+                    >street
+                    </td>
+                    <td
+                            th:text="${pdfContent.orderContact().street()}"
+                    >Oak alley 12
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                            class="w3-bold"
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).ZIP_CODE)}"
+                    >zip code
+                    </td>
+                    <td
+                            th:text="${pdfContent.orderContact().zipCode()}"
+                    >000 00
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                            class="w3-bold"
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CITY)}"
+                    >city
+                    </td>
+                    <td
+                            th:text="${pdfContent.orderContact().city()}"
+                    >Wooden
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                            class="w3-bold"
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).STATE)}"
+                    >state
+                    </td>
+                    <td
+                            th:text="${pdfContent.orderContact().state()}"
+                    >Forestland
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                            class="w3-bold"
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PHONE)}"
+                    >phone
+                    </td>
+                    <td
+                            th:text="${pdfContent.orderContact().phone()}"
+                    >0905 505 505
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                            class="w3-bold"
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EMAIL)}"
+                    >email
+                    </td>
+                    <td
+                            th:text="${pdfContent.orderContact().email()}"
+                    >wood.pecker@sekvoi.tree
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                            class="w3-bold"
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BUSINESS_ID)}"
+                    >business id
+                    </td>
+                    <td
+                            th:text="${pdfContent.orderContact().businessId()}"
+                    >B001001
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                            class="w3-bold"
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).TAX_ID)}"
+                    >tax id
+                    </td>
+                    <td
+                            th:text="${pdfContent.orderContact().taxId()}"
+                    >T001001
+                    </td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="w3-container w3-margin">
+            <h2
+                    class="w3-center"
+                    th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST)}"
+            >Parts list</h2>
+            <div th:each="item : ${pdfContent.items()}">
+                <table class="w3-table w3-striped">
+                    <tr>
+                        <td th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_NAME)}"
+                        >name
+                        </td>
+                        <td colspan="3" th:text="${item.name()}">test0</td>
+                    </tr>
+                    <tr>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_NUMBER)}"
+                        >part number
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_X)}"
+                        >x
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_Y)}"
+                        >y
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_QUANTITY)}"
+                        >quantity
+                        </td>
+                    </tr>
+                    <tr>
+                        <td th:text="${item.partNum()}">0</td>
+                        <td th:text="${item.dimX()}">250 mm</td>
+                        <td th:text="${item.dimY()}">250 mm</td>
+                        <td th:text="${item.quantity()}">1 p</td>
+                    </tr>
+                    <tr>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_DESCRIPTION)}"
+                        >description
+                        </td>
+                        <td
+                                colspan="3"
+                                th:text="${item.description()}">description
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <img
+                                    th:src="${item.image()}"
+                                    class="w3-image"
+                                    src="image.png"
+                                    alt="part image">
+                        </td>
+                    </tr>
+                </table>
+
+                <table th:if="${!item.edges().isEmpty()}" class="w3-table w3-striped">
+                    <tr th:if="${!item.edges().isEmpty()}">
+                        <td
+                                colspan="2"
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_EDGES)}"
+                        >edges
+                        </td>
+                    </tr>
+                    <tr th:each="edge : ${item.edges()}">
+                        <td th:text="${edge.position()}">A1</td>
+                        <td th:text="${edge.name()}">code 19x0.8</td>
+                    </tr>
+                </table>
+
+                <table th:if="${!item.corners().isEmpty()}" class="w3-table w3-striped">
+                    <tr th:if="${!item.corners().isEmpty()}">
+                        <td
+                                colspan="2"
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_CORNERS)}"
+                        >corners
+                        </td>
+                    </tr>
+                    <tr th:each="corner : ${item.corners()}">
+                        <td th:text="${corner.position()}">A1B1</td>
+                        <td th:text="${corner.name()}">80 mm x 100 mm</td>
+                    </tr>
+                </table>
+
+                <table th:if="${!item.boards().isEmpty()}" class="w3-table w3-striped">
+                    <tr th:if="${!item.boards().isEmpty()}">
+                        <td
+                                colspan="2"
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_BOARDS)}"
+                        >boards
+                        </td>
+                    </tr>
+                    <tr th:each="board : ${item.boards()}">
+                        <td>
+                            <img
+                                    th:src="${board.image()}"
+                                    class="w3-image"
+                                    src="image.png"
+                                    alt="part image">
+                        </td>
+                        <td>
+                            <table class="w3-table">
+                                <tr>
+                                    <td th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_POSITION)}">position</td>
+                                    <td th:text="${board.position()}">TOP</td>
+                                </tr>
+                                <tr>
+                                    <td th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_MATERIAL)}">material</td>
+                                    <td th:text="${board.material()}">material1</td>
+                                </tr>
+                                <tr>
+                                    <td th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_NAME)}">name</td>
+                                    <td th:text="${board.name()}">b-code s-code name</td>
+                                </tr>
+                                <tr>
+                                    <td th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_X)}">x</td>
+                                    <td th:text="${board.dimX()}">250 mm</td>
+                                </tr>
+                                <tr>
+                                    <td th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_Y)}">y</td>
+                                    <td th:text="${board.dimY()}">250 mm</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <section class="w3-container w3-margin">
+            <h2
+                    class="w3-center"
+                    th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).ORDER_SUMMARY)}"
+            >Order summary</h2>
+
+            <h3
+                    class="w3-margin-top"
+                    th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY)}"
+            >Board consumption</h3>
+            <div th:each="item : ${pdfContent.summary().boardSummary()}">
+                <table class="w3-table w3-striped">
+                    <tr>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_MATERIAL)}"
+                        >material
+                        </td>
+                        <td
+                                th:text="${item.material()}"
+                        >material1
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_NAME)}"
+                        >name
+                        </td>
+                        <td
+                                colspan="2"
+                                th:text="${item.name()}"
+                        >b-code s-code name
+                        </td>
+                    </tr>
+                    <tr>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_AREA)}"
+                        >area
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_COUNT)}"
+                        >boards count
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_WEIGHT)}"
+                        >weight
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_PRICE)}"
+                        >price
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_VAT_PRICE)}"
+                        >vat price
+                        </td>
+                    </tr>
+                    <tr>
+                        <td
+                                th:text="${item.area()}"
+                        >4.300 ㎡
+                        </td>
+                        <td
+                                th:text="${item.boardsCount()}"
+                        >2 p
+                        </td>
+                        <td
+                                th:text="${item.weight()}"
+                        >10.240 kg
+                        </td>
+                        <td
+                                th:text="${item.price()}"
+                        >100.00 €
+                        </td>
+                        <td
+                                th:text="${item.vatPrice()}"
+                        >120.00 €
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3
+                    class="w3-margin-top"
+                    th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY)}"
+            >Edge consumption</h3>
+            <div th:each="item : ${pdfContent.summary().edgeSummary()}">
+                <table class="w3-table w3-striped">
+                    <tr>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_NAME)}"
+                        >name
+                        </td>
+                        <td
+                                colspan="6"
+                                th:text="${item.name()}"
+                        >code 19x0.8
+                        </td>
+                    </tr>
+                    <tr>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_LENGTH)}"
+                        >length
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_GLUE_LENGTH)}"
+                        >glue length
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_WEIGHT)}"
+                        >weight
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_EDGE_PRICE)}"
+                        >edge price
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_EDGE_VAT_PRICE)}"
+                        >edge vat price
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_GLUE_PRICE)}"
+                        >glue price
+                        </td>
+                        <td
+                                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_GLUE_VAT_PRICE)}"
+                        >glue vat price
+                        </td>
+                    </tr>
+                    <tr>
+                        <td
+                                th:text="${item.length()}"
+                        >4.200 m
+                        </td>
+                        <td
+                                th:text="${item.glueLength()}"
+                        >3.800 m
+                        </td>
+                        <td
+                                th:text="${item.weight()}"
+                        >0.830 kg
+                        </td>
+                        <td
+                                th:text="${item.edgePrice()}"
+                        >12.12 €
+                        </td>
+                        <td
+                                th:text="${item.edgeVatPrice()}"
+                        >15.15 €
+                        </td>
+                        <td
+                                th:text="${item.gluePrice()}"
+                        >7.54 €
+                        </td>
+                        <td
+                                th:text="${item.glueVatPrice()}"
+                        >8.56 €
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3
+                    class="w3-margin-top"
+                    th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).GLUE_SUMMARY)}"
+            >Glue area</h3>
+            <table class="w3-table w3-striped">
+                <tr>
+                    <td
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).GLUE_SUMMARY_AREA)}"
                     >area
                     </td>
                     <td
-                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_COUNT)}"
-                    >boards count
-                    </td>
-                    <td
-                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_WEIGHT)}"
-                    >weight
-                    </td>
-                    <td
-                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_PRICE)}"
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).GLUE_SUMMARY_PRICE)}"
                     >price
                     </td>
                     <td
-                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_VAT_PRICE)}"
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).GLUE_SUMMARY_VAT_PRICE)}"
                     >vat price
                     </td>
                 </tr>
                 <tr>
                     <td
-                            th:text="${item.area()}"
-                    >4.300 ㎡
+                            th:text="${pdfContent.summary().glueSummary().area()}"
+                    >4.350 ㎡
                     </td>
                     <td
-                            th:text="${item.boardsCount()}"
-                    >2 p
-                    </td>
-                    <td
-                            th:text="${item.weight()}"
-                    >10.240 kg
-                    </td>
-                    <td
-                            th:text="${item.price()}"
+                            th:text="${pdfContent.summary().glueSummary().price()}"
                     >100.00 €
                     </td>
                     <td
-                            th:text="${item.vatPrice()}"
+                            th:text="${pdfContent.summary().glueSummary().vatPrice()}"
                     >120.00 €
                     </td>
                 </tr>
             </table>
-        </div>
 
-        <h3
-                class="w3-margin-top"
-                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY)}"
-        >Edge consumption</h3>
-        <div th:each="item : ${pdfContent.summary().edgeSummary()}">
+            <h3
+                    class="w3-margin-top"
+                    th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CUT_SUMMARY)}"
+            >Formatting</h3>
             <table class="w3-table w3-striped">
                 <tr>
                     <td
-                            colspan="7"
-                            th:text="${item.name()}"
-                    >code 19x0.8
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CUT_SUMMARY_THICKNESS)}"
+                    >thickness
+                    </td>
+                    <td
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CUT_SUMMARY_AMOUNT)}"
+                    >amount
+                    </td>
+                    <td
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CUT_SUMMARY_PRICE)}"
+                    >price
+                    </td>
+                    <td
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CUT_SUMMARY_VAT_PRICE)}"
+                    >vat price
                     </td>
                 </tr>
-                <tr>
+                <tr th:each="item : ${pdfContent.summary().cutSummary()}">
                     <td
-                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_LENGTH)}"
-                    >length
+                            th:text="${item.thickness()}"
+                    >10 mm
                     </td>
                     <td
-                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_GLUE_LENGTH)}"
-                    >glue length
+                            th:text="${item.amount()}"
+                    >6.700 m
                     </td>
                     <td
-                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_WEIGHT)}"
-                    >weight
+                            th:text="${item.price()}"
+                    >2.68 €
                     </td>
                     <td
-                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_EDGE_PRICE)}"
-                    >edge price
-                    </td>
-                    <td
-                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_EDGE_VAT_PRICE)}"
-                    >edge vat price
-                    </td>
-                    <td
-                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_GLUE_PRICE)}"
-                    >glue price
-                    </td>
-                    <td
-                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).EDGE_SUMMARY_GLUE_VAT_PRICE)}"
-                    >glue vat price
-                    </td>
-                </tr>
-                <tr>
-                    <td
-                            th:text="${item.length()}"
-                    >4.200 m
-                    </td>
-                    <td
-                            th:text="${item.glueLength()}"
-                    >3.800 m
-                    </td>
-                    <td
-                            th:text="${item.weight()}"
-                    >0.830 kg
-                    </td>
-                    <td
-                            th:text="${item.edgePrice()}"
-                    >12.12 €
-                    </td>
-                    <td
-                            th:text="${item.edgeVatPrice()}"
-                    >15.15 €
-                    </td>
-                    <td
-                            th:text="${item.gluePrice()}"
-                    >7.54 €
-                    </td>
-                    <td
-                            th:text="${item.glueVatPrice()}"
-                    >8.56 €
+                            th:text="${item.vatPrice()}"
+                    >3.03 €
                     </td>
                 </tr>
             </table>
-        </div>
 
-        <h3
-                class="w3-margin-top"
-                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).GLUE_SUMMARY)}"
-        >Glue area</h3>
-        <table class="w3-table w3-striped">
-            <tr>
-                <td
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).GLUE_SUMMARY_AREA)}"
-                >area
-                </td>
-                <td
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).GLUE_SUMMARY_PRICE)}"
-                >price
-                </td>
-                <td
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).GLUE_SUMMARY_VAT_PRICE)}"
-                >vat price
-                </td>
-            </tr>
-            <tr>
-                <td
-                        th:text="${pdfContent.summary().glueSummary().area()}"
-                >4.350 ㎡
-                </td>
-                <td
-                        th:text="${pdfContent.summary().glueSummary().price()}"
-                >100.00 €
-                </td>
-                <td
-                        th:text="${pdfContent.summary().glueSummary().vatPrice()}"
-                >120.00 €
-                </td>
-            </tr>
-        </table>
-
-        <h3
-                class="w3-margin-top"
-                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CUT_SUMMARY)}"
-        >Formatting</h3>
-        <table class="w3-table w3-striped">
-            <tr>
-                <td
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CUT_SUMMARY_THICKNESS)}"
-                >thickness
-                </td>
-                <td
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CUT_SUMMARY_AMOUNT)}"
-                >amount
-                </td>
-                <td
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CUT_SUMMARY_PRICE)}"
-                >price
-                </td>
-                <td
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).CUT_SUMMARY_VAT_PRICE)}"
-                >vat price
-                </td>
-            </tr>
-            <tr th:each="item : ${pdfContent.summary().cutSummary()}">
-                <td
-                        th:text="${item.thickness()}"
-                >10 mm
-                </td>
-                <td
-                        th:text="${item.amount()}"
-                >6.700 m
-                </td>
-                <td
-                        th:text="${item.price()}"
-                >2.68 €
-                </td>
-                <td
-                        th:text="${item.vatPrice()}"
-                >3.03 €
-                </td>
-            </tr>
-        </table>
-
-        <h3
-                class="w3-margin-top"
-                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).TOTAL_SUMMARY)}"
-        >Total</h3>
-        <table class="w3-table w3-striped">
-            <tr>
-                <th
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).TOTAL_SUMMARY_WEIGHT)}"
-                >weight
-                </th>
-                <th
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).TOTAL_SUMMARY_PRICE)}"
-                >price
-                </th>
-                <th
-                        th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).TOTAL_SUMMARY_VAT_PRICE)}"
-                >vat price
-                </th>
-            </tr>
-            <tr>
-                <td
-                        th:text="${pdfContent.summary().weight()}"
-                >123.123 kg
-                </td>
-                <td
-                        th:text="${pdfContent.summary().total()}"
-                >100.00 €
-                </td>
-                <td
-                        th:text="${pdfContent.summary().vatTotal()}"
-                >120.00 €
-                </td>
-            </tr>
-        </table>
-    </section>
-
-    <section class="w3-container w3-margin">
-        <h2
-                class="w3-center"
-                th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST)}"
-        >Parts list</h2>
-    </section>
+            <h3
+                    class="w3-margin-top"
+                    th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).TOTAL_SUMMARY)}"
+            >Total</h3>
+            <table class="w3-table w3-striped">
+                <tr>
+                    <th
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).TOTAL_SUMMARY_WEIGHT)}"
+                    >weight
+                    </th>
+                    <th
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).TOTAL_SUMMARY_PRICE)}"
+                    >price
+                    </th>
+                    <th
+                            th:text="${pdfProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).TOTAL_SUMMARY_VAT_PRICE)}"
+                    >vat price
+                    </th>
+                </tr>
+                <tr>
+                    <td
+                            th:text="${pdfContent.summary().weight()}"
+                    >123.123 kg
+                    </td>
+                    <td
+                            th:text="${pdfContent.summary().total()}"
+                    >100.00 €
+                    </td>
+                    <td
+                            th:text="${pdfContent.summary().vatTotal()}"
+                    >120.00 €
+                    </td>
+                </tr>
+            </table>
+        </section>
     </main>
 </body>
 </html>

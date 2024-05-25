@@ -24,9 +24,9 @@ public interface OrderService {
 
     OrderData recountOrder(long id, Long modifierId);
 
-    byte[] getPdf(long id);
+    String getHtml(long id);
 
-    byte[] getCsv(long id);
+    String getCsv(long id);
 
     OrderData sendOrder(long id, long modifierId, SendOrderData sendOrder);
 
