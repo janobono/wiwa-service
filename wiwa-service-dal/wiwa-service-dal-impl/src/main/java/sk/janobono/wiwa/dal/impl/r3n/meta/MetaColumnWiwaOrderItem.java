@@ -14,7 +14,8 @@ public enum MetaColumnWiwaOrderItem {
     NAME("name", DataType.STRING),
     DESCRIPTION("description", DataType.STRING),
     QUANTITY("quantity", DataType.INTEGER),
-    PART("part", DataType.STRING);
+    PART("part", DataType.STRING),
+    SUMMARY("summary", DataType.STRING);
 
     private final String columnName;
 

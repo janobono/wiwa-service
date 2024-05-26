@@ -5,26 +5,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
-import sk.janobono.wiwa.dal.impl.component.CriteriaUtil;
+import sk.janobono.wiwa.dal.impl.component.R3nUtil;
 import sk.janobono.wiwa.dal.impl.mapper.CodeListItemDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaCodeListItemDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaCodeListItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.model.CodeListItemSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.CodeListItemRepository;
+import sk.r3n.jdbc.Sql;
 import sk.r3n.jdbc.SqlBuilder;
-import sk.r3n.jdbc.SqlUtil;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
 import sk.r3n.sql.Order;
 import sk.r3n.sql.Query;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -34,222 +33,163 @@ import java.util.Optional;
 @Repository
 public class CodeListItemRepositoryImpl implements CodeListItemRepository {
 
-    private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
     private final SqlBuilder sqlBuilder;
+    private final R3nUtil r3nUtil;
     private final CodeListItemDoMapper mapper;
     private final ScDf scDf;
-    private final CriteriaUtil criteriaUtil;
 
     @Override
     public int countByCode(final String code) {
         log.debug("countByCode({})", code);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaCodeListItem.ID.column()).COUNT()
-                            .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
-                            .WHERE(MetaColumnWiwaCodeListItem.CODE.column(), Condition.EQUALS, code)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .orElse(0);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaCodeListItem.ID.column()).COUNT()
+                .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
+                .WHERE(MetaColumnWiwaCodeListItem.CODE.column(), Condition.EQUALS, code)
+        );
+        return r3nUtil.count(jdbcTemplate, sql);
     }
 
     @Override
     public int countByCodeListIdAndParentIdNull(final long codeListId) {
         log.debug("countByCodeListIdAndParentIdNull({})", codeListId);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaCodeListItem.ID.column()).COUNT()
-                            .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
-                            .WHERE(MetaColumnWiwaCodeListItem.CODE_LIST_ID.column(), Condition.EQUALS, codeListId)
-                            .AND(MetaColumnWiwaCodeListItem.PARENT_ID.column(), Condition.IS_NULL, null)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .orElse(0);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaCodeListItem.ID.column()).COUNT()
+                .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
+                .WHERE(MetaColumnWiwaCodeListItem.CODE_LIST_ID.column(), Condition.EQUALS, codeListId)
+                .AND(MetaColumnWiwaCodeListItem.PARENT_ID.column(), Condition.IS_NULL, null)
+        );
+        return r3nUtil.count(jdbcTemplate, sql);
     }
 
     @Override
     public int countByIdNotAndCode(final long id, final String code) {
         log.debug("countByIdNotAndCode({},{})", id, code);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaCodeListItem.ID.column()).COUNT()
-                            .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
-                            .WHERE(MetaColumnWiwaCodeListItem.ID.column(), Condition.EQUALS_NOT, id)
-                            .AND(MetaColumnWiwaCodeListItem.CODE.column(), Condition.EQUALS, code)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .orElse(0);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaCodeListItem.ID.column()).COUNT()
+                .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
+                .WHERE(MetaColumnWiwaCodeListItem.ID.column(), Condition.EQUALS_NOT, id)
+                .AND(MetaColumnWiwaCodeListItem.CODE.column(), Condition.EQUALS, code)
+        );
+        return r3nUtil.count(jdbcTemplate, sql);
     }
 
     @Override
     public int countByParentId(final long parentId) {
         log.debug("countByParentId({})", parentId);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaCodeListItem.ID.column()).COUNT()
-                            .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
-                            .WHERE(MetaColumnWiwaCodeListItem.PARENT_ID.column(), Condition.EQUALS, parentId)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .orElse(0);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaCodeListItem.ID.column()).COUNT()
+                .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
+                .WHERE(MetaColumnWiwaCodeListItem.PARENT_ID.column(), Condition.EQUALS, parentId)
+        );
+        return r3nUtil.count(jdbcTemplate, sql);
     }
 
     @Override
     public boolean existsById(final long id) {
         log.debug("existsById({})", id);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaCodeListItem.ID.column()).COUNT()
-                            .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
-                            .WHERE(MetaColumnWiwaCodeListItem.ID.column(), Condition.EQUALS, id)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .map(i -> i > 0)
-                    .orElse(false);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaCodeListItem.ID.column()).COUNT()
+                .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
+                .WHERE(MetaColumnWiwaCodeListItem.ID.column(), Condition.EQUALS, id)
+        );
+        return r3nUtil.exists(jdbcTemplate, sql);
     }
 
+    @Transactional
     @Override
     public void deleteById(final long id) {
         log.debug("deleteById({})", id);
-        try (final Connection connection = dataSource.getConnection()) {
-            sqlBuilder.delete(connection,
-                    Query.DELETE()
-                            .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
-                            .WHERE(MetaColumnWiwaCodeListItem.ID.column(), Condition.EQUALS, id)
-            );
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.delete(Query
+                .DELETE()
+                .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
+                .WHERE(MetaColumnWiwaCodeListItem.ID.column(), Condition.EQUALS, id)
+        );
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
     }
 
     @Override
     public Page<CodeListItemDo> findAll(final CodeListItemSearchCriteriaDo criteria, final Pageable pageable) {
         log.debug("findAll({},{})", criteria, pageable);
-        try (final Connection connection = dataSource.getConnection()) {
-            final Query.Select selectTotalRows = Query
-                    .SELECT(MetaColumnWiwaCodeListItem.ID.column())
-                    .COUNT()
+        final Query.Select selectTotalRows = Query
+                .SELECT(MetaColumnWiwaCodeListItem.ID.column())
+                .COUNT()
+                .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table());
+        mapCriteria(criteria, selectTotalRows);
+        final int totalRows = r3nUtil.count(jdbcTemplate, sqlBuilder.select(selectTotalRows));
+
+        if (totalRows > 0) {
+            final Query.Select select = Query.SELECT(MetaColumnWiwaCodeListItem.columns())
                     .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table());
-            mapCriteria(criteria, selectTotalRows);
-            final int totalRows = sqlBuilder.select(connection, selectTotalRows).stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .orElse(0);
-            if (totalRows > 0) {
-                final Query.Select select = Query.SELECT(MetaColumnWiwaCodeListItem.columns())
-                        .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table());
 
-                if (pageable.isPaged()) {
-                    select.page(pageable.getPageNumber(), pageable.getPageSize());
-                }
-
-                if (pageable.getSort().isSorted()) {
-                    mapOrderBy(pageable, select);
-                } else {
-                    select.ORDER_BY(MetaColumnWiwaCodeListItem.SORT_NUM.column(), Order.ASC);
-                }
-
-                mapCriteria(criteria, select);
-
-                final List<Object[]> rows = sqlBuilder.select(connection, select);
-                final List<CodeListItemDo> content = rows.stream()
-                        .map(WiwaCodeListItemDto::toObject)
-                        .map(mapper::toCodeListItemDo)
-                        .toList();
-                return new PageImpl<>(content, pageable, totalRows);
+            if (pageable.isPaged()) {
+                select.page(pageable.getPageNumber(), pageable.getPageSize());
             }
-            return new PageImpl<>(Collections.emptyList(), pageable, totalRows);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
+
+            if (pageable.getSort().isSorted()) {
+                mapOrderBy(pageable, select);
+            } else {
+                select.ORDER_BY(MetaColumnWiwaCodeListItem.SORT_NUM.column(), Order.ASC);
+            }
+
+            mapCriteria(criteria, select);
+
+            final List<Object[]> rows = r3nUtil.query(jdbcTemplate, sqlBuilder.select(select), MetaColumnWiwaCodeListItem.columns());
+
+            final List<CodeListItemDo> content = rows.stream()
+                    .map(WiwaCodeListItemDto::toObject)
+                    .map(mapper::toCodeListItemDo)
+                    .toList();
+            return new PageImpl<>(content, pageable, totalRows);
         }
+        return new PageImpl<>(Collections.emptyList(), pageable, totalRows);
     }
 
     @Override
     public Optional<CodeListItemDo> findById(final long id) {
         log.debug("findById({})", id);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaCodeListItem.columns())
-                            .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
-                            .WHERE(MetaColumnWiwaCodeListItem.ID.column(), Condition.EQUALS, id)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(WiwaCodeListItemDto::toObject)
-                    .map(mapper::toCodeListItemDo);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaCodeListItem.columns())
+                .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
+                .WHERE(MetaColumnWiwaCodeListItem.ID.column(), Condition.EQUALS, id)
+        );
+
+        final List<Object[]> rows = r3nUtil.query(jdbcTemplate, sql, MetaColumnWiwaCodeListItem.columns());
+
+        return rows.stream()
+                .findFirst()
+                .map(WiwaCodeListItemDto::toObject)
+                .map(mapper::toCodeListItemDo);
     }
 
+    @Transactional
     @Override
     public CodeListItemDo save(final CodeListItemDo codeListItemDo) {
         log.debug("save({})", codeListItemDo);
-        try (final Connection connection = dataSource.getConnection()) {
-            final WiwaCodeListItemDto result = save(connection, mapper.toWiwaCodeListItemDto(codeListItemDo));
-            return mapper.toCodeListItemDo(result);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final WiwaCodeListItemDto result = save(mapper.toWiwaCodeListItemDto(codeListItemDo));
+        return mapper.toCodeListItemDo(result);
     }
 
+    @Transactional
     @Override
     public void saveAll(final List<CodeListItemDo> batch) {
         log.debug("saveAll({})", batch);
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-
-            for (final CodeListItemDo codeListItemDo : batch) {
-                save(connection, mapper.toWiwaCodeListItemDto(codeListItemDo));
-            }
-
-            connection.commit();
-        } catch (final Exception e) {
-            SqlUtil.rollback(connection);
-            throw new RuntimeException(e);
-        } finally {
-            SqlUtil.enableAutoCommit(connection);
-            SqlUtil.close(connection);
+        for (final CodeListItemDo codeListItemDo : batch) {
+            save(mapper.toWiwaCodeListItemDto(codeListItemDo));
         }
     }
 
-    private WiwaCodeListItemDto insert(final Connection connection, final WiwaCodeListItemDto wiwaCodeListItemDto) throws SQLException {
-        final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaCodeListItem.columns(), 1);
-        final Object[] values = criteriaUtil.removeFirst(WiwaCodeListItemDto.toArray(wiwaCodeListItemDto), 1);
+    private WiwaCodeListItemDto insert(final WiwaCodeListItemDto wiwaCodeListItemDto) {
+        final Column[] columns = r3nUtil.removeFirst(MetaColumnWiwaCodeListItem.columns(), 1);
+        final Object[] values = r3nUtil.removeFirst(WiwaCodeListItemDto.toArray(wiwaCodeListItemDto), 1);
 
-        final Long id = (Long) sqlBuilder.insert(connection,
-                Query.INSERT()
-                        .INTO(MetaTable.WIWA_CODE_LIST_ITEM.table(), columns)
-                        .VALUES(values).RETURNING(MetaColumnWiwaCodeListItem.ID.column()));
-
-        return WiwaCodeListItemDto.toObject(criteriaUtil.concat(new Object[]{id}, values));
+        final Sql sql = sqlBuilder.insert(Query
+                .INSERT()
+                .INTO(MetaTable.WIWA_CODE_LIST_ITEM.table(), columns)
+                .VALUES(values).RETURNING(MetaColumnWiwaCodeListItem.ID.column())
+        );
+        final Long id = r3nUtil.insert(jdbcTemplate, sql);
+        return WiwaCodeListItemDto.toObject(r3nUtil.concat(new Object[]{id}, values));
     }
 
     private void mapCriteria(final CodeListItemSearchCriteriaDo criteria, final Query.Select select) {
@@ -273,12 +213,12 @@ public class CodeListItemRepositoryImpl implements CodeListItemRepository {
             final String value = "%" + scDf.toScDf(criteria.searchField()) + "%";
             select.AND_IN()
                     .OR(
-                            criteriaUtil.scDf("SF1", MetaColumnWiwaCodeListItem.CODE.column()),
+                            r3nUtil.scDf("SF1", MetaColumnWiwaCodeListItem.CODE.column()),
                             Condition.LIKE,
                             value
                     )
                     .OR(
-                            criteriaUtil.scDf("SF2", MetaColumnWiwaCodeListItem.VALUE.column()),
+                            r3nUtil.scDf("SF2", MetaColumnWiwaCodeListItem.VALUE.column()),
                             Condition.LIKE,
                             value
                     )
@@ -293,7 +233,7 @@ public class CodeListItemRepositoryImpl implements CodeListItemRepository {
         // value
         if (Optional.ofNullable(criteria.value()).filter(s -> !s.isBlank()).isPresent()) {
             select.AND(
-                    criteriaUtil.scDf("VL", MetaColumnWiwaCodeListItem.VALUE.column()),
+                    r3nUtil.scDf("VL", MetaColumnWiwaCodeListItem.VALUE.column()),
                     Condition.LIKE,
                     "%" + scDf.toScDf(criteria.value()) + "%"
             );
@@ -313,55 +253,55 @@ public class CodeListItemRepositoryImpl implements CodeListItemRepository {
                     switch (order.getProperty()) {
                         case "id" -> select.ORDER_BY(
                                 MetaColumnWiwaCodeListItem.ID.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "codeListId" -> select.ORDER_BY(
                                 MetaColumnWiwaCodeListItem.CODE_LIST_ID.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "parentId" -> select.ORDER_BY(
                                 MetaColumnWiwaCodeListItem.PARENT_ID.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "treeCode" -> select.ORDER_BY(
                                 MetaColumnWiwaCodeListItem.TREE_CODE.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "code" -> select.ORDER_BY(
                                 MetaColumnWiwaCodeListItem.CODE.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "value" -> select.ORDER_BY(
                                 MetaColumnWiwaCodeListItem.VALUE.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "sortNum" -> select.ORDER_BY(
                                 MetaColumnWiwaCodeListItem.SORT_NUM.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                     }
                 }
         );
     }
 
-    private WiwaCodeListItemDto save(final Connection connection, final WiwaCodeListItemDto wiwaCodeListItemDto) throws SQLException {
+    private WiwaCodeListItemDto save(final WiwaCodeListItemDto wiwaCodeListItemDto) {
         if (wiwaCodeListItemDto.id() == null) {
-            return insert(connection, wiwaCodeListItemDto);
+            return insert(wiwaCodeListItemDto);
         } else {
-            return update(connection, wiwaCodeListItemDto);
+            return update(wiwaCodeListItemDto);
         }
     }
 
-    private WiwaCodeListItemDto update(final Connection connection, final WiwaCodeListItemDto wiwaCodeListItemDto) throws SQLException {
-        final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaCodeListItem.columns(), 1);
-        final Object[] values = criteriaUtil.removeFirst(WiwaCodeListItemDto.toArray(wiwaCodeListItemDto), 1);
+    private WiwaCodeListItemDto update(final WiwaCodeListItemDto wiwaCodeListItemDto) {
+        final Column[] columns = r3nUtil.removeFirst(MetaColumnWiwaCodeListItem.columns(), 1);
+        final Object[] values = r3nUtil.removeFirst(WiwaCodeListItemDto.toArray(wiwaCodeListItemDto), 1);
 
-        sqlBuilder.update(connection,
-                Query.UPDATE(MetaTable.WIWA_CODE_LIST_ITEM.table())
-                        .SET(columns, values)
-                        .WHERE(MetaColumnWiwaCodeListItem.ID.column(), Condition.EQUALS, wiwaCodeListItemDto.id())
+        final Sql sql = sqlBuilder.update(Query
+                .UPDATE(MetaTable.WIWA_CODE_LIST_ITEM.table())
+                .SET(columns, values)
+                .WHERE(MetaColumnWiwaCodeListItem.ID.column(), Condition.EQUALS, wiwaCodeListItemDto.id())
         );
-
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
         return wiwaCodeListItemDto;
     }
 }

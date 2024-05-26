@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.dal.domain.EdgeDo;
-import sk.janobono.wiwa.dal.impl.component.CriteriaUtil;
+import sk.janobono.wiwa.dal.impl.component.R3nUtil;
 import sk.janobono.wiwa.dal.impl.mapper.EdgeDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaEdgeDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaCodeListItem;
@@ -17,15 +19,13 @@ import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaEdgeCodeListItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.model.EdgeSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.EdgeRepository;
+import sk.r3n.jdbc.Sql;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
 import sk.r3n.sql.Order;
 import sk.r3n.sql.Query;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -35,168 +35,134 @@ import java.util.Optional;
 @Repository
 public class EdgeRepositoryImpl implements EdgeRepository {
 
-    private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
     private final SqlBuilder sqlBuilder;
+    private final R3nUtil r3nUtil;
     private final EdgeDoMapper mapper;
     private final ScDf scDf;
-    private final CriteriaUtil criteriaUtil;
 
     @Override
     public int countByCode(final String code) {
         log.debug("countByCode({})", code);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaEdge.ID.column()).COUNT()
-                            .FROM(MetaTable.WIWA_EDGE.table())
-                            .WHERE(MetaColumnWiwaEdge.CODE.column(), Condition.EQUALS, code)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .orElse(0);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaEdge.ID.column()).COUNT()
+                .FROM(MetaTable.WIWA_EDGE.table())
+                .WHERE(MetaColumnWiwaEdge.CODE.column(), Condition.EQUALS, code)
+        );
+        return r3nUtil.count(jdbcTemplate, sql);
     }
 
     @Override
     public int countByIdNotAndCode(final long id, final String code) {
         log.debug("countByIdNotAndCode({},{})", id, code);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaEdge.ID.column()).COUNT()
-                            .FROM(MetaTable.WIWA_EDGE.table())
-                            .WHERE(MetaColumnWiwaEdge.ID.column(), Condition.EQUALS_NOT, id)
-                            .AND(MetaColumnWiwaEdge.CODE.column(), Condition.EQUALS, code)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .orElse(0);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaEdge.ID.column()).COUNT()
+                .FROM(MetaTable.WIWA_EDGE.table())
+                .WHERE(MetaColumnWiwaEdge.ID.column(), Condition.EQUALS_NOT, id)
+                .AND(MetaColumnWiwaEdge.CODE.column(), Condition.EQUALS, code)
+        );
+        return r3nUtil.count(jdbcTemplate, sql);
     }
 
+    @Transactional
     @Override
     public void deleteById(final long id) {
         log.debug("deleteById({})", id);
-        try (final Connection connection = dataSource.getConnection()) {
-            sqlBuilder.delete(connection,
-                    Query.DELETE()
-                            .FROM(MetaTable.WIWA_EDGE.table())
-                            .WHERE(MetaColumnWiwaEdge.ID.column(), Condition.EQUALS, id)
-            );
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.delete(Query
+                .DELETE()
+                .FROM(MetaTable.WIWA_EDGE.table())
+                .WHERE(MetaColumnWiwaEdge.ID.column(), Condition.EQUALS, id)
+        );
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
     }
 
     @Override
     public boolean existsById(final long id) {
         log.debug("existsById({})", id);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaEdge.ID.column()).COUNT()
-                            .FROM(MetaTable.WIWA_EDGE.table())
-                            .WHERE(MetaColumnWiwaEdge.ID.column(), Condition.EQUALS, id)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .map(i -> i > 0)
-                    .orElse(false);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaEdge.ID.column()).COUNT()
+                .FROM(MetaTable.WIWA_EDGE.table())
+                .WHERE(MetaColumnWiwaEdge.ID.column(), Condition.EQUALS, id)
+        );
+        return r3nUtil.exists(jdbcTemplate, sql);
     }
 
     @Override
     public Page<EdgeDo> findAll(final EdgeSearchCriteriaDo criteria, final Pageable pageable) {
         log.debug("findAll({},{})", criteria, pageable);
-        try (final Connection connection = dataSource.getConnection()) {
-            final Query.Select selectTotalRows = Query
-                    .SELECT(MetaColumnWiwaEdge.ID.column())
-                    .COUNT()
+        final Query.Select selectTotalRows = Query
+                .SELECT(MetaColumnWiwaEdge.ID.column())
+                .COUNT()
+                .FROM(MetaTable.WIWA_EDGE.table());
+        mapCriteria(criteria, selectTotalRows);
+        final int totalRows = r3nUtil.count(jdbcTemplate, sqlBuilder.select(selectTotalRows));
+
+        if (totalRows > 0) {
+            final Query.Select select = Query.SELECT(MetaColumnWiwaEdge.columns())
                     .FROM(MetaTable.WIWA_EDGE.table());
-            mapCriteria(criteria, selectTotalRows);
-            final int totalRows = sqlBuilder.select(connection, selectTotalRows).stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .orElse(0);
-            if (totalRows > 0) {
-                final Query.Select select = Query.SELECT(MetaColumnWiwaEdge.columns())
-                        .FROM(MetaTable.WIWA_EDGE.table());
 
-                if (pageable.isPaged()) {
-                    select.page(pageable.getPageNumber(), pageable.getPageSize());
-                }
-
-                if (pageable.getSort().isSorted()) {
-                    mapOrderBy(pageable, select);
-                } else {
-                    select.ORDER_BY(MetaColumnWiwaEdge.NAME.column(), Order.ASC);
-                }
-
-                mapCriteria(criteria, select);
-
-                final List<Object[]> rows = sqlBuilder.select(connection, select);
-                final List<EdgeDo> content = rows.stream()
-                        .map(WiwaEdgeDto::toObject)
-                        .map(mapper::toEdgeDo)
-                        .toList();
-                return new PageImpl<>(content, pageable, totalRows);
+            if (pageable.isPaged()) {
+                select.page(pageable.getPageNumber(), pageable.getPageSize());
             }
-            return new PageImpl<>(Collections.emptyList(), pageable, totalRows);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
+
+            if (pageable.getSort().isSorted()) {
+                mapOrderBy(pageable, select);
+            } else {
+                select.ORDER_BY(MetaColumnWiwaEdge.NAME.column(), Order.ASC);
+            }
+
+            mapCriteria(criteria, select);
+
+            final List<Object[]> rows = r3nUtil.query(jdbcTemplate, sqlBuilder.select(select), MetaColumnWiwaEdge.columns());
+
+            final List<EdgeDo> content = rows.stream()
+                    .map(WiwaEdgeDto::toObject)
+                    .map(mapper::toEdgeDo)
+                    .toList();
+            return new PageImpl<>(content, pageable, totalRows);
         }
+        return new PageImpl<>(Collections.emptyList(), pageable, totalRows);
     }
 
     @Override
     public Optional<EdgeDo> findById(final long id) {
         log.debug("findById({})", id);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaEdge.columns())
-                            .FROM(MetaTable.WIWA_EDGE.table())
-                            .WHERE(MetaColumnWiwaEdge.ID.column(), Condition.EQUALS, id)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(WiwaEdgeDto::toObject)
-                    .map(mapper::toEdgeDo);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaEdge.columns())
+                .FROM(MetaTable.WIWA_EDGE.table())
+                .WHERE(MetaColumnWiwaEdge.ID.column(), Condition.EQUALS, id)
+        );
+        final List<Object[]> rows = r3nUtil.query(jdbcTemplate, sql, MetaColumnWiwaEdge.columns());
+        return rows.stream()
+                .findFirst()
+                .map(WiwaEdgeDto::toObject)
+                .map(mapper::toEdgeDo);
     }
 
+    @Transactional
     @Override
     public EdgeDo save(final EdgeDo edgeDo) {
         log.debug("save({})", edgeDo);
-        try (final Connection connection = dataSource.getConnection()) {
-            final WiwaEdgeDto wiwaEdgeDto;
-            if (edgeDo.getId() == null) {
-                wiwaEdgeDto = insert(connection, mapper.toWiwaEdgeDto(edgeDo));
-            } else {
-                wiwaEdgeDto = update(connection, mapper.toWiwaEdgeDto(edgeDo));
-            }
-            return mapper.toEdgeDo(wiwaEdgeDto);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
+        final WiwaEdgeDto wiwaEdgeDto;
+        if (edgeDo.getId() == null) {
+            wiwaEdgeDto = insert(mapper.toWiwaEdgeDto(edgeDo));
+        } else {
+            wiwaEdgeDto = update(mapper.toWiwaEdgeDto(edgeDo));
         }
+        return mapper.toEdgeDo(wiwaEdgeDto);
     }
 
-    private WiwaEdgeDto insert(final Connection connection, final WiwaEdgeDto wiwaEdgeDto) throws SQLException {
-        final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaEdge.columns(), 1);
-        final Object[] values = criteriaUtil.removeFirst(WiwaEdgeDto.toArray(wiwaEdgeDto), 1);
+    private WiwaEdgeDto insert(final WiwaEdgeDto wiwaEdgeDto) {
+        final Column[] columns = r3nUtil.removeFirst(MetaColumnWiwaEdge.columns(), 1);
+        final Object[] values = r3nUtil.removeFirst(WiwaEdgeDto.toArray(wiwaEdgeDto), 1);
 
-        final Long id = (Long) sqlBuilder.insert(connection,
-                Query.INSERT()
-                        .INTO(MetaTable.WIWA_EDGE.table(), columns)
-                        .VALUES(values).RETURNING(MetaColumnWiwaEdge.ID.column()));
-
-        return WiwaEdgeDto.toObject(criteriaUtil.concat(new Object[]{id}, values));
+        final Sql sql = sqlBuilder.insert(Query
+                .INSERT()
+                .INTO(MetaTable.WIWA_EDGE.table(), columns)
+                .VALUES(values).RETURNING(MetaColumnWiwaEdge.ID.column())
+        );
+        final Long id = r3nUtil.insert(jdbcTemplate, sql);
+        return WiwaEdgeDto.toObject(r3nUtil.concat(new Object[]{id}, values));
     }
 
     private void mapCriteria(final EdgeSearchCriteriaDo criteria, final Query.Select select) {
@@ -205,12 +171,12 @@ public class EdgeRepositoryImpl implements EdgeRepository {
             final String value = "%" + scDf.toScDf(criteria.searchField()) + "%";
             select.AND_IN()
                     .OR(
-                            criteriaUtil.scDf("SF1", MetaColumnWiwaEdge.CODE.column()),
+                            r3nUtil.scDf("SF1", MetaColumnWiwaEdge.CODE.column()),
                             Condition.LIKE,
                             value
                     )
                     .OR(
-                            criteriaUtil.scDf("SF2", MetaColumnWiwaEdge.NAME.column()),
+                            r3nUtil.scDf("SF2", MetaColumnWiwaEdge.NAME.column()),
                             Condition.LIKE,
                             value
                     )
@@ -225,7 +191,7 @@ public class EdgeRepositoryImpl implements EdgeRepository {
         // name
         if (Optional.ofNullable(criteria.name()).filter(s -> !s.isBlank()).isPresent()) {
             select.AND(
-                    criteriaUtil.scDf("NM", MetaColumnWiwaEdge.NAME.column()),
+                    r3nUtil.scDf("NM", MetaColumnWiwaEdge.NAME.column()),
                     Condition.LIKE,
                     "%" + scDf.toScDf(criteria.name()) + "%"
             );
@@ -286,51 +252,51 @@ public class EdgeRepositoryImpl implements EdgeRepository {
                     switch (order.getProperty()) {
                         case "id" -> select.ORDER_BY(
                                 MetaColumnWiwaEdge.ID.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "code" -> select.ORDER_BY(
                                 MetaColumnWiwaEdge.CODE.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "name" -> select.ORDER_BY(
                                 MetaColumnWiwaEdge.NAME.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "description" -> select.ORDER_BY(
                                 MetaColumnWiwaEdge.DESCRIPTION.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "weight" -> select.ORDER_BY(
                                 MetaColumnWiwaEdge.WEIGHT.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "width" -> select.ORDER_BY(
                                 MetaColumnWiwaEdge.WIDTH.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "thickness" -> select.ORDER_BY(
                                 MetaColumnWiwaEdge.THICKNESS.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "price" -> select.ORDER_BY(
                                 MetaColumnWiwaEdge.PRICE.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                     }
                 }
         );
     }
 
-    private WiwaEdgeDto update(final Connection connection, final WiwaEdgeDto wiwaEdgeDto) throws SQLException {
-        final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaEdge.columns(), 1);
-        final Object[] values = criteriaUtil.removeFirst(WiwaEdgeDto.toArray(wiwaEdgeDto), 1);
+    private WiwaEdgeDto update(final WiwaEdgeDto wiwaEdgeDto) {
+        final Column[] columns = r3nUtil.removeFirst(MetaColumnWiwaEdge.columns(), 1);
+        final Object[] values = r3nUtil.removeFirst(WiwaEdgeDto.toArray(wiwaEdgeDto), 1);
 
-        sqlBuilder.update(connection,
-                Query.UPDATE(MetaTable.WIWA_EDGE.table())
-                        .SET(columns, values)
-                        .WHERE(MetaColumnWiwaEdge.ID.column(), Condition.EQUALS, wiwaEdgeDto.id())
+        final Sql sql = sqlBuilder.update(Query
+                .UPDATE(MetaTable.WIWA_EDGE.table())
+                .SET(columns, values)
+                .WHERE(MetaColumnWiwaEdge.ID.column(), Condition.EQUALS, wiwaEdgeDto.id())
         );
-
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
         return wiwaEdgeDto;
     }
 }

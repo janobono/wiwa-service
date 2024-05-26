@@ -2,22 +2,22 @@ package sk.janobono.wiwa.dal.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
+import sk.janobono.wiwa.dal.impl.component.R3nUtil;
 import sk.janobono.wiwa.dal.impl.mapper.CodeListItemDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaCodeListItemDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaBoardCodeListItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaCodeListItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.BoardCodeListItemRepository;
+import sk.r3n.jdbc.Sql;
 import sk.r3n.jdbc.SqlBuilder;
-import sk.r3n.jdbc.SqlUtil;
 import sk.r3n.sql.Condition;
 import sk.r3n.sql.Query;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -25,65 +25,54 @@ import java.util.List;
 @Repository
 public class BoardCodeListItemRepositoryImpl implements BoardCodeListItemRepository {
 
-    private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
     private final SqlBuilder sqlBuilder;
+    private final R3nUtil r3nUtil;
     private final CodeListItemDoMapper mapper;
 
     @Override
     public List<CodeListItemDo> findByBoardId(final long boardId) {
         log.debug("findByBoardId({})", boardId);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaCodeListItem.columns())
-                            .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
-                            .LEFT_JOIN(MetaTable.WIWA_BOARD_CODE_LIST_ITEM.table(), MetaColumnWiwaBoardCodeListItem.CODE_LIST_ITEM_ID.column(), MetaColumnWiwaCodeListItem.ID.column())
-                            .WHERE(MetaColumnWiwaBoardCodeListItem.BOARD_ID.column(), Condition.EQUALS, boardId)
-            );
-            return rows.stream()
-                    .map(WiwaCodeListItemDto::toObject)
-                    .map(mapper::toCodeListItemDo)
-                    .toList();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaCodeListItem.columns())
+                .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
+                .LEFT_JOIN(MetaTable.WIWA_BOARD_CODE_LIST_ITEM.table(), MetaColumnWiwaBoardCodeListItem.CODE_LIST_ITEM_ID.column(), MetaColumnWiwaCodeListItem.ID.column())
+                .WHERE(MetaColumnWiwaBoardCodeListItem.BOARD_ID.column(), Condition.EQUALS, boardId)
+        );
+
+        final List<Object[]> rows = r3nUtil.query(jdbcTemplate, sql, MetaColumnWiwaCodeListItem.columns());
+
+        return rows.stream()
+                .map(WiwaCodeListItemDto::toObject)
+                .map(mapper::toCodeListItemDo)
+                .toList();
     }
 
+    @Transactional
     @Override
     public void saveAll(final long boardId, final List<Long> itemIds) {
         log.debug("saveBoardCodeListItems({},{})", boardId, itemIds);
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-
-            delete(connection, boardId);
-            insert(connection, boardId, itemIds);
-
-            connection.commit();
-        } catch (final Exception e) {
-            SqlUtil.rollback(connection);
-            throw new RuntimeException(e);
-        } finally {
-            SqlUtil.enableAutoCommit(connection);
-            SqlUtil.close(connection);
-        }
+        delete(boardId);
+        insert(boardId, itemIds);
     }
 
-    private void delete(final Connection connection, final long boardId) throws SQLException {
-        sqlBuilder.delete(connection,
-                Query.DELETE()
-                        .FROM(MetaTable.WIWA_BOARD_CODE_LIST_ITEM.table())
-                        .WHERE(MetaColumnWiwaBoardCodeListItem.BOARD_ID.column(), Condition.EQUALS, boardId)
+    private void delete(final long boardId) {
+        final Sql sql = sqlBuilder.delete(Query
+                .DELETE()
+                .FROM(MetaTable.WIWA_BOARD_CODE_LIST_ITEM.table())
+                .WHERE(MetaColumnWiwaBoardCodeListItem.BOARD_ID.column(), Condition.EQUALS, boardId)
         );
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
     }
 
-    private void insert(final Connection connection, final long boardId, final List<Long> itemIds) throws SQLException {
+    private void insert(final long boardId, final List<Long> itemIds) {
         for (final Long itemId : itemIds) {
-            sqlBuilder.insert(connection,
-                    Query.INSERT()
-                            .INTO(MetaTable.WIWA_BOARD_CODE_LIST_ITEM.table(), MetaColumnWiwaBoardCodeListItem.columns())
-                            .VALUES(boardId, itemId)
+            final Sql sql = sqlBuilder.insert(Query
+                    .INSERT()
+                    .INTO(MetaTable.WIWA_BOARD_CODE_LIST_ITEM.table(), MetaColumnWiwaBoardCodeListItem.columns())
+                    .VALUES(boardId, itemId)
             );
+            jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
         }
     }
 }

@@ -10,6 +10,6 @@ public class R3nConfig {
 
     @Bean
     public SqlBuilder sqlBuilder() {
-        return new PostgreSqlBuilder(false);
+        return new PostgreSqlBuilder();
     }
 }

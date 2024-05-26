@@ -7,7 +7,8 @@ public record WiwaOrderItemDto(
         String name,
         String description,
         Integer quantity,
-        String part
+        String part,
+        String summary
 ) {
 
     public static Object[] toArray(final WiwaOrderItemDto wiwaOrderItemDto) {
@@ -18,7 +19,8 @@ public record WiwaOrderItemDto(
                 wiwaOrderItemDto.name,
                 wiwaOrderItemDto.description,
                 wiwaOrderItemDto.quantity,
-                wiwaOrderItemDto.part
+                wiwaOrderItemDto.part,
+                wiwaOrderItemDto.summary
         };
     }
 
@@ -30,7 +32,8 @@ public record WiwaOrderItemDto(
                 (String) array[3],
                 (String) array[4],
                 (Integer) array[5],
-                (String) array[6]
+                (String) array[6],
+                (String) array[7]
         );
     }
 }

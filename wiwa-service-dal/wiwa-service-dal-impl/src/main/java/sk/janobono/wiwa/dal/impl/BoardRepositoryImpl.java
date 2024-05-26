@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import sk.janobono.wiwa.component.ScDf;
 import sk.janobono.wiwa.dal.domain.BoardDo;
-import sk.janobono.wiwa.dal.impl.component.CriteriaUtil;
+import sk.janobono.wiwa.dal.impl.component.R3nUtil;
 import sk.janobono.wiwa.dal.impl.mapper.BoardDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaBoardDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaBoard;
@@ -17,15 +19,13 @@ import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaCodeListItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.model.BoardSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.BoardRepository;
+import sk.r3n.jdbc.Sql;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
 import sk.r3n.sql.Order;
 import sk.r3n.sql.Query;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -35,168 +35,138 @@ import java.util.Optional;
 @Repository
 public class BoardRepositoryImpl implements BoardRepository {
 
-    private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
     private final SqlBuilder sqlBuilder;
+    private final R3nUtil r3nUtil;
     private final BoardDoMapper mapper;
     private final ScDf scDf;
-    private final CriteriaUtil criteriaUtil;
 
     @Override
     public int countByCode(final String code) {
         log.debug("countByCode({})", code);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaBoard.ID.column()).COUNT()
-                            .FROM(MetaTable.WIWA_BOARD.table())
-                            .WHERE(MetaColumnWiwaBoard.CODE.column(), Condition.EQUALS, code)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .orElse(0);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaBoard.ID.column()).COUNT()
+                .FROM(MetaTable.WIWA_BOARD.table())
+                .WHERE(MetaColumnWiwaBoard.CODE.column(), Condition.EQUALS, code)
+        );
+        return r3nUtil.count(jdbcTemplate, sql);
     }
 
     @Override
     public int countByIdNotAndCode(final long id, final String code) {
         log.debug("countByIdNotAndCode({},{})", id, code);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaBoard.ID.column()).COUNT()
-                            .FROM(MetaTable.WIWA_BOARD.table())
-                            .WHERE(MetaColumnWiwaBoard.ID.column(), Condition.EQUALS_NOT, id)
-                            .AND(MetaColumnWiwaBoard.CODE.column(), Condition.EQUALS, code)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .orElse(0);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaBoard.ID.column()).COUNT()
+                .FROM(MetaTable.WIWA_BOARD.table())
+                .WHERE(MetaColumnWiwaBoard.ID.column(), Condition.EQUALS_NOT, id)
+                .AND(MetaColumnWiwaBoard.CODE.column(), Condition.EQUALS, code)
+        );
+        return r3nUtil.count(jdbcTemplate, sql);
     }
 
+    @Transactional
     @Override
     public void deleteById(final long id) {
         log.debug("deleteById({})", id);
-        try (final Connection connection = dataSource.getConnection()) {
-            sqlBuilder.delete(connection,
-                    Query.DELETE()
-                            .FROM(MetaTable.WIWA_BOARD.table())
-                            .WHERE(MetaColumnWiwaBoard.ID.column(), Condition.EQUALS, id)
-            );
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.delete(Query
+                .DELETE()
+                .FROM(MetaTable.WIWA_BOARD.table())
+                .WHERE(MetaColumnWiwaBoard.ID.column(), Condition.EQUALS, id)
+        );
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
     }
 
     @Override
     public boolean existsById(final long id) {
         log.debug("existsById({})", id);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaBoard.ID.column()).COUNT()
-                            .FROM(MetaTable.WIWA_BOARD.table())
-                            .WHERE(MetaColumnWiwaBoard.ID.column(), Condition.EQUALS, id)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .map(i -> i > 0)
-                    .orElse(false);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaBoard.ID.column()).COUNT()
+                .FROM(MetaTable.WIWA_BOARD.table())
+                .WHERE(MetaColumnWiwaBoard.ID.column(), Condition.EQUALS, id)
+        );
+        return r3nUtil.exists(jdbcTemplate, sql);
     }
 
     @Override
     public Page<BoardDo> findAll(final BoardSearchCriteriaDo criteria, final Pageable pageable) {
         log.debug("findAll({},{})", criteria, pageable);
-        try (final Connection connection = dataSource.getConnection()) {
-            final Query.Select selectTotalRows = Query
-                    .SELECT(MetaColumnWiwaBoard.ID.column())
-                    .COUNT()
+
+        final Query.Select selectTotalRows = Query
+                .SELECT(MetaColumnWiwaBoard.ID.column())
+                .COUNT()
+                .FROM(MetaTable.WIWA_BOARD.table());
+        mapCriteria(criteria, selectTotalRows);
+        final int totalRows = r3nUtil.count(jdbcTemplate, sqlBuilder.select(selectTotalRows));
+
+        if (totalRows > 0) {
+            final Query.Select select = Query.SELECT(MetaColumnWiwaBoard.columns())
                     .FROM(MetaTable.WIWA_BOARD.table());
-            mapCriteria(criteria, selectTotalRows);
-            final int totalRows = sqlBuilder.select(connection, selectTotalRows).stream()
-                    .findFirst()
-                    .map(row -> (Integer) row[0])
-                    .orElse(0);
-            if (totalRows > 0) {
-                final Query.Select select = Query.SELECT(MetaColumnWiwaBoard.columns())
-                        .FROM(MetaTable.WIWA_BOARD.table());
 
-                if (pageable.isPaged()) {
-                    select.page(pageable.getPageNumber(), pageable.getPageSize());
-                }
-
-                if (pageable.getSort().isSorted()) {
-                    mapOrderBy(pageable, select);
-                } else {
-                    select.ORDER_BY(MetaColumnWiwaBoard.NAME.column(), Order.ASC);
-                }
-
-                mapCriteria(criteria, select);
-
-                final List<Object[]> rows = sqlBuilder.select(connection, select);
-                final List<BoardDo> content = rows.stream()
-                        .map(WiwaBoardDto::toObject)
-                        .map(mapper::toBoardDo)
-                        .toList();
-                return new PageImpl<>(content, pageable, totalRows);
+            if (pageable.isPaged()) {
+                select.page(pageable.getPageNumber(), pageable.getPageSize());
             }
-            return new PageImpl<>(Collections.emptyList(), pageable, totalRows);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
+
+            if (pageable.getSort().isSorted()) {
+                mapOrderBy(pageable, select);
+            } else {
+                select.ORDER_BY(MetaColumnWiwaBoard.NAME.column(), Order.ASC);
+            }
+
+            mapCriteria(criteria, select);
+
+            final List<Object[]> rows = r3nUtil.query(jdbcTemplate, sqlBuilder.select(select), MetaColumnWiwaBoard.columns());
+
+            final List<BoardDo> content = rows.stream()
+                    .map(WiwaBoardDto::toObject)
+                    .map(mapper::toBoardDo)
+                    .toList();
+            return new PageImpl<>(content, pageable, totalRows);
         }
+        return new PageImpl<>(Collections.emptyList(), pageable, totalRows);
     }
 
     @Override
     public Optional<BoardDo> findById(final long id) {
         log.debug("findById({})", id);
-        try (final Connection connection = dataSource.getConnection()) {
-            final List<Object[]> rows = sqlBuilder.select(connection,
-                    Query.SELECT(MetaColumnWiwaBoard.columns())
-                            .FROM(MetaTable.WIWA_BOARD.table())
-                            .WHERE(MetaColumnWiwaBoard.ID.column(), Condition.EQUALS, id)
-            );
-            return rows.stream()
-                    .findFirst()
-                    .map(WiwaBoardDto::toObject)
-                    .map(mapper::toBoardDo);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+
+        final Sql sql = sqlBuilder.select(Query
+                .SELECT(MetaColumnWiwaBoard.columns())
+                .FROM(MetaTable.WIWA_BOARD.table())
+                .WHERE(MetaColumnWiwaBoard.ID.column(), Condition.EQUALS, id)
+        );
+
+        final List<Object[]> rows = r3nUtil.query(jdbcTemplate, sql, MetaColumnWiwaBoard.columns());
+
+        return rows.stream()
+                .findFirst()
+                .map(WiwaBoardDto::toObject)
+                .map(mapper::toBoardDo);
     }
 
+    @Transactional
     @Override
     public BoardDo save(final BoardDo boardDo) {
         log.debug("save({})", boardDo);
-        try (final Connection connection = dataSource.getConnection()) {
-            final WiwaBoardDto wiwaBoardDto;
-            if (boardDo.getId() == null) {
-                wiwaBoardDto = insert(connection, mapper.toWiwaBoardDto(boardDo));
-            } else {
-                wiwaBoardDto = update(connection, mapper.toWiwaBoardDto(boardDo));
-            }
-            return mapper.toBoardDo(wiwaBoardDto);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
+        final WiwaBoardDto wiwaBoardDto;
+        if (boardDo.getId() == null) {
+            wiwaBoardDto = insert(mapper.toWiwaBoardDto(boardDo));
+        } else {
+            wiwaBoardDto = update(mapper.toWiwaBoardDto(boardDo));
         }
+        return mapper.toBoardDo(wiwaBoardDto);
     }
 
-    private WiwaBoardDto insert(final Connection connection, final WiwaBoardDto wiwaBoardDto) throws SQLException {
-        final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaBoard.columns(), 1);
-        final Object[] values = criteriaUtil.removeFirst(WiwaBoardDto.toArray(wiwaBoardDto), 1);
+    private WiwaBoardDto insert(final WiwaBoardDto wiwaBoardDto) {
+        final Column[] columns = r3nUtil.removeFirst(MetaColumnWiwaBoard.columns(), 1);
+        final Object[] values = r3nUtil.removeFirst(WiwaBoardDto.toArray(wiwaBoardDto), 1);
 
-        final Long id = (Long) sqlBuilder.insert(connection,
-                Query.INSERT()
-                        .INTO(MetaTable.WIWA_BOARD.table(), columns)
-                        .VALUES(values).RETURNING(MetaColumnWiwaBoard.ID.column()));
-
-        return WiwaBoardDto.toObject(criteriaUtil.concat(new Object[]{id}, values));
+        final Sql sql = sqlBuilder.insert(Query
+                .INSERT()
+                .INTO(MetaTable.WIWA_BOARD.table(), columns)
+                .VALUES(values).RETURNING(MetaColumnWiwaBoard.ID.column())
+        );
+        final Long id = r3nUtil.insert(jdbcTemplate, sql);
+        return WiwaBoardDto.toObject(r3nUtil.concat(new Object[]{id}, values));
     }
 
     private void mapCriteria(final BoardSearchCriteriaDo criteria, final Query.Select select) {
@@ -205,12 +175,12 @@ public class BoardRepositoryImpl implements BoardRepository {
             final String value = "%" + scDf.toScDf(criteria.searchField()) + "%";
             select.AND_IN()
                     .OR(
-                            criteriaUtil.scDf("SF1", MetaColumnWiwaBoard.CODE.column()),
+                            r3nUtil.scDf("SF1", MetaColumnWiwaBoard.CODE.column()),
                             Condition.LIKE,
                             value
                     )
                     .OR(
-                            criteriaUtil.scDf("SF2", MetaColumnWiwaBoard.NAME.column()),
+                            r3nUtil.scDf("SF2", MetaColumnWiwaBoard.NAME.column()),
                             Condition.LIKE,
                             value
                     )
@@ -225,7 +195,7 @@ public class BoardRepositoryImpl implements BoardRepository {
         // name
         if (Optional.ofNullable(criteria.name()).filter(s -> !s.isBlank()).isPresent()) {
             select.AND(
-                    criteriaUtil.scDf("NM", MetaColumnWiwaBoard.NAME.column()),
+                    r3nUtil.scDf("NM", MetaColumnWiwaBoard.NAME.column()),
                     Condition.LIKE,
                     "%" + scDf.toScDf(criteria.name()) + "%"
             );
@@ -234,7 +204,7 @@ public class BoardRepositoryImpl implements BoardRepository {
         // board code
         if (Optional.ofNullable(criteria.boardCode()).filter(s -> !s.isBlank()).isPresent()) {
             select.AND(
-                    criteriaUtil.scDf("BC", MetaColumnWiwaBoard.BOARD_CODE.column()),
+                    r3nUtil.scDf("BC", MetaColumnWiwaBoard.BOARD_CODE.column()),
                     Condition.LIKE,
                     "%" + scDf.toScDf(criteria.boardCode()) + "%"
             );
@@ -243,7 +213,7 @@ public class BoardRepositoryImpl implements BoardRepository {
         // structure code
         if (Optional.ofNullable(criteria.structureCode()).filter(s -> !s.isBlank()).isPresent()) {
             select.AND(
-                    criteriaUtil.scDf("SC", MetaColumnWiwaBoard.STRUCTURE_CODE.column()),
+                    r3nUtil.scDf("SC", MetaColumnWiwaBoard.STRUCTURE_CODE.column()),
                     Condition.LIKE,
                     "%" + scDf.toScDf(criteria.structureCode()) + "%"
             );
@@ -319,67 +289,67 @@ public class BoardRepositoryImpl implements BoardRepository {
                     switch (order.getProperty()) {
                         case "id" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.ID.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "code" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.CODE.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "name" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.NAME.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "description" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.DESCRIPTION.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "boardCode" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.BOARD_CODE.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "structureCode" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.STRUCTURE_CODE.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "orientation" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.ORIENTATION.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "weight" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.WEIGHT.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "length" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.LENGTH.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "width" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.WIDTH.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "thickness" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.THICKNESS.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                         case "price" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.PRICE.column(),
-                                criteriaUtil.mapDirection(order)
+                                r3nUtil.mapDirection(order)
                         );
                     }
                 }
         );
     }
 
-    private WiwaBoardDto update(final Connection connection, final WiwaBoardDto wiwaBoardDto) throws SQLException {
-        final Column[] columns = criteriaUtil.removeFirst(MetaColumnWiwaBoard.columns(), 1);
-        final Object[] values = criteriaUtil.removeFirst(WiwaBoardDto.toArray(wiwaBoardDto), 1);
+    private WiwaBoardDto update(final WiwaBoardDto wiwaBoardDto) {
+        final Column[] columns = r3nUtil.removeFirst(MetaColumnWiwaBoard.columns(), 1);
+        final Object[] values = r3nUtil.removeFirst(WiwaBoardDto.toArray(wiwaBoardDto), 1);
 
-        sqlBuilder.update(connection,
-                Query.UPDATE(MetaTable.WIWA_BOARD.table())
-                        .SET(columns, values)
-                        .WHERE(MetaColumnWiwaBoard.ID.column(), Condition.EQUALS, wiwaBoardDto.id())
+        final Sql sql = sqlBuilder.update(Query
+                .UPDATE(MetaTable.WIWA_BOARD.table())
+                .SET(columns, values)
+                .WHERE(MetaColumnWiwaBoard.ID.column(), Condition.EQUALS, wiwaBoardDto.id())
         );
-
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
         return wiwaBoardDto;
     }
 }
