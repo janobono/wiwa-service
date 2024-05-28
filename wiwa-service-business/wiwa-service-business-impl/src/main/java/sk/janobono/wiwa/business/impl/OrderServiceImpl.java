@@ -712,7 +712,10 @@ public class OrderServiceImpl implements OrderService {
         );
 
         final List<OrderItemSummaryDo> orderItemSummaryList = summaryUtil.toOrderItemSummaries(itemId, orderItemSummary);
-        orderItemSummaryRepository.saveAll(itemId, orderItemSummaryList);
+        orderItemSummaryRepository.deleteByOrderItemId(itemId);
+        for (final OrderItemSummaryDo orderItemSummaryDo : orderItemSummaryList) {
+            orderItemSummaryRepository.insert(orderItemSummaryDo);
+        }
     }
 
     private void recountOrderItems(final long id) {

@@ -166,17 +166,13 @@ public class CodeListItemRepositoryImpl implements CodeListItemRepository {
     @Override
     public CodeListItemDo save(final CodeListItemDo codeListItemDo) {
         log.debug("save({})", codeListItemDo);
-        final WiwaCodeListItemDto result = save(mapper.toWiwaCodeListItemDto(codeListItemDo));
-        return mapper.toCodeListItemDo(result);
-    }
-
-    @Transactional
-    @Override
-    public void saveAll(final List<CodeListItemDo> batch) {
-        log.debug("saveAll({})", batch);
-        for (final CodeListItemDo codeListItemDo : batch) {
-            save(mapper.toWiwaCodeListItemDto(codeListItemDo));
+        final WiwaCodeListItemDto result;
+        if (codeListItemDo.getId() == null) {
+            result = insert(mapper.toWiwaCodeListItemDto(codeListItemDo));
+        } else {
+            result = update(mapper.toWiwaCodeListItemDto(codeListItemDo));
         }
+        return mapper.toCodeListItemDo(result);
     }
 
     private WiwaCodeListItemDto insert(final WiwaCodeListItemDto wiwaCodeListItemDto) {
@@ -251,10 +247,6 @@ public class CodeListItemRepositoryImpl implements CodeListItemRepository {
     private void mapOrderBy(final Pageable pageable, final Query.Select select) {
         pageable.getSort().stream().forEach(order -> {
                     switch (order.getProperty()) {
-                        case "id" -> select.ORDER_BY(
-                                MetaColumnWiwaCodeListItem.ID.column(),
-                                r3nUtil.mapDirection(order)
-                        );
                         case "codeListId" -> select.ORDER_BY(
                                 MetaColumnWiwaCodeListItem.CODE_LIST_ID.column(),
                                 r3nUtil.mapDirection(order)
@@ -279,17 +271,13 @@ public class CodeListItemRepositoryImpl implements CodeListItemRepository {
                                 MetaColumnWiwaCodeListItem.SORT_NUM.column(),
                                 r3nUtil.mapDirection(order)
                         );
+                        default -> select.ORDER_BY(
+                                MetaColumnWiwaCodeListItem.ID.column(),
+                                r3nUtil.mapDirection(order)
+                        );
                     }
                 }
         );
-    }
-
-    private WiwaCodeListItemDto save(final WiwaCodeListItemDto wiwaCodeListItemDto) {
-        if (wiwaCodeListItemDto.id() == null) {
-            return insert(wiwaCodeListItemDto);
-        } else {
-            return update(wiwaCodeListItemDto);
-        }
     }
 
     private WiwaCodeListItemDto update(final WiwaCodeListItemDto wiwaCodeListItemDto) {

@@ -15,7 +15,6 @@ import sk.janobono.wiwa.dal.model.CodeListItemSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.CodeListItemRepository;
 import sk.janobono.wiwa.exception.WiwaException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -104,17 +103,13 @@ public class CodeListItemServiceImpl implements CodeListItemService {
         final List<CodeListItemDo> children = getItems(codeListItemDo.getCodeListId(), codeListItemDo.getParentId());
         final int categoryIndex = children.indexOf(codeListItemDo);
         if (categoryIndex > 0) {
-            final List<CodeListItemDo> batch = new ArrayList<>();
-
             final CodeListItemDo upItem = children.get(categoryIndex);
             upItem.setSortNum(upItem.getSortNum() - 1);
-            batch.add(upItem);
+            codeListItemRepository.save(upItem);
 
             final CodeListItemDo downItem = children.get(categoryIndex - 1);
             downItem.setSortNum(downItem.getSortNum() + 1);
-            batch.add(downItem);
-
-            codeListItemRepository.saveAll(batch);
+            codeListItemRepository.save(downItem);
         }
 
         return toCodeListItemData(getCodeListItemDo(id));
@@ -128,17 +123,13 @@ public class CodeListItemServiceImpl implements CodeListItemService {
         final List<CodeListItemDo> children = getItems(codeListItemDo.getCodeListId(), codeListItemDo.getParentId());
         final int categoryIndex = children.indexOf(codeListItemDo);
         if (categoryIndex < children.size() - 1) {
-            final List<CodeListItemDo> batch = new ArrayList<>();
-
             final CodeListItemDo downItem = children.get(categoryIndex);
             downItem.setSortNum(downItem.getSortNum() + 1);
-            batch.add(downItem);
+            codeListItemRepository.save(downItem);
 
             final CodeListItemDo upItem = children.get(categoryIndex + 1);
             upItem.setSortNum(downItem.getSortNum() - 1);
-            batch.add(upItem);
-
-            codeListItemRepository.saveAll(batch);
+            codeListItemRepository.save(upItem);
         }
 
         return toCodeListItemData(getCodeListItemDo(id));
@@ -197,8 +188,8 @@ public class CodeListItemServiceImpl implements CodeListItemService {
         final List<CodeListItemDo> items = getItems(id, parentItemId);
         for (final CodeListItemDo item : items) {
             item.setSortNum(items.indexOf(item));
+            codeListItemRepository.save(item);
         }
-        codeListItemRepository.saveAll(items);
     }
 
     private List<CodeListItemDo> getItems(final Long id, final Long parentItemId) {

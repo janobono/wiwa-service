@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface OrderItemSummaryRepository {
 
+    void deleteByOrderItemId(long orderItemId);
+
     List<OrderItemSummaryDo> findAllByOrderItemId(long orderItemId);
 
-    void saveAll(long orderItemId, List<OrderItemSummaryDo> batch);
+    OrderItemSummaryDo insert(OrderItemSummaryDo orderItemSummary);
 }

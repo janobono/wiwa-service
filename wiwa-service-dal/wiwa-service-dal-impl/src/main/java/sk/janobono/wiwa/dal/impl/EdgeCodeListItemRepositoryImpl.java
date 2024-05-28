@@ -16,6 +16,7 @@ import sk.janobono.wiwa.dal.repository.EdgeCodeListItemRepository;
 import sk.r3n.jdbc.Sql;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Condition;
+import sk.r3n.sql.Order;
 import sk.r3n.sql.Query;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class EdgeCodeListItemRepositoryImpl implements EdgeCodeListItemRepositor
                 .FROM(MetaTable.WIWA_CODE_LIST_ITEM.table())
                 .LEFT_JOIN(MetaTable.WIWA_EDGE_CODE_LIST_ITEM.table(), MetaColumnWiwaEdgeCodeListItem.CODE_LIST_ITEM_ID.column(), MetaColumnWiwaCodeListItem.ID.column())
                 .WHERE(MetaColumnWiwaEdgeCodeListItem.EDGE_ID.column(), Condition.EQUALS, edgeId)
+                .ORDER_BY(MetaColumnWiwaCodeListItem.ID.column(), Order.ASC)
         );
 
         final List<Object[]> rows = r3nUtil.query(jdbcTemplate, sql, MetaColumnWiwaCodeListItem.columns());

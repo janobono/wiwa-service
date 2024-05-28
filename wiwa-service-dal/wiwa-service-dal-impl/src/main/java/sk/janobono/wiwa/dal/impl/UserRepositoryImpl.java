@@ -116,7 +116,7 @@ public class UserRepositoryImpl implements UserRepository {
             if (pageable.getSort().isSorted()) {
                 mapOrderBy(pageable, select);
             } else {
-                select.ORDER_BY(MetaColumnWiwaUser.USERNAME.column(), Order.ASC);
+                select.ORDER_BY(MetaColumnWiwaUser.ID.column(), Order.ASC);
             }
 
             mapCriteria(criteria, select);
@@ -250,10 +250,6 @@ public class UserRepositoryImpl implements UserRepository {
     private void mapOrderBy(final Pageable pageable, final Query.Select select) {
         pageable.getSort().stream().forEach(order -> {
                     switch (order.getProperty()) {
-                        case "id" -> select.ORDER_BY(
-                                MetaColumnWiwaUser.ID.column(),
-                                r3nUtil.mapDirection(order)
-                        );
                         case "username" -> select.ORDER_BY(
                                 MetaColumnWiwaUser.USERNAME.column(),
                                 r3nUtil.mapDirection(order)
@@ -292,6 +288,10 @@ public class UserRepositoryImpl implements UserRepository {
                         );
                         case "enabled" -> select.ORDER_BY(
                                 MetaColumnWiwaUser.ENABLED.column(),
+                                r3nUtil.mapDirection(order)
+                        );
+                        default -> select.ORDER_BY(
+                                MetaColumnWiwaUser.ID.column(),
                                 r3nUtil.mapDirection(order)
                         );
                     }

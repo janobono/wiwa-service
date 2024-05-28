@@ -30,6 +30,17 @@ public class OrderItemSummaryRepositoryImpl implements OrderItemSummaryRepositor
     private final R3nUtil r3nUtil;
     private final OrderItemSummaryDoMapper mapper;
 
+    @Transactional
+    @Override
+    public void deleteByOrderItemId(final long orderItemId) {
+        final Sql sql = sqlBuilder.delete(Query
+                .DELETE()
+                .FROM(MetaTable.WIWA_ORDER_ITEM_SUMMARY.table())
+                .WHERE(MetaColumnWiwaOrderItemSummary.ORDER_ITEM_ID.column(), Condition.EQUALS, orderItemId)
+        );
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
+    }
+
     @Override
     public List<OrderItemSummaryDo> findAllByOrderItemId(final long orderItemId) {
         log.debug("findAllByOrderItemId({})", orderItemId);
@@ -48,29 +59,14 @@ public class OrderItemSummaryRepositoryImpl implements OrderItemSummaryRepositor
 
     @Transactional
     @Override
-    public void saveAll(final long orderItemId, final List<OrderItemSummaryDo> batch) {
-        log.debug("saveAll({},{})", orderItemId, batch);
-        delete(orderItemId);
-        for (final OrderItemSummaryDo orderItemSummaryDo : batch) {
-            insert(mapper.toWiwaOrderItemSummaryDto(orderItemSummaryDo));
-        }
-    }
-
-    private void delete(final long orderItemId) {
-        final Sql sql = sqlBuilder.delete(Query
-                .DELETE()
-                .FROM(MetaTable.WIWA_ORDER_ITEM_SUMMARY.table())
-                .WHERE(MetaColumnWiwaOrderItemSummary.ORDER_ITEM_ID.column(), Condition.EQUALS, orderItemId)
-        );
-        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
-    }
-
-    private void insert(final WiwaOrderItemSummaryDto wiwaOrderItemSummaryDto) {
+    public OrderItemSummaryDo insert(final OrderItemSummaryDo orderItemSummary) {
+        log.debug("save({})", orderItemSummary);
         final Sql sql = sqlBuilder.insert(Query
                 .INSERT()
                 .INTO(MetaTable.WIWA_ORDER_ITEM_SUMMARY.table(), MetaColumnWiwaOrderItemSummary.columns())
-                .VALUES(WiwaOrderItemSummaryDto.toArray(wiwaOrderItemSummaryDto))
+                .VALUES(WiwaOrderItemSummaryDto.toArray(mapper.toWiwaOrderItemSummaryDto(orderItemSummary)))
         );
         jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
+        return orderItemSummary;
     }
 }

@@ -9,7 +9,6 @@ import sk.janobono.wiwa.dal.domain.OrderStatusDo;
 import sk.janobono.wiwa.dal.impl.component.R3nUtil;
 import sk.janobono.wiwa.dal.impl.mapper.OrderStatusDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaOrderStatusDto;
-import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaCodeListItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrderStatus;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.repository.OrderStatusRepository;
@@ -36,12 +35,12 @@ public class OrderStatusRepositoryImpl implements OrderStatusRepository {
     public List<OrderStatusDo> findAllByOrderId(final long orderId) {
         log.debug("findByOrderId({})", orderId);
         final Sql sql = sqlBuilder.select(Query
-                .SELECT(MetaColumnWiwaCodeListItem.columns())
+                .SELECT(MetaColumnWiwaOrderStatus.columns())
                 .FROM(MetaTable.WIWA_ORDER_STATUS.table())
                 .WHERE(MetaColumnWiwaOrderStatus.ORDER_ID.column(), Condition.EQUALS, orderId)
-                .ORDER_BY(MetaColumnWiwaOrderStatus.CREATED.column(), Order.ASC)
+                .ORDER_BY(MetaColumnWiwaOrderStatus.ID.column(), Order.ASC)
         );
-        final List<Object[]> rows = r3nUtil.query(jdbcTemplate, sql, MetaColumnWiwaCodeListItem.columns());
+        final List<Object[]> rows = r3nUtil.query(jdbcTemplate, sql, MetaColumnWiwaOrderStatus.columns());
         return rows.stream()
                 .map(WiwaOrderStatusDto::toObject)
                 .map(mapper::toOrderStatusDo)

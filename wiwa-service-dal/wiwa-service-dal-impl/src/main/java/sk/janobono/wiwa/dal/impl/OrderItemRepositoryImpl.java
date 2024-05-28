@@ -104,6 +104,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
                 .toList();
     }
 
+    @Transactional
     @Override
     public OrderItemDo insert(final OrderItemDo orderItemDo) {
         log.debug("insert({})", orderItemDo);

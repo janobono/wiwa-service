@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.model.CodeListItemSearchCriteriaDo;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface CodeListItemRepository {
@@ -27,6 +26,4 @@ public interface CodeListItemRepository {
     Optional<CodeListItemDo> findById(long id);
 
     CodeListItemDo save(CodeListItemDo codeListItemDo);
-
-    void saveAll(List<CodeListItemDo> batch);
 }

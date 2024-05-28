@@ -200,16 +200,16 @@ public class CodeListRepositoryImpl implements CodeListRepository {
     private void mapOrderBy(final Pageable pageable, final Query.Select select) {
         pageable.getSort().stream().forEach(order -> {
                     switch (order.getProperty()) {
-                        case "id" -> select.ORDER_BY(
-                                MetaColumnWiwaCodeList.ID.column(),
-                                r3nUtil.mapDirection(order)
-                        );
                         case "code" -> select.ORDER_BY(
                                 MetaColumnWiwaCodeList.CODE.column(),
                                 r3nUtil.mapDirection(order)
                         );
                         case "name" -> select.ORDER_BY(
                                 MetaColumnWiwaCodeList.NAME.column(),
+                                r3nUtil.mapDirection(order)
+                        );
+                        default -> select.ORDER_BY(
+                                MetaColumnWiwaCodeList.ID.column(),
                                 r3nUtil.mapDirection(order)
                         );
                     }

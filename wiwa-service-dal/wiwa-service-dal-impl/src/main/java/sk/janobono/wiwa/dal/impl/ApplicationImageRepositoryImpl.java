@@ -153,21 +153,14 @@ public class ApplicationImageRepositoryImpl implements ApplicationImageRepositor
 
     private void mapOrderBy(final Pageable pageable, final Query.Select select) {
         pageable.getSort().stream().forEach(order -> {
-                    switch (order.getProperty()) {
-                        case "fileName" -> select.ORDER_BY(
-                                MetaColumnWiwaApplicationImage.FILE_NAME.column(),
-                                r3nUtil.mapDirection(order)
-                        );
-                        case "fileType" -> select.ORDER_BY(
+                    if (order.getProperty().equals("fileType")) {
+                        select.ORDER_BY(
                                 MetaColumnWiwaApplicationImage.FILE_TYPE.column(),
                                 r3nUtil.mapDirection(order)
                         );
-                        case "thumbnail" -> select.ORDER_BY(
-                                MetaColumnWiwaApplicationImage.THUMBNAIL.column(),
-                                r3nUtil.mapDirection(order)
-                        );
-                        case "data" -> select.ORDER_BY(
-                                MetaColumnWiwaApplicationImage.DATA.column(),
+                    } else {
+                        select.ORDER_BY(
+                                MetaColumnWiwaApplicationImage.FILE_NAME.column(),
                                 r3nUtil.mapDirection(order)
                         );
                     }

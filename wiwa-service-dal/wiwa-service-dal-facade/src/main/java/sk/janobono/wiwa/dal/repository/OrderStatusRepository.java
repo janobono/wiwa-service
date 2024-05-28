@@ -8,5 +8,5 @@ public interface OrderStatusRepository {
 
     List<OrderStatusDo> findAllByOrderId(long orderId);
 
-    OrderStatusDo save(OrderStatusDo orderStatusDo);
+    OrderStatusDo save(OrderStatusDo orderStatus);
 }

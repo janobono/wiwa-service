@@ -50,8 +50,7 @@ create table wiwa_order_item
     name        varchar(255) not null,
     description varchar(255),
     quantity    integer      not null,
-    part        text         not null,
-    summary     text         not null
+    part        text         not null
 );
 
 create table wiwa_order_item_summary

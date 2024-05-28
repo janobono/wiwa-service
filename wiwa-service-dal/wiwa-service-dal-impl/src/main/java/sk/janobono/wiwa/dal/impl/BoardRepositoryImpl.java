@@ -287,10 +287,6 @@ public class BoardRepositoryImpl implements BoardRepository {
     private void mapOrderBy(final Pageable pageable, final Query.Select select) {
         pageable.getSort().stream().forEach(order -> {
                     switch (order.getProperty()) {
-                        case "id" -> select.ORDER_BY(
-                                MetaColumnWiwaBoard.ID.column(),
-                                r3nUtil.mapDirection(order)
-                        );
                         case "code" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.CODE.column(),
                                 r3nUtil.mapDirection(order)
@@ -333,6 +329,10 @@ public class BoardRepositoryImpl implements BoardRepository {
                         );
                         case "price" -> select.ORDER_BY(
                                 MetaColumnWiwaBoard.PRICE.column(),
+                                r3nUtil.mapDirection(order)
+                        );
+                        default -> select.ORDER_BY(
+                                MetaColumnWiwaBoard.ID.column(),
                                 r3nUtil.mapDirection(order)
                         );
                     }

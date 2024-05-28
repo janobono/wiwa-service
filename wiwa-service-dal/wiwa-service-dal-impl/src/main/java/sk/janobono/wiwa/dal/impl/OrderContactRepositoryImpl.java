@@ -52,7 +52,7 @@ public class OrderContactRepositoryImpl implements OrderContactRepository {
 
         if (totalRows > 0) {
             final Query.Select select = Query
-                    .SELECT(columns).DISTINCT().page(pageable.getPageNumber(), pageable.getPageSize())
+                    .SELECT(columns).DISTINCT()
                     .FROM(MetaTable.WIWA_ORDER_CONTACT.table())
                     .LEFT_JOIN(MetaTable.WIWA_ORDER.table(), MetaColumnWiwaOrder.ID.column(), MetaColumnWiwaOrderContact.ORDER_ID.column())
                     .WHERE(MetaColumnWiwaOrder.USER_ID.column(), Condition.EQUALS, userId);
@@ -140,10 +140,6 @@ public class OrderContactRepositoryImpl implements OrderContactRepository {
                                 MetaColumnWiwaOrderContact.ORDER_ID.column(),
                                 r3nUtil.mapDirection(order)
                         );
-                        case "name" -> select.ORDER_BY(
-                                MetaColumnWiwaOrderContact.NAME.column(),
-                                r3nUtil.mapDirection(order)
-                        );
                         case "street" -> select.ORDER_BY(
                                 MetaColumnWiwaOrderContact.STREET.column(),
                                 r3nUtil.mapDirection(order)
@@ -174,6 +170,10 @@ public class OrderContactRepositoryImpl implements OrderContactRepository {
                         );
                         case "taxId" -> select.ORDER_BY(
                                 MetaColumnWiwaOrderContact.TAX_ID.column(),
+                                r3nUtil.mapDirection(order)
+                        );
+                        default -> select.ORDER_BY(
+                                MetaColumnWiwaOrderContact.NAME.column(),
                                 r3nUtil.mapDirection(order)
                         );
                     }

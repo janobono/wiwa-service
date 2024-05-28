@@ -250,10 +250,6 @@ public class EdgeRepositoryImpl implements EdgeRepository {
     private void mapOrderBy(final Pageable pageable, final Query.Select select) {
         pageable.getSort().stream().forEach(order -> {
                     switch (order.getProperty()) {
-                        case "id" -> select.ORDER_BY(
-                                MetaColumnWiwaEdge.ID.column(),
-                                r3nUtil.mapDirection(order)
-                        );
                         case "code" -> select.ORDER_BY(
                                 MetaColumnWiwaEdge.CODE.column(),
                                 r3nUtil.mapDirection(order)
@@ -280,6 +276,10 @@ public class EdgeRepositoryImpl implements EdgeRepository {
                         );
                         case "price" -> select.ORDER_BY(
                                 MetaColumnWiwaEdge.PRICE.column(),
+                                r3nUtil.mapDirection(order)
+                        );
+                        default -> select.ORDER_BY(
+                                MetaColumnWiwaEdge.ID.column(),
                                 r3nUtil.mapDirection(order)
                         );
                     }

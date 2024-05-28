@@ -72,7 +72,7 @@ public class OrderViewRepositoryImpl implements OrderViewRepository {
             if (pageable.getSort().isSorted()) {
                 mapOrderBy(pageable, select);
             } else {
-                select.ORDER_BY(MetaColumnWiwaOrderView.ID.column(), Order.DESC);
+                select.ORDER_BY(MetaColumnWiwaOrderView.ID.column(), Order.ASC);
             }
 
             mapCriteria(criteria, select);
@@ -135,10 +135,6 @@ public class OrderViewRepositoryImpl implements OrderViewRepository {
     private void mapOrderBy(final Pageable pageable, final Query.Select select) {
         pageable.getSort().stream().forEach(order -> {
                     switch (order.getProperty()) {
-                        case "id" -> select.ORDER_BY(
-                                MetaColumnWiwaOrderView.ID.column(),
-                                r3nUtil.mapDirection(order)
-                        );
                         case "userId" -> select.ORDER_BY(
                                 MetaColumnWiwaOrderView.USER_ID.column(),
                                 r3nUtil.mapDirection(order)
@@ -171,9 +167,12 @@ public class OrderViewRepositoryImpl implements OrderViewRepository {
                                 MetaColumnWiwaOrderView.TOTAL.column(),
                                 r3nUtil.mapDirection(order)
                         );
+                        default -> select.ORDER_BY(
+                                MetaColumnWiwaOrderView.ID.column(),
+                                r3nUtil.mapDirection(order)
+                        );
                     }
                 }
         );
     }
-
 }

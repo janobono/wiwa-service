@@ -1,8 +1,11 @@
 package sk.janobono.wiwa.dal.model;
 
+import lombok.Builder;
+
 import java.math.BigDecimal;
 import java.util.List;
 
+@Builder
 public record BoardSearchCriteriaDo(
         String searchField,
         String code,
