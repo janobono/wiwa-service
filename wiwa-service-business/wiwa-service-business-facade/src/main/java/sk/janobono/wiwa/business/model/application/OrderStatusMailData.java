@@ -1,5 +1,8 @@
 package sk.janobono.wiwa.business.model.application;
 
+import lombok.Builder;
+
+@Builder
 public record OrderStatusMailData(
         String productionSubject,
         String productionTitle,

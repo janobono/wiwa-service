@@ -114,19 +114,19 @@ class OrderSummaryCalculationUtilTest {
                         .build()
         );
 
-        assertThat(orderSummary.boardSummary().size()).isEqualTo(3);
+        assertThat(orderSummary.boardSummary()).hasSize(3);
         assertThat(orderSummary.boardSummary().getFirst()).usingRecursiveComparison().isEqualTo(new OrderBoardSummaryData(1L, BigDecimal.valueOf(1), BigDecimal.valueOf(1), new BigDecimal("0.333"), BigDecimal.valueOf(100), new BigDecimal("120.000")));
         assertThat(orderSummary.boardSummary().get(1)).usingRecursiveComparison().isEqualTo(new OrderBoardSummaryData(2L, BigDecimal.valueOf(2), BigDecimal.valueOf(1), new BigDecimal("1.334"), BigDecimal.valueOf(200), new BigDecimal("240.000")));
         assertThat(orderSummary.boardSummary().getLast()).usingRecursiveComparison().isEqualTo(new OrderBoardSummaryData(3L, BigDecimal.valueOf(3), BigDecimal.valueOf(2), new BigDecimal("3.000"), BigDecimal.valueOf(600), new BigDecimal("720.000")));
 
-        assertThat(orderSummary.edgeSummary().size()).isEqualTo(3);
+        assertThat(orderSummary.edgeSummary()).hasSize(3);
         assertThat(orderSummary.edgeSummary().getFirst()).usingRecursiveComparison().isEqualTo(new OrderEdgeSummaryData(1L, BigDecimal.valueOf(1), BigDecimal.valueOf(1), BigDecimal.valueOf(1), BigDecimal.valueOf(100), new BigDecimal("120.000"), BigDecimal.valueOf(1), new BigDecimal("1.200")));
         assertThat(orderSummary.edgeSummary().get(1)).usingRecursiveComparison().isEqualTo(new OrderEdgeSummaryData(2L, BigDecimal.valueOf(2), BigDecimal.valueOf(2), BigDecimal.valueOf(4), BigDecimal.valueOf(400), new BigDecimal("480.000"), BigDecimal.valueOf(4), new BigDecimal("4.800")));
         assertThat(orderSummary.edgeSummary().getLast()).usingRecursiveComparison().isEqualTo(new OrderEdgeSummaryData(3L, BigDecimal.valueOf(3), BigDecimal.valueOf(3), BigDecimal.valueOf(9), BigDecimal.valueOf(900), new BigDecimal("1080.000"), BigDecimal.valueOf(9), new BigDecimal("10.800")));
 
         assertThat(orderSummary.glueSummary()).usingRecursiveComparison().isEqualTo(new OrderGlueSummaryData(BigDecimal.valueOf(1), BigDecimal.valueOf(1), new BigDecimal("1.200")));
 
-        assertThat(orderSummary.cutSummary().size()).isEqualTo(3);
+        assertThat(orderSummary.cutSummary()).hasSize(3);
         assertThat(orderSummary.cutSummary().getFirst()).usingRecursiveComparison().isEqualTo(new OrderCutSummaryData(BigDecimal.valueOf(10), BigDecimal.valueOf(1), BigDecimal.valueOf(1), new BigDecimal("1.200")));
         assertThat(orderSummary.cutSummary().get(1)).usingRecursiveComparison().isEqualTo(new OrderCutSummaryData(BigDecimal.valueOf(20), BigDecimal.valueOf(2), BigDecimal.valueOf(2), new BigDecimal("2.400")));
         assertThat(orderSummary.cutSummary().getLast()).usingRecursiveComparison().isEqualTo(new OrderCutSummaryData(BigDecimal.valueOf(30), BigDecimal.valueOf(3), BigDecimal.valueOf(6), new BigDecimal("7.200")));

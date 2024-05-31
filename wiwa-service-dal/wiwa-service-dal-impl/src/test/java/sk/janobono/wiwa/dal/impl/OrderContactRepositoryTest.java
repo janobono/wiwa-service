@@ -102,20 +102,20 @@ class OrderContactRepositoryTest extends BaseRepositoryTest {
         assertThat(searchAllResult.getTotalElements()).isEqualTo(2);
         assertThat(searchAllResult.getTotalPages()).isEqualTo(1);
         assertThat(searchAllResult.getSize()).isEqualTo(2);
-        assertThat(searchAllResult.getContent().size()).isEqualTo(2);
+        assertThat(searchAllResult.getContent()).hasSize(2);
 
         Page<BaseOrderContactDo> searchResult = orderContactRepository.findAllByUserId(user.getId(), PageRequest.of(0, 1, Sort.Direction.ASC, "anything"));
         assertThat(searchResult.getTotalElements()).isEqualTo(2);
         assertThat(searchResult.getTotalPages()).isEqualTo(2);
         assertThat(searchResult.getSize()).isEqualTo(1);
-        assertThat(searchResult.getContent().size()).isEqualTo(1);
+        assertThat(searchResult.getContent()).hasSize(1);
         assertThat(searchResult.getContent().getFirst()).isEqualTo(searchAllResult.getContent().getFirst());
 
         searchResult = orderContactRepository.findAllByUserId(user.getId(), PageRequest.of(0, 1, Sort.Direction.DESC, "name"));
         assertThat(searchResult.getTotalElements()).isEqualTo(2);
         assertThat(searchResult.getTotalPages()).isEqualTo(2);
         assertThat(searchResult.getSize()).isEqualTo(1);
-        assertThat(searchResult.getContent().size()).isEqualTo(1);
+        assertThat(searchResult.getContent()).hasSize(1);
         assertThat(searchResult.getContent().getFirst()).isEqualTo(searchAllResult.getContent().getLast());
     }
 }

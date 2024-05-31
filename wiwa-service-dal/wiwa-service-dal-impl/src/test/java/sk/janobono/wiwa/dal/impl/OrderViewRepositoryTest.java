@@ -82,7 +82,7 @@ class OrderViewRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(1);
-        assertThat(searchResult.getContent().size()).isEqualTo(1);
+        assertThat(searchResult.getContent()).hasSize(1);
         assertThat(searchResult.getContent().getFirst()).isEqualTo(saved.get());
     }
 }

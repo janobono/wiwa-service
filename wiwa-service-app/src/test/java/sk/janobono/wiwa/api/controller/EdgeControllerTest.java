@@ -248,14 +248,14 @@ class EdgeControllerTest extends BaseControllerTest {
         List<EdgeCategoryItemWebDto> categoryItems = setEdgeCodeListItems(headers, testEdgeId,
                 List.of(new EdgeCategoryItemChangeWebDto(codeList.getId(), codeListItem01.getId()))).categoryItems();
         List<EdgeCategoryItemWebDto> savedCategoryItems = getEdge(headers, testEdgeId).categoryItems();
-        assertThat(categoryItems.size()).isEqualTo(1);
+        assertThat(categoryItems).hasSize(1);
         assertThat(categoryItems.getFirst().id()).isEqualTo(codeListItem01.getId());
         assertThat(categoryItems.getFirst()).isEqualTo(savedCategoryItems.getFirst());
 
         categoryItems = setEdgeCodeListItems(headers, testEdgeId,
                 List.of(new EdgeCategoryItemChangeWebDto(codeList.getId(), codeListItem02.getId()))).categoryItems();
         savedCategoryItems = getEdge(headers, testEdgeId).categoryItems();
-        assertThat(categoryItems.size()).isEqualTo(1);
+        assertThat(categoryItems).hasSize(1);
         assertThat(categoryItems.getFirst().id()).isEqualTo(codeListItem02.getId());
         assertThat(categoryItems.getFirst()).isEqualTo(savedCategoryItems.getFirst());
 
@@ -263,7 +263,7 @@ class EdgeControllerTest extends BaseControllerTest {
                 List.of(new EdgeCategoryItemChangeWebDto(codeList.getId(), codeListItem01.getId()),
                         new EdgeCategoryItemChangeWebDto(codeList.getId(), codeListItem02.getId()))).categoryItems();
         savedCategoryItems = getEdge(headers, testEdgeId).categoryItems();
-        assertThat(categoryItems.size()).isEqualTo(2);
+        assertThat(categoryItems).hasSize(2);
         assertThat(categoryItems.get(0).id()).isEqualTo(savedCategoryItems.get(0).id());
         assertThat(categoryItems.get(1)).isEqualTo(savedCategoryItems.get(1));
 
@@ -297,8 +297,8 @@ class EdgeControllerTest extends BaseControllerTest {
 
         categoryItems = setEdgeCodeListItems(headers, testEdgeId, Collections.emptyList()).categoryItems();
         savedCategoryItems = getEdge(headers, testEdgeId).categoryItems();
-        assertThat(categoryItems.size()).isEqualTo(0);
-        assertThat(categoryItems.size()).isEqualTo(savedCategoryItems.size());
+        assertThat(categoryItems).isEmpty();
+        assertThat(savedCategoryItems).isEmpty();
 
         deleteEdgeImage(headers, testEdgeId);
         for (final EdgeWebDto edge : edges) {

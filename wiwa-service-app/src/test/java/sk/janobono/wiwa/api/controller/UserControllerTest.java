@@ -43,19 +43,19 @@ class UserControllerTest extends BaseControllerTest {
         Page<UserWebDto> page = getUsers(headers, pageable);
         assertThat(page.getTotalElements()).isEqualTo(14);
         assertThat(page.getTotalPages()).isEqualTo(3);
-        assertThat(page.getContent().size()).isEqualTo(5);
+        assertThat(page.getContent()).hasSize(5);
 
         pageable = PageRequest.of(1, 5, Sort.Direction.DESC, "id", "username");
         page = getUsers(headers, pageable);
         assertThat(page.getTotalElements()).isEqualTo(14);
         assertThat(page.getTotalPages()).isEqualTo(3);
-        assertThat(page.getContent().size()).isEqualTo(5);
+        assertThat(page.getContent()).hasSize(5);
 
         pageable = PageRequest.of(0, 5);
         page = getUsers(headers, "0", "user0", "mail0@domain.com", pageable);
         assertThat(page.getTotalElements()).isEqualTo(1);
         assertThat(page.getTotalPages()).isEqualTo(1);
-        assertThat(page.getContent().size()).isEqualTo(1);
+        assertThat(page.getContent()).hasSize(1);
 
         for (final UserWebDto user : users) {
             setUser(headers, user);
@@ -120,7 +120,7 @@ class UserControllerTest extends BaseControllerTest {
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().authorities().size()).isEqualTo(2);
+        assertThat(response.getBody().authorities()).hasSize(2);
     }
 
     private void setConfirmed(final HttpHeaders headers, final UserWebDto user) {

@@ -11,7 +11,7 @@ public record OrderPropertiesWebDto(
         @NotNull Map<BoardPosition, String> boards,
         @NotNull Map<EdgePosition, String> edges,
         @NotNull Map<CornerPosition, String> corners,
-        @NotNull Map<OrderFormat, String> format,
+        @NotNull Map<OrderPattern, String> pattern,
         @NotNull Map<OrderContent, String> content,
         @NotNull Map<OrderPackageType, String> packageType,
         @NotEmpty String csvSeparator,

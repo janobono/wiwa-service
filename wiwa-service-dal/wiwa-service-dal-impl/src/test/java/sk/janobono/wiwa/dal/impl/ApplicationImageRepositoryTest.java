@@ -44,21 +44,21 @@ class ApplicationImageRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(10);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(10);
-        assertThat(searchResult.getContent().size()).isEqualTo(10);
+        assertThat(searchResult.getContent()).hasSize(10);
         assertThat(searchResult.getContent().getFirst().fileName()).isEqualTo(images.getFirst().getFileName());
 
         searchResult = applicationImageRepository.findAll(PageRequest.of(0, 3, Sort.Direction.ASC, "fileName"));
         assertThat(searchResult.getTotalElements()).isEqualTo(10);
         assertThat(searchResult.getTotalPages()).isEqualTo(4);
         assertThat(searchResult.getSize()).isEqualTo(3);
-        assertThat(searchResult.getContent().size()).isEqualTo(3);
+        assertThat(searchResult.getContent()).hasSize(3);
         assertThat(searchResult.getContent().getFirst().fileName()).isEqualTo(images.getFirst().getFileName());
 
         searchResult = applicationImageRepository.findAll(PageRequest.of(0, 3, Sort.Direction.DESC, "anything"));
         assertThat(searchResult.getTotalElements()).isEqualTo(10);
         assertThat(searchResult.getTotalPages()).isEqualTo(4);
         assertThat(searchResult.getSize()).isEqualTo(3);
-        assertThat(searchResult.getContent().size()).isEqualTo(3);
+        assertThat(searchResult.getContent()).hasSize(3);
         assertThat(searchResult.getContent().getFirst().fileName()).isEqualTo(images.getLast().getFileName());
 
         for (final ApplicationImageDo image : images) {
@@ -69,6 +69,6 @@ class ApplicationImageRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(0);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(0);
-        assertThat(searchResult.getContent().size()).isEqualTo(0);
+        assertThat(searchResult.getContent()).isEmpty();
     }
 }

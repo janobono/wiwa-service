@@ -115,15 +115,15 @@ class SummaryUtilTest {
                         .toList()
         );
 
-        assertThat(orderSummary.boardSummary().size()).isEqualTo(1);
+        assertThat(orderSummary.boardSummary()).hasSize(1);
         assertThat(orderSummary.boardSummary().getFirst()).usingRecursiveComparison().isEqualTo(new OrderBoardSummaryData(1L, new BigDecimal("0.250"), BigDecimal.valueOf(1), new BigDecimal("0.083"), BigDecimal.valueOf(100), new BigDecimal("120.000")));
 
-        assertThat(orderSummary.edgeSummary().size()).isEqualTo(1);
+        assertThat(orderSummary.edgeSummary()).hasSize(1);
         assertThat(orderSummary.edgeSummary().getFirst()).usingRecursiveComparison().isEqualTo(new OrderEdgeSummaryData(1L, new BigDecimal("2.620"), new BigDecimal("2.300"), new BigDecimal("2.620"), new BigDecimal("262.000"), new BigDecimal("314.400"), new BigDecimal("2.300"), new BigDecimal("2.760")));
 
         assertThat(orderSummary.glueSummary()).usingRecursiveComparison().isEqualTo(new OrderGlueSummaryData(BigDecimal.valueOf(0), BigDecimal.valueOf(0), new BigDecimal("0.000")));
 
-        assertThat(orderSummary.cutSummary().size()).isEqualTo(1);
+        assertThat(orderSummary.cutSummary()).hasSize(1);
         assertThat(orderSummary.cutSummary().getFirst()).usingRecursiveComparison().isEqualTo(new OrderCutSummaryData(BigDecimal.valueOf(10), new BigDecimal("2.300"), new BigDecimal("2.300"), new BigDecimal("2.760")));
 
         assertThat(orderSummary.weight()).isEqualTo(new BigDecimal("2.703"));

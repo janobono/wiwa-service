@@ -53,7 +53,7 @@ class CodeListRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(10);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(10);
-        assertThat(searchResult.getContent().size()).isEqualTo(10);
+        assertThat(searchResult.getContent()).hasSize(10);
 
         searchResult = codeListRepository.findAll(CodeListSearchCriteriaDo.builder()
                         .searchField("NAME")
@@ -62,7 +62,7 @@ class CodeListRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(10);
         assertThat(searchResult.getTotalPages()).isEqualTo(2);
         assertThat(searchResult.getSize()).isEqualTo(5);
-        assertThat(searchResult.getContent().size()).isEqualTo(5);
+        assertThat(searchResult.getContent()).hasSize(5);
         assertThat(searchResult.getContent().getFirst()).isEqualTo(codeLists.getFirst());
 
         searchResult = codeListRepository.findAll(CodeListSearchCriteriaDo.builder()
@@ -72,7 +72,7 @@ class CodeListRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(10);
         assertThat(searchResult.getTotalPages()).isEqualTo(2);
         assertThat(searchResult.getSize()).isEqualTo(5);
-        assertThat(searchResult.getContent().size()).isEqualTo(5);
+        assertThat(searchResult.getContent()).hasSize(5);
         assertThat(searchResult.getContent().getFirst()).isEqualTo(codeLists.getLast());
 
         searchResult = codeListRepository.findAll(CodeListSearchCriteriaDo.builder()
@@ -82,7 +82,7 @@ class CodeListRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(5);
-        assertThat(searchResult.getContent().size()).isEqualTo(1);
+        assertThat(searchResult.getContent()).hasSize(1);
 
         searchResult = codeListRepository.findAll(CodeListSearchCriteriaDo.builder()
                         .name("name0")
@@ -91,7 +91,7 @@ class CodeListRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(5);
-        assertThat(searchResult.getContent().size()).isEqualTo(1);
+        assertThat(searchResult.getContent()).hasSize(1);
 
         for (final CodeListDo codeList : codeLists) {
             codeListRepository.save(CodeListDo.builder()
@@ -109,6 +109,6 @@ class CodeListRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(0);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(0);
-        assertThat(searchResult.getContent().size()).isEqualTo(0);
+        assertThat(searchResult.getContent()).isEmpty();
     }
 }

@@ -37,13 +37,13 @@ class CodeListControllerTest extends BaseControllerTest {
         }
 
         final List<CodeListWebDto> searchCodeLists = getCodeLists(headers, "name-", null, null, Pageable.unpaged()).stream().toList();
-        assertThat(searchCodeLists.size()).isEqualTo(10);
+        assertThat(searchCodeLists).hasSize(10);
 
         final List<CodeListWebDto> codeCodeLists = getCodeLists(headers, null, "code-1", null, Pageable.unpaged()).stream().toList();
-        assertThat(codeCodeLists.size()).isEqualTo(1);
+        assertThat(codeCodeLists).hasSize(1);
 
         final List<CodeListWebDto> nameCodeLists = getCodeLists(headers, null, null, "NAME", Pageable.unpaged()).stream().toList();
-        assertThat(nameCodeLists.size()).isEqualTo(10);
+        assertThat(nameCodeLists).hasSize(10);
 
         final CodeListWebDto changedCodeList = setCodeList(headers, 1L, new CodeListChangeWebDto("code-x", "name-x"));
         assertThat(changedCodeList.code()).isEqualTo("code-x");

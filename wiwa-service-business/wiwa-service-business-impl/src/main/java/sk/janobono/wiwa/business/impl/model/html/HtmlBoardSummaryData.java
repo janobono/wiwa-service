@@ -1,9 +1,9 @@
-package sk.janobono.wiwa.business.impl.model.pdf;
+package sk.janobono.wiwa.business.impl.model.html;
 
 import lombok.Builder;
 
 @Builder
-public record PdfBoardSummaryData(
+public record HtmlBoardSummaryData(
         String material,
         String name,
         String area,

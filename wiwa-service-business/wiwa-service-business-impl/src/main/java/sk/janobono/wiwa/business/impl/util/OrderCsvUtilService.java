@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.security.InvalidParameterException;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -107,7 +108,7 @@ public class OrderCsvUtilService {
                 materialNames,
                 item,
                 part,
-                orderProperties.format().get(OrderFormat.CSV_BASIC),
+                orderProperties.pattern().get(OrderPattern.CSV_BASIC),
                 BoardPosition.TOP,
                 part.dimensionsTOP(),
                 part.orientation(),
@@ -142,7 +143,7 @@ public class OrderCsvUtilService {
                 materialNames,
                 item,
                 part,
-                orderProperties.format().get(OrderFormat.CSV_DUPLICATED_BASIC),
+                orderProperties.pattern().get(OrderPattern.CSV_DUPLICATED_BASIC),
                 BoardPosition.TOP,
                 boardDimensions.get(BoardPosition.TOP),
                 part.orientation(),
@@ -166,7 +167,7 @@ public class OrderCsvUtilService {
                 materialNames,
                 item,
                 part,
-                orderProperties.format().get(OrderFormat.CSV_DUPLICATED_BASIC),
+                orderProperties.pattern().get(OrderPattern.CSV_DUPLICATED_BASIC),
                 BoardPosition.BOTTOM,
                 boardDimensions.get(BoardPosition.BOTTOM),
                 part.orientation(),
@@ -198,7 +199,7 @@ public class OrderCsvUtilService {
                     materialNames,
                     item,
                     part,
-                    orderProperties.format().get(OrderFormat.CSV_FRAME),
+                    orderProperties.pattern().get(OrderPattern.CSV_FRAME),
                     key,
                     boardDimensions.get(key),
                     false,
@@ -231,7 +232,7 @@ public class OrderCsvUtilService {
                 materialNames,
                 item,
                 part,
-                orderProperties.format().get(OrderFormat.CSV_DUPLICATED_FRAME),
+                orderProperties.pattern().get(OrderPattern.CSV_DUPLICATED_FRAME),
                 BoardPosition.TOP,
                 boardDimensions.get(BoardPosition.TOP),
                 part.orientation(),
@@ -273,7 +274,7 @@ public class OrderCsvUtilService {
                     materialNames,
                     item,
                     part,
-                    orderProperties.format().get(OrderFormat.CSV_DUPLICATED_FRAME),
+                    orderProperties.pattern().get(OrderPattern.CSV_DUPLICATED_FRAME),
                     key,
                     boardDimensions.get(key),
                     false,
@@ -358,7 +359,7 @@ public class OrderCsvUtilService {
                          final Map<Long, String> materialNames,
                          final OrderItemDo item,
                          final PartData part,
-                         final String nameFormat,
+                         final String namePattern,
                          final BoardPosition position,
                          final DimensionsData dimensions,
                          final boolean orientation,
@@ -370,11 +371,11 @@ public class OrderCsvUtilService {
         // NUMBER
         addNumber(orderProperties, item, position, data);
         // NAME
-        addName(orderProperties, nameFormat, item, position, part.dimensions().get(position), data);
+        addName(orderProperties, namePattern, item, position, part.dimensions().get(position), data);
         // MATERIAL
         data.put(CSVColumn.MATERIAL, getMaterial(materialNames, part.boards().get(position)));
         // DECOR
-        data.put(CSVColumn.DECOR, getDecor(boards, part.boards().get(position)));
+        data.put(CSVColumn.DECOR, getDecor(orderProperties.pattern().get(OrderPattern.CSV_DECOR), boards, part.boards().get(position)));
         // DIMENSIONS
         addDimensions(dimensions, data);
         // QUANTITY
@@ -400,18 +401,18 @@ public class OrderCsvUtilService {
                            final BoardPosition position,
                            final Map<CSVColumn, String> data) {
         data.put(CSVColumn.NUMBER,
-                getNumber(orderProperties.format().get(OrderFormat.CSV_NUMBER), item.getSortNum() + 1, getPositionName(orderProperties, position)));
+                getNumber(orderProperties.pattern().get(OrderPattern.CSV_NUMBER), item.getSortNum() + 1, getPositionName(orderProperties, position)));
     }
 
     private void addName(final OrderPropertiesData orderProperties,
-                         final String format,
+                         final String pattern,
                          final OrderItemDo item,
                          final BoardPosition position,
                          final DimensionsData dimensions,
                          final Map<CSVColumn, String> data
     ) {
         data.put(CSVColumn.NAME, getName(
-                format,
+                pattern,
                 item.getName(),
                 getPositionName(orderProperties, position),
                 dimensions,
@@ -430,7 +431,7 @@ public class OrderCsvUtilService {
                           final List<OrderEdgeData> edges,
                           final Map<CSVColumn, Long> partEdges,
                           final Map<CSVColumn, String> data) {
-        partEdges.forEach((key, value) -> data.put(key, getEdge(orderProperties.format().get(OrderFormat.CSV_EDGE), edges, value)));
+        partEdges.forEach((key, value) -> data.put(key, getEdge(orderProperties.pattern().get(OrderPattern.CSV_EDGE), edges, value)));
     }
 
     private void addCorners(final OrderPropertiesData orderProperties, final List<OrderEdgeData> edges, final PartData part, final Map<CSVColumn, String> data) {
@@ -446,24 +447,24 @@ public class OrderCsvUtilService {
         });
     }
 
-    private String getNumber(final String format, final int num, final String positionName) {
-        return addQuotes(format.formatted(num, positionName));
+    private String getNumber(final String pattern, final int num, final String positionName) {
+        return addQuotes(MessageFormat.format(pattern, num, positionName));
     }
 
-    private String getName(final String format,
+    private String getName(final String pattern,
                            final String itemName,
                            final String positionName,
                            final DimensionsData partDimensions,
                            final Integer quantity) {
-        return addQuotes(format.formatted(itemName, positionName, partDimensions.x().intValue(), partDimensions.y().intValue(), quantity));
+        return addQuotes(MessageFormat.format(pattern, itemName, positionName, partDimensions.x().intValue(), partDimensions.y().intValue(), quantity));
     }
 
     private String getMaterial(final Map<Long, String> materialNames, final long boardId) {
         return addQuotes(materialNames.getOrDefault(boardId, MATERIAL_NOT_FOUND));
     }
 
-    private String getDecor(final List<OrderBoardData> boards, final long boardId) {
-        return addQuotes(materialUtilService.getDecor(boards, boardId, BOARD_NOT_FOUND));
+    private String getDecor(final String pattern, final List<OrderBoardData> boards, final long boardId) {
+        return addQuotes(materialUtilService.getDecor(pattern, boards, boardId, BOARD_NOT_FOUND));
     }
 
     private String getThickness(final List<OrderBoardData> boards, final long boardId) {
@@ -471,8 +472,8 @@ public class OrderCsvUtilService {
         return board.map(OrderBoardData::thickness).map(BigDecimal::intValue).map(this::toString).orElse("");
     }
 
-    private String getEdge(final String format, final List<OrderEdgeData> edges, final Long edgeId) {
-        return addQuotes(materialUtilService.getEdge(format, edges, edgeId, EDGE_NOT_FOUND));
+    private String getEdge(final String pattern, final List<OrderEdgeData> edges, final Long edgeId) {
+        return addQuotes(materialUtilService.getEdge(pattern, edges, edgeId, EDGE_NOT_FOUND));
     }
 
     private String getCorner(final OrderPropertiesData orderProperties,
@@ -484,7 +485,7 @@ public class OrderCsvUtilService {
         }
 
         final String cornerString = cornerString(orderProperties, position, partCorner);
-        final String edgeString = materialUtilService.getEdge(orderProperties.format().get(OrderFormat.CSV_EDGE), edges, partCorner.edgeId(), EDGE_NOT_FOUND);
+        final String edgeString = materialUtilService.getEdge(orderProperties.pattern().get(OrderPattern.CSV_EDGE), edges, partCorner.edgeId(), EDGE_NOT_FOUND);
 
         if (edgeString.isBlank()) {
             return addQuotes(cornerString);
@@ -494,17 +495,17 @@ public class OrderCsvUtilService {
 
     private String cornerString(final OrderPropertiesData orderProperties, final CornerPosition position, final PartCornerData partCorner) {
         return switch (partCorner) {
-            case final PartCornerStraightData partCornerStraightData ->
-                    orderProperties.format().get(OrderFormat.CSV_CORNER_STRAIGHT).formatted(
-                            orderProperties.corners().getOrDefault(position, position.name()),
-                            partCornerStraightData.dimensions().x().intValue(),
-                            partCornerStraightData.dimensions().y().intValue()
-                    );
-            case final PartCornerRoundedData partCornerRoundedData ->
-                    orderProperties.format().get(OrderFormat.CSV_CORNER_ROUNDED).formatted(
-                            orderProperties.corners().getOrDefault(position, position.name()),
-                            partCornerRoundedData.radius().intValue()
-                    );
+            case final PartCornerStraightData partCornerStraightData -> MessageFormat.format(
+                    orderProperties.pattern().get(OrderPattern.CSV_CORNER_STRAIGHT),
+                    orderProperties.corners().getOrDefault(position, position.name()),
+                    partCornerStraightData.dimensions().x().intValue(),
+                    partCornerStraightData.dimensions().y().intValue()
+            );
+            case final PartCornerRoundedData partCornerRoundedData -> MessageFormat.format(
+                    orderProperties.pattern().get(OrderPattern.CSV_CORNER_ROUNDED),
+                    orderProperties.corners().getOrDefault(position, position.name()),
+                    partCornerRoundedData.radius().intValue()
+            );
             default ->
                     throw new InvalidParameterException("Unsupported part corner type: " + partCorner.getClass().getSimpleName());
         };

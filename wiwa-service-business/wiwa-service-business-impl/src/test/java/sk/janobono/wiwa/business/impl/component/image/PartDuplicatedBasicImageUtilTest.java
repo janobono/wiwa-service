@@ -52,7 +52,7 @@ class PartDuplicatedBasicImageUtilTest {
                 part
         );
 
-        assertThat(images.size()).isEqualTo(3);
+        assertThat(images).hasSize(3);
 
         for (final OrderItemImageData item : images) {
             Files.write(Path.of("./target").resolve("duplicated_basic_%s.png".formatted(item.itemImage().name())),

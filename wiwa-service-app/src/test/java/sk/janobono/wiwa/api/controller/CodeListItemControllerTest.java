@@ -73,16 +73,16 @@ public class CodeListItemControllerTest extends BaseControllerTest {
         }
 
         final List<CodeListItemWebDto> searchCodeListItems = getCodeListItems(headers, 1L, true, null, "value-0", null, null, null, Pageable.unpaged()).stream().toList();
-        assertThat(searchCodeListItems.size()).isEqualTo(5);
+        assertThat(searchCodeListItems).hasSize(5);
 
         final List<CodeListItemWebDto> codeCodeListItems = getCodeListItems(headers, 1L, true, null, null, "code-0-0", null, null, Pageable.unpaged()).stream().toList();
-        assertThat(codeCodeListItems.size()).isEqualTo(1);
+        assertThat(codeCodeListItems).hasSize(1);
 
         final List<CodeListItemWebDto> valueCodeListItems = getCodeListItems(headers, 1L, true, null, null, null, "VALUE", null, Pageable.unpaged()).stream().toList();
-        assertThat(valueCodeListItems.size()).isEqualTo(5);
+        assertThat(valueCodeListItems).hasSize(5);
 
         final List<CodeListItemWebDto> treeCodeListItems = getCodeListItems(headers, 1L, null, null, null, null, null, "code-0-4", Pageable.unpaged()).stream().toList();
-        assertThat(treeCodeListItems.size()).isEqualTo(11);
+        assertThat(treeCodeListItems).hasSize(11);
 
         final CodeListItemWebDto changedCodeListItem = setCodeListItem(headers, 1L, new CodeListItemChangeWebDto(1L, null, "code-x", "value-x"));
         assertThat(changedCodeListItem.code()).isEqualTo("code-x");
@@ -90,7 +90,7 @@ public class CodeListItemControllerTest extends BaseControllerTest {
         assertThat(changedCodeListItem.leafNode()).isFalse();
 
         List<CodeListItemWebDto> rootCodeListItems = getCodeListItems(headers, 1L, true, null, null, null, null, null, Pageable.unpaged()).stream().toList();
-        assertThat(rootCodeListItems.size()).isEqualTo(5);
+        assertThat(rootCodeListItems).hasSize(5);
 
         final CodeListItemWebDto movedItem = rootCodeListItems.getFirst();
         moveCodeListItemDown(headers, movedItem.id());

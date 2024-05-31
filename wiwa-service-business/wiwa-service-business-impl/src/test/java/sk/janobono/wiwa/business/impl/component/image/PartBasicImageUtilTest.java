@@ -54,7 +54,7 @@ class PartBasicImageUtilTest {
                 part
         );
 
-        assertThat(images.size()).isEqualTo(2);
+        assertThat(images).hasSize(2);
 
         for (final OrderItemImageData item : images) {
             Files.write(Path.of("./target").resolve("basic_%s_%d.png".formatted(item.itemImage().name(), size)),

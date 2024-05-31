@@ -8,6 +8,10 @@ import java.util.List;
 
 public interface ApplicationPropertyService {
 
+    boolean getMaintenance();
+
+    boolean setMaintenance(boolean maintenance);
+
     ApplicationPropertiesData getApplicationProperties();
 
     String getTitle();

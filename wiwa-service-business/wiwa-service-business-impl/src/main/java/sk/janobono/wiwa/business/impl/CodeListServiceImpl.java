@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sk.janobono.wiwa.business.model.codelist.CodeListChangeData;
 import sk.janobono.wiwa.business.model.codelist.CodeListData;
 import sk.janobono.wiwa.business.model.codelist.CodeListSearchCriteriaData;
@@ -31,6 +32,7 @@ public class CodeListServiceImpl implements CodeListService {
         return toCodeListData(getCodeListDo(id));
     }
 
+    @Transactional
     @Override
     public CodeListData addCodeList(final CodeListChangeData data) {
         if (isCodeUsed(null, data)) {
@@ -44,6 +46,7 @@ public class CodeListServiceImpl implements CodeListService {
         );
     }
 
+    @Transactional
     @Override
     public CodeListData setCodeList(final long id, final CodeListChangeData data) {
         if (isCodeUsed(id, data)) {
@@ -57,6 +60,7 @@ public class CodeListServiceImpl implements CodeListService {
         return toCodeListData(codeListRepository.save(codeListDo));
     }
 
+    @Transactional
     @Override
     public void deleteCodeList(final long id) {
         if (!codeListRepository.existsById(id)) {

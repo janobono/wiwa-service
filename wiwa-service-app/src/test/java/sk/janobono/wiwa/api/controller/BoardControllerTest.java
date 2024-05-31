@@ -394,14 +394,14 @@ class BoardControllerTest extends BaseControllerTest {
         List<BoardCategoryItemWebDto> categoryItems = setBoardCodeListItems(headers, testBoardId,
                 List.of(new BoardCategoryItemChangeWebDto(codeList.getId(), codeListItem01.getId()))).categoryItems();
         List<BoardCategoryItemWebDto> savedCategoryItems = getBoard(headers, testBoardId).categoryItems();
-        assertThat(categoryItems.size()).isEqualTo(1);
+        assertThat(categoryItems).hasSize(1);
         assertThat(categoryItems.getFirst().id()).isEqualTo(codeListItem01.getId());
         assertThat(categoryItems.getFirst()).isEqualTo(savedCategoryItems.getFirst());
 
         categoryItems = setBoardCodeListItems(headers, testBoardId,
                 List.of(new BoardCategoryItemChangeWebDto(codeList.getId(), codeListItem02.getId()))).categoryItems();
         savedCategoryItems = getBoard(headers, testBoardId).categoryItems();
-        assertThat(categoryItems.size()).isEqualTo(1);
+        assertThat(categoryItems).hasSize(1);
         assertThat(categoryItems.getFirst().id()).isEqualTo(codeListItem02.getId());
         assertThat(categoryItems.getFirst()).isEqualTo(savedCategoryItems.getFirst());
 
@@ -409,7 +409,7 @@ class BoardControllerTest extends BaseControllerTest {
                 List.of(new BoardCategoryItemChangeWebDto(codeList.getId(), codeListItem01.getId()),
                         new BoardCategoryItemChangeWebDto(codeList.getId(), codeListItem02.getId()))).categoryItems();
         savedCategoryItems = getBoard(headers, testBoardId).categoryItems();
-        assertThat(categoryItems.size()).isEqualTo(2);
+        assertThat(categoryItems).hasSize(2);
         assertThat(categoryItems.get(0).id()).isEqualTo(savedCategoryItems.get(0).id());
         assertThat(categoryItems.get(1)).isEqualTo(savedCategoryItems.get(1));
 
@@ -453,8 +453,8 @@ class BoardControllerTest extends BaseControllerTest {
 
         categoryItems = setBoardCodeListItems(headers, testBoardId, Collections.emptyList()).categoryItems();
         savedCategoryItems = getBoard(headers, testBoardId).categoryItems();
-        assertThat(categoryItems.size()).isEqualTo(0);
-        assertThat(categoryItems.size()).isEqualTo(savedCategoryItems.size());
+        assertThat(categoryItems).isEmpty();
+        assertThat(savedCategoryItems).isEmpty();
 
         deleteBoardImage(headers, testBoardId);
 

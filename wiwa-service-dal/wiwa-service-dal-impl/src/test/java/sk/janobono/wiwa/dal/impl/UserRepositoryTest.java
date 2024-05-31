@@ -65,21 +65,21 @@ class UserRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(10);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(10);
-        assertThat(searchResult.getContent().size()).isEqualTo(10);
+        assertThat(searchResult.getContent()).hasSize(10);
         assertThat(searchResult.getContent().getFirst()).usingRecursiveComparison().isEqualTo(users.getFirst());
 
         searchResult = userRepository.findAll(UserSearchCriteriaDo.builder().build(), PageRequest.of(0, 3, Sort.Direction.ASC, "anything"));
         assertThat(searchResult.getTotalElements()).isEqualTo(10);
         assertThat(searchResult.getTotalPages()).isEqualTo(4);
         assertThat(searchResult.getSize()).isEqualTo(3);
-        assertThat(searchResult.getContent().size()).isEqualTo(3);
+        assertThat(searchResult.getContent()).hasSize(3);
         assertThat(searchResult.getContent().getFirst()).usingRecursiveComparison().isEqualTo(users.getFirst());
 
         searchResult = userRepository.findAll(UserSearchCriteriaDo.builder().build(), PageRequest.of(0, 3, Sort.Direction.DESC, "anything"));
         assertThat(searchResult.getTotalElements()).isEqualTo(10);
         assertThat(searchResult.getTotalPages()).isEqualTo(4);
         assertThat(searchResult.getSize()).isEqualTo(3);
-        assertThat(searchResult.getContent().size()).isEqualTo(3);
+        assertThat(searchResult.getContent()).hasSize(3);
         assertThat(searchResult.getContent().getFirst()).usingRecursiveComparison().isEqualTo(users.getLast());
 
         searchResult = userRepository.findAll(UserSearchCriteriaDo.builder()
@@ -88,7 +88,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(1);
-        assertThat(searchResult.getContent().size()).isEqualTo(1);
+        assertThat(searchResult.getContent()).hasSize(1);
 
         searchResult = userRepository.findAll(UserSearchCriteriaDo.builder()
                 .username("userName0")
@@ -96,7 +96,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(1);
-        assertThat(searchResult.getContent().size()).isEqualTo(1);
+        assertThat(searchResult.getContent()).hasSize(1);
 
         searchResult = userRepository.findAll(UserSearchCriteriaDo.builder()
                 .email("email0")
@@ -104,7 +104,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(1);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(1);
-        assertThat(searchResult.getContent().size()).isEqualTo(1);
+        assertThat(searchResult.getContent()).hasSize(1);
 
         for (final UserDo user : users) {
             userRepository.deleteById(user.getId());
@@ -114,6 +114,6 @@ class UserRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(0);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(0);
-        assertThat(searchResult.getContent().size()).isEqualTo(0);
+        assertThat(searchResult.getContent()).isEmpty();
     }
 }

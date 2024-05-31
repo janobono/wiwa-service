@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.business.model.edge.*;
@@ -54,6 +55,7 @@ public class EdgeServiceImpl implements EdgeService {
         return toEdgeData(getEdgeDo(id), applicationPropertyService.getVatRate());
     }
 
+    @Transactional
     @Override
     public EdgeData addEdge(final EdgeChangeData data) {
         if (isCodeUsed(null, data.code())) {
@@ -72,6 +74,7 @@ public class EdgeServiceImpl implements EdgeService {
         return toEdgeData(edgeDo, applicationPropertyService.getVatRate());
     }
 
+    @Transactional
     @Override
     public EdgeData setEdge(final long id, final EdgeChangeData data) {
         final EdgeDo edgeDo = getEdgeDo(id);
@@ -90,12 +93,14 @@ public class EdgeServiceImpl implements EdgeService {
         return toEdgeData(edgeRepository.save(edgeDo), applicationPropertyService.getVatRate());
     }
 
+    @Transactional
     @Override
     public void deleteEdge(final long id) {
         getEdgeDo(id);
         edgeRepository.deleteById(id);
     }
 
+    @Transactional
     @Override
     public void setEdgeImage(final long edgeId, final MultipartFile multipartFile) {
         if (!edgeRepository.existsById(edgeId)) {
@@ -119,6 +124,7 @@ public class EdgeServiceImpl implements EdgeService {
                 .build());
     }
 
+    @Transactional
     @Override
     public void deleteEdgeImage(final long edgeId) {
         if (!edgeRepository.existsById(edgeId)) {
@@ -128,6 +134,7 @@ public class EdgeServiceImpl implements EdgeService {
         edgeImageRepository.deleteByEdgeId(edgeId);
     }
 
+    @Transactional
     @Override
     public EdgeData setEdgeCategoryItems(final long edgeId, final List<EdgeCategoryItemChangeData> categoryItems) {
         final EdgeDo edgeDo = getEdgeDo(edgeId);

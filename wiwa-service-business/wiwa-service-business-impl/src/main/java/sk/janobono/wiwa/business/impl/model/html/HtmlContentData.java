@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.business.impl.model.pdf;
+package sk.janobono.wiwa.business.impl.model.html;
 
 import lombok.Builder;
 import sk.janobono.wiwa.business.model.order.OrderContactData;
@@ -6,7 +6,7 @@ import sk.janobono.wiwa.business.model.order.OrderContactData;
 import java.util.List;
 
 @Builder
-public record PdfContentData(
+public record HtmlContentData(
         String title,
         String creator,
         String created,
@@ -14,7 +14,7 @@ public record PdfContentData(
         String deliveryDate,
         String packageType,
         OrderContactData orderContact,
-        PdfSummaryData summary,
-        List<PdfItemData> items
+        HtmlSummaryData summary,
+        List<HtmlItemData> items
 ) {
 }

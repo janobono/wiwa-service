@@ -89,7 +89,7 @@ class PartDuplicatedFrameUtilTest {
         assertThat(boards.get(BoardPosition.A2)).isEqualTo(3L);
         assertThat(boards.get(BoardPosition.B1)).isEqualTo(4L);
         assertThat(boards.get(BoardPosition.B2)).isEqualTo(5L);
-        assertThat(boards.size()).isEqualTo(5);
+        assertThat(boards).hasSize(5);
     }
 
     @Test
@@ -113,7 +113,7 @@ class PartDuplicatedFrameUtilTest {
         assertThat(edges.get(EdgePosition.B1I)).isEqualTo(6L);
         assertThat(edges.get(EdgePosition.B2)).isEqualTo(7L);
         assertThat(edges.get(EdgePosition.B2I)).isEqualTo(8L);
-        assertThat(edges.size()).isEqualTo(8);
+        assertThat(edges).hasSize(8);
     }
 
     @Test
@@ -129,7 +129,7 @@ class PartDuplicatedFrameUtilTest {
         assertThat(corners.get(CornerPosition.A1B2).dimensions()).isEqualTo(new DimensionsData(BigDecimal.ONE, BigDecimal.ONE));
         assertThat(corners.get(CornerPosition.A2B1).dimensions()).isEqualTo(new DimensionsData(BigDecimal.TWO, BigDecimal.TWO));
         assertThat(corners.get(CornerPosition.A2B2).dimensions()).isEqualTo(new DimensionsData(BigDecimal.TEN, BigDecimal.TEN));
-        assertThat(corners.size()).isEqualTo(4);
+        assertThat(corners).hasSize(4);
     }
 
     @Test
@@ -176,7 +176,7 @@ class PartDuplicatedFrameUtilTest {
         final PartDuplicatedFrameData part = objectMapper.readValue(getClass().getResource("/part_duplicated_frame.json"), PartDuplicatedFrameData.class);
         final Map<BoardPosition, BigDecimal> areaMap = partDuplicatedFrameUtil.calculateBoardArea(part, manufactureProperties);
 
-        assertThat(areaMap.size()).isEqualTo(5);
+        assertThat(areaMap).hasSize(5);
         assertThat(areaMap.containsKey(BoardPosition.TOP)).isTrue();
         assertThat(areaMap.get(BoardPosition.TOP)).isEqualTo(new BigDecimal("0.270"));
         assertThat(areaMap.containsKey(BoardPosition.A1)).isTrue();
@@ -194,7 +194,7 @@ class PartDuplicatedFrameUtilTest {
         final PartDuplicatedFrameData part = objectMapper.readValue(getClass().getResource("/part_duplicated_frame_vertical.json"), PartDuplicatedFrameData.class);
         final Map<BoardPosition, BigDecimal> areaMap = partDuplicatedFrameUtil.calculateBoardArea(part, manufactureProperties);
 
-        assertThat(areaMap.size()).isEqualTo(5);
+        assertThat(areaMap).hasSize(5);
         assertThat(areaMap.containsKey(BoardPosition.TOP)).isTrue();
         assertThat(areaMap.get(BoardPosition.TOP)).isEqualTo(new BigDecimal("0.270"));
         assertThat(areaMap.containsKey(BoardPosition.A1)).isTrue();
@@ -213,7 +213,7 @@ class PartDuplicatedFrameUtilTest {
 
         final Map<BigDecimal, BigDecimal> cutLengthMap = partDuplicatedFrameUtil.calculateCutLength(part, thicknessMap, manufactureProperties);
 
-        assertThat(cutLengthMap.size()).isEqualTo(3);
+        assertThat(cutLengthMap).hasSize(3);
         assertThat(cutLengthMap.containsKey(BigDecimal.valueOf(10))).isTrue();
         assertThat(cutLengthMap.get(BigDecimal.valueOf(10))).isEqualTo(new BigDecimal("2.080"));
         assertThat(cutLengthMap.containsKey(BigDecimal.valueOf(20))).isTrue();
@@ -227,7 +227,7 @@ class PartDuplicatedFrameUtilTest {
         final PartDuplicatedFrameData part = objectMapper.readValue(getClass().getResource("/part_duplicated_frame.json"), PartDuplicatedFrameData.class);
         final Map<Long, EdgeLengthData> edgeLengthMap = partDuplicatedFrameUtil.calculateEdgeLength(part, manufactureProperties);
 
-        assertThat(edgeLengthMap.size()).isEqualTo(2);
+        assertThat(edgeLengthMap).hasSize(2);
         assertThat(edgeLengthMap.containsKey(1L)).isTrue();
         assertThat(edgeLengthMap.get(1L)).isEqualTo(new EdgeLengthData(new BigDecimal("1.600"), new BigDecimal("1.760")));
 

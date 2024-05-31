@@ -12,7 +12,10 @@ import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Base64;
 
@@ -26,14 +29,10 @@ public class ImageUtil {
     }
 
     public byte[] getFileData(final MultipartFile file) {
-        try (
-                final InputStream is = new BufferedInputStream(file.getInputStream());
-                final ByteArrayOutputStream os = new ByteArrayOutputStream()
-        ) {
-            read(is, os);
-            return os.toByteArray();
+        try {
+            return file.getBytes();
         } catch (final Exception e) {
-            throw new RuntimeException("Local storage exception.", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -239,17 +238,6 @@ public class ImageUtil {
             }
             imageWriter.setOutput(ios);
             imageWriter.write(metadata, new IIOImage(bufferedImage, null, metadata), imageWriteParam);
-        }
-    }
-
-    private void read(final InputStream is, final ByteArrayOutputStream os) throws IOException {
-        final byte[] buffer = new byte[1024];
-        int bytesRead = 0;
-        while (bytesRead != -1) {
-            bytesRead = is.read(buffer);
-            if (bytesRead > 0) {
-                os.write(buffer, 0, bytesRead);
-            }
         }
     }
 }

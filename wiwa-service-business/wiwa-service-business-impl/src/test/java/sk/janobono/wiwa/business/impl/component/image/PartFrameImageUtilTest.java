@@ -54,7 +54,7 @@ class PartFrameImageUtilTest {
                 part
         );
 
-        assertThat(images.size()).isEqualTo(5);
+        assertThat(images).hasSize(5);
 
         for (final OrderItemImageData item : images) {
             Files.write(Path.of("./target").resolve("%s_%s.png".formatted(name, item.itemImage().name())),

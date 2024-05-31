@@ -94,7 +94,7 @@ class CodeListItemRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(20);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(20);
-        assertThat(searchResult.getContent().size()).isEqualTo(20);
+        assertThat(searchResult.getContent()).hasSize(20);
 
         searchResult = codeListItemRepository.findAll(
                 CodeListItemSearchCriteriaDo.builder()
@@ -106,7 +106,7 @@ class CodeListItemRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(10);
         assertThat(searchResult.getTotalPages()).isEqualTo(2);
         assertThat(searchResult.getSize()).isEqualTo(5);
-        assertThat(searchResult.getContent().size()).isEqualTo(5);
+        assertThat(searchResult.getContent()).hasSize(5);
         assertThat(searchResult.getContent().getFirst()).isEqualTo(codeListItems1.getFirst());
 
         searchResult = codeListItemRepository.findAll(
@@ -119,7 +119,7 @@ class CodeListItemRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(0);
         assertThat(searchResult.getTotalPages()).isEqualTo(0);
         assertThat(searchResult.getSize()).isEqualTo(5);
-        assertThat(searchResult.getContent().size()).isEqualTo(0);
+        assertThat(searchResult.getContent()).isEmpty();
 
         searchResult = codeListItemRepository.findAll(
                 CodeListItemSearchCriteriaDo.builder()
@@ -130,7 +130,7 @@ class CodeListItemRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(10);
         assertThat(searchResult.getTotalPages()).isEqualTo(2);
         assertThat(searchResult.getSize()).isEqualTo(5);
-        assertThat(searchResult.getContent().size()).isEqualTo(5);
+        assertThat(searchResult.getContent()).hasSize(5);
         assertThat(searchResult.getContent().getFirst()).isEqualTo(codeListItems1.getLast());
 
         int i = 0;
@@ -174,6 +174,6 @@ class CodeListItemRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(0);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(0);
-        assertThat(searchResult.getContent().size()).isEqualTo(0);
+        assertThat(searchResult.getContent()).isEmpty();
     }
 }

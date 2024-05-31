@@ -95,7 +95,7 @@ class BoardRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(10);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(10);
-        assertThat(searchResult.getContent().size()).isEqualTo(10);
+        assertThat(searchResult.getContent()).hasSize(10);
         assertThat(searchResult.getContent().getFirst()).isEqualTo(boards.getFirst());
 
         searchResult = boardRepository.findAll(
@@ -104,7 +104,7 @@ class BoardRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(10);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(10);
-        assertThat(searchResult.getContent().size()).isEqualTo(10);
+        assertThat(searchResult.getContent()).hasSize(10);
         assertThat(searchResult.getContent().getFirst()).isEqualTo(boards.getLast());
 
         for (final BoardDo board : boards) {
@@ -121,6 +121,6 @@ class BoardRepositoryTest extends BaseRepositoryTest {
         assertThat(searchResult.getTotalElements()).isEqualTo(0);
         assertThat(searchResult.getTotalPages()).isEqualTo(1);
         assertThat(searchResult.getSize()).isEqualTo(0);
-        assertThat(searchResult.getContent().size()).isEqualTo(0);
+        assertThat(searchResult.getContent()).isEmpty();
     }
 }

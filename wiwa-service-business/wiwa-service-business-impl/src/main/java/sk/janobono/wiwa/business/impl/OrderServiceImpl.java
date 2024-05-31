@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sk.janobono.wiwa.business.impl.component.DataUtil;
 import sk.janobono.wiwa.business.impl.component.MaterialUtil;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
@@ -41,6 +42,7 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.InvalidParameterException;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -73,11 +75,10 @@ public class OrderServiceImpl implements OrderService {
 
     private final MailUtilService mailUtilService;
     private final OrderCsvUtilService orderCsvUtilService;
-    private final OrderHtmlUtilService orderPdfUtilService;
+    private final OrderHtmlUtilService orderHtmlUtilService;
     private final UserUtilService userUtilService;
 
     private final ApplicationPropertyService applicationPropertyService;
-    private final OrderHtmlUtilService orderHtmlUtilService;
 
     @Override
     public Page<OrderData> getOrders(final OrderSearchCriteriaData criteria, final Pageable pageable) {
@@ -100,6 +101,7 @@ public class OrderServiceImpl implements OrderService {
                 .build());
     }
 
+    @Transactional
     @Override
     public OrderData setOrderContact(final long id, final OrderContactData orderContact) {
         final OrderDo order = getOrderDo(id);
@@ -123,6 +125,7 @@ public class OrderServiceImpl implements OrderService {
         return toOrderData(getOrderViewDo(id), applicationPropertyService.getVatRate());
     }
 
+    @Transactional
     @Override
     public OrderData addOrder(final long userId) {
         final OrderDo orderDo = orderRepository.insert(OrderDo.builder()
@@ -142,6 +145,7 @@ public class OrderServiceImpl implements OrderService {
         return getOrder(orderDo.getId());
     }
 
+    @Transactional
     @Override
     public void deleteOrder(final long id) {
         orderRepository.deleteById(id);
@@ -153,6 +157,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> WiwaException.ORDER_NOT_FOUND.exception("Order with id {0} not found", id));
     }
 
+    @Transactional
     @Override
     public OrderData recountOrder(final long id, final Long modifierId) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
@@ -164,7 +169,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public String getHtml(final long id) {
-        return orderPdfUtilService.generateHtml(getOrder(id));
+        return orderHtmlUtilService.generateHtml(getOrder(id));
     }
 
     @Override
@@ -173,6 +178,7 @@ public class OrderServiceImpl implements OrderService {
         return orderCsvUtilService.generateCsv(orderViewDo);
     }
 
+    @Transactional
     @Override
     public OrderData sendOrder(final long id, final long modifierId, final SendOrderData sendOrder) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
@@ -221,9 +227,9 @@ public class OrderServiceImpl implements OrderService {
                 .from(commonConfigProperties.mail())
                 .recipients(getEmails(owner, orderContact))
                 .cc(List.of(commonConfigProperties.ordersMail()))
-                .subject(orderSendMail.subject().formatted(orderViewDo.orderNumber()))
+                .subject(MessageFormat.format(orderSendMail.subject(), orderViewDo.orderNumber()))
                 .content(MailContentData.builder()
-                        .title(orderSendMail.title().formatted(orderViewDo.orderNumber()))
+                        .title(MessageFormat.format(orderSendMail.title(), orderViewDo.orderNumber()))
                         .lines(List.of(orderSendMail.message()))
                         .mailLink(MailLinkData.builder()
                                 .href(getOrderUrl(id))
@@ -231,7 +237,7 @@ public class OrderServiceImpl implements OrderService {
                                 .build())
                         .build())
                 .attachments(Map.of(
-                        orderSendMail.attachment().formatted(orderViewDo.orderNumber()),
+                        MessageFormat.format(orderSendMail.attachment(), orderViewDo.orderNumber()),
                         toHtmlFile(orderHtmlUtilService.generateHtml(order))
                 ))
                 .build());
@@ -239,6 +245,7 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
+    @Transactional
     @Override
     public OrderData setOrderStatus(final long id, final long modifierId, final OrderStatusChangeData orderStatusChange) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
@@ -274,37 +281,37 @@ public class OrderServiceImpl implements OrderService {
         if (orderStatusChange.notifyUser()) {
             switch (orderStatusChange.newStatus()) {
                 case IN_PRODUCTION:
-                    mailDataBuilder.subject(orderStatusMail.productionSubject().formatted(orderViewDo.orderNumber()));
+                    mailDataBuilder.subject(MessageFormat.format(orderStatusMail.productionSubject(), orderViewDo.orderNumber()));
                     mailDataBuilder.content(MailContentData.builder()
-                            .title(orderStatusMail.productionTitle().formatted(orderViewDo.orderNumber()))
+                            .title(MessageFormat.format(orderStatusMail.productionTitle(), orderViewDo.orderNumber()))
                             .lines(List.of(orderStatusMail.productionMessage()))
                             .mailLink(mailLink)
                             .build());
                     break;
                 case READY:
-                    mailDataBuilder.subject(orderStatusMail.readySubject().formatted(orderViewDo.orderNumber()));
+                    mailDataBuilder.subject(MessageFormat.format(orderStatusMail.readySubject(), orderViewDo.orderNumber()));
                     mailDataBuilder.content(MailContentData.builder()
-                            .title(orderStatusMail.readyTitle().formatted(orderViewDo.orderNumber()))
+                            .title(MessageFormat.format(orderStatusMail.readyTitle(), orderViewDo.orderNumber()))
                             .lines(List.of(orderStatusMail.readyMessage()))
                             .mailLink(mailLink)
                             .build());
                     mailDataBuilder.attachments(Map.of(
-                            orderStatusMail.attachment().formatted(orderViewDo.orderNumber()),
+                            MessageFormat.format(orderStatusMail.attachment(), orderViewDo.orderNumber()),
                             toHtmlFile(orderHtmlUtilService.generateHtml(order))
                     ));
                     break;
                 case FINISHED:
-                    mailDataBuilder.subject(orderStatusMail.finishedSubject().formatted(orderViewDo.orderNumber()));
+                    mailDataBuilder.subject(MessageFormat.format(orderStatusMail.finishedSubject(), orderViewDo.orderNumber()));
                     mailDataBuilder.content(MailContentData.builder()
-                            .title(orderStatusMail.finishedTitle().formatted(orderViewDo.orderNumber()))
+                            .title(MessageFormat.format(orderStatusMail.finishedTitle(), orderViewDo.orderNumber()))
                             .lines(List.of(orderStatusMail.finishedMessage()))
                             .mailLink(mailLink)
                             .build());
                     break;
                 case CANCELLED:
-                    mailDataBuilder.subject(orderStatusMail.cancelledSubject().formatted(orderViewDo.orderNumber()));
+                    mailDataBuilder.subject(MessageFormat.format(orderStatusMail.cancelledSubject(), orderViewDo.orderNumber()));
                     mailDataBuilder.content(MailContentData.builder()
-                            .title(orderStatusMail.cancelledTitle().formatted(orderViewDo.orderNumber()))
+                            .title(MessageFormat.format(orderStatusMail.cancelledTitle(), orderViewDo.orderNumber()))
                             .lines(List.of(orderStatusMail.cancelledMessage()))
                             .mailLink(mailLink)
                             .build());
@@ -316,6 +323,7 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
+    @Transactional
     @Override
     public OrderData addComment(final long id, final long creatorId, final OrderCommentChangeData orderCommentChange) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
@@ -334,9 +342,9 @@ public class OrderServiceImpl implements OrderService {
                 .from(commonConfigProperties.mail())
                 .recipients(getEmails(owner, orderContactRepository.findByOrderId(id).orElse(null)))
                 .cc(List.of(commonConfigProperties.ordersMail()))
-                .subject(orderCommentMail.subject().formatted(orderViewDo.orderNumber()))
+                .subject(MessageFormat.format(orderCommentMail.subject(), orderViewDo.orderNumber()))
                 .content(MailContentData.builder()
-                        .title(orderCommentMail.title().formatted(orderViewDo.orderNumber()))
+                        .title(MessageFormat.format(orderCommentMail.title(), orderViewDo.orderNumber()))
                         .lines(List.of(
                                 orderCommentMail.message(),
                                 orderCommentChange.comment()

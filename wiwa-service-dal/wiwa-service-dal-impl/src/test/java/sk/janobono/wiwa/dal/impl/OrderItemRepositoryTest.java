@@ -78,7 +78,7 @@ class OrderItemRepositoryTest extends BaseRepositoryTest {
         assertThat(orderItemRepository.countByOrderId(order.getId())).isEqualTo(10);
 
         List<OrderItemDo> items2 = orderItemRepository.findAllByOrderId(order.getId());
-        assertThat(items.size()).isEqualTo(items2.size());
+        assertThat(items).hasSize(items2.size());
         assertThat(items.getFirst()).usingRecursiveComparison().isEqualTo(items2.getFirst());
         assertThat(items.getLast()).usingRecursiveComparison().isEqualTo(items2.getLast());
 
@@ -87,7 +87,7 @@ class OrderItemRepositoryTest extends BaseRepositoryTest {
                 new OderItemSortNumDo(items.getFirst().getId(), 9)
         ));
         items2 = orderItemRepository.findAllByOrderId(order.getId());
-        assertThat(items.size()).isEqualTo(items2.size());
+        assertThat(items).hasSize(items2.size());
         assertThat(items.getFirst().getId()).isEqualTo(items2.getLast().getId());
         assertThat(items.getLast().getId()).isEqualTo(items2.getFirst().getId());
 

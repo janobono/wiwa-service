@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.business.impl.mapper.ApplicationImageDataMapper;
 import sk.janobono.wiwa.business.model.application.ApplicationImageData;
@@ -65,7 +66,7 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
                         .data(boardImageDo.getData())
                         .build())
                 .orElseGet(() -> new ApplicationImageData(
-                        getFileName("board%d".formatted(boardId), MediaType.IMAGE_PNG_VALUE),
+                        getFileName(name, MediaType.IMAGE_PNG_VALUE),
                         MediaType.IMAGE_PNG_VALUE,
                         imageUtil.generateMessageImage(null),
                         imageUtil.generateMessageImage(null)
@@ -89,6 +90,7 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
                 ));
     }
 
+    @Transactional
     @Override
     public ApplicationImageInfoData setApplicationImage(final MultipartFile multipartFile) {
         final String fileName = scDf.toStripAndLowerCase(multipartFile.getOriginalFilename());
@@ -119,6 +121,7 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
         return applicationImageDataMapper.mapToInfoData(applicationImageRepository.save(applicationImageDo));
     }
 
+    @Transactional
     @Override
     public void deleteApplicationImage(final String fileName) {
         applicationImageRepository.deleteById(fileName);
@@ -129,6 +132,7 @@ public class ApplicationImageServiceImpl implements ApplicationImageService {
         return getApplicationImage("logo.png");
     }
 
+    @Transactional
     @Override
     public ApplicationImageInfoData setLogo(final MultipartFile multipartFile) {
         final String fileName = "logo.png";

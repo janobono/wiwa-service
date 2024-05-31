@@ -82,7 +82,7 @@ class PartDuplicatedBasicUtilTest {
                 .boards();
         assertThat(boards.get(BoardPosition.TOP)).isEqualTo(1L);
         assertThat(boards.get(BoardPosition.BOTTOM)).isEqualTo(2L);
-        assertThat(boards.size()).isEqualTo(2);
+        assertThat(boards).hasSize(2);
     }
 
     @Test
@@ -98,7 +98,7 @@ class PartDuplicatedBasicUtilTest {
         assertThat(edges.get(EdgePosition.A2)).isEqualTo(2L);
         assertThat(edges.get(EdgePosition.B1)).isEqualTo(3L);
         assertThat(edges.get(EdgePosition.B2)).isEqualTo(4L);
-        assertThat(edges.size()).isEqualTo(4);
+        assertThat(edges).hasSize(4);
     }
 
     @Test
@@ -114,7 +114,7 @@ class PartDuplicatedBasicUtilTest {
         assertThat(corners.get(CornerPosition.A1B2).dimensions()).isEqualTo(new DimensionsData(BigDecimal.ONE, BigDecimal.ONE));
         assertThat(corners.get(CornerPosition.A2B1).dimensions()).isEqualTo(new DimensionsData(BigDecimal.TWO, BigDecimal.TWO));
         assertThat(corners.get(CornerPosition.A2B2).dimensions()).isEqualTo(new DimensionsData(BigDecimal.TEN, BigDecimal.TEN));
-        assertThat(corners.size()).isEqualTo(4);
+        assertThat(corners).hasSize(4);
     }
 
     @Test
@@ -162,7 +162,7 @@ class PartDuplicatedBasicUtilTest {
 
         final Map<BoardPosition, BigDecimal> areaMap = partDuplicatedBasicUtil.calculateBoardArea(part, manufactureProperties);
 
-        assertThat(areaMap.size()).isEqualTo(2);
+        assertThat(areaMap).hasSize(2);
         assertThat(areaMap.containsKey(BoardPosition.TOP)).isTrue();
         assertThat(areaMap.get(BoardPosition.TOP)).isEqualTo(new BigDecimal("0.270"));
         assertThat(areaMap.containsKey(BoardPosition.BOTTOM)).isTrue();
@@ -175,7 +175,7 @@ class PartDuplicatedBasicUtilTest {
 
         final Map<BigDecimal, BigDecimal> cutLengthMap = partDuplicatedBasicUtil.calculateCutLength(part, thicknessMap, manufactureProperties);
 
-        assertThat(cutLengthMap.size()).isEqualTo(3);
+        assertThat(cutLengthMap).hasSize(3);
         assertThat(cutLengthMap.containsKey(BigDecimal.valueOf(10))).isTrue();
         assertThat(cutLengthMap.get(BigDecimal.valueOf(10))).isEqualTo(new BigDecimal("2.080"));
         assertThat(cutLengthMap.containsKey(BigDecimal.valueOf(20))).isTrue();
@@ -190,7 +190,7 @@ class PartDuplicatedBasicUtilTest {
 
         final Map<Long, EdgeLengthData> edgeLengthMap = partDuplicatedBasicUtil.calculateEdgeLength(part, manufactureProperties);
 
-        assertThat(edgeLengthMap.size()).isEqualTo(1);
+        assertThat(edgeLengthMap).hasSize(1);
         assertThat(edgeLengthMap.containsKey(3L)).isTrue();
         assertThat(edgeLengthMap.get(3L)).isEqualTo(new EdgeLengthData(new BigDecimal("2.000"), new BigDecimal("2.160")));
     }

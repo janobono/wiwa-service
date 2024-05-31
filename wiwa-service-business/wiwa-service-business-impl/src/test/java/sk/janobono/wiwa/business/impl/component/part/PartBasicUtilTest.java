@@ -80,7 +80,7 @@ class PartBasicUtilTest {
                 .build()
                 .boards();
         assertThat(boards.get(BoardPosition.TOP)).isEqualTo(1L);
-        assertThat(boards.size()).isEqualTo(1);
+        assertThat(boards).hasSize(1);
     }
 
     @Test
@@ -96,7 +96,7 @@ class PartBasicUtilTest {
         assertThat(edges.get(EdgePosition.A2)).isEqualTo(2L);
         assertThat(edges.get(EdgePosition.B1)).isEqualTo(3L);
         assertThat(edges.get(EdgePosition.B2)).isEqualTo(4L);
-        assertThat(edges.size()).isEqualTo(4);
+        assertThat(edges).hasSize(4);
     }
 
     @Test
@@ -112,7 +112,7 @@ class PartBasicUtilTest {
         assertThat(corners.get(CornerPosition.A1B2).dimensions()).isEqualTo(new DimensionsData(BigDecimal.ONE, BigDecimal.ONE));
         assertThat(corners.get(CornerPosition.A2B1).dimensions()).isEqualTo(new DimensionsData(BigDecimal.TWO, BigDecimal.TWO));
         assertThat(corners.get(CornerPosition.A2B2).dimensions()).isEqualTo(new DimensionsData(BigDecimal.TEN, BigDecimal.TEN));
-        assertThat(corners.size()).isEqualTo(4);
+        assertThat(corners).hasSize(4);
     }
 
     @Test
@@ -171,7 +171,7 @@ class PartBasicUtilTest {
 
         final Map<BoardPosition, BigDecimal> areaMap = partBasicUtil.calculateBoardArea(part, manufactureProperties);
 
-        assertThat(areaMap.size()).isEqualTo(1);
+        assertThat(areaMap).hasSize(1);
         assertThat(areaMap.containsKey(BoardPosition.TOP)).isTrue();
         assertThat(areaMap.get(BoardPosition.TOP)).isEqualTo(new BigDecimal("0.250"));
     }
@@ -182,7 +182,7 @@ class PartBasicUtilTest {
 
         final Map<BigDecimal, BigDecimal> cutLengthMap = partBasicUtil.calculateCutLength(part, thicknessMap, manufactureProperties);
 
-        assertThat(cutLengthMap.size()).isEqualTo(1);
+        assertThat(cutLengthMap).hasSize(1);
         assertThat(cutLengthMap.containsKey(BigDecimal.valueOf(10))).isTrue();
         assertThat(cutLengthMap.get(BigDecimal.valueOf(10))).isEqualTo(new BigDecimal("2.300"));
     }
@@ -193,7 +193,7 @@ class PartBasicUtilTest {
 
         final Map<Long, EdgeLengthData> edgeLengthMap = partBasicUtil.calculateEdgeLength(part, manufactureProperties);
 
-        assertThat(edgeLengthMap.size()).isEqualTo(5);
+        assertThat(edgeLengthMap).hasSize(5);
         assertThat(edgeLengthMap.containsKey(1L)).isTrue();
         assertThat(edgeLengthMap.get(1L)).isEqualTo(new EdgeLengthData(new BigDecimal("2.000"), new BigDecimal("2.160")));
         assertThat(edgeLengthMap.containsKey(2L)).isTrue();

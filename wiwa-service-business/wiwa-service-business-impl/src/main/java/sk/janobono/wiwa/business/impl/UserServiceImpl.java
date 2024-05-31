@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sk.janobono.wiwa.business.impl.util.UserUtilService;
 import sk.janobono.wiwa.business.model.user.UserCreateData;
 import sk.janobono.wiwa.business.model.user.UserProfileData;
@@ -43,6 +44,7 @@ public class UserServiceImpl implements UserService {
         return userUtilService.mapToUser(userUtilService.getUserDo(id));
     }
 
+    @Transactional
     @Override
     public User addUser(final UserCreateData data) {
         if (userRepository.existsByUsername(scDf.toStripAndLowerCase(data.username()))) {
@@ -71,6 +73,7 @@ public class UserServiceImpl implements UserService {
         return userUtilService.mapToUser(userDo);
     }
 
+    @Transactional
     @Override
     public User setUser(final long id, final UserProfileData userProfile) {
         final UserDo userDo = userUtilService.getUserDo(id);
@@ -84,6 +87,7 @@ public class UserServiceImpl implements UserService {
         return userUtilService.mapToUser(userRepository.save(userDo));
     }
 
+    @Transactional
     @Override
     public User setAuthorities(final long id, final List<Authority> authorities) {
         final UserDo userDo = userUtilService.getUserDo(id);
@@ -93,6 +97,7 @@ public class UserServiceImpl implements UserService {
         return userUtilService.mapToUser(userDo);
     }
 
+    @Transactional
     @Override
     public User setConfirmed(final long id, final boolean confirmed) {
         final UserDo userDo = userUtilService.getUserDo(id);
@@ -102,6 +107,7 @@ public class UserServiceImpl implements UserService {
         return userUtilService.mapToUser(userRepository.save(userDo));
     }
 
+    @Transactional
     @Override
     public User setEnabled(final long id, final boolean enabled) {
         final UserDo userDo = userUtilService.getUserDo(id);
@@ -111,6 +117,7 @@ public class UserServiceImpl implements UserService {
         return userUtilService.mapToUser(userRepository.save(userDo));
     }
 
+    @Transactional
     @Override
     public void deleteUser(final long id) {
         if (!userRepository.existsById(id)) {

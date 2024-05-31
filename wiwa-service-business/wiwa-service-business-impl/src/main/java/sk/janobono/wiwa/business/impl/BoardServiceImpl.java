@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
 import sk.janobono.wiwa.business.model.board.*;
@@ -54,6 +55,7 @@ public class BoardServiceImpl implements BoardService {
         return toBoardData(getBoardDo(id), applicationPropertyService.getVatRate());
     }
 
+    @Transactional
     @Override
     public BoardData addBoard(final BoardChangeData data) {
         if (isCodeUsed(null, data.code())) {
@@ -76,6 +78,7 @@ public class BoardServiceImpl implements BoardService {
         return toBoardData(boardDo, applicationPropertyService.getVatRate());
     }
 
+    @Transactional
     @Override
     public BoardData setBoard(final long id, final BoardChangeData data) {
         final BoardDo boardDo = getBoardDo(id);
@@ -98,12 +101,14 @@ public class BoardServiceImpl implements BoardService {
         return toBoardData(boardRepository.save(boardDo), applicationPropertyService.getVatRate());
     }
 
+    @Transactional
     @Override
     public void deleteBoard(final long id) {
         getBoardDo(id);
         boardRepository.deleteById(id);
     }
 
+    @Transactional
     @Override
     public void setBoardImage(final long boardId, final MultipartFile multipartFile) {
         if (!boardRepository.existsById(boardId)) {
@@ -127,6 +132,7 @@ public class BoardServiceImpl implements BoardService {
                 .build());
     }
 
+    @Transactional
     @Override
     public void deleteBoardImage(final long boardId) {
         if (!boardRepository.existsById(boardId)) {
@@ -135,6 +141,7 @@ public class BoardServiceImpl implements BoardService {
         boardImageRepository.deleteByBoardId(boardId);
     }
 
+    @Transactional
     @Override
     public BoardData setBoardCategoryItems(final long boardId, final List<BoardCategoryItemChangeData> categoryItems) {
         final BoardDo boardDo = getBoardDo(boardId);

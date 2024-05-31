@@ -1,11 +1,11 @@
-package sk.janobono.wiwa.business.impl.model.pdf;
+package sk.janobono.wiwa.business.impl.model.html;
 
 import lombok.Builder;
 
 import java.util.List;
 
 @Builder
-public record PdfItemData(
+public record HtmlItemData(
         String partNum,
         String name,
         String dimX,
@@ -13,8 +13,8 @@ public record PdfItemData(
         String quantity,
         String description,
         String image,
-        List<PdfItemBoardData> boards,
-        List<PdfItemEdgeData> edges,
-        List<PdfItemCornerData> corners
+        List<HtmlItemBoardData> boards,
+        List<HtmlItemEdgeData> edges,
+        List<HtmlItemCornerData> corners
 ) {
 }

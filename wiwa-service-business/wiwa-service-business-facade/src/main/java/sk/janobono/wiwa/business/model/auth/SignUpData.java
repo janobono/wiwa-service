@@ -1,5 +1,8 @@
 package sk.janobono.wiwa.business.model.auth;
 
+import lombok.Builder;
+
+@Builder
 public record SignUpData(
         String username,
         String password,

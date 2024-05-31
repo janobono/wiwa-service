@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sk.janobono.wiwa.business.impl.model.mail.MailContentData;
 import sk.janobono.wiwa.business.impl.model.mail.MailData;
 import sk.janobono.wiwa.business.impl.model.mail.MailLinkData;
@@ -28,6 +29,7 @@ import sk.janobono.wiwa.model.User;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final ApplicationPropertyService applicationPropertyService;
 
+    @Transactional
     @Override
     public AuthenticationResponseData confirm(final ConfirmationData confirmation) {
         final Map<String, String> data = verificationToken.parseToken(confirmation.token());
@@ -71,6 +74,7 @@ public class AuthServiceImpl implements AuthService {
         return createAuthenticationResponse(userDo);
     }
 
+    @Transactional
     @Override
     public AuthenticationResponseData changeEmail(final User user, final ChangeEmailData changeEmail) {
         captcha.checkTokenValid(changeEmail.captchaText(), changeEmail.captchaToken());
@@ -84,6 +88,7 @@ public class AuthServiceImpl implements AuthService {
         return createAuthenticationResponse(userRepository.save(userDo));
     }
 
+    @Transactional
     @Override
     public AuthenticationResponseData changePassword(final User user, final ChangePasswordData changePassword) {
         captcha.checkTokenValid(changePassword.captchaText(), changePassword.captchaToken());
@@ -94,6 +99,7 @@ public class AuthServiceImpl implements AuthService {
         return createAuthenticationResponse(userRepository.save(userDo));
     }
 
+    @Transactional
     @Override
     public AuthenticationResponseData changeUserDetails(final User user, final ChangeUserDetailsData changeUserDetails) {
         captcha.checkTokenValid(changeUserDetails.captchaText(), changeUserDetails.captchaToken());
@@ -141,6 +147,7 @@ public class AuthServiceImpl implements AuthService {
         return createAuthenticationResponse(userDo);
     }
 
+    @Transactional
     @Override
     public AuthenticationResponseData signUp(final SignUpData signUp) {
         captcha.checkTokenValid(signUp.captchaText(), signUp.captchaToken());
@@ -239,10 +246,13 @@ public class AuthServiceImpl implements AuthService {
                 .content(MailContentData.builder()
                         .title(resetPasswordMail.title())
                         .lines(List.of(
-                                resetPasswordMail.message(),
-                                resetPasswordMail.passwordMessage()
-                                        .formatted(data.get(AuthTokenKey.NEW_PASSWORD.name())
-                                        )))
+                                        resetPasswordMail.message(),
+                                        MessageFormat.format(
+                                                resetPasswordMail.passwordMessage(),
+                                                data.get(AuthTokenKey.NEW_PASSWORD.name())
+                                        )
+                                )
+                        )
                         .mailLink(MailLinkData.builder()
                                 .href(getTokenUrl(commonConfigProperties.webUrl(), commonConfigProperties.confirmPath(), token))
                                 .text(resetPasswordMail.link())

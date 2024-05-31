@@ -52,7 +52,7 @@ class PartDuplicatedFrameImageUtilTest {
                 part
         );
 
-        assertThat(images.size()).isEqualTo(6);
+        assertThat(images).hasSize(6);
 
         for (final OrderItemImageData item : images) {
             Files.write(Path.of("./target").resolve("duplicated_frame_%s.png".formatted(item.itemImage().name())),

@@ -85,7 +85,7 @@ class PartFrameUtilTest {
         assertThat(boards.get(BoardPosition.A2)).isEqualTo(2L);
         assertThat(boards.get(BoardPosition.B1)).isEqualTo(3L);
         assertThat(boards.get(BoardPosition.B2)).isEqualTo(4L);
-        assertThat(boards.size()).isEqualTo(4);
+        assertThat(boards).hasSize(4);
     }
 
     @Test
@@ -109,7 +109,7 @@ class PartFrameUtilTest {
         assertThat(edges.get(EdgePosition.B1I)).isEqualTo(6L);
         assertThat(edges.get(EdgePosition.B2)).isEqualTo(7L);
         assertThat(edges.get(EdgePosition.B2I)).isEqualTo(8L);
-        assertThat(edges.size()).isEqualTo(8);
+        assertThat(edges).hasSize(8);
     }
 
     @Test
@@ -117,7 +117,7 @@ class PartFrameUtilTest {
         final Map<CornerPosition, PartCornerData> corners = PartFrameData.builder()
                 .build()
                 .corners();
-        assertThat(corners.isEmpty()).isTrue();
+        assertThat(corners).isEmpty();
     }
 
     @Test
@@ -164,7 +164,7 @@ class PartFrameUtilTest {
         final PartFrameData part = objectMapper.readValue(getClass().getResource("/part_frame.json"), PartFrameData.class);
         final Map<BoardPosition, BigDecimal> areaMap = partFrameUtil.calculateBoardArea(part, manufactureProperties);
 
-        assertThat(areaMap.size()).isEqualTo(4);
+        assertThat(areaMap).hasSize(4);
         assertThat(areaMap.containsKey(BoardPosition.A1)).isTrue();
         assertThat(areaMap.get(BoardPosition.A1)).isEqualTo(new BigDecimal("0.050"));
         assertThat(areaMap.containsKey(BoardPosition.A2)).isTrue();
@@ -181,7 +181,7 @@ class PartFrameUtilTest {
 
         final Map<BigDecimal, BigDecimal> cutLengthMap = partFrameUtil.calculateCutLength(part, thicknessMap, manufactureProperties);
 
-        assertThat(cutLengthMap.size()).isEqualTo(1);
+        assertThat(cutLengthMap).hasSize(1);
         assertThat(cutLengthMap.containsKey(BigDecimal.valueOf(10))).isTrue();
         assertThat(cutLengthMap.get(BigDecimal.valueOf(10))).isEqualTo(new BigDecimal("4.000"));
     }
@@ -191,7 +191,7 @@ class PartFrameUtilTest {
         final PartFrameData part = objectMapper.readValue(getClass().getResource("/part_frame.json"), PartFrameData.class);
         final Map<Long, EdgeLengthData> edgeLengthMap = partFrameUtil.calculateEdgeLength(part, manufactureProperties);
 
-        assertThat(edgeLengthMap.size()).isEqualTo(1);
+        assertThat(edgeLengthMap).hasSize(1);
         assertThat(edgeLengthMap.containsKey(1L)).isTrue();
         assertThat(edgeLengthMap.get(1L)).isEqualTo(new EdgeLengthData(new BigDecimal("3.600"), new BigDecimal("3.920")));
     }

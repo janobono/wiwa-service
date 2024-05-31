@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sk.janobono.wiwa.business.model.codelist.CodeListItemChangeData;
 import sk.janobono.wiwa.business.model.codelist.CodeListItemData;
 import sk.janobono.wiwa.business.model.codelist.CodeListItemSearchCriteriaData;
@@ -35,6 +36,7 @@ public class CodeListItemServiceImpl implements CodeListItemService {
         return toCodeListItemData(getCodeListItemDo(id));
     }
 
+    @Transactional
     @Override
     public CodeListItemData addCodeListItem(final CodeListItemChangeData data) {
         if (isCodeUsed(null, data)) {
@@ -53,6 +55,7 @@ public class CodeListItemServiceImpl implements CodeListItemService {
         );
     }
 
+    @Transactional
     @Override
     public CodeListItemData setCodeListItem(final long id, final CodeListItemChangeData data) {
         if (isCodeUsed(id, data)) {
@@ -85,6 +88,7 @@ public class CodeListItemServiceImpl implements CodeListItemService {
         return toCodeListItemData(codeListItemRepository.save(codeListItemDo));
     }
 
+    @Transactional
     @Override
     public void deleteCodeListItem(final long id) {
         final CodeListItemDo codeListItemDo = getCodeListItemDo(id);
@@ -95,6 +99,7 @@ public class CodeListItemServiceImpl implements CodeListItemService {
         sortItems(codeListItemDo.getCodeListId(), codeListItemDo.getParentId());
     }
 
+    @Transactional
     @Override
     public CodeListItemData moveCodeListItemUp(final long id) {
         final CodeListItemDo codeListItemDo = getCodeListItemDo(id);
@@ -115,6 +120,7 @@ public class CodeListItemServiceImpl implements CodeListItemService {
         return toCodeListItemData(getCodeListItemDo(id));
     }
 
+    @Transactional
     @Override
     public CodeListItemData moveCodeListItemDown(final long id) {
         final CodeListItemDo codeListItemDo = getCodeListItemDo(id);

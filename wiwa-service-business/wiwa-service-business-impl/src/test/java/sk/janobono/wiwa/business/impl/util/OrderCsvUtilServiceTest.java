@@ -5,26 +5,24 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import sk.janobono.wiwa.business.TestConfigProperties;
+import sk.janobono.wiwa.business.TestRepositories;
+import sk.janobono.wiwa.business.impl.ApplicationPropertyServiceImpl;
 import sk.janobono.wiwa.business.impl.component.DataUtil;
 import sk.janobono.wiwa.business.impl.component.MaterialUtil;
-import sk.janobono.wiwa.business.model.DimensionsData;
-import sk.janobono.wiwa.business.model.application.ManufacturePropertiesData;
-import sk.janobono.wiwa.business.model.application.OrderPropertiesData;
-import sk.janobono.wiwa.business.model.board.BoardCategoryData;
 import sk.janobono.wiwa.business.model.order.OrderBoardData;
 import sk.janobono.wiwa.business.model.order.OrderEdgeData;
 import sk.janobono.wiwa.business.model.order.part.PartData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.component.ScDf;
+import sk.janobono.wiwa.config.CommonConfigProperties;
+import sk.janobono.wiwa.config.JwtConfigProperties;
+import sk.janobono.wiwa.dal.domain.CodeListDo;
+import sk.janobono.wiwa.dal.domain.CodeListItemDo;
 import sk.janobono.wiwa.dal.domain.OrderItemDo;
 import sk.janobono.wiwa.dal.domain.OrderViewDo;
-import sk.janobono.wiwa.dal.repository.OrderItemRepository;
-import sk.janobono.wiwa.dal.repository.OrderMaterialRepository;
-import sk.janobono.wiwa.model.OrderContent;
-import sk.janobono.wiwa.model.OrderFormat;
+import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.model.OrderPackageType;
 import sk.janobono.wiwa.model.OrderStatus;
 
@@ -33,34 +31,23 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class OrderCsvUtilServiceTest {
 
     private ObjectMapper objectMapper;
-
-    private OrderCsvUtilService orderCsvUtilService;
-
-    @Mock
     private OrderItemRepository orderItemRepository;
-
-    @Mock
-    private OrderMaterialRepository orderMaterialRepository;
-
-    @Mock
-    private ApplicationPropertyService applicationPropertyService;
-
-    @Mock
-    private MaterialUtilService materialUtilService;
-
     private DataUtil dataUtil;
+    private OrderCsvUtilService orderCsvUtilService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        final CommonConfigProperties commonConfigProperties = Mockito.mock(CommonConfigProperties.class);
+        final JwtConfigProperties jwtConfigProperties = Mockito.mock(JwtConfigProperties.class);
+        final TestConfigProperties testConfigProperties = new TestConfigProperties();
+        testConfigProperties.mock(commonConfigProperties);
+        testConfigProperties.mock(jwtConfigProperties);
 
         objectMapper = JsonMapper.builder()
                 .addModule(new JavaTimeModule())
@@ -69,55 +56,36 @@ class OrderCsvUtilServiceTest {
         dataUtil = new DataUtil(objectMapper);
         final MaterialUtil materialUtil = new MaterialUtil(dataUtil);
 
-        orderCsvUtilService = new OrderCsvUtilService(
-                new ScDf(),
-                dataUtil,
-                materialUtil,
-                orderItemRepository,
-                orderMaterialRepository,
-                applicationPropertyService,
-                materialUtilService
+        final ApplicationPropertyRepository applicationPropertyRepository = Mockito.mock(ApplicationPropertyRepository.class);
+        final CodeListItemRepository codeListItemRepository = Mockito.mock(CodeListItemRepository.class);
+        final CodeListRepository codeListRepository = Mockito.mock(CodeListRepository.class);
+        orderItemRepository = Mockito.mock(OrderItemRepository.class);
+        final OrderMaterialRepository orderMaterialRepository = Mockito.mock(OrderMaterialRepository.class);
+        final BoardCodeListItemRepository boardCodeListItemRepository = Mockito.mock(BoardCodeListItemRepository.class);
+        final TestRepositories testRepositories = new TestRepositories();
+        testRepositories.mock(applicationPropertyRepository);
+        testRepositories.mock(codeListItemRepository);
+        testRepositories.mock(codeListRepository);
+        testRepositories.mock(orderItemRepository);
+        testRepositories.mock(orderMaterialRepository);
+        testRepositories.mock(boardCodeListItemRepository);
+
+        final ApplicationPropertyService applicationPropertyService = new ApplicationPropertyServiceImpl(
+                objectMapper, commonConfigProperties, jwtConfigProperties, new PropertyUtilService(applicationPropertyRepository), codeListRepository
         );
 
-        Mockito.when(applicationPropertyService.getManufactureProperties()).thenReturn(
-                new ManufacturePropertiesData(
-                        new DimensionsData(BigDecimal.valueOf(50), BigDecimal.valueOf(50)),
-                        new DimensionsData(BigDecimal.valueOf(250), BigDecimal.valueOf(60)),
-                        new DimensionsData(BigDecimal.valueOf(250), BigDecimal.valueOf(70)),
-                        new DimensionsData(BigDecimal.valueOf(250), BigDecimal.valueOf(80)),
-                        BigDecimal.valueOf(8),
-                        BigDecimal.valueOf(40),
-                        BigDecimal.valueOf(10)
-                )
-        );
-
-        Mockito.when(applicationPropertyService.getOrderProperties()).thenReturn(
-                new OrderPropertiesData(
-                        Map.of(),
-                        Map.of(),
-                        Map.of(),
-                        Map.of(),
-                        Map.of(
-                                OrderFormat.CSV_NUMBER, "%d %s",
-                                OrderFormat.CSV_BASIC, "%s (basic %s-%dx%dmm-%dp)",
-                                OrderFormat.CSV_FRAME, "%s (frame %s-%dx%dmm-%dp)",
-                                OrderFormat.CSV_DUPLICATED_BASIC, "%s (duplicated basic %s-%dx%dmm-%dp)",
-                                OrderFormat.CSV_DUPLICATED_FRAME, "%s (duplicated frame %s-%dx%dmm-%dp)",
-                                OrderFormat.CSV_EDGE, "%s %dx%.1f",
-                                OrderFormat.CSV_CORNER_STRAIGHT, "%s %dx%d",
-                                OrderFormat.CSV_CORNER_ROUNDED, "%s r%d"
-                        ),
-                        Map.of(
-                                OrderContent.MATERIAL_NOT_FOUND, "Material not found",
-                                OrderContent.BOARD_NOT_FOUND, "Board not found",
-                                OrderContent.EDGE_NOT_FOUND, "Edge not found"
-                        ),
-                        Map.of(),
-                        ";",
-                        Map.of("<.*?>", "", "\\s+", "_"),
-                        Map.of()
-                )
-        );
+        final CodeListDo codeList = codeListRepository.save(CodeListDo.builder().code("code").name("materials").build());
+        final CodeListItemDo codeListItem1 = codeListItemRepository.save(CodeListItemDo.builder()
+                .codeListId(codeList.getId())
+                .value("material1")
+                .build());
+        final CodeListItemDo codeListItem2 = codeListItemRepository.save(CodeListItemDo.builder()
+                .codeListId(codeList.getId())
+                .value("material2")
+                .build());
+        boardCodeListItemRepository.saveAll(1L, List.of(codeListItem1.getId()));
+        boardCodeListItemRepository.saveAll(2L, List.of(codeListItem2.getId()));
+        applicationPropertyService.setBoardMaterialCategory(codeList.getId());
 
         final List<OrderBoardData> boards = List.of(
                 OrderBoardData.builder().id(1L).boardCode("b1").structureCode("s1").name("n1").length(BigDecimal.valueOf(2000)).width(BigDecimal.valueOf(1500)).thickness(BigDecimal.valueOf(10)).build(),
@@ -125,47 +93,37 @@ class OrderCsvUtilServiceTest {
                 OrderBoardData.builder().id(3L).boardCode("b3").structureCode("s3").name("n3").length(BigDecimal.valueOf(2000)).width(BigDecimal.valueOf(1500)).thickness(BigDecimal.valueOf(30)).build()
         );
         final List<OrderEdgeData> edges = List.of(
-                OrderEdgeData.builder().id(1L).code("e1").width(BigDecimal.valueOf(18)).thickness(new BigDecimal("0.8")).build(),
-                OrderEdgeData.builder().id(2L).code("e2").width(BigDecimal.valueOf(28)).thickness(new BigDecimal("1.0")).build(),
-                OrderEdgeData.builder().id(3L).code("e3").width(BigDecimal.valueOf(38)).thickness(new BigDecimal("2.0")).build()
+                OrderEdgeData.builder().id(1L).code("e1").width(BigDecimal.valueOf(18)).thickness(new BigDecimal("0.81")).build(),
+                OrderEdgeData.builder().id(2L).code("e2").width(BigDecimal.valueOf(28)).thickness(new BigDecimal("1.01")).build(),
+                OrderEdgeData.builder().id(3L).code("e3").width(BigDecimal.valueOf(38)).thickness(new BigDecimal("2.01")).build()
         );
 
-        Mockito.when(orderMaterialRepository.findAllByOrderId(Mockito.anyLong())).thenReturn(
-                Stream.concat(
-                        boards.stream().map(b -> materialUtil.toMaterial(1L, b)),
-                        edges.stream().map(e -> materialUtil.toMaterial(1L, e))
-                ).toList()
-        );
+        boards.forEach(board -> orderMaterialRepository.save(materialUtil.toMaterial(1L, board)));
+        edges.forEach(edge -> orderMaterialRepository.save(materialUtil.toMaterial(1L, edge)));
 
-        Mockito.when(applicationPropertyService.getBoardMaterialCategory()).thenReturn(
-                new BoardCategoryData(1L, "code", "name")
+        orderCsvUtilService = new OrderCsvUtilService(
+                new ScDf(),
+                dataUtil,
+                materialUtil,
+                orderItemRepository,
+                orderMaterialRepository,
+                applicationPropertyService,
+                new MaterialUtilService(boardCodeListItemRepository)
         );
-
-        Mockito.when(materialUtilService.getMaterialNames(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(
-                Map.of(1L, "material1", 2L, "material2")
-        );
-
-        Mockito.when(materialUtilService.findBoard(Mockito.any(), Mockito.anyLong())).thenCallRealMethod();
-        Mockito.when(materialUtilService.findEdge(Mockito.any(), Mockito.anyLong())).thenCallRealMethod();
-        Mockito.when(materialUtilService.getDecor(Mockito.any(), Mockito.anyLong(), Mockito.anyString())).thenCallRealMethod();
-        Mockito.when(materialUtilService.getEdge(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenCallRealMethod();
     }
 
     @Test
     void generateCsv_whenPartBasic_thenTheseResults() throws IOException {
         final PartData part = objectMapper.readValue(getClass().getResource("/part_basic.json"), PartData.class);
 
-        Mockito.when(orderItemRepository.findAllByOrderId(Mockito.anyLong())).thenReturn(
-                List.of(OrderItemDo.builder()
-                        .id(1L)
-                        .orderId(1L)
-                        .sortNum(0)
-                        .name("basic")
-                        .description("test basic part")
-                        .quantity(1)
-                        .part(dataUtil.serializeValue(part))
-                        .build())
-        );
+        orderItemRepository.insert(OrderItemDo.builder()
+                .orderId(1L)
+                .sortNum(0)
+                .name("basic")
+                .description("test basic part")
+                .quantity(1)
+                .part(dataUtil.serializeValue(part))
+                .build());
 
         final String csv = orderCsvUtilService.generateCsv(new OrderViewDo(
                 1L,
@@ -189,17 +147,14 @@ class OrderCsvUtilServiceTest {
     void generateCsv_whenPartDuplicatedBasic_thenTheseResults() throws IOException {
         final PartData part = objectMapper.readValue(getClass().getResource("/part_duplicated.json"), PartData.class);
 
-        Mockito.when(orderItemRepository.findAllByOrderId(Mockito.anyLong())).thenReturn(
-                List.of(OrderItemDo.builder()
-                        .id(1L)
-                        .orderId(1L)
-                        .sortNum(0)
-                        .name("basic")
-                        .description("test basic part")
-                        .quantity(1)
-                        .part(dataUtil.serializeValue(part))
-                        .build())
-        );
+        orderItemRepository.insert(OrderItemDo.builder()
+                .orderId(1L)
+                .sortNum(0)
+                .name("basic")
+                .description("test basic part")
+                .quantity(1)
+                .part(dataUtil.serializeValue(part))
+                .build());
 
         final String csv = orderCsvUtilService.generateCsv(new OrderViewDo(
                 1L,
@@ -224,18 +179,14 @@ class OrderCsvUtilServiceTest {
     void generateCsv_whenPartFrame_thenTheseResults() throws IOException {
         final PartData part = objectMapper.readValue(getClass().getResource("/part_frame.json"), PartData.class);
 
-        Mockito.when(orderItemRepository.findAllByOrderId(Mockito.anyLong())).thenReturn(
-                List.of(OrderItemDo.builder()
-                        .id(1L)
-                        .orderId(1L)
-                        .sortNum(0)
-                        .name("frame")
-                        .description("test frame part")
-                        .quantity(1)
-                        .part(dataUtil.serializeValue(part))
-                        .build())
-        );
-
+        orderItemRepository.insert(OrderItemDo.builder()
+                .orderId(1L)
+                .sortNum(0)
+                .name("frame")
+                .description("test frame part")
+                .quantity(1)
+                .part(dataUtil.serializeValue(part))
+                .build());
 
         final String csv = orderCsvUtilService.generateCsv(new OrderViewDo(
                 1L,
@@ -262,17 +213,14 @@ class OrderCsvUtilServiceTest {
     void generateCsv_whenDuplicatedFrame_thenTheseResults() throws IOException {
         final PartData part = objectMapper.readValue(getClass().getResource("/part_duplicated_frame.json"), PartData.class);
 
-        Mockito.when(orderItemRepository.findAllByOrderId(Mockito.anyLong())).thenReturn(
-                List.of(OrderItemDo.builder()
-                        .id(1L)
-                        .orderId(1L)
-                        .sortNum(0)
-                        .name("duplicated frame")
-                        .description("test duplicated frame part")
-                        .quantity(1)
-                        .part(dataUtil.serializeValue(part))
-                        .build())
-        );
+        orderItemRepository.insert(OrderItemDo.builder()
+                .orderId(1L)
+                .sortNum(0)
+                .name("duplicated frame")
+                .description("test duplicated frame part")
+                .quantity(1)
+                .part(dataUtil.serializeValue(part))
+                .build());
 
         final String csv = orderCsvUtilService.generateCsv(new OrderViewDo(
                 1L,
