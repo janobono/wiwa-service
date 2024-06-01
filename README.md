@@ -34,9 +34,8 @@ docker compose down
 
 ### endpoints
 
-- [/actuator/health](http://localhost:8080/api/actuator/health)
-- [/actuator/info](http://localhost:8080/api/actuator/info)
-- [/actuator/metrics](http://localhost:8080/api/actuator/metrics)
+- [/livez](http://localhost:8080/api/livez)
+- [/readyz](http://localhost:8080/api/readyz)
 - [/api-docs.yaml](http://localhost:8080/api/api-docs.yaml)
 - [/swagger-ui.html](http://localhost:8080/api/swagger-ui.html)
 - [smtp mail dev](http://localhost:8081)
