@@ -46,6 +46,12 @@ public class ConfigController {
         return configApiService.setLogo(multipartFile);
     }
 
+    @PostMapping("/maintenance")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public SingleValueBodyWebDto<Boolean> setMaintenance(@Valid @RequestBody final SingleValueBodyWebDto<Boolean> singleValueBody) {
+        return configApiService.setMaintenance(singleValueBody);
+    }
+
     @PostMapping(value = "/title")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public SingleValueBodyWebDto<String> setTitle(@Valid @RequestBody final SingleValueBodyWebDto<String> singleValueBody) {
@@ -68,6 +74,24 @@ public class ConfigController {
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public CompanyInfoWebDto setCompanyInfo(@Valid @RequestBody final CompanyInfoWebDto companyInfo) {
         return configApiService.setCompanyInfo(companyInfo);
+    }
+
+    @PostMapping(value = "/units")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public List<UnitWebDto> setUnits(@Valid @RequestBody final List<UnitWebDto> units) {
+        return configApiService.setUnits(units);
+    }
+
+    @GetMapping(value = "/vat-rate")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public SingleValueBodyWebDto<BigDecimal> getVatRate() {
+        return configApiService.getVatRate();
+    }
+
+    @PostMapping(value = "/vat-rate")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public SingleValueBodyWebDto<BigDecimal> setVatRate(@Valid @RequestBody final SingleValueBodyWebDto<BigDecimal> singleValueBody) {
+        return configApiService.setVatRate(singleValueBody);
     }
 
     @PostMapping(value = "/business-conditions")
@@ -100,22 +124,16 @@ public class ConfigController {
         return configApiService.setWorkingHours(singleValueBody);
     }
 
-    @PostMapping(value = "/units")
+    @GetMapping(value = "/sign-up-mail")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<UnitWebDto> setUnits(@Valid @RequestBody final List<UnitWebDto> units) {
-        return configApiService.setUnits(units);
+    public SignUpMailWebDto getSignUpMail() {
+        return configApiService.getSignUpMail();
     }
 
-    @GetMapping(value = "/vat-rate")
+    @PostMapping(value = "/sign-up-mail")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public SingleValueBodyWebDto<BigDecimal> getVatRate() {
-        return configApiService.getVatRate();
-    }
-
-    @PostMapping(value = "/vat-rate")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public SingleValueBodyWebDto<BigDecimal> setVatRate(@Valid @RequestBody final SingleValueBodyWebDto<BigDecimal> singleValueBody) {
-        return configApiService.setVatRate(singleValueBody);
+    public SignUpMailWebDto setSignUpMail(@Valid @RequestBody final SignUpMailWebDto signUpMail) {
+        return configApiService.setSignUpMail(signUpMail);
     }
 
     @GetMapping(value = "/reset-password-mail")
@@ -130,16 +148,9 @@ public class ConfigController {
         return configApiService.setResetPasswordMail(resetPasswordMail);
     }
 
-    @GetMapping(value = "/sign-up-mail")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public SignUpMailWebDto getSignUpMail() {
-        return configApiService.getSignUpMail();
-    }
-
-    @PostMapping(value = "/sign-up-mail")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public SignUpMailWebDto setSignUpMail(@Valid @RequestBody final SignUpMailWebDto signUpMail) {
-        return configApiService.setSignUpMail(signUpMail);
+    @GetMapping(value = "/manufacture-properties")
+    public ManufacturePropertiesWebDto getManufactureProperties() {
+        return configApiService.getManufactureProperties();
     }
 
     @PostMapping(value = "/manufacture-properties")
@@ -148,16 +159,16 @@ public class ConfigController {
         return configApiService.setManufactureProperties(manufactureProperties);
     }
 
-    @GetMapping(value = "/prices-for-cutting")
+    @GetMapping(value = "/price-for-gluing-layer")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<PriceForCuttingWebDto> getPricesForCutting() {
-        return configApiService.getPricesForCutting();
+    public PriceForGluingLayerWebDto getPriceForGluingLayer() {
+        return configApiService.getPriceForGluingLayer();
     }
 
-    @PostMapping(value = "/prices-for-cutting")
+    @PostMapping(value = "/price-for-gluing-layer")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<PriceForCuttingWebDto> setPricesForCutting(@Valid @RequestBody final List<PriceForCuttingWebDto> pricesForCutting) {
-        return configApiService.setPricesForCutting(pricesForCutting);
+    public PriceForGluingLayerWebDto setPriceForGluingLayer(@Valid @RequestBody final PriceForGluingLayerWebDto priceForGluingLayer) {
+        return configApiService.setPriceForGluingLayer(priceForGluingLayer);
     }
 
     @GetMapping(value = "/prices-for-gluing-edge")
@@ -172,16 +183,16 @@ public class ConfigController {
         return configApiService.setPricesForGluingEdge(pricesForGluingEdge);
     }
 
-    @GetMapping(value = "/price-for-gluing-layer")
+    @GetMapping(value = "/prices-for-cutting")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public PriceForGluingLayerWebDto getPriceForGluingLayer() {
-        return configApiService.getPriceForGluingLayer();
+    public List<PriceForCuttingWebDto> getPricesForCutting() {
+        return configApiService.getPricesForCutting();
     }
 
-    @PostMapping(value = "/price-for-gluing-layer")
+    @PostMapping(value = "/prices-for-cutting")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public PriceForGluingLayerWebDto setPriceForGluingLayer(@Valid @RequestBody final PriceForGluingLayerWebDto priceForGluingLayer) {
-        return configApiService.setPriceForGluingLayer(priceForGluingLayer);
+    public List<PriceForCuttingWebDto> setPricesForCutting(@Valid @RequestBody final List<PriceForCuttingWebDto> pricesForCutting) {
+        return configApiService.setPricesForCutting(pricesForCutting);
     }
 
     @PostMapping(value = "/free-days")

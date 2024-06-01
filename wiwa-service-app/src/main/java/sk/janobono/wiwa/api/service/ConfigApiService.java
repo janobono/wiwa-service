@@ -44,6 +44,10 @@ public class ConfigApiService {
         return applicationImageWebMapper.mapToWebDto(applicationImageService.setLogo(multipartFile));
     }
 
+    public SingleValueBodyWebDto<Boolean> setMaintenance(final SingleValueBodyWebDto<Boolean> singleValueBody) {
+        return new SingleValueBodyWebDto<>(applicationPropertyService.setMaintenance(singleValueBody.value()));
+    }
+
     public SingleValueBodyWebDto<String> setTitle(final SingleValueBodyWebDto<String> singleValueBody) {
         return new SingleValueBodyWebDto<>(applicationPropertyService.setTitle(singleValueBody.value()));
     }
@@ -58,6 +62,20 @@ public class ConfigApiService {
 
     public CompanyInfoWebDto setCompanyInfo(final CompanyInfoWebDto companyInfo) {
         return uiWebMapper.mapToWebDto(applicationPropertyService.setCompanyInfo(uiWebMapper.mapToData(companyInfo)));
+    }
+
+    public List<UnitWebDto> setUnits(final List<UnitWebDto> units) {
+        return applicationPropertyService.setUnits(
+                units.stream().map(uiWebMapper::mapToData).toList()
+        ).stream().map(uiWebMapper::mapToWebDto).toList();
+    }
+
+    public SingleValueBodyWebDto<BigDecimal> getVatRate() {
+        return new SingleValueBodyWebDto<>(applicationPropertyService.getVatRate());
+    }
+
+    public SingleValueBodyWebDto<BigDecimal> setVatRate(final SingleValueBodyWebDto<BigDecimal> singleValueBody) {
+        return new SingleValueBodyWebDto<>(applicationPropertyService.setVatRate(singleValueBody.value()));
     }
 
     public SingleValueBodyWebDto<String> setBusinessConditions(final SingleValueBodyWebDto<String> singleValueBody) {
@@ -80,18 +98,12 @@ public class ConfigApiService {
         return new SingleValueBodyWebDto<>(applicationPropertyService.setWorkingHours(singleValueBody.value()));
     }
 
-    public List<UnitWebDto> setUnits(final List<UnitWebDto> units) {
-        return applicationPropertyService.setUnits(
-                units.stream().map(uiWebMapper::mapToData).toList()
-        ).stream().map(uiWebMapper::mapToWebDto).toList();
+    public SignUpMailWebDto getSignUpMail() {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getSignUpMail());
     }
 
-    public SingleValueBodyWebDto<BigDecimal> getVatRate() {
-        return new SingleValueBodyWebDto<>(applicationPropertyService.getVatRate());
-    }
-
-    public SingleValueBodyWebDto<BigDecimal> setVatRate(final SingleValueBodyWebDto<BigDecimal> singleValueBody) {
-        return new SingleValueBodyWebDto<>(applicationPropertyService.setVatRate(singleValueBody.value()));
+    public SignUpMailWebDto setSignUpMail(final SignUpMailWebDto signUpMail) {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.setSignUpMail(uiWebMapper.mapToData(signUpMail)));
     }
 
     public ResetPasswordMailWebDto getResetPasswordMail() {
@@ -102,26 +114,20 @@ public class ConfigApiService {
         return uiWebMapper.mapToWebDto(applicationPropertyService.setResetPasswordMail(uiWebMapper.mapToData(resetPasswordMail)));
     }
 
-    public SignUpMailWebDto getSignUpMail() {
-        return uiWebMapper.mapToWebDto(applicationPropertyService.getSignUpMail());
-    }
-
-    public SignUpMailWebDto setSignUpMail(final SignUpMailWebDto signUpMail) {
-        return uiWebMapper.mapToWebDto(applicationPropertyService.setSignUpMail(uiWebMapper.mapToData(signUpMail)));
+    public ManufacturePropertiesWebDto getManufactureProperties() {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getManufactureProperties());
     }
 
     public ManufacturePropertiesWebDto setManufactureProperties(final ManufacturePropertiesWebDto manufactureProperties) {
         return uiWebMapper.mapToWebDto(applicationPropertyService.setManufactureProperties(uiWebMapper.mapToData(manufactureProperties)));
     }
 
-    public List<PriceForCuttingWebDto> getPricesForCutting() {
-        return applicationPropertyService.getPricesForCutting().stream().map(uiWebMapper::mapToWebDto).toList();
+    public PriceForGluingLayerWebDto getPriceForGluingLayer() {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getPriceForGluingLayer());
     }
 
-    public List<PriceForCuttingWebDto> setPricesForCutting(final List<PriceForCuttingWebDto> pricesForCutting) {
-        return applicationPropertyService.setPricesForCutting(
-                pricesForCutting.stream().map(uiWebMapper::mapToData).toList()
-        ).stream().map(uiWebMapper::mapToWebDto).toList();
+    public PriceForGluingLayerWebDto setPriceForGluingLayer(final PriceForGluingLayerWebDto priceForGluingLayer) {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.setPriceForGluingLayer(uiWebMapper.mapToData(priceForGluingLayer)));
     }
 
     public List<PriceForGluingEdgeWebDto> getPricesForGluingEdge() {
@@ -134,12 +140,14 @@ public class ConfigApiService {
         ).stream().map(uiWebMapper::mapToWebDto).toList();
     }
 
-    public PriceForGluingLayerWebDto getPriceForGluingLayer() {
-        return uiWebMapper.mapToWebDto(applicationPropertyService.getPriceForGluingLayer());
+    public List<PriceForCuttingWebDto> getPricesForCutting() {
+        return applicationPropertyService.getPricesForCutting().stream().map(uiWebMapper::mapToWebDto).toList();
     }
 
-    public PriceForGluingLayerWebDto setPriceForGluingLayer(final PriceForGluingLayerWebDto priceForGluingLayer) {
-        return uiWebMapper.mapToWebDto(applicationPropertyService.setPriceForGluingLayer(uiWebMapper.mapToData(priceForGluingLayer)));
+    public List<PriceForCuttingWebDto> setPricesForCutting(final List<PriceForCuttingWebDto> pricesForCutting) {
+        return applicationPropertyService.setPricesForCutting(
+                pricesForCutting.stream().map(uiWebMapper::mapToData).toList()
+        ).stream().map(uiWebMapper::mapToWebDto).toList();
     }
 
     public List<FreeDayWebDto> setFreeDays(final List<FreeDayWebDto> freeDays) {

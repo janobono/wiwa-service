@@ -24,11 +24,6 @@ public class UiController {
 
     private final UiApiService uiApiService;
 
-    @GetMapping("/application-properties")
-    public ApplicationPropertiesWebDto getApplicationProperties() {
-        return uiApiService.getApplicationProperties();
-    }
-
     @GetMapping("/captcha")
     public CaptchaWebDto getCaptcha() {
         return uiApiService.getCaptcha();
@@ -41,56 +36,6 @@ public class UiController {
                 .contentType(MediaType.parseMediaType(resourceEntity.contentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceEntity.fileName() + "\"")
                 .body(resourceEntity.resource());
-    }
-
-    @GetMapping(value = "/title")
-    public SingleValueBodyWebDto<String> getTitle() {
-        return uiApiService.getTitle();
-    }
-
-    @GetMapping(value = "/welcome-text")
-    public SingleValueBodyWebDto<String> getWelcomeText() {
-        return uiApiService.getWelcomeText();
-    }
-
-    @GetMapping("/application-info")
-    public List<String> getApplicationInfo() {
-        return uiApiService.getApplicationInfo();
-    }
-
-    @GetMapping("/company-info")
-    public CompanyInfoWebDto getCompanyInfo() {
-        return uiApiService.getCompanyInfo();
-    }
-
-    @GetMapping(value = "/business-conditions")
-    public SingleValueBodyWebDto<String> getBusinessConditions() {
-        return uiApiService.getBusinessConditions();
-    }
-
-    @GetMapping(value = "/cookies-info")
-    public SingleValueBodyWebDto<String> getCookiesInfo() {
-        return uiApiService.getCookiesInfo();
-    }
-
-    @GetMapping(value = "/gdpr-info")
-    public SingleValueBodyWebDto<String> getGdprInfo() {
-        return uiApiService.getGdprInfo();
-    }
-
-    @GetMapping(value = "/order-info")
-    public SingleValueBodyWebDto<String> getOrderInfo() {
-        return uiApiService.getOrderInfo();
-    }
-
-    @GetMapping(value = "/working-hours")
-    public SingleValueBodyWebDto<String> getWorkingHours() {
-        return uiApiService.getWorkingHours();
-    }
-
-    @GetMapping(value = "/units")
-    public List<UnitWebDto> getUnits() {
-        return uiApiService.getUnits();
     }
 
     @GetMapping("/application-images/{fileName}")
@@ -120,9 +65,64 @@ public class UiController {
                 .body(resourceEntity.resource());
     }
 
-    @GetMapping(value = "/manufacture-properties")
-    public ManufacturePropertiesWebDto getManufactureProperties() {
-        return uiApiService.getManufactureProperties();
+    @GetMapping("/maintenance")
+    public SingleValueBodyWebDto<Boolean> getMaintenance() {
+        return uiApiService.getMaintenance();
+    }
+
+    @GetMapping("/application-properties")
+    public ApplicationPropertiesWebDto getApplicationProperties() {
+        return uiApiService.getApplicationProperties();
+    }
+
+    @GetMapping(value = "/title")
+    public SingleValueBodyWebDto<String> getTitle() {
+        return uiApiService.getTitle();
+    }
+
+    @GetMapping(value = "/welcome-text")
+    public SingleValueBodyWebDto<String> getWelcomeText() {
+        return uiApiService.getWelcomeText();
+    }
+
+    @GetMapping("/application-info")
+    public List<String> getApplicationInfo() {
+        return uiApiService.getApplicationInfo();
+    }
+
+    @GetMapping("/company-info")
+    public CompanyInfoWebDto getCompanyInfo() {
+        return uiApiService.getCompanyInfo();
+    }
+
+    @GetMapping(value = "/units")
+    public List<UnitWebDto> getUnits() {
+        return uiApiService.getUnits();
+    }
+
+    @GetMapping(value = "/business-conditions")
+    public SingleValueBodyWebDto<String> getBusinessConditions() {
+        return uiApiService.getBusinessConditions();
+    }
+
+    @GetMapping(value = "/cookies-info")
+    public SingleValueBodyWebDto<String> getCookiesInfo() {
+        return uiApiService.getCookiesInfo();
+    }
+
+    @GetMapping(value = "/gdpr-info")
+    public SingleValueBodyWebDto<String> getGdprInfo() {
+        return uiApiService.getGdprInfo();
+    }
+
+    @GetMapping(value = "/order-info")
+    public SingleValueBodyWebDto<String> getOrderInfo() {
+        return uiApiService.getOrderInfo();
+    }
+
+    @GetMapping(value = "/working-hours")
+    public SingleValueBodyWebDto<String> getWorkingHours() {
+        return uiApiService.getWorkingHours();
     }
 
     @GetMapping(value = "/free-days")

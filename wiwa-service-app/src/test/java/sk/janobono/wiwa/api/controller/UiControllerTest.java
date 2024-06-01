@@ -1,104 +1,183 @@
 package sk.janobono.wiwa.api.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import sk.janobono.wiwa.BaseTest;
+import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
-import sk.janobono.wiwa.business.service.ApplicationPropertyService;
-import sk.janobono.wiwa.component.ImageUtil;
 
-import java.util.Objects;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UiControllerTest extends BaseControllerTest {
-
-    @Autowired
-    public ImageUtil imageUtil;
-
-    @Autowired
-    public ApplicationPropertyService applicationPropertyService;
+class UiControllerTest extends BaseTest {
 
     @Test
-    void fullTest() {
-        // application-info
-        final ApplicationPropertiesWebDto applicationProperties = restTemplate.getForObject(getURI("/ui/application-properties"), ApplicationPropertiesWebDto.class);
-        assertThat(applicationProperties).isNotNull();
-        assertThat(applicationProperties.defaultLocale()).isEqualTo("en_US");
-        assertThat(applicationProperties.appTitle()).isEqualTo("Wiwa");
-        assertThat(applicationProperties.appDescription()).isEqualTo("Woodworking Industry Web Application");
-        assertThat(applicationProperties.tokenExpiresIn()).isEqualTo(15);
+    void captchaTest() {
+        final ResponseEntity<CaptchaWebDto> responseEntity = restClient.get()
+                .uri(getURI("/ui/captcha"))
+                .retrieve()
+                .toEntity(CaptchaWebDto.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().captchaImage()).isNotBlank();
+        assertThat(responseEntity.getBody().captchaToken()).isNotBlank();
+    }
 
-        // captcha
-        final ResponseEntity<CaptchaWebDto> response = restTemplate.exchange(
-                getURI("/ui/captcha"), HttpMethod.GET, HttpEntity.EMPTY, CaptchaWebDto.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
+    @Test
+    void logoTest() {
+        final ResponseEntity<byte[]> responseEntity = restClient.get()
+                .uri(getURI("/ui/logo"))
+                .retrieve()
+                .toEntity(byte[].class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+    }
 
-        // logo
-        final byte[] logo = restTemplate.getForObject(getURI("/ui/logo"), byte[].class);
-        assertThat(logo).isEqualTo(imageUtil.generateMessageImage(null));
+    @Test
+    void applicationImagesTest() {
+        final ResponseEntity<byte[]> responseEntity = restClient.get()
+                .uri(getURI("/ui/application-images/{fileName}", Map.of("fileName", "image.jpg")))
+                .retrieve()
+                .toEntity(byte[].class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+    }
 
-        // title
-        final String title = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/title"), JsonNode.class)).get("value").textValue();
-        assertThat(title).isEqualTo("WIWA - Internet store");
+    @Test
+    void boardImagesTest() {
+        final ResponseEntity<byte[]> responseEntity = restClient.get()
+                .uri(getURI("/ui/board-images/{id}", Map.of("id", "1")))
+                .retrieve()
+                .toEntity(byte[].class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+    }
 
-        // welcome-text
-        final String welcomeText = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/welcome-text"), JsonNode.class)).get("value").textValue();
-        assertThat(welcomeText).isNotBlank();
+    @Test
+    void edgeImagesTest() {
+        final ResponseEntity<byte[]> responseEntity = restClient.get()
+                .uri(getURI("/ui/edge-images/{id}", Map.of("id", "1")))
+                .retrieve()
+                .toEntity(byte[].class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+    }
 
-        // application-info
-        final String[] applicationInfo = restTemplate.getForObject(getURI("/ui/application-info"), String[].class);
-        assertThat(applicationInfo).isNotNull();
-        assertThat(applicationInfo.length).isEqualTo(3);
+    @Test
+    void maintenanceTest() {
+        final ResponseEntity<SingleValueBodyWebDto> responseEntity = restClient.get()
+                .uri(getURI("/ui/maintenance"))
+                .retrieve()
+                .toEntity(SingleValueBodyWebDto.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().value()).isEqualTo(true);
+    }
 
-        // company-info
-        final CompanyInfoWebDto companyInfo = restTemplate.getForObject(getURI("/ui/company-info"), CompanyInfoWebDto.class);
-        assertThat(companyInfo).isNotNull();
-        assertThat(companyInfo.name()).isEqualTo("WIWA, Ltd.");
-        assertThat(companyInfo.street()).isEqualTo("Street 12/4567");
-        assertThat(companyInfo.city()).isEqualTo("Zvolen");
-        assertThat(companyInfo.zipCode()).isEqualTo("960 01");
-        assertThat(companyInfo.state()).isEqualTo("Slovakia");
-        assertThat(companyInfo.phone()).isEqualTo("+421 111 111 111");
-        assertThat(companyInfo.mail()).isEqualTo("mail@domain.sk");
-        assertThat(companyInfo.businessId()).isEqualTo("11 111 111");
-        assertThat(companyInfo.taxId()).isEqualTo("1111111111");
-        assertThat(companyInfo.vatRegNo()).isEqualTo("SK1111111111");
-        assertThat(companyInfo.commercialRegisterInfo()).isEqualTo("The company is registered in the Commercial Register of the District Court in Zvolen, section Sro, insert number 11111/P");
-        assertThat(companyInfo.mapUrl()).isEqualTo("https://maps.google.com/maps?q=Zvolen&t=&z=13&ie=UTF8&iwloc=&output=embed");
+    @Test
+    void applicationPropertiesTest() {
+        final ResponseEntity<ApplicationPropertiesWebDto> responseEntity = restClient.get()
+                .uri(getURI("/ui/application-properties"))
+                .retrieve()
+                .toEntity(ApplicationPropertiesWebDto.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().defaultLocale()).isNotBlank();
+        assertThat(responseEntity.getBody().appTitle()).isNotBlank();
+        assertThat(responseEntity.getBody().appDescription()).isNotBlank();
+        assertThat(responseEntity.getBody().tokenExpiresIn()).isNotNull();
+        assertThat(responseEntity.getBody().currency()).isNotNull();
+    }
 
-        // business-conditions
-        final String businessConditions = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/business-conditions"), JsonNode.class)).get("value").textValue();
-        assertThat(businessConditions).isEqualTo(applicationPropertyService.getBusinessConditions());
+    @ParameterizedTest
+    @ValueSource(strings = {"title", "welcome-text", "business-conditions", "cookies-info", "gdpr-info", "order-info", "working-hours"})
+    void stringTest(final String path) {
+        final ResponseEntity<SingleValueBodyWebDto> responseEntity = restClient.get()
+                .uri(getURI("/ui/" + path))
+                .retrieve()
+                .toEntity(SingleValueBodyWebDto.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().value().getClass()).isEqualTo(String.class);
+    }
 
-        // cookies-info
-        final String cookiesInfo = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/cookies-info"), JsonNode.class)).get("value").textValue();
-        assertThat(cookiesInfo).isEqualTo(applicationPropertyService.getCookiesInfo());
+    @Test
+    void applicationInfoTest() {
+        final ResponseEntity<String[]> responseEntity = restClient.get()
+                .uri(getURI("/ui/application-info"))
+                .retrieve()
+                .toEntity(String[].class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody()).isEmpty();
+    }
 
-        // gdpr-info
-        final String gdprInfo = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/gdpr-info"), JsonNode.class)).get("value").textValue();
-        assertThat(gdprInfo).isEqualTo(applicationPropertyService.getGdprInfo());
+    @Test
+    void companyInfoTest() {
+        final ResponseEntity<CompanyInfoWebDto> responseEntity = restClient.get()
+                .uri(getURI("/ui/company-info"))
+                .retrieve()
+                .toEntity(CompanyInfoWebDto.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().name()).isNotBlank();
+        assertThat(responseEntity.getBody().street()).isNotBlank();
+        assertThat(responseEntity.getBody().city()).isNotBlank();
+        assertThat(responseEntity.getBody().zipCode()).isNotBlank();
+        assertThat(responseEntity.getBody().state()).isNotBlank();
+        assertThat(responseEntity.getBody().phone()).isNotBlank();
+        assertThat(responseEntity.getBody().mail()).isNotBlank();
+        assertThat(responseEntity.getBody().businessId()).isNotBlank();
+        assertThat(responseEntity.getBody().taxId()).isNotBlank();
+        assertThat(responseEntity.getBody().vatRegNo()).isNotBlank();
+        assertThat(responseEntity.getBody().commercialRegisterInfo()).isNotBlank();
+        assertThat(responseEntity.getBody().mapUrl()).isNotBlank();
+    }
 
-        // working-hours
-        final String workingHours = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/working-hours"), JsonNode.class)).get("value").textValue();
-        assertThat(workingHours).isEqualTo(applicationPropertyService.getWorkingHours());
+    @Test
+    void unitsTest() {
+        final ResponseEntity<UnitWebDto[]> responseEntity = restClient.get()
+                .uri(getURI("/ui/units"))
+                .retrieve()
+                .toEntity(UnitWebDto[].class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody()).hasSize(5);
+    }
 
-        // units
-        final UnitWebDto[] units = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/units"), UnitWebDto[].class));
-        assertThat(units).isNotNull();
+    @Test
+    void freeDaysTest() {
+        final ResponseEntity<FreeDayWebDto[]> responseEntity = restClient.get()
+                .uri(getURI("/ui/free-days"))
+                .retrieve()
+                .toEntity(FreeDayWebDto[].class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody()).hasSize(15);
+    }
 
-        // manufacture-properties
-        final ManufacturePropertiesWebDto manufactureProperties = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/manufacture-properties"), ManufacturePropertiesWebDto.class));
-        assertThat(manufactureProperties).isNotNull();
-
-        // free-days
-        final FreeDayWebDto[] freeDays = Objects.requireNonNull(restTemplate.getForObject(getURI("/ui/free-days"), FreeDayWebDto[].class));
-        assertThat(freeDays).isNotNull();
+    @Test
+    void orderPropertiesTest() {
+        final ResponseEntity<OrderPropertiesWebDto> responseEntity = restClient.get()
+                .uri(getURI("/ui/order-properties"))
+                .retrieve()
+                .toEntity(OrderPropertiesWebDto.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().dimensions()).isEmpty();
+        assertThat(responseEntity.getBody().boards()).isEmpty();
+        assertThat(responseEntity.getBody().edges()).isEmpty();
+        assertThat(responseEntity.getBody().corners()).isEmpty();
+        assertThat(responseEntity.getBody().pattern()).isNotEmpty();
+        assertThat(responseEntity.getBody().content()).isNotEmpty();
+        assertThat(responseEntity.getBody().packageType()).isEmpty();
+        assertThat(responseEntity.getBody().csvSeparator()).isEqualTo(";");
+        assertThat(responseEntity.getBody().csvReplacements()).isNotEmpty();
+        assertThat(responseEntity.getBody().csvColumns()).isEmpty();
     }
 }

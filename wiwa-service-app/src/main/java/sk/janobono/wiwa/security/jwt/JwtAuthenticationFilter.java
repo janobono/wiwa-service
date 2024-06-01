@@ -9,7 +9,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.component.JwtToken;
+import sk.janobono.wiwa.model.Authority;
 import sk.janobono.wiwa.model.User;
 
 import java.io.IOException;
@@ -21,6 +23,8 @@ import java.util.stream.Collectors;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtToken jwtToken;
+
+    private final ApplicationPropertyService applicationPropertyService;
 
     @Override
     protected void doFilterInternal(
@@ -35,8 +39,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     final User user = jwtToken.parseToken(token);
                     final List<SimpleGrantedAuthority> authorities = user.authorities().stream()
                             .map(authority -> new SimpleGrantedAuthority(authority.toString())).collect(Collectors.toList());
-                    SecurityContextHolder.getContext()
-                            .setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
+                    final boolean maintenance = applicationPropertyService.getMaintenance()
+                            && !user.authorities().contains(Authority.W_ADMIN)
+                            && !user.authorities().contains(Authority.W_MANAGER);
+                    if (!maintenance) {
+                        SecurityContextHolder.getContext()
+                                .setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
+                    }
                 });
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }

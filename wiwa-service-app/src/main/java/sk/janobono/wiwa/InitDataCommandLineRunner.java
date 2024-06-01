@@ -1,6 +1,5 @@
 package sk.janobono.wiwa;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -8,7 +7,6 @@ import org.springframework.stereotype.Component;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.AuthorityDo;
 import sk.janobono.wiwa.dal.domain.UserDo;
-import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
 import sk.janobono.wiwa.dal.repository.AuthorityRepository;
 import sk.janobono.wiwa.dal.repository.UserRepository;
 import sk.janobono.wiwa.model.Authority;
@@ -17,15 +15,13 @@ import sk.janobono.wiwa.model.Authority;
 @Component
 public class InitDataCommandLineRunner implements CommandLineRunner {
 
-    private final ObjectMapper objectMapper;
     private final CommonConfigProperties commonConfigProperties;
     private final PasswordEncoder passwordEncoder;
     private final AuthorityRepository authorityRepository;
     private final UserRepository userRepository;
-    private final ApplicationPropertyRepository applicationPropertyRepository;
 
     @Override
-    public void run(final String... args) throws Exception {
+    public void run(final String... args) {
         initAuthorities();
         initUsers();
     }
@@ -38,7 +34,7 @@ public class InitDataCommandLineRunner implements CommandLineRunner {
         }
     }
 
-    private void initUsers() throws Exception {
+    private void initUsers() {
         if (userRepository.count() == 0L) {
             final UserDo userDo = userRepository.save(UserDo.builder()
                     .username("wiwa")

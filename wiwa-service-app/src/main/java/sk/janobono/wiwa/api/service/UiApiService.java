@@ -24,10 +24,6 @@ public class UiApiService {
     private final ApplicationImageWebMapper applicationImageWebMapper;
     private final UiWebMapper uiWebMapper;
 
-    public ApplicationPropertiesWebDto getApplicationProperties() {
-        return uiWebMapper.mapToWebDto(applicationPropertyService.getApplicationProperties());
-    }
-
     public CaptchaWebDto getCaptcha() {
         return uiWebMapper.mapToWebDto(captchaService.getCaptcha());
     }
@@ -48,6 +44,14 @@ public class UiApiService {
         return applicationImageWebMapper.mapToWebDto(applicationImageService.getEdgeImage(edgeId));
     }
 
+    public SingleValueBodyWebDto<Boolean> getMaintenance() {
+        return new SingleValueBodyWebDto<>(applicationPropertyService.getMaintenance());
+    }
+
+    public ApplicationPropertiesWebDto getApplicationProperties() {
+        return uiWebMapper.mapToWebDto(applicationPropertyService.getApplicationProperties());
+    }
+
     public SingleValueBodyWebDto<String> getTitle() {
         return new SingleValueBodyWebDto<>(applicationPropertyService.getTitle());
     }
@@ -62,6 +66,10 @@ public class UiApiService {
 
     public CompanyInfoWebDto getCompanyInfo() {
         return uiWebMapper.mapToWebDto(applicationPropertyService.getCompanyInfo());
+    }
+
+    public List<UnitWebDto> getUnits() {
+        return applicationPropertyService.getUnits().stream().map(uiWebMapper::mapToWebDto).toList();
     }
 
     public SingleValueBodyWebDto<String> getBusinessConditions() {
@@ -82,14 +90,6 @@ public class UiApiService {
 
     public SingleValueBodyWebDto<String> getWorkingHours() {
         return new SingleValueBodyWebDto<>(applicationPropertyService.getWorkingHours());
-    }
-
-    public List<UnitWebDto> getUnits() {
-        return applicationPropertyService.getUnits().stream().map(uiWebMapper::mapToWebDto).toList();
-    }
-
-    public ManufacturePropertiesWebDto getManufactureProperties() {
-        return uiWebMapper.mapToWebDto(applicationPropertyService.getManufactureProperties());
     }
 
     public List<FreeDayWebDto> getFreeDays() {

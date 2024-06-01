@@ -1,4 +1,4 @@
-package sk.janobono.wiwa.business;
+package sk.janobono.wiwa;
 
 import org.mockito.Mockito;
 import org.springframework.data.domain.PageImpl;

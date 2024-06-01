@@ -1,35 +1,77 @@
 package sk.janobono.wiwa.api.controller;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import sk.janobono.wiwa.BaseTest;
+
+import java.net.URI;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SecurityConfigPropertiesTest extends BaseControllerTest {
-
-    @Autowired
-    public RestTemplateBuilder restTemplateBuilder;
+class SecurityConfigPropertiesTest extends BaseTest {
 
     @Test
     void fullTest() {
-        final RestTemplate restTemplate = restTemplateBuilder.build();
+        HttpStatusCode httpStatusCode = getStatus(getURI("/livez"));
+        assertThat(httpStatusCode).isEqualTo(HttpStatus.OK);
 
-        var result = restTemplate.getForEntity(getURI("/livez"), Void.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        httpStatusCode = getStatus(getURI("/readyz"));
+        assertThat(httpStatusCode).isEqualTo(HttpStatus.OK);
 
-        result = restTemplate.getForEntity(getURI("/readyz"), Void.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        httpStatusCode = getStatus(getURI("/api-docs"));
+        assertThat(httpStatusCode).isEqualTo(HttpStatus.OK);
 
-        result = restTemplate.getForEntity(getURI("/api-docs"), Void.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        httpStatusCode = getStatus(getURI("/swagger-ui.html"), String.class);
+        assertThat(httpStatusCode).isEqualTo(HttpStatus.OK);
 
-        result = restTemplate.getForEntity(getURI("/swagger-ui.html"), Void.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        httpStatusCode = getStatus(getURI("/swagger-ui/index.html"), String.class);
+        assertThat(httpStatusCode).isEqualTo(HttpStatus.OK);
 
-        result = restTemplate.getForEntity(getURI("/swagger-ui/index.html"), Void.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        httpStatusCode = getStatus(getURI("/ui/captcha"));
+        assertThat(httpStatusCode).isEqualTo(HttpStatus.OK);
+
+        httpStatusCode = getStatus(getURI("/boards/1"));
+        assertThat(httpStatusCode).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+        httpStatusCode = getStatus(getURI("/code-lists/1"));
+        assertThat(httpStatusCode).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+        httpStatusCode = getStatus(getURI("/code-list-items/1"));
+        assertThat(httpStatusCode).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+        httpStatusCode = getStatus(getURI("/config/vat-rate"));
+        assertThat(httpStatusCode).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+        httpStatusCode = getStatus(getURI("/edges/1"));
+        assertThat(httpStatusCode).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+        httpStatusCode = getStatus(getURI("/orders/1"));
+        assertThat(httpStatusCode).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+        httpStatusCode = getStatus(getURI("/users/1"));
+        assertThat(httpStatusCode).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
+
+    private HttpStatusCode getStatus(final URI uri) {
+        return getStatus(uri, Void.class);
+    }
+
+    private <T> HttpStatusCode getStatus(final URI uri, final Class<T> bodyType) {
+        final AtomicReference<HttpStatusCode> status = new AtomicReference<>();
+        final ResponseEntity<T> responseEntity = restClient.get()
+                .uri(uri)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, ((request, response) -> {
+                    status.set(response.getStatusCode());
+                }))
+                .toEntity(bodyType);
+        if (status.get() != null) {
+            return status.get();
+        }
+        return responseEntity.getStatusCode();
+    }
+
 }
