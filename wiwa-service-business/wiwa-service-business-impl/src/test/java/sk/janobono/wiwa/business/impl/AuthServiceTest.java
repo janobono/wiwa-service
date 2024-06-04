@@ -140,10 +140,7 @@ class AuthServiceTest {
         assertThat(confirmationToken).isNotBlank();
         response = authService.confirm(new ConfirmationData(confirmationToken));
         assertThat(response).isNotNull();
-        final User user = jwtToken.parseToken(response.token());
-        assertThat(user.username()).isEqualTo("username");
-        assertThat(user.firstName()).isEqualTo("John");
-        assertThat(user.lastName()).isEqualTo("Doe");
+        assertThat(jwtToken.parseToken(response.token())).isEqualTo(1L);
     }
 
     @Test
@@ -200,7 +197,7 @@ class AuthServiceTest {
                 .captchaToken(captcha.generateToken("1234"))
                 .build());
         assertThat(response).isNotNull();
-        assertThat(jwtToken.parseToken(response.token()).email()).isEqualTo("changed@test.com");
+        assertThat(jwtToken.parseToken(response.token())).isEqualTo(user.id());
 
         response = authService.changePassword(user, ChangePasswordData.builder()
                 .oldPassword(TestUsers.PASSWORD)
@@ -222,6 +219,6 @@ class AuthServiceTest {
                 .captchaText("1234")
                 .captchaToken(captcha.generateToken("1234"))
                 .build());
-        assertThat(jwtToken.parseToken(response.token()).midName()).isEqualTo("midName");
+        assertThat(jwtToken.parseToken(response.token())).isEqualTo(userDo.getId());
     }
 }

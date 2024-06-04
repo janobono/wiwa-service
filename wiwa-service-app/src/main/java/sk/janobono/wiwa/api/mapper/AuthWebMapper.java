@@ -4,7 +4,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.NullValueCheckStrategy;
 import sk.janobono.wiwa.api.model.auth.*;
+import sk.janobono.wiwa.api.model.user.UserWebDto;
 import sk.janobono.wiwa.business.model.auth.*;
+import sk.janobono.wiwa.model.User;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface AuthWebMapper {
@@ -25,4 +27,6 @@ public interface AuthWebMapper {
     SignUpData mapToData(SignUpWebDto signUp);
 
     RefreshTokenData mapToData(RefreshTokenWebDto refreshToken);
+
+    UserWebDto mapToWebDto(User user);
 }

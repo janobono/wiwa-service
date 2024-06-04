@@ -18,8 +18,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.HandlerExceptionResolver;
-import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.component.JwtToken;
+import sk.janobono.wiwa.dal.repository.ApplicationPropertyRepository;
+import sk.janobono.wiwa.dal.repository.AuthorityRepository;
+import sk.janobono.wiwa.dal.repository.UserRepository;
 import sk.janobono.wiwa.security.ApplicationAccessDeniedHandler;
 import sk.janobono.wiwa.security.ApplicationAuthenticationEntryPoint;
 import sk.janobono.wiwa.security.jwt.JwtAuthenticationEntryPoint;
@@ -36,7 +38,9 @@ public class SecurityConfig {
     private final CorsConfigProperties corsConfigProperties;
     private final SecurityConfigProperties securityConfigProperties;
     private final JwtToken jwtToken;
-    private final ApplicationPropertyService applicationPropertyService;
+    private final ApplicationPropertyRepository applicationPropertyRepository;
+    private final AuthorityRepository authorityRepository;
+    private final UserRepository userRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -91,7 +95,7 @@ public class SecurityConfig {
     }
 
     private JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtToken, applicationPropertyService);
+        return new JwtAuthenticationFilter(jwtToken, applicationPropertyRepository, authorityRepository, userRepository);
     }
 
     private AccessDeniedHandler accessDeniedHandler() {

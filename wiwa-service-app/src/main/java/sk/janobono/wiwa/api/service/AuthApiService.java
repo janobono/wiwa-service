@@ -5,6 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.api.mapper.AuthWebMapper;
 import sk.janobono.wiwa.api.model.auth.*;
+import sk.janobono.wiwa.api.model.user.UserWebDto;
 import sk.janobono.wiwa.business.model.auth.AuthenticationResponseData;
 import sk.janobono.wiwa.business.service.AuthService;
 import sk.janobono.wiwa.model.User;
@@ -58,5 +59,10 @@ public class AuthApiService {
 
     private AuthenticationResponseWebDto mapToWebDto(final AuthenticationResponseData authenticationResponseData) {
         return new AuthenticationResponseWebDto(authenticationResponseData.token(), authenticationResponseData.refreshToken());
+    }
+
+    public UserWebDto getUserDetail() {
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return authWebMapper.mapToWebDto(user);
     }
 }

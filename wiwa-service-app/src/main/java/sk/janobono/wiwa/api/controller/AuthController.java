@@ -2,11 +2,9 @@ package sk.janobono.wiwa.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sk.janobono.wiwa.api.model.auth.*;
+import sk.janobono.wiwa.api.model.user.UserWebDto;
 import sk.janobono.wiwa.api.service.AuthApiService;
 
 @RequiredArgsConstructor
@@ -59,5 +57,10 @@ public class AuthController {
     @PostMapping("/refresh")
     public AuthenticationResponseWebDto refresh(@Valid @RequestBody final RefreshTokenWebDto refreshToken) {
         return authApiService.refresh(refreshToken);
+    }
+
+    @GetMapping("/user-detail")
+    public UserWebDto getUserDetail() {
+        return authApiService.getUserDetail();
     }
 }
