@@ -320,7 +320,7 @@ class OrderServiceTest {
                         .build())
                 .gdprAgreement(true)
                 .businessConditionsAgreement(true)
-                .deliveryDate(LocalDate.now())
+                .deliveryDate(LocalDate.now().plusDays(5))
                 .packageType(OrderPackageType.NO_PACKAGE)
                 .build());
         assertThat(order).isNotNull();

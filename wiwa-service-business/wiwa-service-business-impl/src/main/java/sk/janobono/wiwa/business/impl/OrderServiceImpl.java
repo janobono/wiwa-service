@@ -43,6 +43,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.InvalidParameterException;
 import java.text.MessageFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -587,6 +588,9 @@ public class OrderServiceImpl implements OrderService {
 
     private void checkDeliveryDate(final LocalDate deliveryDate, final List<FreeDayData> freeDays) {
         if (deliveryDate != null) {
+            if (deliveryDate.getDayOfWeek() == DayOfWeek.SATURDAY || deliveryDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                throw WiwaException.ORDER_DELIVERY_DATE_INVALID.exception("Order delivery date is invalid {0}", deliveryDate.toString());
+            }
             final boolean isFreeDay = freeDays.stream()
                     .anyMatch(freeDayData -> {
                         final int day = deliveryDate.getDayOfMonth();

@@ -8,6 +8,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.stereotype.Component;
 import sk.janobono.wiwa.config.JwtConfigProperties;
+import sk.janobono.wiwa.model.Authority;
 import sk.janobono.wiwa.model.User;
 
 import java.security.KeyPair;
@@ -15,13 +16,13 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtToken {
-
-    private static final String ID = "id";
 
     private final Algorithm algorithm;
     private final Long expiration;
@@ -51,7 +52,13 @@ public class JwtToken {
                     .withIssuer(issuer)
                     .withIssuedAt(new Date(issuedAt))
                     .withExpiresAt(new Date(expiresAt(issuedAt)));
-            jwtBuilder.withClaim(ID, user.id());
+            jwtBuilder.withSubject(Long.toString(user.id()));
+            jwtBuilder.withAudience(
+                    Optional.ofNullable(user.authorities()).stream()
+                            .flatMap(Collection::stream)
+                            .map(Authority::toString)
+                            .toArray(String[]::new)
+            );
             return jwtBuilder.sign(algorithm);
         } catch (final Exception e) {
             throw new RuntimeException(e);
@@ -67,6 +74,6 @@ public class JwtToken {
 
     public Long parseToken(final String token) {
         final DecodedJWT jwt = decodeToken(token);
-        return jwt.getClaims().get(ID).asLong();
+        return Long.parseLong(jwt.getSubject());
     }
 }
