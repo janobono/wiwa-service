@@ -9,6 +9,7 @@ import sk.janobono.wiwa.business.impl.util.PropertyUtilService;
 import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.application.*;
 import sk.janobono.wiwa.business.model.board.BoardCategoryData;
+import sk.janobono.wiwa.business.model.edge.EdgeCategoryData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.config.JwtConfigProperties;
@@ -48,6 +49,8 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     private static final String ORDER_SEND_MAIL = "ORDER_SEND_MAIL";
     private static final String ORDER_STATUS_MAIL = "ORDER_STATUS_MAIL";
     private static final String BOARD_MATERIAL_CATEGORY = "BOARD_MATERIAL_CATEGORY";
+    private static final String BOARD_CATEGORIES = "BOARD_CATEGORIES";
+    private static final String EDGE_CATEGORIES = "EDGE_CATEGORIES";
     private static final String ORDER_PROPERTIES = "ORDER_PROPERTIES";
 
     private final ObjectMapper objectMapper;
@@ -604,6 +607,68 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     }
 
     @Override
+    public List<BoardCategoryData> getBoardCategories() {
+        final List<Long> categoryIds = propertyUtilService.getProperty(v -> {
+            try {
+                return Arrays.asList(objectMapper.readValue(v, Long[].class));
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, BOARD_CATEGORIES).orElseGet(Collections::emptyList);
+
+        return categoryIds.stream()
+                .map(codeListRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(cl -> new BoardCategoryData(cl.getId(), cl.getCode(), cl.getName()))
+                .toList();
+    }
+
+    @Override
+    public List<BoardCategoryData> setBoardCategories(final List<Long> categoryIds) {
+        checkCategories(categoryIds);
+        propertyUtilService.setProperty(data -> {
+            try {
+                return objectMapper.writeValueAsString(data);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, BOARD_CATEGORIES, categoryIds);
+        return getBoardCategories();
+    }
+
+    @Override
+    public List<EdgeCategoryData> getEdgeCategories() {
+        final List<Long> categoryIds = propertyUtilService.getProperty(v -> {
+            try {
+                return Arrays.asList(objectMapper.readValue(v, Long[].class));
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, EDGE_CATEGORIES).orElseGet(Collections::emptyList);
+
+        return categoryIds.stream()
+                .map(codeListRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(cl -> new EdgeCategoryData(cl.getId(), cl.getCode(), cl.getName()))
+                .toList();
+    }
+
+    @Override
+    public List<EdgeCategoryData> setEdgeCategories(final List<Long> categoryIds) {
+        checkCategories(categoryIds);
+        propertyUtilService.setProperty(data -> {
+            try {
+                return objectMapper.writeValueAsString(data);
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, EDGE_CATEGORIES, categoryIds);
+        return getEdgeCategories();
+    }
+
+    @Override
     public OrderPropertiesData getOrderProperties() {
         return propertyUtilService.getProperty(v -> {
             try {
@@ -716,5 +781,13 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
             }
         }, ORDER_PROPERTIES, orderProperties);
         return orderProperties;
+    }
+
+    private void checkCategories(final List<Long> categoryIds) {
+        for (final Long categoryId : categoryIds) {
+            if (!codeListRepository.existsById(categoryId)) {
+                throw WiwaException.CODE_LIST_NOT_FOUND.exception("Category does not exist");
+            }
+        }
     }
 }

@@ -7,10 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.api.mapper.ApplicationImageWebMapper;
 import sk.janobono.wiwa.api.mapper.BoardWebMapper;
+import sk.janobono.wiwa.api.mapper.EdgeWebMapper;
 import sk.janobono.wiwa.api.mapper.UiWebMapper;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.api.model.board.BoardCategoryWebDto;
+import sk.janobono.wiwa.api.model.edge.EdgeCategoryWebDto;
 import sk.janobono.wiwa.business.service.ApplicationImageService;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 
@@ -26,6 +28,7 @@ public class ConfigApiService {
     private final ApplicationImageWebMapper applicationImageWebMapper;
     private final UiWebMapper uiWebMapper;
     private final BoardWebMapper boardWebMapper;
+    private final EdgeWebMapper edgeWebMapper;
 
     public Page<ApplicationImageInfoWebDto> getApplicationImages(final Pageable pageable) {
         return applicationImageService.getApplicationImages(pageable)
@@ -184,8 +187,24 @@ public class ConfigApiService {
         return boardWebMapper.mapToWebDto(applicationPropertyService.getBoardMaterialCategory());
     }
 
-    public BoardCategoryWebDto setBoardMaterialCategory(final long categoryId) {
-        return boardWebMapper.mapToWebDto(applicationPropertyService.setBoardMaterialCategory(categoryId));
+    public BoardCategoryWebDto setBoardMaterialCategory(final SingleValueBodyWebDto<Long> categoryId) {
+        return boardWebMapper.mapToWebDto(applicationPropertyService.setBoardMaterialCategory(categoryId.value()));
+    }
+
+    public List<BoardCategoryWebDto> getBoardCategories() {
+        return applicationPropertyService.getBoardCategories().stream().map(boardWebMapper::mapToWebDto).toList();
+    }
+
+    public List<BoardCategoryWebDto> setBoardCategories(final List<Long> categoryIds) {
+        return applicationPropertyService.setBoardCategories(categoryIds).stream().map(boardWebMapper::mapToWebDto).toList();
+    }
+
+    public List<EdgeCategoryWebDto> getEdgeCategories() {
+        return applicationPropertyService.getEdgeCategories().stream().map(edgeWebMapper::mapToWebDto).toList();
+    }
+
+    public List<EdgeCategoryWebDto> setEdgeCategories(final List<Long> categoryIds) {
+        return applicationPropertyService.setEdgeCategories(categoryIds).stream().map(edgeWebMapper::mapToWebDto).toList();
     }
 
     public OrderPropertiesWebDto setOrderProperties(final OrderPropertiesWebDto orderProperties) {

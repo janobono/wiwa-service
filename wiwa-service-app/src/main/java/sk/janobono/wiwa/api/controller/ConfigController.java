@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.api.model.board.BoardCategoryWebDto;
+import sk.janobono.wiwa.api.model.edge.EdgeCategoryWebDto;
 import sk.janobono.wiwa.api.service.ConfigApiService;
 
 import java.math.BigDecimal;
@@ -246,7 +247,31 @@ public class ConfigController {
     @PostMapping(value = "/board-material-category")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public BoardCategoryWebDto setBoardMaterialCategory(@Valid @RequestBody final SingleValueBodyWebDto<Long> categoryId) {
-        return configApiService.setBoardMaterialCategory(categoryId.value());
+        return configApiService.setBoardMaterialCategory(categoryId);
+    }
+
+    @GetMapping(value = "/board-categories")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public List<BoardCategoryWebDto> getBoardCategories() {
+        return configApiService.getBoardCategories();
+    }
+
+    @PostMapping(value = "/board-categories")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public List<BoardCategoryWebDto> setBoardCategories(@Valid @RequestBody final List<Long> categoryIds) {
+        return configApiService.setBoardCategories(categoryIds);
+    }
+
+    @GetMapping(value = "/edge-categories")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public List<EdgeCategoryWebDto> getEdgeCategories() {
+        return configApiService.getEdgeCategories();
+    }
+
+    @PostMapping(value = "/edge-categories")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
+    public List<EdgeCategoryWebDto> setEdgeCategories(@Valid @RequestBody final List<Long> categoryIds) {
+        return configApiService.setEdgeCategories(categoryIds);
     }
 
     @PostMapping(value = "/order-properties")
