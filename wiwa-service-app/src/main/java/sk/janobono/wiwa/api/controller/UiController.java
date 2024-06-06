@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
+import sk.janobono.wiwa.api.model.board.BoardCategoryWebDto;
 import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
+import sk.janobono.wiwa.api.model.edge.EdgeCategoryWebDto;
 import sk.janobono.wiwa.api.service.UiApiService;
 
 import java.util.List;
@@ -128,6 +130,16 @@ public class UiController {
     @GetMapping(value = "/free-days")
     public List<FreeDayWebDto> getFreeDays() {
         return uiApiService.getFreeDays();
+    }
+
+    @GetMapping(value = "/board-categories")
+    public List<BoardCategoryWebDto> getBoardCategories() {
+        return uiApiService.getBoardCategories();
+    }
+
+    @GetMapping(value = "/edge-categories")
+    public List<EdgeCategoryWebDto> getEdgeCategories() {
+        return uiApiService.getEdgeCategories();
     }
 
     @GetMapping(value = "/order-properties")

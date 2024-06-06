@@ -191,16 +191,8 @@ public class ConfigApiService {
         return boardWebMapper.mapToWebDto(applicationPropertyService.setBoardMaterialCategory(categoryId.value()));
     }
 
-    public List<BoardCategoryWebDto> getBoardCategories() {
-        return applicationPropertyService.getBoardCategories().stream().map(boardWebMapper::mapToWebDto).toList();
-    }
-
     public List<BoardCategoryWebDto> setBoardCategories(final List<Long> categoryIds) {
         return applicationPropertyService.setBoardCategories(categoryIds).stream().map(boardWebMapper::mapToWebDto).toList();
-    }
-
-    public List<EdgeCategoryWebDto> getEdgeCategories() {
-        return applicationPropertyService.getEdgeCategories().stream().map(edgeWebMapper::mapToWebDto).toList();
     }
 
     public List<EdgeCategoryWebDto> setEdgeCategories(final List<Long> categoryIds) {

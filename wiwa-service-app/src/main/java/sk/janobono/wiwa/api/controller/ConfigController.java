@@ -250,22 +250,10 @@ public class ConfigController {
         return configApiService.setBoardMaterialCategory(categoryId);
     }
 
-    @GetMapping(value = "/board-categories")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<BoardCategoryWebDto> getBoardCategories() {
-        return configApiService.getBoardCategories();
-    }
-
     @PostMapping(value = "/board-categories")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
     public List<BoardCategoryWebDto> setBoardCategories(@Valid @RequestBody final List<Long> categoryIds) {
         return configApiService.setBoardCategories(categoryIds);
-    }
-
-    @GetMapping(value = "/edge-categories")
-    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<EdgeCategoryWebDto> getEdgeCategories() {
-        return configApiService.getEdgeCategories();
     }
 
     @PostMapping(value = "/edge-categories")
