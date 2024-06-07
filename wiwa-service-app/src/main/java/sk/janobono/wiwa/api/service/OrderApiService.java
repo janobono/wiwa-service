@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import sk.janobono.wiwa.api.mapper.ApplicationImageWebMapper;
 import sk.janobono.wiwa.api.mapper.OrderWebMapper;
+import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
 import sk.janobono.wiwa.business.service.OrderService;
@@ -79,13 +80,13 @@ public class OrderApiService {
         return orderWebMapper.mapToWebDto(orderService.recountOrder(id, user.id()));
     }
 
-    public String getHtml(final long id) {
+    public SingleValueBodyWebDto<String> getHtml(final long id) {
         checkEmployeeAccess(id);
-        return orderService.getHtml(id);
+        return new SingleValueBodyWebDto<>(orderService.getHtml(id));
     }
 
-    public String getCsv(final long id) {
-        return orderService.getCsv(id);
+    public SingleValueBodyWebDto<String> getCsv(final long id) {
+        return new SingleValueBodyWebDto<>(orderService.getCsv(id));
     }
 
     public OrderWebDto sendOrder(final long id, final SendOrderWebDto sendOrder) {

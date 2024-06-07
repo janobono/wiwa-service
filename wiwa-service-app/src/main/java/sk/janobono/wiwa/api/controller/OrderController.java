@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.api.service.OrderApiService;
 import sk.janobono.wiwa.model.OrderStatus;
@@ -86,14 +87,14 @@ public class OrderController {
         return orderApiService.recountOrder(id);
     }
 
-    @GetMapping(value = "/{id}/html", produces = MediaType.TEXT_HTML_VALUE)
-    public String getHtml(@PathVariable("id") final long id) {
+    @GetMapping(value = "/{id}/html")
+    public SingleValueBodyWebDto<String> getHtml(@PathVariable("id") final long id) {
         return orderApiService.getHtml(id);
     }
 
-    @GetMapping(value = "/{id}/csv", produces = "text/csv")
+    @GetMapping(value = "/{id}/csv")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public String getCsv(@PathVariable("id") final long id) {
+    public SingleValueBodyWebDto<String> getCsv(@PathVariable("id") final long id) {
         return orderApiService.getCsv(id);
     }
 
