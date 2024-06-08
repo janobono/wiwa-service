@@ -70,8 +70,6 @@
             display: block;
             margin-left: auto;
             margin-right: auto;
-            max-height: 500px;
-            max-width: 20%;
         }
 
         img {
@@ -270,7 +268,8 @@
                     class="w3-center"
                     th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST)}"
             >Parts list</h2>
-            <div th:each="item : ${htmlContent.items()}">
+            <div class="w3-margin-top" th:each="item : ${htmlContent.items()}">
+                <hr>
                 <table class="w3-table w3-striped">
                     <tr>
                         <td th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_NAME)}"
@@ -317,76 +316,76 @@
                             <img
                                     th:src="${item.image()}"
                                     class="w3-image"
+                                    style="max-width: 800px; max-height: 800px;"
                                     src="image.png"
                                     alt="part image">
                         </td>
                     </tr>
                 </table>
 
+                <h3 th:if="${!item.edges().isEmpty()}" th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_EDGES)}">
+                    edges
+                </h3>
                 <table th:if="${!item.edges().isEmpty()}" class="w3-table w3-striped">
-                    <tr th:if="${!item.edges().isEmpty()}">
-                        <td
-                                colspan="2"
-                                th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_EDGES)}"
-                        >edges
-                        </td>
-                    </tr>
                     <tr th:each="edge : ${item.edges()}">
                         <td th:text="${edge.position()}">A1</td>
                         <td th:text="${edge.name()}">code 19x0.8</td>
                     </tr>
                 </table>
 
+                <h3 th:if="${!item.corners().isEmpty()}" th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_CORNERS)}">
+                    corners
+                </h3>
                 <table th:if="${!item.corners().isEmpty()}" class="w3-table w3-striped">
-                    <tr th:if="${!item.corners().isEmpty()}">
-                        <td
-                                colspan="2"
-                                th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_CORNERS)}"
-                        >corners
-                        </td>
-                    </tr>
                     <tr th:each="corner : ${item.corners()}">
                         <td th:text="${corner.position()}">A1B1</td>
                         <td th:text="${corner.name()}">80 mm x 100 mm</td>
                     </tr>
                 </table>
 
+                <h3 th:if="${!item.boards().isEmpty()}" th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_BOARDS)}">
+                    boards
+                </h3>
                 <table th:if="${!item.boards().isEmpty()}" class="w3-table w3-striped">
-                    <tr th:if="${!item.boards().isEmpty()}">
-                        <td
-                                colspan="2"
-                                th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_BOARDS)}"
-                        >boards
-                        </td>
-                    </tr>
                     <tr th:each="board : ${item.boards()}">
                         <td>
                             <img
                                     th:src="${board.image()}"
                                     class="w3-image"
+                                    style="max-height: 250px; max-width: 250px;"
                                     src="image.png"
                                     alt="part image">
                         </td>
                         <td>
                             <table class="w3-table">
                                 <tr>
-                                    <td th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_POSITION)}">position</td>
+                                    <td th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_POSITION)}">
+                                        position
+                                    </td>
                                     <td th:text="${board.position()}">TOP</td>
                                 </tr>
                                 <tr>
-                                    <td th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_MATERIAL)}">material</td>
+                                    <td th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_MATERIAL)}">
+                                        material
+                                    </td>
                                     <td th:text="${board.material()}">material1</td>
                                 </tr>
                                 <tr>
-                                    <td th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_NAME)}">name</td>
+                                    <td th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).BOARD_SUMMARY_NAME)}">
+                                        name
+                                    </td>
                                     <td th:text="${board.name()}">b-code s-code name</td>
                                 </tr>
                                 <tr>
-                                    <td th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_X)}">x</td>
+                                    <td th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_X)}">
+                                        x
+                                    </td>
                                     <td th:text="${board.dimX()}">250 mm</td>
                                 </tr>
                                 <tr>
-                                    <td th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_Y)}">y</td>
+                                    <td th:text="${orderProperties.content().get(T(sk.janobono.wiwa.model.OrderContent).PARTS_LIST_Y)}">
+                                        y
+                                    </td>
                                     <td th:text="${board.dimY()}">250 mm</td>
                                 </tr>
                             </table>

@@ -733,6 +733,7 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
                     put(OrderContent.EDGE_SUMMARY_NAME, "name");
                     put(OrderContent.EDGE_SUMMARY_LENGTH, "length");
                     put(OrderContent.EDGE_SUMMARY_GLUE_LENGTH, "glue length");
+                    put(OrderContent.EDGE_SUMMARY_WEIGHT, "weight");
                     put(OrderContent.EDGE_SUMMARY_EDGE_PRICE, "edge price");
                     put(OrderContent.EDGE_SUMMARY_EDGE_VAT_PRICE, "edge vat price");
                     put(OrderContent.EDGE_SUMMARY_GLUE_PRICE, "glue price");
