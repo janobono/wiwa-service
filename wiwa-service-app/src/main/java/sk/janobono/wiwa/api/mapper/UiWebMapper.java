@@ -4,11 +4,17 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.NullValueCheckStrategy;
 import sk.janobono.wiwa.api.model.DimensionsWebDto;
+import sk.janobono.wiwa.api.model.EntryWebDto;
 import sk.janobono.wiwa.api.model.application.*;
 import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
 import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.application.*;
 import sk.janobono.wiwa.business.model.captcha.CaptchaData;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface UiWebMapper {
@@ -46,7 +52,77 @@ public interface UiWebMapper {
 
     OrderStatusMailWebDto mapToWebDto(OrderStatusMailData orderStatusMail);
 
-    OrderPropertiesWebDto mapToWebDto(OrderPropertiesData orderProperties);
+    default OrderPropertiesWebDto mapToWebDto(final OrderPropertiesData orderProperties) {
+        if (orderProperties == null) {
+            return null;
+        }
+        return OrderPropertiesWebDto.builder()
+                .dimensions(
+                        Optional.ofNullable(orderProperties.dimensions()).stream()
+                                .map(Map::entrySet)
+                                .flatMap(Collection::stream)
+                                .map(item -> new EntryWebDto<>(item.getKey(), item.getValue()))
+                                .collect(Collectors.toSet())
+                )
+                .boards(
+                        Optional.ofNullable(orderProperties.boards()).stream()
+                                .map(Map::entrySet)
+                                .flatMap(Collection::stream)
+                                .map(item -> new EntryWebDto<>(item.getKey(), item.getValue()))
+                                .collect(Collectors.toSet())
+                )
+                .edges(
+                        Optional.ofNullable(orderProperties.edges()).stream()
+                                .map(Map::entrySet)
+                                .flatMap(Collection::stream)
+                                .map(item -> new EntryWebDto<>(item.getKey(), item.getValue()))
+                                .collect(Collectors.toSet())
+                )
+                .corners(
+                        Optional.ofNullable(orderProperties.corners()).stream()
+                                .map(Map::entrySet)
+                                .flatMap(Collection::stream)
+                                .map(item -> new EntryWebDto<>(item.getKey(), item.getValue()))
+                                .collect(Collectors.toSet())
+                )
+                .pattern(
+                        Optional.ofNullable(orderProperties.pattern()).stream()
+                                .map(Map::entrySet)
+                                .flatMap(Collection::stream)
+                                .map(item -> new EntryWebDto<>(item.getKey(), item.getValue()))
+                                .collect(Collectors.toSet())
+                )
+                .content(
+                        Optional.ofNullable(orderProperties.content()).stream()
+                                .map(Map::entrySet)
+                                .flatMap(Collection::stream)
+                                .map(item -> new EntryWebDto<>(item.getKey(), item.getValue()))
+                                .collect(Collectors.toSet())
+                )
+                .packageType(
+                        Optional.ofNullable(orderProperties.packageType()).stream()
+                                .map(Map::entrySet)
+                                .flatMap(Collection::stream)
+                                .map(item -> new EntryWebDto<>(item.getKey(), item.getValue()))
+                                .collect(Collectors.toSet())
+                )
+                .csvSeparator(orderProperties.csvSeparator())
+                .csvReplacements(
+                        Optional.ofNullable(orderProperties.csvReplacements()).stream()
+                                .map(Map::entrySet)
+                                .flatMap(Collection::stream)
+                                .map(item -> new EntryWebDto<>(item.getKey(), item.getValue()))
+                                .collect(Collectors.toSet())
+                )
+                .csvColumns(
+                        Optional.ofNullable(orderProperties.csvColumns()).stream()
+                                .map(Map::entrySet)
+                                .flatMap(Collection::stream)
+                                .map(item -> new EntryWebDto<>(item.getKey(), item.getValue()))
+                                .collect(Collectors.toSet())
+                )
+                .build();
+    }
 
     ResetPasswordMailData mapToData(ResetPasswordMailWebDto resetPasswordMail);
 
@@ -75,5 +151,57 @@ public interface UiWebMapper {
 
     OrderStatusMailData mapToData(OrderStatusMailWebDto orderStatusMail);
 
-    OrderPropertiesData mapToData(OrderPropertiesWebDto orderProperties);
+    default OrderPropertiesData mapToData(final OrderPropertiesWebDto orderProperties) {
+        if (orderProperties == null) {
+            return null;
+        }
+        return OrderPropertiesData.builder()
+                .dimensions(
+                        Optional.ofNullable(orderProperties.dimensions()).stream()
+                                .flatMap(Collection::stream)
+                                .collect(Collectors.toMap(EntryWebDto::key, EntryWebDto::value))
+                )
+                .boards(
+                        Optional.ofNullable(orderProperties.boards()).stream()
+                                .flatMap(Collection::stream)
+                                .collect(Collectors.toMap(EntryWebDto::key, EntryWebDto::value))
+                )
+                .edges(
+                        Optional.ofNullable(orderProperties.edges()).stream()
+                                .flatMap(Collection::stream)
+                                .collect(Collectors.toMap(EntryWebDto::key, EntryWebDto::value))
+                )
+                .corners(
+                        Optional.ofNullable(orderProperties.corners()).stream()
+                                .flatMap(Collection::stream)
+                                .collect(Collectors.toMap(EntryWebDto::key, EntryWebDto::value))
+                )
+                .pattern(
+                        Optional.ofNullable(orderProperties.pattern()).stream()
+                                .flatMap(Collection::stream)
+                                .collect(Collectors.toMap(EntryWebDto::key, EntryWebDto::value))
+                )
+                .content(
+                        Optional.ofNullable(orderProperties.content()).stream()
+                                .flatMap(Collection::stream)
+                                .collect(Collectors.toMap(EntryWebDto::key, EntryWebDto::value))
+                )
+                .packageType(
+                        Optional.ofNullable(orderProperties.packageType()).stream()
+                                .flatMap(Collection::stream)
+                                .collect(Collectors.toMap(EntryWebDto::key, EntryWebDto::value))
+                )
+                .csvSeparator(orderProperties.csvSeparator())
+                .csvReplacements(
+                        Optional.ofNullable(orderProperties.csvReplacements()).stream()
+                                .flatMap(Collection::stream)
+                                .collect(Collectors.toMap(EntryWebDto::key, EntryWebDto::value))
+                )
+                .csvColumns(
+                        Optional.ofNullable(orderProperties.csvColumns()).stream()
+                                .flatMap(Collection::stream)
+                                .collect(Collectors.toMap(EntryWebDto::key, EntryWebDto::value))
+                )
+                .build();
+    }
 }

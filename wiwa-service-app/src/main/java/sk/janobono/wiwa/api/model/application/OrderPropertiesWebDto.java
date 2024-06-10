@@ -2,20 +2,24 @@ package sk.janobono.wiwa.api.model.application;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
+import sk.janobono.wiwa.api.model.EntryWebDto;
 import sk.janobono.wiwa.model.*;
 
 import java.util.Map;
+import java.util.Set;
 
+@Builder
 public record OrderPropertiesWebDto(
-        @NotNull Map<BoardDimension, String> dimensions,
-        @NotNull Map<BoardPosition, String> boards,
-        @NotNull Map<EdgePosition, String> edges,
-        @NotNull Map<CornerPosition, String> corners,
-        @NotNull Map<OrderPattern, String> pattern,
-        @NotNull Map<OrderContent, String> content,
-        @NotNull Map<OrderPackageType, String> packageType,
+        @NotNull Set<EntryWebDto<BoardDimension, String>> dimensions,
+        @NotNull Set<EntryWebDto<BoardPosition, String>> boards,
+        @NotNull Set<EntryWebDto<EdgePosition, String>> edges,
+        @NotNull Set<EntryWebDto<CornerPosition, String>> corners,
+        @NotNull Set<EntryWebDto<OrderPattern, String>> pattern,
+        @NotNull Set<EntryWebDto<OrderContent, String>> content,
+        @NotNull Set<EntryWebDto<OrderPackageType, String>> packageType,
         @NotEmpty String csvSeparator,
-        @NotNull Map<String, String> csvReplacements,
-        @NotNull Map<CSVColumn, String> csvColumns
+        @NotNull Set<EntryWebDto<String, String>> csvReplacements,
+        @NotNull Set<EntryWebDto<CSVColumn, String>> csvColumns
 ) {
 }
