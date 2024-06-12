@@ -109,7 +109,7 @@ public class BoardRepositoryImpl implements BoardRepository {
             if (pageable.getSort().isSorted()) {
                 mapOrderBy(pageable, select);
             } else {
-                select.ORDER_BY(MetaColumnWiwaBoard.NAME.column(), Order.ASC);
+                select.ORDER_BY(MetaColumnWiwaBoard.ID.column(), Order.ASC);
             }
 
             mapCriteria(criteria, select);

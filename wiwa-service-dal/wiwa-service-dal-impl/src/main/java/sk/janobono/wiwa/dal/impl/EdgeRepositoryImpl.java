@@ -108,7 +108,7 @@ public class EdgeRepositoryImpl implements EdgeRepository {
             if (pageable.getSort().isSorted()) {
                 mapOrderBy(pageable, select);
             } else {
-                select.ORDER_BY(MetaColumnWiwaEdge.NAME.column(), Order.ASC);
+                select.ORDER_BY(MetaColumnWiwaEdge.ID.column(), Order.ASC);
             }
 
             mapCriteria(criteria, select);

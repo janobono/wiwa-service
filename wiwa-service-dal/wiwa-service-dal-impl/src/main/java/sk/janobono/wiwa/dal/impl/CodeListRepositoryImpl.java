@@ -107,7 +107,7 @@ public class CodeListRepositoryImpl implements CodeListRepository {
             if (pageable.getSort().isSorted()) {
                 mapOrderBy(pageable, select);
             } else {
-                select.ORDER_BY(MetaColumnWiwaCodeList.NAME.column(), Order.ASC);
+                select.ORDER_BY(MetaColumnWiwaCodeList.ID.column(), Order.ASC);
             }
 
             mapCriteria(criteria, select);
