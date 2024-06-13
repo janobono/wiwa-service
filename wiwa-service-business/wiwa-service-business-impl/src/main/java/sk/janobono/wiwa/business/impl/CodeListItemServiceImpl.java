@@ -168,6 +168,7 @@ public class CodeListItemServiceImpl implements CodeListItemService {
         return new CodeListItemData(
                 codeListCodeDo.getId(),
                 codeListCodeDo.getCodeListId(),
+                codeListCodeDo.getSortNum(),
                 codeListCodeDo.getCode(),
                 codeListCodeDo.getValue(),
                 isLeafItem(codeListCodeDo.getId())
