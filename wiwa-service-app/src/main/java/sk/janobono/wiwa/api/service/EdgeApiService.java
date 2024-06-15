@@ -5,8 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import sk.janobono.wiwa.api.mapper.CategoryWebMapper;
 import sk.janobono.wiwa.api.mapper.EdgeWebMapper;
-import sk.janobono.wiwa.api.model.edge.EdgeCategoryItemChangeWebDto;
+import sk.janobono.wiwa.api.model.CategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeWebDto;
 import sk.janobono.wiwa.business.model.edge.EdgeSearchCriteriaData;
@@ -21,6 +22,7 @@ public class EdgeApiService {
 
     private final EdgeService edgeService;
     private final EdgeWebMapper edgeWebMapper;
+    private final CategoryWebMapper categoryWebMapper;
 
     public Page<EdgeWebDto> getEdges(
             final String searchField,
@@ -74,9 +76,9 @@ public class EdgeApiService {
         edgeService.deleteEdgeImage(id);
     }
 
-    public EdgeWebDto setEdgeCategoryItems(final long id, final List<EdgeCategoryItemChangeWebDto> categoryItems) {
+    public EdgeWebDto setEdgeCategoryItems(final long id, final List<CategoryItemChangeWebDto> categoryItems) {
         return edgeWebMapper.mapToWebDto(
-                edgeService.setEdgeCategoryItems(id, categoryItems.stream().map(edgeWebMapper::mapToData).toList())
+                edgeService.setEdgeCategoryItems(id, categoryItems.stream().map(categoryWebMapper::mapToData).toList())
         );
     }
 }

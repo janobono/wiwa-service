@@ -3,19 +3,16 @@ package sk.janobono.wiwa.api.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.NullValueCheckStrategy;
-import sk.janobono.wiwa.api.model.board.*;
-import sk.janobono.wiwa.business.model.board.*;
+import sk.janobono.wiwa.api.model.board.BoardChangeWebDto;
+import sk.janobono.wiwa.api.model.board.BoardWebDto;
+import sk.janobono.wiwa.business.model.board.BoardChangeData;
+import sk.janobono.wiwa.business.model.board.BoardData;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+        uses = {CategoryWebMapper.class})
 public interface BoardWebMapper {
-
-    BoardCategoryWebDto mapToWebDto(BoardCategoryData boardCategory);
-
-    BoardCategoryItemWebDto mapToWebDto(BoardCategoryItemData boardCategoryItem);
 
     BoardWebDto mapToWebDto(BoardData boardData);
 
     BoardChangeData mapToData(BoardChangeWebDto boardChange);
-
-    BoardCategoryItemChangeData mapToData(BoardCategoryItemChangeWebDto boardCategoryItemChange);
 }

@@ -7,10 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import sk.janobono.wiwa.api.model.CategoryWebDto;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
-import sk.janobono.wiwa.api.model.board.BoardCategoryWebDto;
-import sk.janobono.wiwa.api.model.edge.EdgeCategoryWebDto;
 import sk.janobono.wiwa.api.service.ConfigApiService;
 
 import java.math.BigDecimal;
@@ -240,25 +239,25 @@ public class ConfigController {
 
     @GetMapping(value = "/board-material-category")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public BoardCategoryWebDto getBoardMaterialCategory() {
+    public CategoryWebDto getBoardMaterialCategory() {
         return configApiService.getBoardMaterialCategory();
     }
 
     @PostMapping(value = "/board-material-category")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public BoardCategoryWebDto setBoardMaterialCategory(@Valid @RequestBody final SingleValueBodyWebDto<Long> categoryId) {
+    public CategoryWebDto setBoardMaterialCategory(@Valid @RequestBody final SingleValueBodyWebDto<Long> categoryId) {
         return configApiService.setBoardMaterialCategory(categoryId);
     }
 
     @PostMapping(value = "/board-categories")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<BoardCategoryWebDto> setBoardCategories(@Valid @RequestBody final List<Long> categoryIds) {
+    public List<CategoryWebDto> setBoardCategories(@Valid @RequestBody final List<Long> categoryIds) {
         return configApiService.setBoardCategories(categoryIds);
     }
 
     @PostMapping(value = "/edge-categories")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<EdgeCategoryWebDto> setEdgeCategories(@Valid @RequestBody final List<Long> categoryIds) {
+    public List<CategoryWebDto> setEdgeCategories(@Valid @RequestBody final List<Long> categoryIds) {
         return configApiService.setEdgeCategories(categoryIds);
     }
 

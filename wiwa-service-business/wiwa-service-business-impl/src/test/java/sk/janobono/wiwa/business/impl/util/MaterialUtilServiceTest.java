@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import sk.janobono.wiwa.business.TestRepositories;
-import sk.janobono.wiwa.business.model.board.BoardCategoryData;
+import sk.janobono.wiwa.business.model.CategoryData;
 import sk.janobono.wiwa.business.model.order.OrderBoardData;
 import sk.janobono.wiwa.business.model.order.OrderEdgeData;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
@@ -42,20 +42,20 @@ class MaterialUtilServiceTest {
         assertThat(data).isEmpty();
         data = materialUtilService.getMaterialNames(List.of(), null, null);
         assertThat(data).isEmpty();
-        data = materialUtilService.getMaterialNames(List.of(), BoardCategoryData.builder().build(), null);
+        data = materialUtilService.getMaterialNames(List.of(), CategoryData.builder().build(), null);
         assertThat(data).isEmpty();
         data = materialUtilService.getMaterialNames(List.of(OrderBoardData.builder().id(1L).build()),
-                BoardCategoryData.builder().id(2L).build(), null);
+                CategoryData.builder().id(2L).build(), null);
         assertThat(data).hasSize(1);
         assertThat(data).containsKey(1L);
         assertThat(data.get(1L)).isEqualTo("");
         data = materialUtilService.getMaterialNames(List.of(OrderBoardData.builder().id(1L).build()),
-                BoardCategoryData.builder().id(2L).build(), "not found");
+                CategoryData.builder().id(2L).build(), "not found");
         assertThat(data).hasSize(1);
         assertThat(data).containsKey(1L);
         assertThat(data.get(1L)).isEqualTo("not found");
         data = materialUtilService.getMaterialNames(List.of(OrderBoardData.builder().id(1L).build()),
-                BoardCategoryData.builder().id(1L).build(), "not found");
+                CategoryData.builder().id(1L).build(), "not found");
         assertThat(data).hasSize(1);
         assertThat(data).containsKey(1L);
         assertThat(data.get(1L)).isEqualTo("value");

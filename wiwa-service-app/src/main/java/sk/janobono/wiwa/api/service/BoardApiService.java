@@ -6,7 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.api.mapper.BoardWebMapper;
-import sk.janobono.wiwa.api.model.board.BoardCategoryItemChangeWebDto;
+import sk.janobono.wiwa.api.mapper.CategoryWebMapper;
+import sk.janobono.wiwa.api.model.CategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardWebDto;
 import sk.janobono.wiwa.business.model.board.BoardSearchCriteriaData;
@@ -21,6 +22,7 @@ public class BoardApiService {
 
     private final BoardService boardService;
     private final BoardWebMapper boardWebMapper;
+    private final CategoryWebMapper categoryWebMapper;
 
     public Page<BoardWebDto> getBoards(
             final String searchField,
@@ -84,9 +86,9 @@ public class BoardApiService {
         boardService.deleteBoardImage(id);
     }
 
-    public BoardWebDto setBoardCategoryItems(final long id, final List<BoardCategoryItemChangeWebDto> categoryItems) {
+    public BoardWebDto setBoardCategoryItems(final long id, final List<CategoryItemChangeWebDto> categoryItems) {
         return boardWebMapper.mapToWebDto(
-                boardService.setBoardCategoryItems(id, categoryItems.stream().map(boardWebMapper::mapToData).toList())
+                boardService.setBoardCategoryItems(id, categoryItems.stream().map(categoryWebMapper::mapToData).toList())
         );
     }
 }

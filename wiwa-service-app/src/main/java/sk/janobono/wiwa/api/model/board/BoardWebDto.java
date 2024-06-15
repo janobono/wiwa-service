@@ -1,5 +1,7 @@
 package sk.janobono.wiwa.api.model.board;
 
+import sk.janobono.wiwa.api.model.CategoryItemWebDto;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -18,6 +20,6 @@ public record BoardWebDto(
         BigDecimal thickness,
         BigDecimal price,
         BigDecimal vatPrice,
-        List<BoardCategoryItemWebDto> categoryItems
+        List<CategoryItemWebDto> categoryItems
 ) {
 }

@@ -2,7 +2,7 @@ package sk.janobono.wiwa.business.impl.util;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sk.janobono.wiwa.business.model.board.BoardCategoryData;
+import sk.janobono.wiwa.business.model.CategoryData;
 import sk.janobono.wiwa.business.model.order.OrderBoardData;
 import sk.janobono.wiwa.business.model.order.OrderEdgeData;
 import sk.janobono.wiwa.dal.domain.CodeListItemDo;
@@ -18,13 +18,13 @@ public class MaterialUtilService {
 
     private final BoardCodeListItemRepository boardCodeListItemRepository;
 
-    public Map<Long, String> getMaterialNames(final List<OrderBoardData> boards, final BoardCategoryData boardCategoryData, final String notFoundName) {
+    public Map<Long, String> getMaterialNames(final List<OrderBoardData> boards, final CategoryData categoryData, final String notFoundName) {
         final Map<Long, String> result = new HashMap<>();
 
         for (final OrderBoardData board : Optional.ofNullable(boards).orElse(Collections.emptyList())) {
             final String value = boardCodeListItemRepository.findByBoardId(board.id()).stream()
                     .filter(codeListItem -> Objects.equals(codeListItem.getCodeListId(),
-                            Optional.ofNullable(boardCategoryData).map(BoardCategoryData::id).orElse(null)))
+                            Optional.ofNullable(categoryData).map(CategoryData::id).orElse(null)))
                     .findFirst()
                     .map(CodeListItemDo::getValue)
                     .orElse(Optional.ofNullable(notFoundName).orElse(""));

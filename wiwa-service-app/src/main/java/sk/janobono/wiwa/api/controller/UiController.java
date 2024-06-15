@@ -9,12 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sk.janobono.wiwa.api.model.CategoryWebDto;
 import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
-import sk.janobono.wiwa.api.model.board.BoardCategoryWebDto;
 import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
-import sk.janobono.wiwa.api.model.edge.EdgeCategoryWebDto;
 import sk.janobono.wiwa.api.service.UiApiService;
 
 import java.util.List;
@@ -133,12 +132,12 @@ public class UiController {
     }
 
     @GetMapping(value = "/board-categories")
-    public List<BoardCategoryWebDto> getBoardCategories() {
+    public List<CategoryWebDto> getBoardCategories() {
         return uiApiService.getBoardCategories();
     }
 
     @GetMapping(value = "/edge-categories")
-    public List<EdgeCategoryWebDto> getEdgeCategories() {
+    public List<CategoryWebDto> getEdgeCategories() {
         return uiApiService.getEdgeCategories();
     }
 

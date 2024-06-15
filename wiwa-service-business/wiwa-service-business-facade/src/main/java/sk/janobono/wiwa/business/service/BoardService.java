@@ -3,7 +3,7 @@ package sk.janobono.wiwa.business.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.business.model.board.BoardCategoryItemChangeData;
+import sk.janobono.wiwa.business.model.CategoryItemChangeData;
 import sk.janobono.wiwa.business.model.board.BoardChangeData;
 import sk.janobono.wiwa.business.model.board.BoardData;
 import sk.janobono.wiwa.business.model.board.BoardSearchCriteriaData;
@@ -26,5 +26,5 @@ public interface BoardService {
 
     void deleteBoardImage(long boardId);
 
-    BoardData setBoardCategoryItems(long boardId, List<BoardCategoryItemChangeData> categoryItems);
+    BoardData setBoardCategoryItems(long boardId, List<CategoryItemChangeData> categoryItems);
 }

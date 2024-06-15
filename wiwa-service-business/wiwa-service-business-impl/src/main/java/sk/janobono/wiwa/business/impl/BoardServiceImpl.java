@@ -8,7 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
-import sk.janobono.wiwa.business.model.board.*;
+import sk.janobono.wiwa.business.model.CategoryData;
+import sk.janobono.wiwa.business.model.CategoryItemChangeData;
+import sk.janobono.wiwa.business.model.CategoryItemData;
+import sk.janobono.wiwa.business.model.board.BoardChangeData;
+import sk.janobono.wiwa.business.model.board.BoardData;
+import sk.janobono.wiwa.business.model.board.BoardSearchCriteriaData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.BoardService;
 import sk.janobono.wiwa.component.ImageUtil;
@@ -143,12 +148,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Transactional
     @Override
-    public BoardData setBoardCategoryItems(final long boardId, final List<BoardCategoryItemChangeData> categoryItems) {
+    public BoardData setBoardCategoryItems(final long boardId, final List<CategoryItemChangeData> categoryItems) {
         final BoardDo boardDo = getBoardDo(boardId);
 
         boardCodeListItemRepository.saveAll(boardDo.getId(),
                 categoryItems.stream()
-                        .map(BoardCategoryItemChangeData::itemId)
+                        .map(CategoryItemChangeData::itemId)
                         .toList()
         );
 
@@ -200,20 +205,20 @@ public class BoardServiceImpl implements BoardService {
                 .build();
     }
 
-    private List<BoardCategoryItemData> toBoardCategoryItems(final Long boardId) {
+    private List<CategoryItemData> toBoardCategoryItems(final Long boardId) {
         return boardCodeListItemRepository.findByBoardId(boardId).stream()
                 .map(this::toBoardCategoryItem)
                 .toList();
     }
 
-    private BoardCategoryItemData toBoardCategoryItem(final CodeListItemDo codeListItemDo) {
+    private CategoryItemData toBoardCategoryItem(final CodeListItemDo codeListItemDo) {
         final CodeListDo codeList = codeListRepository.findById(codeListItemDo.getCodeListId())
                 .orElseThrow(() -> WiwaException.CODE_LIST_NOT_FOUND.exception("Code list with id {0} not found", codeListItemDo.getCodeListId()));
-        return new BoardCategoryItemData(
+        return new CategoryItemData(
                 codeListItemDo.getId(),
                 codeListItemDo.getCode(),
                 codeListItemDo.getValue(),
-                new BoardCategoryData(codeList.getId(), codeList.getCode(), codeList.getName())
+                new CategoryData(codeList.getId(), codeList.getCode(), codeList.getName())
         );
     }
 

@@ -1,6 +1,7 @@
 package sk.janobono.wiwa.business.model.board;
 
 import lombok.Builder;
+import sk.janobono.wiwa.business.model.CategoryItemData;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,6 +22,6 @@ public record BoardData(
         BigDecimal thickness,
         BigDecimal price,
         BigDecimal vatPrice,
-        List<BoardCategoryItemData> categoryItems
+        List<CategoryItemData> categoryItems
 ) {
 }

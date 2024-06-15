@@ -1,8 +1,7 @@
 package sk.janobono.wiwa.business.service;
 
+import sk.janobono.wiwa.business.model.CategoryData;
 import sk.janobono.wiwa.business.model.application.*;
-import sk.janobono.wiwa.business.model.board.BoardCategoryData;
-import sk.janobono.wiwa.business.model.edge.EdgeCategoryData;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -99,17 +98,17 @@ public interface ApplicationPropertyService {
 
     OrderStatusMailData setOrderStatusMail(OrderStatusMailData orderStatusMail);
 
-    BoardCategoryData getBoardMaterialCategory();
+    CategoryData getBoardMaterialCategory();
 
-    BoardCategoryData setBoardMaterialCategory(final long categoryId);
+    CategoryData setBoardMaterialCategory(final long categoryId);
 
-    List<BoardCategoryData> getBoardCategories();
+    List<CategoryData> getBoardCategories();
 
-    List<BoardCategoryData> setBoardCategories(final List<Long> categoryIds);
+    List<CategoryData> setBoardCategories(final List<Long> categoryIds);
 
-    List<EdgeCategoryData> getEdgeCategories();
+    List<CategoryData> getEdgeCategories();
 
-    List<EdgeCategoryData> setEdgeCategories(final List<Long> categoryIds);
+    List<CategoryData> setEdgeCategories(final List<Long> categoryIds);
 
     OrderPropertiesData getOrderProperties();
 

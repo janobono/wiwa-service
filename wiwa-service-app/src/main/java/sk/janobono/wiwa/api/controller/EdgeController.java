@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.api.model.edge.EdgeCategoryItemChangeWebDto;
+import sk.janobono.wiwa.api.model.CategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeChangeWebDto;
 import sk.janobono.wiwa.api.model.edge.EdgeWebDto;
 import sk.janobono.wiwa.api.service.EdgeApiService;
@@ -103,7 +103,7 @@ public class EdgeController {
 
     @PostMapping("/{id}/category-items")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public EdgeWebDto setEdgeCategoryItems(@PathVariable("id") final long id, @RequestBody final List<EdgeCategoryItemChangeWebDto> categoryItems) {
+    public EdgeWebDto setEdgeCategoryItems(@PathVariable("id") final long id, @RequestBody final List<CategoryItemChangeWebDto> categoryItems) {
         return edgeApiService.setEdgeCategoryItems(id, categoryItems);
     }
 }

@@ -8,7 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sk.janobono.wiwa.business.impl.component.PriceUtil;
-import sk.janobono.wiwa.business.model.edge.*;
+import sk.janobono.wiwa.business.model.CategoryData;
+import sk.janobono.wiwa.business.model.CategoryItemChangeData;
+import sk.janobono.wiwa.business.model.CategoryItemData;
+import sk.janobono.wiwa.business.model.edge.EdgeChangeData;
+import sk.janobono.wiwa.business.model.edge.EdgeData;
+import sk.janobono.wiwa.business.model.edge.EdgeSearchCriteriaData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.EdgeService;
 import sk.janobono.wiwa.component.ImageUtil;
@@ -136,12 +141,12 @@ public class EdgeServiceImpl implements EdgeService {
 
     @Transactional
     @Override
-    public EdgeData setEdgeCategoryItems(final long edgeId, final List<EdgeCategoryItemChangeData> categoryItems) {
+    public EdgeData setEdgeCategoryItems(final long edgeId, final List<CategoryItemChangeData> categoryItems) {
         final EdgeDo edgeDo = getEdgeDo(edgeId);
 
         edgeCodeListItemRepository.saveAll(edgeDo.getId(),
                 categoryItems.stream()
-                        .map(EdgeCategoryItemChangeData::itemId)
+                        .map(CategoryItemChangeData::itemId)
                         .toList()
         );
 
@@ -184,20 +189,20 @@ public class EdgeServiceImpl implements EdgeService {
                 .build();
     }
 
-    private List<EdgeCategoryItemData> toEdgeCategoryItems(final long edgeId) {
+    private List<CategoryItemData> toEdgeCategoryItems(final long edgeId) {
         return edgeCodeListItemRepository.findByEdgeId(edgeId).stream()
                 .map(this::toEdgeCategoryItem)
                 .toList();
     }
 
-    private EdgeCategoryItemData toEdgeCategoryItem(final CodeListItemDo codeListItemDo) {
+    private CategoryItemData toEdgeCategoryItem(final CodeListItemDo codeListItemDo) {
         final CodeListDo codeList = codeListRepository.findById(codeListItemDo.getCodeListId())
                 .orElseThrow(() -> WiwaException.CODE_LIST_NOT_FOUND.exception("Code list with id {0} not found", codeListItemDo.getCodeListId()));
-        return new EdgeCategoryItemData(
+        return new CategoryItemData(
                 codeListItemDo.getId(),
                 codeListItemDo.getCode(),
                 codeListItemDo.getValue(),
-                new EdgeCategoryData(codeList.getId(), codeList.getCode(), codeList.getName())
+                new CategoryData(codeList.getId(), codeList.getCode(), codeList.getName())
         );
     }
 

@@ -1,5 +1,7 @@
 package sk.janobono.wiwa.api.model.edge;
 
+import sk.janobono.wiwa.api.model.CategoryItemWebDto;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -14,6 +16,6 @@ public record EdgeWebDto(
         BigDecimal thickness,
         BigDecimal price,
         BigDecimal vatPrice,
-        List<EdgeCategoryItemWebDto> categoryItems
+        List<CategoryItemWebDto> categoryItems
 ) {
 }

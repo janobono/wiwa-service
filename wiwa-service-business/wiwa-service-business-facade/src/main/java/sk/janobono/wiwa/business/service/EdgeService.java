@@ -3,7 +3,7 @@ package sk.janobono.wiwa.business.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.business.model.edge.EdgeCategoryItemChangeData;
+import sk.janobono.wiwa.business.model.CategoryItemChangeData;
 import sk.janobono.wiwa.business.model.edge.EdgeChangeData;
 import sk.janobono.wiwa.business.model.edge.EdgeData;
 import sk.janobono.wiwa.business.model.edge.EdgeSearchCriteriaData;
@@ -26,5 +26,5 @@ public interface EdgeService {
 
     void deleteEdgeImage(long edgeId);
 
-    EdgeData setEdgeCategoryItems(long edgeId, List<EdgeCategoryItemChangeData> categoryItems);
+    EdgeData setEdgeCategoryItems(long edgeId, List<CategoryItemChangeData> categoryItems);
 }

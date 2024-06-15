@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sk.janobono.wiwa.api.model.board.BoardCategoryItemChangeWebDto;
+import sk.janobono.wiwa.api.model.CategoryItemChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardChangeWebDto;
 import sk.janobono.wiwa.api.model.board.BoardWebDto;
 import sk.janobono.wiwa.api.service.BoardApiService;
@@ -113,7 +113,7 @@ public class BoardController {
 
     @PostMapping("/{id}/category-items")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public BoardWebDto setBoardCategoryItems(@PathVariable("id") final long id, @RequestBody final List<BoardCategoryItemChangeWebDto> categoryItems) {
+    public BoardWebDto setBoardCategoryItems(@PathVariable("id") final long id, @RequestBody final List<CategoryItemChangeWebDto> categoryItems) {
         return boardApiService.setBoardCategoryItems(id, categoryItems);
     }
 }

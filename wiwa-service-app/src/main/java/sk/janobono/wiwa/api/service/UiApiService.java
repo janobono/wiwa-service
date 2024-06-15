@@ -2,16 +2,12 @@ package sk.janobono.wiwa.api.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sk.janobono.wiwa.api.mapper.ApplicationImageWebMapper;
-import sk.janobono.wiwa.api.mapper.BoardWebMapper;
-import sk.janobono.wiwa.api.mapper.EdgeWebMapper;
-import sk.janobono.wiwa.api.mapper.UiWebMapper;
+import sk.janobono.wiwa.api.mapper.*;
+import sk.janobono.wiwa.api.model.CategoryWebDto;
 import sk.janobono.wiwa.api.model.ResourceEntityWebDto;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.application.*;
-import sk.janobono.wiwa.api.model.board.BoardCategoryWebDto;
 import sk.janobono.wiwa.api.model.captcha.CaptchaWebDto;
-import sk.janobono.wiwa.api.model.edge.EdgeCategoryWebDto;
 import sk.janobono.wiwa.business.service.ApplicationImageService;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.CaptchaService;
@@ -27,8 +23,7 @@ public class UiApiService {
     private final CaptchaService captchaService;
     private final ApplicationImageWebMapper applicationImageWebMapper;
     private final UiWebMapper uiWebMapper;
-    private final BoardWebMapper boardWebMapper;
-    private final EdgeWebMapper edgeWebMapper;
+    private final CategoryWebMapper categoryWebMapper;
 
     public CaptchaWebDto getCaptcha() {
         return uiWebMapper.mapToWebDto(captchaService.getCaptcha());
@@ -102,12 +97,12 @@ public class UiApiService {
         return applicationPropertyService.getFreeDays().stream().map(uiWebMapper::mapToWebDto).toList();
     }
 
-    public List<BoardCategoryWebDto> getBoardCategories() {
-        return applicationPropertyService.getBoardCategories().stream().map(boardWebMapper::mapToWebDto).toList();
+    public List<CategoryWebDto> getBoardCategories() {
+        return applicationPropertyService.getBoardCategories().stream().map(categoryWebMapper::mapToWebDto).toList();
     }
 
-    public List<EdgeCategoryWebDto> getEdgeCategories() {
-        return applicationPropertyService.getEdgeCategories().stream().map(edgeWebMapper::mapToWebDto).toList();
+    public List<CategoryWebDto> getEdgeCategories() {
+        return applicationPropertyService.getEdgeCategories().stream().map(categoryWebMapper::mapToWebDto).toList();
     }
 
     public OrderPropertiesWebDto getOrderProperties() {

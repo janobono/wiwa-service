@@ -6,10 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.janobono.wiwa.business.impl.util.PropertyUtilService;
+import sk.janobono.wiwa.business.model.CategoryData;
 import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.application.*;
-import sk.janobono.wiwa.business.model.board.BoardCategoryData;
-import sk.janobono.wiwa.business.model.edge.EdgeCategoryData;
 import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.config.JwtConfigProperties;
@@ -588,17 +587,17 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     }
 
     @Override
-    public BoardCategoryData getBoardMaterialCategory() {
+    public CategoryData getBoardMaterialCategory() {
         final long categoryId = propertyUtilService.getProperty(Long::valueOf, BOARD_MATERIAL_CATEGORY).orElse(-1L);
 
-        return codeListRepository.findById(categoryId).map(codeListDo -> new BoardCategoryData(codeListDo.getId(),
+        return codeListRepository.findById(categoryId).map(codeListDo -> new CategoryData(codeListDo.getId(),
                 codeListDo.getCode(),
-                codeListDo.getName())).orElseGet(() -> new BoardCategoryData(categoryId, "NOT FOUND", "NOT FOUND"));
+                codeListDo.getName())).orElseGet(() -> new CategoryData(categoryId, "NOT FOUND", "NOT FOUND"));
     }
 
     @Transactional
     @Override
-    public BoardCategoryData setBoardMaterialCategory(final long categoryId) {
+    public CategoryData setBoardMaterialCategory(final long categoryId) {
         if (!codeListRepository.existsById(categoryId)) {
             throw WiwaException.CODE_LIST_NOT_FOUND.exception("Category does not exist");
         }
@@ -607,25 +606,12 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     }
 
     @Override
-    public List<BoardCategoryData> getBoardCategories() {
-        final List<Long> categoryIds = propertyUtilService.getProperty(v -> {
-            try {
-                return Arrays.asList(objectMapper.readValue(v, Long[].class));
-            } catch (final JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }, BOARD_CATEGORIES).orElseGet(Collections::emptyList);
-
-        return categoryIds.stream()
-                .map(codeListRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(cl -> new BoardCategoryData(cl.getId(), cl.getCode(), cl.getName()))
-                .toList();
+    public List<CategoryData> getBoardCategories() {
+        return getCategories(BOARD_CATEGORIES);
     }
 
     @Override
-    public List<BoardCategoryData> setBoardCategories(final List<Long> categoryIds) {
+    public List<CategoryData> setBoardCategories(final List<Long> categoryIds) {
         checkCategories(categoryIds);
         propertyUtilService.setProperty(data -> {
             try {
@@ -638,25 +624,12 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     }
 
     @Override
-    public List<EdgeCategoryData> getEdgeCategories() {
-        final List<Long> categoryIds = propertyUtilService.getProperty(v -> {
-            try {
-                return Arrays.asList(objectMapper.readValue(v, Long[].class));
-            } catch (final JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }, EDGE_CATEGORIES).orElseGet(Collections::emptyList);
-
-        return categoryIds.stream()
-                .map(codeListRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(cl -> new EdgeCategoryData(cl.getId(), cl.getCode(), cl.getName()))
-                .toList();
+    public List<CategoryData> getEdgeCategories() {
+        return getCategories(EDGE_CATEGORIES);
     }
 
     @Override
-    public List<EdgeCategoryData> setEdgeCategories(final List<Long> categoryIds) {
+    public List<CategoryData> setEdgeCategories(final List<Long> categoryIds) {
         checkCategories(categoryIds);
         propertyUtilService.setProperty(data -> {
             try {
@@ -790,5 +763,22 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
                 throw WiwaException.CODE_LIST_NOT_FOUND.exception("Category does not exist");
             }
         }
+    }
+
+    private List<CategoryData> getCategories(final String key) {
+        final List<Long> categoryIds = propertyUtilService.getProperty(v -> {
+            try {
+                return Arrays.asList(objectMapper.readValue(v, Long[].class));
+            } catch (final JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }, key).orElseGet(Collections::emptyList);
+
+        return categoryIds.stream()
+                .map(codeListRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(cl -> new CategoryData(cl.getId(), cl.getCode(), cl.getName()))
+                .toList();
     }
 }
