@@ -180,7 +180,17 @@ public class BoardRepositoryImpl implements BoardRepository {
                             value
                     )
                     .OR(
-                            r3nUtil.scDf("SF2", MetaColumnWiwaBoard.NAME.column()),
+                            r3nUtil.scDf("SF2", MetaColumnWiwaBoard.BOARD_CODE.column()),
+                            Condition.LIKE,
+                            value
+                    )
+                    .OR(
+                            r3nUtil.scDf("SF3", MetaColumnWiwaBoard.STRUCTURE_CODE.column()),
+                            Condition.LIKE,
+                            value
+                    )
+                    .OR(
+                            r3nUtil.scDf("SF4", MetaColumnWiwaBoard.NAME.column()),
                             Condition.LIKE,
                             value
                     )
