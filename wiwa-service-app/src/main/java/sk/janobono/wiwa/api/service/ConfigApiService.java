@@ -16,6 +16,7 @@ import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -188,11 +189,11 @@ public class ConfigApiService {
         return categoryWebMapper.mapToWebDto(applicationPropertyService.setBoardMaterialCategory(categoryId.value()));
     }
 
-    public List<CategoryWebDto> setBoardCategories(final List<Long> categoryIds) {
+    public List<CategoryWebDto> setBoardCategories(final Set<Long> categoryIds) {
         return applicationPropertyService.setBoardCategories(categoryIds).stream().map(categoryWebMapper::mapToWebDto).toList();
     }
 
-    public List<CategoryWebDto> setEdgeCategories(final List<Long> categoryIds) {
+    public List<CategoryWebDto> setEdgeCategories(final Set<Long> categoryIds) {
         return applicationPropertyService.setEdgeCategories(categoryIds).stream().map(categoryWebMapper::mapToWebDto).toList();
     }
 

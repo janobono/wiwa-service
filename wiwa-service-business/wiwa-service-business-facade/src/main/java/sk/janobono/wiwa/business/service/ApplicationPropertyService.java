@@ -5,6 +5,7 @@ import sk.janobono.wiwa.business.model.application.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 public interface ApplicationPropertyService {
 
@@ -104,11 +105,11 @@ public interface ApplicationPropertyService {
 
     List<CategoryData> getBoardCategories();
 
-    List<CategoryData> setBoardCategories(final List<Long> categoryIds);
+    List<CategoryData> setBoardCategories(final Set<Long> categoryIds);
 
     List<CategoryData> getEdgeCategories();
 
-    List<CategoryData> setEdgeCategories(final List<Long> categoryIds);
+    List<CategoryData> setEdgeCategories(final Set<Long> categoryIds);
 
     OrderPropertiesData getOrderProperties();
 

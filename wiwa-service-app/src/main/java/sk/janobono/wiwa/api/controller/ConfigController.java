@@ -14,6 +14,7 @@ import sk.janobono.wiwa.api.service.ConfigApiService;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
@@ -251,13 +252,13 @@ public class ConfigController {
 
     @PostMapping(value = "/board-categories")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<CategoryWebDto> setBoardCategories(@Valid @RequestBody final List<Long> categoryIds) {
+    public List<CategoryWebDto> setBoardCategories(@Valid @RequestBody final Set<Long> categoryIds) {
         return configApiService.setBoardCategories(categoryIds);
     }
 
     @PostMapping(value = "/edge-categories")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager')")
-    public List<CategoryWebDto> setEdgeCategories(@Valid @RequestBody final List<Long> categoryIds) {
+    public List<CategoryWebDto> setEdgeCategories(@Valid @RequestBody final Set<Long> categoryIds) {
         return configApiService.setEdgeCategories(categoryIds);
     }
 

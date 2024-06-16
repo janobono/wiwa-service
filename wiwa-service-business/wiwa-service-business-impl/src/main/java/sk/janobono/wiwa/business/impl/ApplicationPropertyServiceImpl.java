@@ -611,7 +611,7 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     }
 
     @Override
-    public List<CategoryData> setBoardCategories(final List<Long> categoryIds) {
+    public List<CategoryData> setBoardCategories(final Set<Long> categoryIds) {
         checkCategories(categoryIds);
         propertyUtilService.setProperty(data -> {
             try {
@@ -629,7 +629,7 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     }
 
     @Override
-    public List<CategoryData> setEdgeCategories(final List<Long> categoryIds) {
+    public List<CategoryData> setEdgeCategories(final Set<Long> categoryIds) {
         checkCategories(categoryIds);
         propertyUtilService.setProperty(data -> {
             try {
@@ -757,7 +757,7 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
         return orderProperties;
     }
 
-    private void checkCategories(final List<Long> categoryIds) {
+    private void checkCategories(final Set<Long> categoryIds) {
         for (final Long categoryId : categoryIds) {
             if (!codeListRepository.existsById(categoryId)) {
                 throw WiwaException.CODE_LIST_NOT_FOUND.exception("Category does not exist");
