@@ -15,6 +15,7 @@ import sk.janobono.wiwa.business.service.BoardService;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -86,7 +87,7 @@ public class BoardApiService {
         boardService.deleteBoardImage(id);
     }
 
-    public BoardWebDto setBoardCategoryItems(final long id, final List<CategoryItemChangeWebDto> categoryItems) {
+    public BoardWebDto setBoardCategoryItems(final long id, final Set<CategoryItemChangeWebDto> categoryItems) {
         return boardWebMapper.mapToWebDto(
                 boardService.setBoardCategoryItems(id, categoryItems.stream().map(categoryWebMapper::mapToData).toList())
         );

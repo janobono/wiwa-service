@@ -15,6 +15,7 @@ import sk.janobono.wiwa.business.service.EdgeService;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -76,7 +77,7 @@ public class EdgeApiService {
         edgeService.deleteEdgeImage(id);
     }
 
-    public EdgeWebDto setEdgeCategoryItems(final long id, final List<CategoryItemChangeWebDto> categoryItems) {
+    public EdgeWebDto setEdgeCategoryItems(final long id, final Set<CategoryItemChangeWebDto> categoryItems) {
         return edgeWebMapper.mapToWebDto(
                 edgeService.setEdgeCategoryItems(id, categoryItems.stream().map(categoryWebMapper::mapToData).toList())
         );

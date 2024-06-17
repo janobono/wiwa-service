@@ -21,6 +21,7 @@ import sk.janobono.wiwa.api.service.EdgeApiService;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
@@ -103,7 +104,7 @@ public class EdgeController {
 
     @PostMapping("/{id}/category-items")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public EdgeWebDto setEdgeCategoryItems(@PathVariable("id") final long id, @RequestBody final List<CategoryItemChangeWebDto> categoryItems) {
+    public EdgeWebDto setEdgeCategoryItems(@PathVariable("id") final long id, @RequestBody final Set<CategoryItemChangeWebDto> categoryItems) {
         return edgeApiService.setEdgeCategoryItems(id, categoryItems);
     }
 }

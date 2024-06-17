@@ -21,6 +21,7 @@ import sk.janobono.wiwa.api.service.BoardApiService;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
@@ -113,7 +114,7 @@ public class BoardController {
 
     @PostMapping("/{id}/category-items")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
-    public BoardWebDto setBoardCategoryItems(@PathVariable("id") final long id, @RequestBody final List<CategoryItemChangeWebDto> categoryItems) {
+    public BoardWebDto setBoardCategoryItems(@PathVariable("id") final long id, @RequestBody final Set<CategoryItemChangeWebDto> categoryItems) {
         return boardApiService.setBoardCategoryItems(id, categoryItems);
     }
 }
