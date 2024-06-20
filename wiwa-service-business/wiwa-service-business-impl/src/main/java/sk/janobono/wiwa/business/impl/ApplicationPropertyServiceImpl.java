@@ -407,14 +407,17 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     @Transactional
     @Override
     public List<PriceForGluingEdgeData> setPricesForGluingEdge(final List<PriceForGluingEdgeData> pricesForGluingEdge) {
+        final List<PriceForGluingEdgeData> sorted = pricesForGluingEdge.stream()
+                .sorted(Comparator.comparing(PriceForGluingEdgeData::width)).toList();
+
         propertyUtilService.setProperty(data -> {
             try {
                 return objectMapper.writeValueAsString(data);
             } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-        }, PRICES_FOR_GLUING_EDGE, pricesForGluingEdge);
-        return pricesForGluingEdge;
+        }, PRICES_FOR_GLUING_EDGE, sorted);
+        return sorted;
     }
 
     @Override
@@ -435,14 +438,17 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     @Transactional
     @Override
     public List<PriceForCuttingData> setPricesForCutting(final List<PriceForCuttingData> pricesForCutting) {
+        final List<PriceForCuttingData> sorted = pricesForCutting.stream()
+                .sorted(Comparator.comparing(PriceForCuttingData::thickness)).toList();
+
         propertyUtilService.setProperty(data -> {
             try {
                 return objectMapper.writeValueAsString(data);
             } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-        }, PRICES_FOR_CUTTING, pricesForCutting);
-        return pricesForCutting;
+        }, PRICES_FOR_CUTTING, sorted);
+        return sorted;
     }
 
     @Override
