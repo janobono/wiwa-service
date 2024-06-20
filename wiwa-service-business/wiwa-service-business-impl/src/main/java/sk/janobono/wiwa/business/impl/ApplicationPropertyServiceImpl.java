@@ -475,14 +475,22 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     @Transactional
     @Override
     public List<FreeDayData> setFreeDays(final List<FreeDayData> freeDays) {
+        final List<FreeDayData> sorted = freeDays.stream().sorted((o1, o2) -> {
+            final int result = o1.month().compareTo(o2.month());
+            if (result == 0) {
+                return o1.day().compareTo(o2.day());
+            }
+            return result;
+        }).toList();
+
         propertyUtilService.setProperty(data -> {
             try {
                 return objectMapper.writeValueAsString(data);
             } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-        }, FREE_DAYS, freeDays);
-        return freeDays;
+        }, FREE_DAYS, sorted);
+        return sorted;
     }
 
     @Override
