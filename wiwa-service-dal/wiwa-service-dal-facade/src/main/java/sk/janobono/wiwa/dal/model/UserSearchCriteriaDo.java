@@ -6,6 +6,7 @@ import lombok.Builder;
 public record UserSearchCriteriaDo(
         String searchField,
         String username,
-        String email
+        String email,
+        Boolean order
 ) {
 }

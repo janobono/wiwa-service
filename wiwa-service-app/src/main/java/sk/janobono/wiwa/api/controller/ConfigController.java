@@ -1,5 +1,11 @@
 package sk.janobono.wiwa.api.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +29,13 @@ public class ConfigController {
 
     private final ConfigApiService configApiService;
 
+    @Operation(parameters = {
+            @Parameter(in = ParameterIn.QUERY, name = "page", content = @Content(schema = @Schema(type = "integer"))),
+            @Parameter(in = ParameterIn.QUERY, name = "size", content = @Content(schema = @Schema(type = "integer"))),
+            @Parameter(in = ParameterIn.QUERY, name = "sort",
+                    content = @Content(array = @ArraySchema(schema = @Schema(type = "string")))
+            )
+    })
     @GetMapping("/application-images")
     @PreAuthorize("hasAnyAuthority('p2-admin', 'p2-manager')")
     public Page<ApplicationImageInfoWebDto> getApplicationImages(final Pageable pageable) {

@@ -73,6 +73,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderStatusRepository orderStatusRepository;
     private final OrderSummaryViewRepository orderSummaryViewRepository;
     private final OrderViewRepository orderViewRepository;
+    private final UserRepository userRepository;
 
     private final MailUtilService mailUtilService;
     private final OrderCsvUtilService orderCsvUtilService;
@@ -100,6 +101,15 @@ public class OrderServiceImpl implements OrderService {
                 .businessId(value.businessId())
                 .taxId(value.taxId())
                 .build());
+    }
+
+    @Override
+    public Page<OrderUserData> getOrderUsers(final OrderUserSearchCriteriaData criteria, final Pageable pageable) {
+        return userRepository.findAll(UserSearchCriteriaDo.builder()
+                        .searchField(criteria.searchField())
+                        .email(criteria.email())
+                        .build(), pageable)
+                .map(this::toOrderUserData);
     }
 
     @Transactional

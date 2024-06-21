@@ -11,6 +11,7 @@ import sk.janobono.wiwa.api.mapper.OrderWebMapper;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
 import sk.janobono.wiwa.api.model.order.*;
 import sk.janobono.wiwa.business.model.order.OrderSearchCriteriaData;
+import sk.janobono.wiwa.business.model.order.OrderUserSearchCriteriaData;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.component.AuthUtil;
 import sk.janobono.wiwa.model.Authority;
@@ -55,6 +56,14 @@ public class OrderApiService {
     public Page<OrderContactWebDto> getOrderContacts(final Pageable pageable) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return orderService.getOrderContacts(user.id(), pageable).map(orderWebMapper::mapToWebDto);
+    }
+
+    public Page<OrderUserWebDto> getOrderUsers(final String searchField, final String email, final Pageable pageable) {
+        final OrderUserSearchCriteriaData criteria = OrderUserSearchCriteriaData.builder()
+                .searchField(searchField)
+                .email(email)
+                .build();
+        return orderService.getOrderUsers(criteria, pageable).map(orderWebMapper::mapToWebDto);
     }
 
     public OrderWebDto setOrderContact(final long id, final OrderContactWebDto orderContact) {

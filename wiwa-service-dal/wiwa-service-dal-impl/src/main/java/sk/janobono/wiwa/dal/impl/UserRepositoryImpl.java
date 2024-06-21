@@ -13,6 +13,7 @@ import sk.janobono.wiwa.dal.domain.UserDo;
 import sk.janobono.wiwa.dal.impl.component.R3nUtil;
 import sk.janobono.wiwa.dal.impl.mapper.UserDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaUserDto;
+import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrder;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaUser;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
 import sk.janobono.wiwa.dal.model.UserSearchCriteriaDo;
@@ -244,6 +245,12 @@ public class UserRepositoryImpl implements UserRepository {
         // email
         if (Optional.ofNullable(criteria.email()).filter(s -> !s.isBlank()).isPresent()) {
             select.AND(MetaColumnWiwaUser.EMAIL.column(), Condition.LIKE, "%" + scDf.toStripAndLowerCase(criteria.email()) + "%");
+        }
+
+        // order
+        if (Optional.ofNullable(criteria.order()).orElse(false)) {
+            select.DISTINCT()
+                    .INNER_JOIN(MetaTable.WIWA_ORDER.table(), MetaColumnWiwaOrder.USER_ID.column(), MetaColumnWiwaUser.ID.column());
         }
     }
 

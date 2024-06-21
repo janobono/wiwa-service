@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import sk.janobono.wiwa.api.model.SingleValueBodyWebDto;
@@ -60,9 +59,32 @@ public class OrderController {
         );
     }
 
+    @Operation(parameters = {
+            @Parameter(in = ParameterIn.QUERY, name = "page", content = @Content(schema = @Schema(type = "integer"))),
+            @Parameter(in = ParameterIn.QUERY, name = "size", content = @Content(schema = @Schema(type = "integer"))),
+            @Parameter(in = ParameterIn.QUERY, name = "sort",
+                    content = @Content(array = @ArraySchema(schema = @Schema(type = "string")))
+            )
+    })
     @GetMapping("/contacts")
     public Page<OrderContactWebDto> getOrderContacts(final Pageable pageable) {
         return orderApiService.getOrderContacts(pageable);
+    }
+
+    @Operation(parameters = {
+            @Parameter(in = ParameterIn.QUERY, name = "page", content = @Content(schema = @Schema(type = "integer"))),
+            @Parameter(in = ParameterIn.QUERY, name = "size", content = @Content(schema = @Schema(type = "integer"))),
+            @Parameter(in = ParameterIn.QUERY, name = "sort",
+                    content = @Content(array = @ArraySchema(schema = @Schema(type = "string")))
+            )
+    })
+    @GetMapping("/users")
+    @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager', 'w-employee')")
+    public Page<OrderUserWebDto> getOrderUsers(
+            @RequestParam(value = "searchField", required = false) final String searchField,
+            @RequestParam(value = "email", required = false) final String email,
+            final Pageable pageable) {
+        return orderApiService.getOrderUsers(searchField, email, pageable);
     }
 
     @PostMapping("/{id}/contact")

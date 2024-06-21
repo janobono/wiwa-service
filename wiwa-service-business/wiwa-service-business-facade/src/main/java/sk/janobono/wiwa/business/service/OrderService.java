@@ -12,6 +12,8 @@ public interface OrderService {
 
     Page<OrderContactData> getOrderContacts(long userId, Pageable pageable);
 
+    Page<OrderUserData> getOrderUsers(OrderUserSearchCriteriaData criteria, Pageable pageable);
+
     OrderData setOrderContact(long id, OrderContactData orderContact);
 
     OrderData getOrder(long id);

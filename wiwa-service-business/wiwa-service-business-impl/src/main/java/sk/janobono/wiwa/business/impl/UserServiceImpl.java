@@ -36,7 +36,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<User> getUsers(final UserSearchCriteriaData criteria, final Pageable pageable) {
-        return userRepository.findAll(mapToDo(criteria), pageable).map(userUtilService::mapToUser);
+        return userRepository.findAll(UserSearchCriteriaDo.builder()
+                .searchField(criteria.searchField())
+                .username(criteria.username())
+                .email(criteria.email())
+                .build(), pageable).map(userUtilService::mapToUser);
     }
 
     @Override
@@ -125,13 +129,5 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.deleteById(id);
-    }
-
-    private UserSearchCriteriaDo mapToDo(final UserSearchCriteriaData criteria) {
-        return new UserSearchCriteriaDo(
-                criteria.searchField(),
-                criteria.username(),
-                criteria.email()
-        );
     }
 }

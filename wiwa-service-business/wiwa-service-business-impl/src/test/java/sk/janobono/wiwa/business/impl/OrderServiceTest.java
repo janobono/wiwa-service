@@ -253,6 +253,7 @@ class OrderServiceTest {
                 orderStatusRepository,
                 orderSummaryViewRepository,
                 orderViewRepository,
+                userRepository,
                 mailUtilService,
                 new OrderCsvUtilService(new ScDf(), dataUtil, materialUtil, orderItemRepository, orderMaterialRepository, applicationPropertyService, materialUtilService),
                 new OrderHtmlUtilService(commonConfigProperties, templateEngine, new ImageUtil(), applicationPropertyService, materialUtilService),
