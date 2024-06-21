@@ -10,6 +10,7 @@ import sk.janobono.wiwa.business.impl.component.part.PartFrameUtil;
 import sk.janobono.wiwa.business.model.DimensionsData;
 import sk.janobono.wiwa.business.model.application.ManufacturePropertiesData;
 import sk.janobono.wiwa.business.model.application.OrderPropertiesData;
+import sk.janobono.wiwa.business.model.application.UnitData;
 import sk.janobono.wiwa.business.model.order.OrderBoardData;
 import sk.janobono.wiwa.business.model.order.OrderEdgeData;
 import sk.janobono.wiwa.business.model.order.part.*;
@@ -54,6 +55,7 @@ public class OrderCsvUtilService {
         final OrderPropertiesData orderProperties = applicationPropertyService.getOrderProperties();
         final List<OrderMaterialDo> materials = orderMaterialRepository.findAllByOrderId(orderViewDo.id());
         final List<OrderBoardData> boards = materialUtil.toBoards(materials);
+        final List<UnitData> units = applicationPropertyService.getUnits();
         final Map<Long, String> materialNames = materialUtilService.getMaterialNames(boards, applicationPropertyService.getBoardMaterialCategory(), MATERIAL_NOT_FOUND);
         final List<OrderEdgeData> edges = materialUtil.toEdges(materials);
         final List<OrderItemDo> items = orderItemRepository.findAllByOrderId(orderViewDo.id());
@@ -65,7 +67,7 @@ public class OrderCsvUtilService {
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
             );
             for (final OrderItemDo item : items) {
-                printItem(writer, manufactureProperties, orderProperties, boards, edges, materialNames, item);
+                printItem(writer, manufactureProperties, orderProperties, boards, edges, units, materialNames, item);
             }
             writer.flush();
 
@@ -78,18 +80,19 @@ public class OrderCsvUtilService {
                            final OrderPropertiesData orderProperties,
                            final List<OrderBoardData> boards,
                            final List<OrderEdgeData> edges,
+                           final List<UnitData> units,
                            final Map<Long, String> materialNames,
                            final OrderItemDo item) {
         final PartData part = dataUtil.parseValue(item.getPart(), PartData.class);
         switch (part) {
             case final PartBasicData partBasic ->
-                    printBasic(writer, orderProperties, boards, edges, materialNames, item, partBasic);
+                    printBasic(writer, orderProperties, boards, edges, units, materialNames, item, partBasic);
             case final PartDuplicatedBasicData partDuplicatedBasic ->
-                    printDuplicatedBasic(writer, manufactureProperties, orderProperties, boards, edges, materialNames, item, partDuplicatedBasic);
+                    printDuplicatedBasic(writer, manufactureProperties, orderProperties, boards, edges, units, materialNames, item, partDuplicatedBasic);
             case final PartFrameData partFrame ->
-                    printFrame(writer, manufactureProperties, orderProperties, boards, edges, materialNames, item, partFrame);
+                    printFrame(writer, manufactureProperties, orderProperties, boards, edges, units, materialNames, item, partFrame);
             case final PartDuplicatedFrameData partDuplicatedFrame ->
-                    printPartDuplicatedFrame(writer, manufactureProperties, orderProperties, boards, edges, materialNames, item, partDuplicatedFrame);
+                    printPartDuplicatedFrame(writer, manufactureProperties, orderProperties, boards, edges, units, materialNames, item, partDuplicatedFrame);
             default -> throw new InvalidParameterException("Unsupported part type: " + part.getClass().getSimpleName());
         }
     }
@@ -98,11 +101,13 @@ public class OrderCsvUtilService {
                             final OrderPropertiesData orderProperties,
                             final List<OrderBoardData> boards,
                             final List<OrderEdgeData> edges,
+                            final List<UnitData> units,
                             final Map<Long, String> materialNames,
                             final OrderItemDo item,
                             final PartBasicData part) {
         final Map<CSVColumn, String> data = new HashMap<>();
         addPart(orderProperties,
+                units,
                 boards,
                 edges,
                 materialNames,
@@ -130,6 +135,7 @@ public class OrderCsvUtilService {
                                       final OrderPropertiesData orderProperties,
                                       final List<OrderBoardData> boards,
                                       final List<OrderEdgeData> edges,
+                                      final List<UnitData> units,
                                       final Map<Long, String> materialNames,
                                       final OrderItemDo item,
                                       final PartDuplicatedBasicData part) {
@@ -138,6 +144,7 @@ public class OrderCsvUtilService {
         // TOP
         final Map<CSVColumn, String> data = new HashMap<>();
         addPart(orderProperties,
+                units,
                 boards,
                 edges,
                 materialNames,
@@ -162,6 +169,7 @@ public class OrderCsvUtilService {
 
         // BOTTOM
         addPart(orderProperties,
+                units,
                 boards,
                 edges,
                 materialNames,
@@ -184,6 +192,7 @@ public class OrderCsvUtilService {
                             final OrderPropertiesData orderProperties,
                             final List<OrderBoardData> boards,
                             final List<OrderEdgeData> edges,
+                            final List<UnitData> units,
                             final Map<Long, String> materialNames,
                             final OrderItemDo item,
                             final PartFrameData part) {
@@ -194,6 +203,7 @@ public class OrderCsvUtilService {
             final Map<CSVColumn, String> data = new HashMap<>();
 
             addPart(orderProperties,
+                    units,
                     boards,
                     edges,
                     materialNames,
@@ -218,6 +228,7 @@ public class OrderCsvUtilService {
                                           final OrderPropertiesData orderProperties,
                                           final List<OrderBoardData> boards,
                                           final List<OrderEdgeData> edges,
+                                          final List<UnitData> units,
                                           final Map<Long, String> materialNames,
                                           final OrderItemDo item,
                                           final PartDuplicatedFrameData part) {
@@ -227,6 +238,7 @@ public class OrderCsvUtilService {
         // TOP
         final Map<CSVColumn, String> data = new HashMap<>();
         addPart(orderProperties,
+                units,
                 boards,
                 edges,
                 materialNames,
@@ -269,6 +281,7 @@ public class OrderCsvUtilService {
             };
 
             addPart(orderProperties,
+                    units,
                     boards,
                     edges,
                     materialNames,
@@ -354,6 +367,7 @@ public class OrderCsvUtilService {
     }
 
     private void addPart(final OrderPropertiesData orderProperties,
+                         final List<UnitData> units,
                          final List<OrderBoardData> boards,
                          final List<OrderEdgeData> edges,
                          final Map<Long, String> materialNames,
@@ -371,7 +385,7 @@ public class OrderCsvUtilService {
         // NUMBER
         addNumber(orderProperties, item, position, data);
         // NAME
-        addName(orderProperties, namePattern, item, position, part.dimensions().get(position), data);
+        addName(orderProperties, units, namePattern, item, position, part.dimensions().get(position), data);
         // MATERIAL
         data.put(CSVColumn.MATERIAL, getMaterial(materialNames, part.boards().get(position)));
         // DECOR
@@ -405,6 +419,7 @@ public class OrderCsvUtilService {
     }
 
     private void addName(final OrderPropertiesData orderProperties,
+                         final List<UnitData> units,
                          final String pattern,
                          final OrderItemDo item,
                          final BoardPosition position,
@@ -416,7 +431,9 @@ public class OrderCsvUtilService {
                 item.getName(),
                 getPositionName(orderProperties, position),
                 dimensions,
-                item.getQuantity()
+                getUnit(Unit.MILLIMETER, units),
+                item.getQuantity(),
+                getUnit(Unit.PIECE, units)
         ));
     }
 
@@ -455,8 +472,10 @@ public class OrderCsvUtilService {
                            final String itemName,
                            final String positionName,
                            final DimensionsData partDimensions,
-                           final Integer quantity) {
-        return addQuotes(MessageFormat.format(pattern, itemName, positionName, partDimensions.x().intValue(), partDimensions.y().intValue(), quantity));
+                           final String lengthUnit,
+                           final Integer quantity,
+                           final String quantityUnit) {
+        return addQuotes(MessageFormat.format(pattern, itemName, positionName, partDimensions.x().intValue(), partDimensions.y().intValue(), lengthUnit, quantity, quantityUnit));
     }
 
     private String getMaterial(final Map<Long, String> materialNames, final long boardId) {
@@ -540,5 +559,9 @@ public class OrderCsvUtilService {
         }
 
         writer.println(s);
+    }
+
+    private String getUnit(final Unit unit, final List<UnitData> units) {
+        return units.stream().filter(u -> u.id() == unit).findFirst().map(UnitData::value).orElse(unit.name());
     }
 }

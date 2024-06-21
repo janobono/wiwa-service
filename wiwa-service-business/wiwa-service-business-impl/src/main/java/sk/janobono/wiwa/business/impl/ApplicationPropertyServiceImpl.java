@@ -670,10 +670,10 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
                 .corners(Map.of())
                 .pattern(new HashMap<>() {{
                     put(OrderPattern.CSV_NUMBER, "{0} {1}");
-                    put(OrderPattern.CSV_BASIC, "{0} (basic {1}-{2}x{3}mm-{4}p)");
-                    put(OrderPattern.CSV_FRAME, "{0} (frame {1}-{2}x{3}mm-{4}p)");
-                    put(OrderPattern.CSV_DUPLICATED_BASIC, "{0} (duplicated basic {1}-{2}x{3}mm-{4}p)");
-                    put(OrderPattern.CSV_DUPLICATED_FRAME, "{0} (duplicated frame {1}-{2}x{3}mm-{4}p)");
+                    put(OrderPattern.CSV_BASIC, "{0} (basic {1}-{2}x{3}{4}-{5}{6})");
+                    put(OrderPattern.CSV_FRAME, "{0} (frame {1}-{2}x{3}{4}-{5}{6})");
+                    put(OrderPattern.CSV_DUPLICATED_BASIC, "{0} (duplicated basic {1}-{2}x{3}{4}-{5}{6})");
+                    put(OrderPattern.CSV_DUPLICATED_FRAME, "{0} (duplicated frame {1}-{2}x{3}{4}-{5}{6})");
                     put(OrderPattern.CSV_DECOR, "{0} {1} {2}");
                     put(OrderPattern.CSV_EDGE, "{0} {1}x{2,number,0.0}");
                     put(OrderPattern.CSV_CORNER_STRAIGHT, "{0} {1}x{2}");
