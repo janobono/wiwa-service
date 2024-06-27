@@ -104,7 +104,7 @@ public class AuthorityRepositoryImpl implements AuthorityRepository {
         insertUserAuthorities(userId, authorities);
     }
 
-    private void deleteUserAuthorities(final Long userId) {
+    private void deleteUserAuthorities(final long userId) {
         final Sql sql = sqlBuilder.delete(Query
                 .DELETE()
                 .FROM(MetaTable.WIWA_USER_AUTHORITY.table())
@@ -124,7 +124,7 @@ public class AuthorityRepositoryImpl implements AuthorityRepository {
         return new WiwaAuthorityDto(id, wiwaAuthorityDto.authority());
     }
 
-    private void insertUserAuthorities(final Long userId, final List<Authority> authorities) {
+    private void insertUserAuthorities(final long userId, final List<Authority> authorities) {
         for (final Authority authority : authorities) {
             final Sql sql = sqlBuilder.insert(Query
                     .INSERT()
