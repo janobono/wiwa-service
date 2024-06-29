@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/maven:3-eclipse-temurin-21-alpine as builder
+FROM public.ecr.aws/docker/library/maven:3-eclipse-temurin-21-alpine AS builder
 
 RUN apk add git
 
@@ -14,7 +14,7 @@ COPY . .
 
 RUN mvn clean install -DskipTests
 
-FROM public.ecr.aws/amazoncorretto/amazoncorretto:21-al2023-headless as production
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:21-al2023-headless AS production
 
 WORKDIR /app
 
@@ -22,4 +22,4 @@ COPY --from=builder app/wiwa-service-app/target/wiwa-service-app-*.jar ./wiwa-se
 
 EXPOSE 8080
 
-CMD java -jar wiwa-service-app.jar
+CMD ["java", "-jar", "wiwa-service-app.jar"]
