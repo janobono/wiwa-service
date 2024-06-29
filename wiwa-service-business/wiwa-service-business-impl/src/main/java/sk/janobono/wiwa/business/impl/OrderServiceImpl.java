@@ -540,7 +540,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderCommentData toOrderCommentData(final OrderCommentDo orderCommentDo) {
         return OrderCommentData.builder()
                 .id(orderCommentDo.getId())
-                .creator(toOrderUserData(userUtilService.getUserDo(orderCommentDo.getId())))
+                .creator(toOrderUserData(userUtilService.getUserDo(orderCommentDo.getUserId())))
                 .created(orderCommentDo.getCreated())
                 .comment(orderCommentDo.getComment())
                 .build();
