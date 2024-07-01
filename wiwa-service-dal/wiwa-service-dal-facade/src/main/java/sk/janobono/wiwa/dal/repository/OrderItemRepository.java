@@ -1,8 +1,6 @@
 package sk.janobono.wiwa.dal.repository;
 
 import sk.janobono.wiwa.dal.domain.OrderItemDo;
-import sk.janobono.wiwa.dal.model.OderItemSortNumDo;
-import sk.janobono.wiwa.dal.model.OrderItemInfoDo;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,9 +19,13 @@ public interface OrderItemRepository {
 
     OrderItemDo insert(OrderItemDo orderItemDo);
 
-    void setSortNums(List<OderItemSortNumDo> sortNums);
+    void setSortNum(long id, int sortNum);
 
-    void setOrderItemInfo(long id, OrderItemInfoDo orderItemInfo);
+    void setName(long id, String name);
+
+    void setDescription(long id, String description);
+
+    void setQuantity(long id, int quantity);
 
     void setPart(long id, String part);
 }

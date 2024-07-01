@@ -66,18 +66,6 @@ public class OrderController {
                     content = @Content(array = @ArraySchema(schema = @Schema(type = "string")))
             )
     })
-    @GetMapping("/contacts")
-    public Page<OrderContactWebDto> getOrderContacts(final Pageable pageable) {
-        return orderApiService.getOrderContacts(pageable);
-    }
-
-    @Operation(parameters = {
-            @Parameter(in = ParameterIn.QUERY, name = "page", content = @Content(schema = @Schema(type = "integer"))),
-            @Parameter(in = ParameterIn.QUERY, name = "size", content = @Content(schema = @Schema(type = "integer"))),
-            @Parameter(in = ParameterIn.QUERY, name = "sort",
-                    content = @Content(array = @ArraySchema(schema = @Schema(type = "string")))
-            )
-    })
     @GetMapping("/users")
     @PreAuthorize("hasAnyAuthority('w-admin', 'w-manager', 'w-employee')")
     public Page<OrderUserWebDto> getOrderUsers(
@@ -85,6 +73,11 @@ public class OrderController {
             @RequestParam(value = "email", required = false) final String email,
             final Pageable pageable) {
         return orderApiService.getOrderUsers(searchField, email, pageable);
+    }
+
+    @GetMapping("/last-contact")
+    public OrderContactWebDto getLastOrderContact() {
+        return orderApiService.getLastOrderContact();
     }
 
     @PostMapping("/{id}/contact")

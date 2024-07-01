@@ -9,6 +9,7 @@ public record WiwaOrderViewDto(
         Long userId,
         LocalDateTime created,
         Long orderNumber,
+        String contact,
         LocalDate delivery,
         String packageType,
         String status,
@@ -22,6 +23,7 @@ public record WiwaOrderViewDto(
                 wiwaOrderViewDto.userId,
                 wiwaOrderViewDto.created,
                 wiwaOrderViewDto.orderNumber,
+                wiwaOrderViewDto.contact,
                 wiwaOrderViewDto.delivery,
                 wiwaOrderViewDto.packageType,
                 wiwaOrderViewDto.status,
@@ -36,11 +38,12 @@ public record WiwaOrderViewDto(
                 (Long) array[1],
                 (LocalDateTime) array[2],
                 (Long) array[3],
-                (LocalDate) array[4],
-                (String) array[5],
+                (String) array[4],
+                (LocalDate) array[5],
                 (String) array[6],
-                (BigDecimal) array[7],
-                (BigDecimal) array[8]
+                (String) array[7],
+                (BigDecimal) array[8],
+                (BigDecimal) array[9]
         );
     }
 }

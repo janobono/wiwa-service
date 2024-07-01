@@ -11,6 +11,7 @@ create table wiwa_order
     user_id      bigint         not null references wiwa_user (id) on delete cascade,
     created      timestamp      not null,
     order_number bigint         not null,
+    contact      text,
     delivery     date,
     package_type varchar(255),
     weight       numeric(19, 3) not null,
@@ -26,20 +27,6 @@ create table wiwa_order_comment
     user_id  bigint    not null references wiwa_user (id) on delete cascade,
     created  timestamp not null,
     comment  text      not null
-);
-
-create table wiwa_order_contact
-(
-    order_id    bigint primary key references wiwa_order (id) on delete cascade,
-    name        varchar(255) not null,
-    street      varchar(255) not null,
-    zip_code    varchar(255) not null,
-    city        varchar(255) not null,
-    state       varchar(255) not null,
-    phone       varchar(255) not null,
-    email       varchar(255) not null,
-    business_id varchar(255),
-    tax_id      varchar(255)
 );
 
 create table wiwa_order_item
@@ -79,18 +66,20 @@ create table wiwa_order_status
     status   varchar(255) not null
 );
 
-create view wiwa_order_view (id, user_id, created, order_number, delivery, package_type, status, weight, total) as
+create view wiwa_order_view
+            (id, user_id, created, order_number, contact, delivery, package_type, status, weight, total) as
 SELECT o.id,
        o.user_id,
        o.created,
        o.order_number,
+       o.contact,
        o.delivery,
        o.package_type,
        COALESCE((SELECT wiwa_order_status.status
                  FROM wiwa_order_status
                  WHERE wiwa_order_status.order_id = o.id
                  ORDER BY wiwa_order_status.created DESC
-                LIMIT 1), 'NEW') as status,
+                 LIMIT 1), 'NEW') as status,
        o.weight,
        o.total
 FROM wiwa_order o;

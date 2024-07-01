@@ -53,17 +53,17 @@ public class OrderApiService {
         return orderService.getOrders(criteria, pageable).map(orderWebMapper::mapToWebDto);
     }
 
-    public Page<OrderContactWebDto> getOrderContacts(final Pageable pageable) {
-        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return orderService.getOrderContacts(user.id(), pageable).map(orderWebMapper::mapToWebDto);
-    }
-
     public Page<OrderUserWebDto> getOrderUsers(final String searchField, final String email, final Pageable pageable) {
         final OrderUserSearchCriteriaData criteria = OrderUserSearchCriteriaData.builder()
                 .searchField(searchField)
                 .email(email)
                 .build();
         return orderService.getOrderUsers(criteria, pageable).map(orderWebMapper::mapToWebDto);
+    }
+
+    public OrderContactWebDto getLastOrderContact() {
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return orderWebMapper.mapToWebDto(orderService.getLastOrderContact(user.id()));
     }
 
     public OrderWebDto setOrderContact(final long id, final OrderContactWebDto orderContact) {

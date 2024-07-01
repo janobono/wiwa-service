@@ -104,9 +104,6 @@ public abstract class BaseTest {
     public OrderCommentRepository orderCommentRepository;
 
     @MockBean
-    public OrderContactRepository orderContactRepository;
-
-    @MockBean
     public OrderItemRepository orderItemRepository;
 
     @MockBean
@@ -155,7 +152,6 @@ public abstract class BaseTest {
         testRepositories.mock(edgeImageRepository);
         testRepositories.mock(edgeRepository);
         testRepositories.mock(orderCommentRepository);
-        testRepositories.mock(orderContactRepository);
         testRepositories.mock(orderItemRepository);
         testRepositories.mock(orderItemSummaryRepository);
         testRepositories.mock(orderMaterialRepository);

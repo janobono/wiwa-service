@@ -12,6 +12,7 @@ public enum MetaColumnWiwaOrderView {
     USER_ID("user_id", DataType.LONG),
     CREATED("created", DataType.TIME_STAMP),
     ORDER_NUMBER("order_number", DataType.LONG),
+    CONTACT("contact", DataType.STRING),
     DELIVERY("delivery", DataType.DATE),
     PACKAGE_TYPE("package_type", DataType.STRING),
     STATUS("status", DataType.STRING),

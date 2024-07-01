@@ -12,6 +12,7 @@ public record OrderViewDo(
         Long userId,
         LocalDateTime created,
         Long orderNumber,
+        String contact,
         LocalDate delivery,
         OrderPackageType packageType,
         OrderStatus status,

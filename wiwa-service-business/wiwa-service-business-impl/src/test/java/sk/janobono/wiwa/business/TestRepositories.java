@@ -7,9 +7,11 @@ import sk.janobono.wiwa.dal.domain.*;
 import sk.janobono.wiwa.dal.model.*;
 import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.model.Authority;
+import sk.janobono.wiwa.model.OrderPackageType;
 import sk.janobono.wiwa.model.OrderStatus;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -46,8 +48,6 @@ public class TestRepositories {
 
     final AtomicLong orderCommentId = new AtomicLong(1L);
     final List<OrderCommentDo> orderComments = new LinkedList<>();
-
-    final List<OrderContactDo> orderContacts = new LinkedList<>();
 
     final AtomicLong orderItemId = new AtomicLong(1L);
     final Map<Long, List<OrderItemDo>> orderItems = new HashMap<>();
@@ -457,44 +457,6 @@ public class TestRepositories {
         });
     }
 
-    public void mock(final OrderContactRepository orderContactRepository) {
-        Mockito.when(orderContactRepository.findAllByUserId(Mockito.anyLong(), Mockito.any(Pageable.class)))
-                .thenAnswer(answer -> {
-                    final Long id = answer.getArgument(0);
-                    return new PageImpl<>(
-                            orderContacts.stream().filter(item -> item.getOrderId().equals(id))
-                                    .map(oc -> BaseOrderContactDo.builder()
-                                            .name(oc.getName())
-                                            .street(oc.getStreet())
-                                            .zipCode(oc.getZipCode())
-                                            .city(oc.getCity())
-                                            .state(oc.getState())
-                                            .phone(oc.getPhone())
-                                            .email(oc.getEmail())
-                                            .businessId(oc.getBusinessId())
-                                            .taxId(oc.getTaxId())
-                                            .build())
-                                    .toList(),
-                            Pageable.unpaged(),
-                            orderContacts.stream().filter(item -> item.getOrderId().equals(id)).count());
-                });
-
-        Mockito.when(orderContactRepository.findByOrderId(Mockito.anyLong())).thenAnswer(answer -> {
-            final Long id = answer.getArgument(0);
-            return orderContacts.stream().filter(item -> item.getOrderId().equals(id)).findFirst();
-        });
-
-        Mockito.when(orderContactRepository.save(Mockito.any(OrderContactDo.class))).thenAnswer(answer -> {
-            final OrderContactDo newItem = answer.getArgument(0);
-            final Optional<OrderContactDo> savedItem = orderContacts.stream()
-                    .filter(item -> item.getOrderId().equals(newItem.getOrderId()))
-                    .findFirst();
-            savedItem.ifPresent(orderContacts::remove);
-            orderContacts.add(newItem);
-            return newItem;
-        });
-    }
-
     public void mock(final OrderItemRepository orderItemRepository) {
         Mockito.when(orderItemRepository.countByOrderId(Mockito.anyLong())).thenAnswer(answer -> {
             final Long id = answer.getArgument(0);
@@ -537,27 +499,48 @@ public class TestRepositories {
         });
 
         Mockito.doAnswer(answer -> {
-            final List<OderItemSortNumDo> sortNums = answer.getArgument(0);
-            for (final OderItemSortNumDo itemSortNum : sortNums) {
-                orderItems.values().stream().flatMap(Collection::stream)
-                        .filter(item -> item.getId().equals(itemSortNum.id()))
-                        .forEach(item -> item.setSortNum(itemSortNum.sortNum()));
-            }
-            return null;
-        }).when(orderItemRepository).setSortNums(Mockito.any());
-
-        Mockito.doAnswer(answer -> {
             final Long id = answer.getArgument(0);
-            final OrderItemInfoDo itemInfo = answer.getArgument(1);
+            final Integer sortNum = answer.getArgument(1);
             orderItems.values().stream().flatMap(Collection::stream)
                     .filter(item -> item.getId().equals(id))
                     .forEach(item -> {
-                        item.setName(itemInfo.name());
-                        item.setDescription(itemInfo.description());
-                        item.setQuantity(itemInfo.quantity());
+                        item.setSortNum(sortNum);
                     });
             return null;
-        }).when(orderItemRepository).setOrderItemInfo(Mockito.anyLong(), Mockito.any(OrderItemInfoDo.class));
+        }).when(orderItemRepository).setSortNum(Mockito.anyLong(), Mockito.anyInt());
+
+        Mockito.doAnswer(answer -> {
+            final Long id = answer.getArgument(0);
+            final String name = answer.getArgument(1);
+            orderItems.values().stream().flatMap(Collection::stream)
+                    .filter(item -> item.getId().equals(id))
+                    .forEach(item -> {
+                        item.setName(name);
+                    });
+            return null;
+        }).when(orderItemRepository).setName(Mockito.anyLong(), Mockito.anyString());
+
+        Mockito.doAnswer(answer -> {
+            final Long id = answer.getArgument(0);
+            final String description = answer.getArgument(1);
+            orderItems.values().stream().flatMap(Collection::stream)
+                    .filter(item -> item.getId().equals(id))
+                    .forEach(item -> {
+                        item.setDescription(description);
+                    });
+            return null;
+        }).when(orderItemRepository).setDescription(Mockito.anyLong(), Mockito.anyString());
+
+        Mockito.doAnswer(answer -> {
+            final Long id = answer.getArgument(0);
+            final Integer quantity = answer.getArgument(1);
+            orderItems.values().stream().flatMap(Collection::stream)
+                    .filter(item -> item.getId().equals(id))
+                    .forEach(item -> {
+                        item.setQuantity(quantity);
+                    });
+            return null;
+        }).when(orderItemRepository).setQuantity(Mockito.anyLong(), Mockito.anyInt());
 
         Mockito.doAnswer(answer -> {
             final Long id = answer.getArgument(0);
@@ -595,22 +578,34 @@ public class TestRepositories {
     }
 
     public void mock(final OrderMaterialRepository orderMaterialRepository) {
-        Mockito.when(orderMaterialRepository.countById(Mockito.any(OrderMaterialIdDo.class))).thenAnswer(answer -> {
-            final OrderMaterialIdDo id = answer.getArgument(0);
-            return orderMaterials.stream().filter(item -> isMaterialId(id, item)).count();
-        });
+        Mockito.when(orderMaterialRepository.countById(Mockito.anyLong(), Mockito.anyLong(), Mockito.anyString()))
+                .thenAnswer(answer -> {
+                    final Long orderId = answer.getArgument(0);
+                    final Long materialId = answer.getArgument(1);
+                    final String code = answer.getArgument(2);
+                    return orderMaterials.stream().filter(item -> isMaterialId(orderId, materialId, code, item)).count();
+                });
 
         Mockito.doAnswer(answer -> {
-            final OrderMaterialIdDo id = answer.getArgument(0);
-            final Optional<OrderMaterialDo> savedItem = orderMaterials.stream().filter(item -> isMaterialId(id, item)).findFirst();
+            final Long orderId = answer.getArgument(0);
+            final Long materialId = answer.getArgument(1);
+            final String code = answer.getArgument(2);
+            final Optional<OrderMaterialDo> savedItem = orderMaterials.stream()
+                    .filter(item -> isMaterialId(orderId, materialId, code, item))
+                    .findFirst();
             savedItem.ifPresent(orderMaterials::remove);
             return null;
-        }).when(orderMaterialRepository).deleteById(Mockito.any(OrderMaterialIdDo.class));
+        }).when(orderMaterialRepository).deleteById(Mockito.anyLong(), Mockito.anyLong(), Mockito.anyString());
 
-        Mockito.when(orderMaterialRepository.findById(Mockito.any(OrderMaterialIdDo.class))).thenAnswer(answer -> {
-            final OrderMaterialIdDo id = answer.getArgument(0);
-            return orderMaterials.stream().filter(item -> isMaterialId(id, item)).findFirst();
-        });
+        Mockito.when(orderMaterialRepository.findById(Mockito.anyLong(), Mockito.anyLong(), Mockito.anyString()))
+                .thenAnswer(answer -> {
+                    final Long orderId = answer.getArgument(0);
+                    final Long materialId = answer.getArgument(1);
+                    final String code = answer.getArgument(2);
+                    return orderMaterials.stream()
+                            .filter(item -> isMaterialId(orderId, materialId, code, item))
+                            .findFirst();
+                });
 
         Mockito.when(orderMaterialRepository.findAllByOrderId(Mockito.anyLong())).thenAnswer(answer -> {
             final Long id = answer.getArgument(0);
@@ -621,11 +616,7 @@ public class TestRepositories {
         Mockito.when(orderMaterialRepository.save(Mockito.any(OrderMaterialDo.class))).thenAnswer(answer -> {
             final OrderMaterialDo newItem = answer.getArgument(0);
             final Optional<OrderMaterialDo> savedItem = orderMaterials.stream()
-                    .filter(item -> isMaterialId(OrderMaterialIdDo.builder()
-                            .orderId(newItem.getOrderId())
-                            .materialId(newItem.getMaterialId())
-                            .code(newItem.getCode())
-                            .build(), item))
+                    .filter(item -> isMaterialId(newItem.getOrderId(), newItem.getMaterialId(), newItem.getCode(), item))
                     .findFirst();
             savedItem.ifPresent(orderMaterials::remove);
             orderMaterials.add(newItem);
@@ -668,25 +659,43 @@ public class TestRepositories {
 
         Mockito.doAnswer(answer -> {
             final Long id = answer.getArgument(0);
-            final OrderDeliveryDo delivery = answer.getArgument(1);
+            final String contact = answer.getArgument(1);
             orders.stream().filter(item -> item.getId().equals(id))
-                    .forEach(item -> {
-                        item.setDelivery(delivery.delivery());
-                        item.setPackageType(delivery.packageType());
-                    });
+                    .forEach(item -> item.setContact(contact));
             return null;
-        }).when(orderRepository).setDelivery(Mockito.anyLong(), Mockito.any(OrderDeliveryDo.class));
+        }).when(orderRepository).setContact(Mockito.anyLong(), Mockito.anyString());
 
         Mockito.doAnswer(answer -> {
             final Long id = answer.getArgument(0);
-            final OrderTotalDo total = answer.getArgument(1);
+            final LocalDate delivery = answer.getArgument(1);
             orders.stream().filter(item -> item.getId().equals(id))
-                    .forEach(item -> {
-                        item.setWeight(total.weight());
-                        item.setTotal(total.total());
-                    });
+                    .forEach(item -> item.setDelivery(delivery));
             return null;
-        }).when(orderRepository).setOrderTotal(Mockito.anyLong(), Mockito.any(OrderTotalDo.class));
+        }).when(orderRepository).setDelivery(Mockito.anyLong(), Mockito.any(LocalDate.class));
+
+        Mockito.doAnswer(answer -> {
+            final Long id = answer.getArgument(0);
+            final OrderPackageType packageType = answer.getArgument(1);
+            orders.stream().filter(item -> item.getId().equals(id))
+                    .forEach(item -> item.setPackageType(packageType));
+            return null;
+        }).when(orderRepository).setPackageType(Mockito.anyLong(), Mockito.any(OrderPackageType.class));
+
+        Mockito.doAnswer(answer -> {
+            final Long id = answer.getArgument(0);
+            final BigDecimal weight = answer.getArgument(1);
+            orders.stream().filter(item -> item.getId().equals(id))
+                    .forEach(item -> item.setWeight(weight));
+            return null;
+        }).when(orderRepository).setWeight(Mockito.anyLong(), Mockito.any(BigDecimal.class));
+
+        Mockito.doAnswer(answer -> {
+            final Long id = answer.getArgument(0);
+            final BigDecimal total = answer.getArgument(1);
+            orders.stream().filter(item -> item.getId().equals(id))
+                    .forEach(item -> item.setTotal(total));
+            return null;
+        }).when(orderRepository).setTotal(Mockito.anyLong(), Mockito.any(BigDecimal.class));
 
         Mockito.doAnswer(answer -> {
             final Long id = answer.getArgument(0);
@@ -861,9 +870,6 @@ public class TestRepositories {
         final List<OrderCommentDo> comments = orderComments.stream().filter(item -> item.getOrderId().equals(id)).toList();
         orderComments.removeAll(comments);
 
-        final List<OrderContactDo> contacts = orderContacts.stream().filter(item -> item.getOrderId().equals(id)).toList();
-        orderContacts.removeAll(contacts);
-
         orderItems.getOrDefault(id, Collections.emptyList()).stream().map(OrderItemDo::getId).forEach(this::deleteOrderItem);
 
         final List<OrderMaterialDo> materials = orderMaterials.stream().filter(item -> item.getOrderId().equals(id)).toList();
@@ -879,10 +885,10 @@ public class TestRepositories {
         userAuthorities.remove(id);
     }
 
-    private boolean isMaterialId(final OrderMaterialIdDo id, final OrderMaterialDo item) {
-        return id.orderId().equals(item.getOrderId())
-                && id.materialId().equals(item.getMaterialId())
-                && id.code().equals(item.getCode());
+    private boolean isMaterialId(final long orderId, final long materialId, final String code, final OrderMaterialDo item) {
+        return item.getOrderId().equals(orderId)
+                && item.getMaterialId().equals(materialId)
+                && item.getCode().equals(code);
     }
 
     private OrderViewDo mapOrderView(final OrderDo item, final Long id) {
@@ -891,6 +897,7 @@ public class TestRepositories {
                 item.getUserId(),
                 item.getCreated(),
                 item.getOrderNumber(),
+                item.getContact(),
                 item.getDelivery(),
                 item.getPackageType(),
                 orderStatuses.getOrDefault(id, Collections.emptyList()).stream()

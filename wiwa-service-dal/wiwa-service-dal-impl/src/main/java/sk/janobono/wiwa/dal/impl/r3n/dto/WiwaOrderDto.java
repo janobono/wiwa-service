@@ -9,6 +9,7 @@ public record WiwaOrderDto(
         Long userId,
         LocalDateTime created,
         Long orderNumber,
+        String contact,
         LocalDate delivery,
         String packageType,
         BigDecimal weight,
@@ -22,6 +23,7 @@ public record WiwaOrderDto(
                 wiwaOrderDto.userId,
                 wiwaOrderDto.created,
                 wiwaOrderDto.orderNumber,
+                wiwaOrderDto.contact,
                 wiwaOrderDto.delivery,
                 wiwaOrderDto.packageType,
                 wiwaOrderDto.weight,
@@ -36,11 +38,12 @@ public record WiwaOrderDto(
                 (Long) array[1],
                 (LocalDateTime) array[2],
                 (Long) array[3],
-                (LocalDate) array[4],
-                (String) array[5],
-                (BigDecimal) array[6],
+                (String) array[4],
+                (LocalDate) array[5],
+                (String) array[6],
                 (BigDecimal) array[7],
-                (String) array[8]
+                (BigDecimal) array[8],
+                (String) array[9]
         );
     }
 }

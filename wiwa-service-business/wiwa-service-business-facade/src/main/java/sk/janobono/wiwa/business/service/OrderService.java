@@ -10,9 +10,9 @@ public interface OrderService {
 
     Page<OrderData> getOrders(OrderSearchCriteriaData criteria, Pageable pageable);
 
-    Page<OrderContactData> getOrderContacts(long userId, Pageable pageable);
-
     Page<OrderUserData> getOrderUsers(OrderUserSearchCriteriaData criteria, Pageable pageable);
+
+    OrderContactData getLastOrderContact(long userId);
 
     OrderData setOrderContact(long id, OrderContactData orderContact);
 

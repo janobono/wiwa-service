@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import sk.janobono.wiwa.dal.domain.OrderDo;
 import sk.janobono.wiwa.dal.domain.UserDo;
-import sk.janobono.wiwa.dal.model.OrderDeliveryDo;
-import sk.janobono.wiwa.dal.model.OrderTotalDo;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.janobono.wiwa.dal.repository.UserRepository;
 import sk.janobono.wiwa.model.OrderPackageType;
@@ -71,13 +69,17 @@ class OrderRepositoryTest extends BaseRepositoryTest {
 
         assertThat(orders.getFirst().getDelivery()).isNull();
         assertThat(orders.getFirst().getPackageType()).isNull();
-        orderRepository.setDelivery(orders.getFirst().getId(), new OrderDeliveryDo(LocalDate.now(), OrderPackageType.PACKAGE));
+        orderRepository.setContact(orders.getFirst().getId(), "contact");
+        orderRepository.setDelivery(orders.getFirst().getId(), LocalDate.now());
+        orderRepository.setPackageType(orders.getFirst().getId(), OrderPackageType.PACKAGE);
         saved = orderRepository.findById(orders.getFirst().getId());
         assertThat(saved.isPresent()).isTrue();
+        assertThat(saved.get().getContact()).isEqualTo("contact");
         assertThat(saved.get().getDelivery()).isNotNull();
         assertThat(saved.get().getPackageType()).isEqualTo(OrderPackageType.PACKAGE);
 
-        orderRepository.setOrderTotal(orders.getFirst().getId(), new OrderTotalDo(BigDecimal.valueOf(10.001), BigDecimal.valueOf(10.002)));
+        orderRepository.setWeight(orders.getFirst().getId(), BigDecimal.valueOf(10.001));
+        orderRepository.setTotal(orders.getFirst().getId(), BigDecimal.valueOf(10.002));
         saved = orderRepository.findById(orders.getFirst().getId());
         assertThat(saved.isPresent()).isTrue();
         assertThat(saved.get().getWeight()).isEqualTo(BigDecimal.valueOf(10.001));

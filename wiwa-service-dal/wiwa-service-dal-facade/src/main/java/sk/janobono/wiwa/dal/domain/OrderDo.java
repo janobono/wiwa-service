@@ -15,6 +15,7 @@ public class OrderDo {
     private Long userId;
     private LocalDateTime created;
     private Long orderNumber;
+    private String contact;
     private LocalDate delivery;
     private OrderPackageType packageType;
     private BigDecimal weight;

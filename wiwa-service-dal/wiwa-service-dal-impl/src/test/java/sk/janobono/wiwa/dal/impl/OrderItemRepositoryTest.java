@@ -5,8 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import sk.janobono.wiwa.dal.domain.OrderDo;
 import sk.janobono.wiwa.dal.domain.OrderItemDo;
 import sk.janobono.wiwa.dal.domain.UserDo;
-import sk.janobono.wiwa.dal.model.OderItemSortNumDo;
-import sk.janobono.wiwa.dal.model.OrderItemInfoDo;
 import sk.janobono.wiwa.dal.repository.OrderItemRepository;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.janobono.wiwa.dal.repository.UserRepository;
@@ -82,20 +80,17 @@ class OrderItemRepositoryTest extends BaseRepositoryTest {
         assertThat(items.getFirst()).usingRecursiveComparison().isEqualTo(items2.getFirst());
         assertThat(items.getLast()).usingRecursiveComparison().isEqualTo(items2.getLast());
 
-        orderItemRepository.setSortNums(List.of(
-                new OderItemSortNumDo(items.getLast().getId(), 0),
-                new OderItemSortNumDo(items.getFirst().getId(), 9)
-        ));
+        orderItemRepository.setSortNum(items.getLast().getId(), 0);
+        orderItemRepository.setSortNum(items.getFirst().getId(), 9);
+
         items2 = orderItemRepository.findAllByOrderId(order.getId());
         assertThat(items).hasSize(items2.size());
         assertThat(items.getFirst().getId()).isEqualTo(items2.getLast().getId());
         assertThat(items.getLast().getId()).isEqualTo(items2.getFirst().getId());
 
-        orderItemRepository.setOrderItemInfo(items.getFirst().getId(), OrderItemInfoDo.builder()
-                .name("nameX")
-                .description("descriptionX")
-                .quantity(0)
-                .build());
+        orderItemRepository.setName(items.getFirst().getId(), "nameX");
+        orderItemRepository.setDescription(items.getFirst().getId(), "descriptionX");
+        orderItemRepository.setQuantity(items.getFirst().getId(), 0);
         saved = orderItemRepository.findById(items.getFirst().getId());
         assertThat(saved.isPresent()).isTrue();
         assertThat(saved.get().getName()).isEqualTo("nameX");

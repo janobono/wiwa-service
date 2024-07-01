@@ -11,7 +11,6 @@ import sk.janobono.wiwa.dal.impl.mapper.OrderMaterialDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaOrderMaterialDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrderMaterial;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
-import sk.janobono.wiwa.dal.model.OrderMaterialIdDo;
 import sk.janobono.wiwa.dal.repository.OrderMaterialRepository;
 import sk.r3n.jdbc.Sql;
 import sk.r3n.jdbc.SqlBuilder;
@@ -32,34 +31,34 @@ public class OrderMaterialRepositoryImpl implements OrderMaterialRepository {
     private final OrderMaterialDoMapper mapper;
 
     @Override
-    public int countById(final OrderMaterialIdDo id) {
-        log.debug("countById({})", id);
-        return countByOrderIdAndMaterialIdAndCode(id.orderId(), id.materialId(), id.code());
+    public int countById(final long orderId, final long materialId, final String code) {
+        log.debug("countById({},{},{})", orderId, materialId, code);
+        return countByOrderIdAndMaterialIdAndCode(orderId, materialId, code);
     }
 
     @Transactional
     @Override
-    public void deleteById(final OrderMaterialIdDo id) {
-        log.debug("deleteById({})", id);
+    public void deleteById(final long orderId, final long materialId, final String code) {
+        log.debug("deleteById({},{},{})", orderId, materialId, code);
         final Sql sql = sqlBuilder.delete(Query
                 .DELETE()
                 .FROM(MetaTable.WIWA_ORDER_MATERIAL.table())
-                .WHERE(MetaColumnWiwaOrderMaterial.ORDER_ID.column(), Condition.EQUALS, id.orderId())
-                .AND(MetaColumnWiwaOrderMaterial.MATERIAL_ID.column(), Condition.EQUALS, id.materialId())
-                .AND(MetaColumnWiwaOrderMaterial.CODE.column(), Condition.EQUALS, id.code())
+                .WHERE(MetaColumnWiwaOrderMaterial.ORDER_ID.column(), Condition.EQUALS, orderId)
+                .AND(MetaColumnWiwaOrderMaterial.MATERIAL_ID.column(), Condition.EQUALS, materialId)
+                .AND(MetaColumnWiwaOrderMaterial.CODE.column(), Condition.EQUALS, code)
         );
         jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
     }
 
     @Override
-    public Optional<OrderMaterialDo> findById(final OrderMaterialIdDo id) {
-        log.debug("findById({})", id);
+    public Optional<OrderMaterialDo> findById(final long orderId, final long materialId, final String code) {
+        log.debug("findById({},{},{})", orderId, materialId, code);
         final Sql sql = sqlBuilder.select(Query
                 .SELECT(MetaColumnWiwaOrderMaterial.columns())
                 .FROM(MetaTable.WIWA_ORDER_MATERIAL.table())
-                .WHERE(MetaColumnWiwaOrderMaterial.ORDER_ID.column(), Condition.EQUALS, id.orderId())
-                .AND(MetaColumnWiwaOrderMaterial.MATERIAL_ID.column(), Condition.EQUALS, id.materialId())
-                .AND(MetaColumnWiwaOrderMaterial.CODE.column(), Condition.EQUALS, id.code())
+                .WHERE(MetaColumnWiwaOrderMaterial.ORDER_ID.column(), Condition.EQUALS, orderId)
+                .AND(MetaColumnWiwaOrderMaterial.MATERIAL_ID.column(), Condition.EQUALS, materialId)
+                .AND(MetaColumnWiwaOrderMaterial.CODE.column(), Condition.EQUALS, code)
         );
         final List<Object[]> rows = r3nUtil.query(jdbcTemplate, sql, MetaColumnWiwaOrderMaterial.columns());
         return rows.stream()

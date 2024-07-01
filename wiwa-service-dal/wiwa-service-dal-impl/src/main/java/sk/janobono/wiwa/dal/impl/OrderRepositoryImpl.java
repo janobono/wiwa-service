@@ -11,15 +11,16 @@ import sk.janobono.wiwa.dal.impl.mapper.OrderDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaOrderDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrder;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
-import sk.janobono.wiwa.dal.model.OrderDeliveryDo;
-import sk.janobono.wiwa.dal.model.OrderTotalDo;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
+import sk.janobono.wiwa.model.OrderPackageType;
 import sk.r3n.jdbc.Sql;
 import sk.r3n.jdbc.SqlBuilder;
 import sk.r3n.sql.Column;
 import sk.r3n.sql.Condition;
 import sk.r3n.sql.Query;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -92,12 +93,11 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Transactional
     @Override
-    public void setDelivery(final long id, final OrderDeliveryDo orderDelivery) {
-        log.debug("setDelivery({},{})", id, orderDelivery);
+    public void setContact(final long id, final String setContact) {
+        log.debug("setContact({},{})", id, setContact);
         final Sql sql = sqlBuilder.update(Query
                 .UPDATE(MetaTable.WIWA_ORDER.table())
-                .SET(MetaColumnWiwaOrder.DELIVERY.column(), orderDelivery.delivery())
-                .SET(MetaColumnWiwaOrder.PACKAGE_TYPE.column(), orderDelivery.packageType().name())
+                .SET(MetaColumnWiwaOrder.CONTACT.column(), setContact)
                 .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, id)
         );
         jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
@@ -105,12 +105,47 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Transactional
     @Override
-    public void setOrderTotal(final long id, final OrderTotalDo orderTotal) {
-        log.debug("setOrderTotal({},{})", id, orderTotal);
+    public void setDelivery(final long id, final LocalDate delivery) {
+        log.debug("setDelivery({},{})", id, delivery);
         final Sql sql = sqlBuilder.update(Query
                 .UPDATE(MetaTable.WIWA_ORDER.table())
-                .SET(MetaColumnWiwaOrder.WEIGHT.column(), orderTotal.weight())
-                .SET(MetaColumnWiwaOrder.TOTAL.column(), orderTotal.total())
+                .SET(MetaColumnWiwaOrder.DELIVERY.column(), delivery)
+                .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, id)
+        );
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
+    }
+
+    @Transactional
+    @Override
+    public void setPackageType(final long id, final OrderPackageType packageType) {
+        log.debug("setPackageType({},{})", id, packageType);
+        final Sql sql = sqlBuilder.update(Query
+                .UPDATE(MetaTable.WIWA_ORDER.table())
+                .SET(MetaColumnWiwaOrder.PACKAGE_TYPE.column(), packageType.name())
+                .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, id)
+        );
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
+    }
+
+    @Transactional
+    @Override
+    public void setWeight(final long id, final BigDecimal weight) {
+        log.debug("setWeight({},{})", id, weight);
+        final Sql sql = sqlBuilder.update(Query
+                .UPDATE(MetaTable.WIWA_ORDER.table())
+                .SET(MetaColumnWiwaOrder.WEIGHT.column(), weight)
+                .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, id)
+        );
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
+    }
+
+    @Transactional
+    @Override
+    public void setTotal(final long id, final BigDecimal total) {
+        log.debug("setTotal({},{})", id, total);
+        final Sql sql = sqlBuilder.update(Query
+                .UPDATE(MetaTable.WIWA_ORDER.table())
+                .SET(MetaColumnWiwaOrder.TOTAL.column(), total)
                 .WHERE(MetaColumnWiwaOrder.ID.column(), Condition.EQUALS, id)
         );
         jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());

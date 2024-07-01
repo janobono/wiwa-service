@@ -1,9 +1,10 @@
 package sk.janobono.wiwa.dal.repository;
 
 import sk.janobono.wiwa.dal.domain.OrderDo;
-import sk.janobono.wiwa.dal.model.OrderDeliveryDo;
-import sk.janobono.wiwa.dal.model.OrderTotalDo;
+import sk.janobono.wiwa.model.OrderPackageType;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface OrderRepository {
@@ -16,9 +17,15 @@ public interface OrderRepository {
 
     OrderDo insert(OrderDo orderDo);
 
-    void setDelivery(long id, OrderDeliveryDo orderDelivery);
+    void setContact(long id, String contact);
 
-    void setOrderTotal(long id, OrderTotalDo orderTotal);
+    void setDelivery(long id, LocalDate delivery);
+
+    void setPackageType(long id, OrderPackageType packageType);
+
+    void setWeight(long id, BigDecimal weight);
+
+    void setTotal(long id, BigDecimal total);
 
     void setSummary(long id, String summary);
 }

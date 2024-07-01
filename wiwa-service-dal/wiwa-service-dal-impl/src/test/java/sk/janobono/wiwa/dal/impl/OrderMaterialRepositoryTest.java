@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import sk.janobono.wiwa.dal.domain.OrderDo;
 import sk.janobono.wiwa.dal.domain.OrderMaterialDo;
 import sk.janobono.wiwa.dal.domain.UserDo;
-import sk.janobono.wiwa.dal.model.OrderMaterialIdDo;
 import sk.janobono.wiwa.dal.repository.OrderMaterialRepository;
 import sk.janobono.wiwa.dal.repository.OrderRepository;
 import sk.janobono.wiwa.dal.repository.UserRepository;
@@ -50,11 +49,7 @@ class OrderMaterialRepositoryTest extends BaseRepositoryTest {
                 .summary("")
                 .build());
 
-        assertThat(orderMaterialRepository.countById(OrderMaterialIdDo.builder()
-                .orderId(order.getId())
-                .materialId(1L)
-                .code("code")
-                .build())).isEqualTo(0);
+        assertThat(orderMaterialRepository.countById(order.getId(), 1L, "code")).isEqualTo(0);
 
         final OrderMaterialDo orderMaterial = orderMaterialRepository.save(OrderMaterialDo.builder()
                 .orderId(order.getId())
@@ -64,34 +59,18 @@ class OrderMaterialRepositoryTest extends BaseRepositoryTest {
                 .build());
         orderMaterialRepository.save(orderMaterial);
 
-        assertThat(orderMaterialRepository.countById(OrderMaterialIdDo.builder()
-                .orderId(order.getId())
-                .materialId(1L)
-                .code("code")
-                .build())).isEqualTo(1);
+        assertThat(orderMaterialRepository.countById(order.getId(), 1L, "code")).isEqualTo(1);
 
-        Optional<OrderMaterialDo> saved = orderMaterialRepository.findById(OrderMaterialIdDo.builder()
-                .orderId(order.getId())
-                .materialId(1L)
-                .code("code")
-                .build());
+        Optional<OrderMaterialDo> saved = orderMaterialRepository.findById(order.getId(), 1L, "code");
         assertThat(saved.isPresent()).isTrue();
 
         List<OrderMaterialDo> items = orderMaterialRepository.findAllByOrderId(order.getId());
         assertThat(items).hasSize(1);
         assertThat(items.getFirst()).isEqualTo(saved.get());
 
-        orderMaterialRepository.deleteById(OrderMaterialIdDo.builder()
-                .orderId(order.getId())
-                .materialId(1L)
-                .code("code")
-                .build());
+        orderMaterialRepository.deleteById(order.getId(), 1L, "code");
 
-        saved = orderMaterialRepository.findById(OrderMaterialIdDo.builder()
-                .orderId(order.getId())
-                .materialId(1L)
-                .code("code")
-                .build());
+        saved = orderMaterialRepository.findById(order.getId(), 1L, "code");
         assertThat(saved.isEmpty()).isTrue();
 
         items = orderMaterialRepository.findAllByOrderId(order.getId());

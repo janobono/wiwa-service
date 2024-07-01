@@ -11,8 +11,6 @@ import sk.janobono.wiwa.dal.impl.mapper.OrderItemDoMapper;
 import sk.janobono.wiwa.dal.impl.r3n.dto.WiwaOrderItemDto;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaColumnWiwaOrderItem;
 import sk.janobono.wiwa.dal.impl.r3n.meta.MetaTable;
-import sk.janobono.wiwa.dal.model.OderItemSortNumDo;
-import sk.janobono.wiwa.dal.model.OrderItemInfoDo;
 import sk.janobono.wiwa.dal.repository.OrderItemRepository;
 import sk.r3n.jdbc.Sql;
 import sk.r3n.jdbc.SqlBuilder;
@@ -122,27 +120,47 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
 
     @Transactional
     @Override
-    public void setSortNums(final List<OderItemSortNumDo> sortNums) {
-        log.debug("setSortNums({})", sortNums);
-        for (final OderItemSortNumDo oderItemSortNumDo : sortNums) {
-            final Sql sql = sqlBuilder.update(Query
-                    .UPDATE(MetaTable.WIWA_ORDER_ITEM.table())
-                    .SET(MetaColumnWiwaOrderItem.SORT_NUM.column(), oderItemSortNumDo.sortNum())
-                    .WHERE(MetaColumnWiwaOrderItem.ID.column(), Condition.EQUALS, oderItemSortNumDo.id())
-            );
-            jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
-        }
+    public void setSortNum(final long id, final int sortNum) {
+        log.debug("setSortNum({},{})", id, sortNum);
+        final Sql sql = sqlBuilder.update(Query
+                .UPDATE(MetaTable.WIWA_ORDER_ITEM.table())
+                .SET(MetaColumnWiwaOrderItem.SORT_NUM.column(), sortNum)
+                .WHERE(MetaColumnWiwaOrderItem.ID.column(), Condition.EQUALS, id)
+        );
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
     }
 
     @Transactional
     @Override
-    public void setOrderItemInfo(final long id, final OrderItemInfoDo orderItemInfo) {
-        log.debug("setOrderItemInfo({},{})", id, orderItemInfo);
+    public void setName(final long id, final String name) {
+        log.debug("setName({},{})", id, name);
         final Sql sql = sqlBuilder.update(Query
                 .UPDATE(MetaTable.WIWA_ORDER_ITEM.table())
-                .SET(MetaColumnWiwaOrderItem.NAME.column(), orderItemInfo.name())
-                .SET(MetaColumnWiwaOrderItem.DESCRIPTION.column(), orderItemInfo.description())
-                .SET(MetaColumnWiwaOrderItem.QUANTITY.column(), orderItemInfo.quantity())
+                .SET(MetaColumnWiwaOrderItem.NAME.column(), name)
+                .WHERE(MetaColumnWiwaOrderItem.ID.column(), Condition.EQUALS, id)
+        );
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
+    }
+
+    @Transactional
+    @Override
+    public void setDescription(final long id, final String description) {
+        log.debug("setDescription({},{})", id, description);
+        final Sql sql = sqlBuilder.update(Query
+                .UPDATE(MetaTable.WIWA_ORDER_ITEM.table())
+                .SET(MetaColumnWiwaOrderItem.DESCRIPTION.column(), description)
+                .WHERE(MetaColumnWiwaOrderItem.ID.column(), Condition.EQUALS, id)
+        );
+        jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());
+    }
+
+    @Transactional
+    @Override
+    public void setQuantity(final long id, final int quantity) {
+        log.debug("setQuantity({},{})", id, quantity);
+        final Sql sql = sqlBuilder.update(Query
+                .UPDATE(MetaTable.WIWA_ORDER_ITEM.table())
+                .SET(MetaColumnWiwaOrderItem.QUANTITY.column(), quantity)
                 .WHERE(MetaColumnWiwaOrderItem.ID.column(), Condition.EQUALS, id)
         );
         jdbcTemplate.update(sql.toSql(), sql.getParamsObjects());

@@ -40,7 +40,6 @@ import sk.janobono.wiwa.model.OrderStatus;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,7 +80,6 @@ class OrderServiceTest {
         final CodeListRepository codeListRepository = Mockito.mock(CodeListRepository.class);
         final EdgeRepository edgeRepository = Mockito.mock(EdgeRepository.class);
         final OrderCommentRepository orderCommentRepository = Mockito.mock(OrderCommentRepository.class);
-        final OrderContactRepository orderContactRepository = Mockito.mock(OrderContactRepository.class);
         final OrderItemRepository orderItemRepository = Mockito.mock(OrderItemRepository.class);
         final OrderItemSummaryRepository orderItemSummaryRepository = Mockito.mock(OrderItemSummaryRepository.class);
         final OrderMaterialRepository orderMaterialRepository = Mockito.mock(OrderMaterialRepository.class);
@@ -101,7 +99,6 @@ class OrderServiceTest {
         testRepositories.mock(codeListRepository);
         testRepositories.mock(edgeRepository);
         testRepositories.mock(orderCommentRepository);
-        testRepositories.mock(orderContactRepository);
         testRepositories.mock(orderItemRepository);
         testRepositories.mock(orderItemSummaryRepository);
         testRepositories.mock(orderMaterialRepository);
@@ -245,7 +242,6 @@ class OrderServiceTest {
                 edgeRepository,
                 orderRepository,
                 orderCommentRepository,
-                orderContactRepository,
                 orderItemRepository,
                 orderItemSummaryRepository,
                 orderMaterialRepository,

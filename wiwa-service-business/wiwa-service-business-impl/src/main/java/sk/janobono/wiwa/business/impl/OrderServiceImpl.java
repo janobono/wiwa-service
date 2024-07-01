@@ -3,7 +3,9 @@ package sk.janobono.wiwa.business.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.janobono.wiwa.business.impl.component.DataUtil;
@@ -31,7 +33,8 @@ import sk.janobono.wiwa.business.service.ApplicationPropertyService;
 import sk.janobono.wiwa.business.service.OrderService;
 import sk.janobono.wiwa.config.CommonConfigProperties;
 import sk.janobono.wiwa.dal.domain.*;
-import sk.janobono.wiwa.dal.model.*;
+import sk.janobono.wiwa.dal.model.OrderViewSearchCriteriaDo;
+import sk.janobono.wiwa.dal.model.UserSearchCriteriaDo;
 import sk.janobono.wiwa.dal.repository.*;
 import sk.janobono.wiwa.exception.WiwaException;
 import sk.janobono.wiwa.model.OrderStatus;
@@ -65,7 +68,6 @@ public class OrderServiceImpl implements OrderService {
     private final EdgeRepository edgeRepository;
     private final OrderRepository orderRepository;
     private final OrderCommentRepository orderCommentRepository;
-    private final OrderContactRepository orderContactRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderItemSummaryRepository orderItemSummaryRepository;
     private final OrderMaterialRepository orderMaterialRepository;
@@ -89,21 +91,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderContactData> getOrderContacts(final long userId, final Pageable pageable) {
-        return orderContactRepository.findAllByUserId(userId, pageable).map(value -> OrderContactData.builder()
-                .name(value.name())
-                .street(value.street())
-                .zipCode(value.zipCode())
-                .city(value.city())
-                .state(value.state())
-                .phone(value.phone())
-                .email(value.email())
-                .businessId(value.businessId())
-                .taxId(value.taxId())
-                .build());
-    }
-
-    @Override
     public Page<OrderUserData> getOrderUsers(final OrderUserSearchCriteriaData criteria, final Pageable pageable) {
         return userRepository.findAll(UserSearchCriteriaDo.builder()
                         .searchField(criteria.searchField())
@@ -112,22 +99,26 @@ public class OrderServiceImpl implements OrderService {
                 .map(this::toOrderUserData);
     }
 
+    @Override
+    public OrderContactData getLastOrderContact(final long userId) {
+        final OrderViewSearchCriteriaDo criteria = OrderViewSearchCriteriaDo.builder()
+                .userIds(Set.of(userId))
+                .statuses(Set.of(OrderStatus.SENT, OrderStatus.IN_PRODUCTION, OrderStatus.READY, OrderStatus.FINISHED))
+                .build();
+        final Pageable pageable = PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "id"));
+
+        return orderViewRepository.findAll(criteria, pageable).stream()
+                .map(OrderViewDo::contact)
+                .map(contact -> dataUtil.parseValue(contact, OrderContactData.class))
+                .findFirst()
+                .orElseGet(() -> OrderContactData.builder().build());
+    }
+
     @Transactional
     @Override
     public OrderData setOrderContact(final long id, final OrderContactData orderContact) {
         final OrderDo order = getOrderDo(id);
-        orderContactRepository.save(OrderContactDo.builder()
-                .orderId(order.getId())
-                .name(orderContact.name())
-                .street(orderContact.street())
-                .zipCode(orderContact.street())
-                .city(orderContact.city())
-                .state(orderContact.state())
-                .phone(orderContact.phone())
-                .email(orderContact.email())
-                .businessId(orderContact.businessId())
-                .taxId(orderContact.taxId())
-                .build());
+        orderRepository.setContact(order.getId(), dataUtil.serializeValue(orderContact));
         return getOrder(id);
     }
 
@@ -209,20 +200,9 @@ public class OrderServiceImpl implements OrderService {
 
         checkDeliveryDate(sendOrder.deliveryDate(), applicationPropertyService.getFreeDays());
 
-        orderRepository.setDelivery(id, new OrderDeliveryDo(sendOrder.deliveryDate(), sendOrder.packageType()));
-
-        final OrderContactDo orderContact = orderContactRepository.save(OrderContactDo.builder()
-                .orderId(id)
-                .name(sendOrder.contact().name())
-                .street(sendOrder.contact().street())
-                .zipCode(sendOrder.contact().street())
-                .city(sendOrder.contact().city())
-                .state(sendOrder.contact().state())
-                .phone(sendOrder.contact().phone())
-                .email(sendOrder.contact().email())
-                .businessId(sendOrder.contact().businessId())
-                .taxId(sendOrder.contact().taxId())
-                .build());
+        orderRepository.setContact(id, dataUtil.serializeValue(sendOrder.contact()));
+        orderRepository.setDelivery(id, sendOrder.deliveryDate());
+        orderRepository.setPackageType(id, sendOrder.packageType());
 
         orderStatusRepository.save(OrderStatusDo.builder()
                 .orderId(id)
@@ -236,7 +216,7 @@ public class OrderServiceImpl implements OrderService {
         final OrderSendMailData orderSendMail = applicationPropertyService.getOrderSendMail();
         mailUtilService.sendEmail(MailData.builder()
                 .from(commonConfigProperties.mail())
-                .recipients(getEmails(owner, orderContact))
+                .recipients(getEmails(owner, sendOrder.contact()))
                 .cc(List.of(commonConfigProperties.ordersMail()))
                 .subject(MessageFormat.format(orderSendMail.subject(), orderViewDo.orderNumber()))
                 .content(MailContentData.builder()
@@ -272,7 +252,12 @@ public class OrderServiceImpl implements OrderService {
         final OrderStatusMailData orderStatusMail = applicationPropertyService.getOrderStatusMail();
         final MailData.MailDataBuilder mailDataBuilder = MailData.builder();
         mailDataBuilder.from(commonConfigProperties.mail())
-                .recipients(getEmails(owner, orderContactRepository.findByOrderId(id).orElse(null)))
+                .recipients(getEmails(
+                        owner,
+                        Optional.ofNullable(orderViewDo.contact())
+                                .map(contact -> dataUtil.parseValue(contact, OrderContactData.class))
+                                .orElse(null)
+                ))
                 .cc(List.of(commonConfigProperties.ordersMail()));
 
         final MailLinkData mailLink = MailLinkData.builder()
@@ -351,7 +336,12 @@ public class OrderServiceImpl implements OrderService {
         final OrderCommentMailData orderCommentMail = applicationPropertyService.getOrderCommentMail();
         mailUtilService.sendEmail(MailData.builder()
                 .from(commonConfigProperties.mail())
-                .recipients(getEmails(owner, orderContactRepository.findByOrderId(id).orElse(null)))
+                .recipients(getEmails(
+                        owner,
+                        Optional.ofNullable(orderViewDo.contact())
+                                .map(contact -> dataUtil.parseValue(contact, OrderContactData.class))
+                                .orElse(null)
+                ))
                 .cc(List.of(commonConfigProperties.ordersMail()))
                 .subject(MessageFormat.format(orderCommentMail.subject(), orderViewDo.orderNumber()))
                 .content(MailContentData.builder()
@@ -370,6 +360,7 @@ public class OrderServiceImpl implements OrderService {
         return getOrder(id);
     }
 
+    @Transactional
     @Override
     public OrderData addItem(final long id, final long creatorId, final OrderItemChangeData orderItemChange, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
@@ -394,6 +385,7 @@ public class OrderServiceImpl implements OrderService {
         return getOrder(id);
     }
 
+    @Transactional
     @Override
     public OrderData setItem(final long id, final long itemId, final long modifierId, final OrderItemChangeData orderItemChange, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
@@ -407,6 +399,7 @@ public class OrderServiceImpl implements OrderService {
         return getOrder(id);
     }
 
+    @Transactional
     @Override
     public OrderData moveUpItem(final long id, final long itemId, final long modifierId, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
@@ -418,15 +411,14 @@ public class OrderServiceImpl implements OrderService {
         final OrderItemDo item = getOrderItemDo(itemId);
         if (item.getSortNum() > 0) {
             final OrderItemDo upItem = getOrderItemDo(id, item.getSortNum() - 1);
-            orderItemRepository.setSortNums(List.of(
-                    new OderItemSortNumDo(upItem.getId(), item.getSortNum()),
-                    new OderItemSortNumDo(item.getId(), upItem.getSortNum())
-            ));
+            orderItemRepository.setSortNum(upItem.getId(), item.getSortNum());
+            orderItemRepository.setSortNum(item.getId(), upItem.getSortNum());
         }
 
         return getOrder(id);
     }
 
+    @Transactional
     @Override
     public OrderData moveDownItem(final long id, final long itemId, final long modifierId, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
@@ -438,10 +430,8 @@ public class OrderServiceImpl implements OrderService {
         final OrderItemDo item = getOrderItemDo(itemId);
         if (item.getSortNum() < orderItemRepository.countByOrderId(id)) {
             final OrderItemDo downItem = getOrderItemDo(id, item.getSortNum() + 1);
-            orderItemRepository.setSortNums(List.of(
-                    new OderItemSortNumDo(downItem.getId(), item.getSortNum()),
-                    new OderItemSortNumDo(item.getId(), downItem.getSortNum())
-            ));
+            orderItemRepository.setSortNum(downItem.getId(), item.getSortNum());
+            orderItemRepository.setSortNum(item.getId(), downItem.getSortNum());
         }
 
         return getOrder(id);
@@ -455,6 +445,7 @@ public class OrderServiceImpl implements OrderService {
         return BaseImageUtil.partImages(orderProperties, part);
     }
 
+    @Transactional
     @Override
     public OrderData deleteItem(final long id, final long itemId, final long modifierId, final boolean manager) {
         final OrderViewDo orderViewDo = getOrderViewDo(id);
@@ -514,8 +505,10 @@ public class OrderServiceImpl implements OrderService {
                 .vatTotal(priceUtil.countVatValue(orderViewDo.total(), vatRate))
                 .deliveryDate(orderViewDo.delivery())
                 .packageType(orderViewDo.packageType())
-                .contact(orderContactRepository.findByOrderId(orderViewDo.id())
-                        .map(this::toOrderContactData).orElse(null))
+                .contact(Optional.ofNullable(orderViewDo.contact())
+                        .map(contact -> dataUtil.parseValue(contact, OrderContactData.class))
+                        .orElse(null)
+                )
                 .boards(materialUtil.toBoards(materials))
                 .edges(materialUtil.toEdges(materials))
                 .items(items.stream().map(this::toOrderItemData).toList())
@@ -543,20 +536,6 @@ public class OrderServiceImpl implements OrderService {
                 .creator(toOrderUserData(userUtilService.getUserDo(orderCommentDo.getUserId())))
                 .created(orderCommentDo.getCreated())
                 .comment(orderCommentDo.getComment())
-                .build();
-    }
-
-    private OrderContactData toOrderContactData(final OrderContactDo orderContactDo) {
-        return OrderContactData.builder()
-                .name(orderContactDo.getName())
-                .street(orderContactDo.getStreet())
-                .zipCode(orderContactDo.getZipCode())
-                .city(orderContactDo.getCity())
-                .state(orderContactDo.getState())
-                .phone(orderContactDo.getPhone())
-                .email(orderContactDo.getEmail())
-                .businessId(orderContactDo.getBusinessId())
-                .taxId(orderContactDo.getTaxId())
                 .build();
     }
 
@@ -620,18 +599,16 @@ public class OrderServiceImpl implements OrderService {
     private void sortItems(final long id) {
         final List<OrderItemDo> items = orderItemRepository.findAllByOrderId(id);
         int sortNum = 0;
-        final List<OderItemSortNumDo> sortNums = new ArrayList<>();
         for (final OrderItemDo item : items) {
-            sortNums.add(new OderItemSortNumDo(item.getId(), sortNum));
+            orderItemRepository.setSortNum(item.getId(), sortNum);
             sortNum++;
         }
-        orderItemRepository.setSortNums(sortNums);
     }
 
-    private List<String> getEmails(final UserDo owner, final OrderContactDo orderContact) {
+    private List<String> getEmails(final UserDo owner, final OrderContactData orderContact) {
         final List<String> emails = new ArrayList<>();
         emails.add(owner.getEmail());
-        Optional.ofNullable(orderContact).map(OrderContactDo::getEmail).ifPresent(email -> {
+        Optional.ofNullable(orderContact).map(OrderContactData::email).ifPresent(email -> {
             if (!emails.contains(email)) {
                 emails.add(email);
             }
@@ -712,10 +689,9 @@ public class OrderServiceImpl implements OrderService {
     private void setItem(final long id, final long itemId, final OrderItemChangeData orderItemChange) {
         validate(id, orderItemChange);
 
-        orderItemRepository.setOrderItemInfo(itemId, new OrderItemInfoDo(
-                orderItemChange.name(),
-                orderItemChange.description(),
-                orderItemChange.quantity()));
+        orderItemRepository.setName(itemId, orderItemChange.name());
+        orderItemRepository.setDescription(itemId, orderItemChange.description());
+        orderItemRepository.setQuantity(itemId, orderItemChange.quantity());
         orderItemRepository.setPart(itemId, dataUtil.serializeValue(orderItemChange.part()));
 
         recountItemSummary(id, itemId);
@@ -766,7 +742,8 @@ public class OrderServiceImpl implements OrderService {
                 orderSummaryViewRepository.findAllById(id)
         );
 
-        orderRepository.setOrderTotal(id, new OrderTotalDo(orderSummary.weight(), orderSummary.total()));
+        orderRepository.setWeight(id, orderSummary.weight());
+        orderRepository.setTotal(id, orderSummary.total());
         orderRepository.setSummary(id, dataUtil.serializeValue(orderSummary));
     }
 
