@@ -8,7 +8,6 @@ import sk.janobono.wiwa.api.model.order.part.PartWebDto;
 public record OrderItemChangeWebDto(
         @NotBlank String name,
         String description,
-        @NotNull Boolean orientation,
         @NotNull @Min(0) Integer quantity,
         @NotNull PartWebDto part
 ) {
