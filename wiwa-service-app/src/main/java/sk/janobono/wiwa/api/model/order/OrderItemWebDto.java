@@ -8,7 +8,6 @@ public record OrderItemWebDto(
         Integer sortNum,
         String name,
         String description,
-        Boolean orientation,
         Integer quantity,
         PartWebDto part,
         OrderItemSummaryWebDto summary
